@@ -1,0 +1,78 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
+import 'package:json_annotation/json_annotation.dart';
+import 'package:szkolny/models/data/teacher.dart';
+import 'package:szkolny/share/config.dart';
+
+part 'grade.g.dart';
+
+@JsonSerializable()
+class Grade {
+  Grade({
+    required this.id,
+    required this.url,
+    required this.name,
+    required this.value,
+    required this.weight,
+    required this.comments,
+    required this.countsToAverage,
+    required this.date,
+    required this.addDate,
+    required this.addedBy,
+    required this.semester,
+    required this.isConstituent,
+    required this.isSemester,
+    required this.isSemesterProposition,
+    required this.isFinal,
+    required this.isFinalProposition,
+  });
+
+  int id;
+  String url;
+  String name;
+  String value;
+  int weight;
+  List<String> comments;
+  bool countsToAverage;
+  DateTime date;
+  DateTime addDate;
+  Teacher addedBy;
+  int semester;
+  bool isConstituent;
+  bool isSemester;
+  bool isSemesterProposition;
+  bool isFinal;
+  bool isFinalProposition;
+
+  String get nameWithWeight => '$name, weight $weight';
+  String get addedByString => 'Added by ${addedBy.name}';
+
+  double get asValue {
+    double val = switch (value) {
+          _ when (Config.customGradeValues?.containsKey(value) ?? false) => Config.customGradeValues![value],
+          '1' => 1,
+          '2' => 2,
+          '3' => 3,
+          '4' => 4,
+          '5' => 5,
+          '6' => 6,
+          _ => -1
+        } ??
+        -1;
+
+    try {
+      // Handle all 6+, 1-, 5+ grade string values
+      if ((Config.customGradeModifierValues?.containsKey(value[value.length - 1]) ?? false) &&
+          !(Config.customGradeValues?.containsKey(value) ?? false))
+        val += (Config.customGradeValues?[value[value.length - 1]] ?? 0);
+    } catch (ex) {
+      // ignored
+    }
+
+    return val;
+  }
+
+  factory Grade.fromJson(Map<String, dynamic> json) => _$GradeFromJson(json);
+
+  Map<String, dynamic> toJson() => _$GradeToJson(this);
+}
