@@ -11,7 +11,7 @@ import 'package:ogaku/interface/material/login.dart' as materialapp show loginPa
 void main() async {
   // try {
   //   var reader = LibrusDataReader();
-  //   await reader.login(session: '81C59CC9-AA58-4FF4-BE69-91B1028F1C04', username: 'LOGIN', password: 'PASS');
+  //   await reader.login(session: '81C59CC9-AA58-4FF4-BE69-91B1028F1C04', username: 'USER', password: 'PASS');
 
   //   await reader.refresh();
   //   await reader.refreshMessages();
@@ -20,6 +20,8 @@ void main() async {
   // } on Exception catch (e) {
   //   print(e);
   // }
+
+  Share.currentProvider = LibrusDataReader();
 
   runApp(const MainApp());
 }
@@ -32,15 +34,19 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  Widget Function() child = Config.useCupertino ? () => cupertinoapp.loginPage : () => materialapp.loginPage;
+  StatefulWidget Function() child = Config.useCupertino ? () => cupertinoapp.loginPage : () => materialapp.loginPage;
+  bool subscribed = false;
 
   @override
   Widget build(BuildContext context) {
-    Share.changeBase.subscribe((args) {
-      setState(() {
-        if (args != null) child = args.value;
+    if (!subscribed) {
+      Share.changeBase.subscribe((args) {
+        setState(() {
+          if (args != null) child = args.value;
+        });
       });
-    });
+      subscribed = true;
+    }
 
     return child();
   }

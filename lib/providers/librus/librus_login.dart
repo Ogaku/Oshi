@@ -37,10 +37,14 @@ class LibrusLogin {
       if (kDebugMode) print(e);
     }
 
-    // Post the login data for OAuth authorization
-    await synergiaData.session.post(librusOAuthUri,
-        queryParameters: {'client_id': 46},
-        data: FormData.fromMap({'action': 'login', 'login': synergiaLogin, 'pass': synergiaPass}));
+    try {
+      // Post the login data for OAuth authorization
+      await synergiaData.session.post(librusOAuthUri,
+          queryParameters: {'client_id': 46},
+          data: FormData.fromMap({'action': 'login', 'login': synergiaLogin, 'pass': synergiaPass}));
+    } on DioException catch (e) {
+      throw Exception(e.response?.data?['errors']?[0]?['message']?.toString() ?? e.message);
+    }
 
     // Acquire all required authorization headers here
     await synergiaData.session.get(librusOAuthGrantUri, queryParameters: {'client_id': 46});

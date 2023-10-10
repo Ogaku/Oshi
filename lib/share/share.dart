@@ -8,5 +8,5 @@ class Share {
 
   // Raised by the app to notify that the uses's just logged in
   // To subscribe: event.subscribe((args) => {})
-  static Event<Value<Widget Function()>> changeBase = Event<Value<Widget Function()>>();
+  static Event<Value<StatefulWidget Function()>> changeBase = Event<Value<StatefulWidget Function()>>();
 }
