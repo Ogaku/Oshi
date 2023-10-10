@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'constants.dart';
 
 import 'package:dio/dio.dart';
-import 'package:szkolny/providers/librus/login_data.dart';
+import 'package:ogaku/providers/librus/login_data.dart';
 
 class LibrusReader {
   final SynergiaData synergiaData;

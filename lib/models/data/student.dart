@@ -1,8 +1,8 @@
 import 'package:darq/darq.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:szkolny/models/data/class.dart';
-import 'package:szkolny/models/data/attendances.dart';
-import 'package:szkolny/models/data/lesson.dart';
+import 'package:ogaku/models/data/class.dart';
+import 'package:ogaku/models/data/attendances.dart';
+import 'package:ogaku/models/data/lesson.dart';
 
 part 'student.g.dart';
 

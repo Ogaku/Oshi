@@ -1,10 +1,10 @@
 import 'package:darq/darq.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:szkolny/models/data/class.dart';
-import 'package:szkolny/models/data/classroom.dart';
-import 'package:szkolny/models/data/lesson.dart';
-import 'package:szkolny/models/data/teacher.dart';
+import 'package:ogaku/models/data/class.dart';
+import 'package:ogaku/models/data/classroom.dart';
+import 'package:ogaku/models/data/lesson.dart';
+import 'package:ogaku/models/data/teacher.dart';
 
 part 'timetables.g.dart';
 
@@ -31,11 +31,17 @@ class TimetableDay {
 
   // The start time of the first non-cancelled lesson
   @JsonKey(includeToJson: false, includeFromJson: false)
-  DateTime? get dayStart => null;
+  DateTime? get dayStart => lessons
+      .firstWhereOrDefault((x) => x?.any((y) => !y.isCanceled) ?? false, defaultValue: null)
+      ?.firstWhereOrDefault((x) => !x.isCanceled)
+      ?.hourFrom;
 
   // The end time of the last non-cancelled lesson
   @JsonKey(includeToJson: false, includeFromJson: false)
-  DateTime? get dayEnd => null;
+  DateTime? get dayEnd => lessons
+      .lastWhereOrDefault((x) => x?.any((y) => !y.isCanceled) ?? false, defaultValue: null)
+      ?.lastWhereOrDefault((x) => !x.isCanceled)
+      ?.hourTo;
 
   // Today's lessons, stripped out of empty|null list blocks
   @JsonKey(includeToJson: false, includeFromJson: false)
@@ -45,6 +51,14 @@ class TimetableDay {
       .skipWhile((value) => (value?.isEmpty ?? true))
       .reverse()
       .toList();
+
+  // Does this day have any non-cancelled lessons?
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get hasValidLessons => lessons.any((x) => x?.any((y) => !y.isCanceled) ?? false);
+
+  // Does this day have any lesson objects?
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get hasLessons => lessons.any((x) => x?.isNotEmpty ?? false);
 
   factory TimetableDay.fromJson(Map<String, dynamic> json) => _$TimetableDayFromJson(json);
 

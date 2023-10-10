@@ -1,11 +1,11 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
 import 'package:event/event.dart';
-import 'package:szkolny/models/data/teacher.dart' show Teacher;
-import 'package:szkolny/models/data/student.dart' show Student;
-import 'package:szkolny/models/data/timetables.dart' show Timetables;
-import 'package:szkolny/models/data/messages.dart' show Messages;
-import 'package:szkolny/models/progress.dart' show IProgress;
+import 'package:ogaku/models/data/teacher.dart' show Teacher;
+import 'package:ogaku/models/data/student.dart' show Student;
+import 'package:ogaku/models/data/timetables.dart' show Timetables;
+import 'package:ogaku/models/data/messages.dart' show Messages;
+import 'package:ogaku/models/progress.dart' show IProgress;
 
 abstract class IProvider {
   // All the accessible data - provided as models

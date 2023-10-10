@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:szkolny/providers/librus/librus_login.dart';
-import 'package:szkolny/providers/librus/librus_reader.dart';
+import 'package:ogaku/providers/librus/librus_login.dart';
+import 'package:ogaku/providers/librus/librus_reader.dart';
 import 'package:uuid/uuid.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';

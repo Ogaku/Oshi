@@ -1,6 +1,6 @@
 {
-    "name": "szkolny",
-    "short_name": "szkolny",
+    "name": "ogaku",
+    "short_name": "ogaku",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

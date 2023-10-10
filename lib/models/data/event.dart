@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:szkolny/models/data/classroom.dart';
-import 'package:szkolny/models/data/teacher.dart';
+import 'package:ogaku/models/data/classroom.dart';
+import 'package:ogaku/models/data/teacher.dart';
 
 part 'event.g.dart';
 

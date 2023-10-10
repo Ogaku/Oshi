@@ -1,4 +1,4 @@
-package com.example.szkolny
+package com.ogaku.ogaku
 
 import io.flutter.embedding.android.FlutterActivity
 

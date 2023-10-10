@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:szkolny/models/data/teacher.dart';
+import 'package:ogaku/models/data/teacher.dart';
 
 part 'announcement.g.dart';
 
