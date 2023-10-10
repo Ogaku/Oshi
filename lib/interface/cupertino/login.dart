@@ -3,6 +3,7 @@
 import 'package:dio/dio.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:ogaku/interface/cupertino/base_app.dart';
 import 'package:ogaku/share/share.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -20,11 +21,19 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController loginController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  bool subscribed = false;
 
   @override
   Widget build(BuildContext context) {
+    if (!subscribed) {
+      SchedulerBinding.instance.platformDispatcher.onPlatformBrightnessChanged = () => setState(() {});
+      subscribed = true;
+    }
+
     return CupertinoApp(
       home: CupertinoPageScaffold(
+        backgroundColor: Color(
+            WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark ? 0x00000000 : 0xFFF2F2F7),
         navigationBar: CupertinoNavigationBar(
           automaticallyImplyLeading: true,
           trailing: CupertinoButton(
