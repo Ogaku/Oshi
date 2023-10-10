@@ -110,6 +110,9 @@ class _LoginPageState extends State<LoginPage> {
       if (!result.success && result.message != null) {
         throw result.message!;
       } else {
+        Share.currentProvider!.refresh(); // TODO TEMPORARY
+        Share.currentProvider!.refreshMessages(); // TODO TEMP
+
         Share.changeBase.broadcast(Value(() => baseApp));
       }
     } on DioException catch (e) {
