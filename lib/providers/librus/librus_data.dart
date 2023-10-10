@@ -650,22 +650,11 @@ class LibrusDataReader implements IProvider {
   models.Timetables? get timetables => dataTimetables;
 
   @override
-  String get providerName => 'Librus Synergia';
+  String get providerName => 'Librus\u00AE Synergia';
 
   @override
-  String get loginAnnotation => 'Put your Librus Synergia (not Portal) user ID here';
-
-  @override
-  String get passAnnotation => 'Put your Librus Synergia (not Portal) password here';
-
-  @override
-  String get providerDescription => 'Librus Synergia'; // TODO
-
-  @override
-  Uri? get providerBanner => null; // TODO
-
-  @override
-  Uri? get providerIcon => null; // TODO
+  String get providerDescription =>
+      "Log in with your Librus\u00AE Synergia account your school has provided you with. A student's login will typically end with an 'u' letter.";
 }
 
 extension UserExtension on User {

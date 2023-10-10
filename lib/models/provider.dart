@@ -16,12 +16,6 @@ abstract class IProvider {
   // Provider's header - distinct data
   String get providerName;
   String get providerDescription;
-  String get loginAnnotation;
-  String get passAnnotation;
-
-  // Provider's decorations - shared data
-  Uri? get providerIcon;
-  Uri? get providerBanner;
 
   // Raised by providers to notify about updates
   // To subscribe: event.subscribe((args) => {})

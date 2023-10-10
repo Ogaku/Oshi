@@ -24,15 +24,24 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoApp(
-      title: 'Cupertino App',
       home: CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar(
-          trailing: Icon(CupertinoIcons.info_circle),
+          automaticallyImplyLeading: true,
+          trailing: CupertinoButton(
+              padding: EdgeInsets.all(10),
+              child: Text('Next',
+                  style: TextStyle(
+                      color: (loginController.text.isNotEmpty && passwordController.text.isNotEmpty)
+                          ? CupertinoColors.activeBlue
+                          : CupertinoColors.inactiveGray)),
+              onPressed: () => (loginController.text.isNotEmpty && passwordController.text.isNotEmpty)
+                  ? tryLogin(login: loginController.text, pass: passwordController.text)
+                  : null),
           middle: FittedBox(
               fit: BoxFit.fitWidth,
               child: Container(
                 margin: EdgeInsets.only(right: 25),
-                child: Text('Log in to ${Share.currentProvider?.providerName}'),
+                child: Text('Log in - ${Share.currentProvider?.providerName}'),
               )),
         ),
         child: Column(
@@ -40,64 +49,45 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
+              Opacity(
+                  opacity: 0.7,
+                  child: Container(
+                      margin: EdgeInsets.only(top: 60, left: 20, right: 20),
+                      child: Text(Share.currentProvider?.providerDescription ?? '', style: TextStyle(fontSize: 14)))),
               Container(
-                margin: EdgeInsets.only(top: 60, left: 20, right: 20),
-                width: 320,
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Container(margin: EdgeInsets.only(bottom: 3, left: 3), child: Text('Username')),
-                    CupertinoTextField(
-                      onChanged: (s) => setState(() {}),
-                      controller: loginController,
-                    ),
-                    Opacity(
-                        opacity: 0.5,
-                        child: Container(
-                            margin: EdgeInsets.only(left: 3),
-                            child: Text(Share.currentProvider?.loginAnnotation ?? '', style: TextStyle(fontSize: 14)))),
-                  ]),
-                  Container(
-                    margin: EdgeInsets.only(top: 25),
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Container(margin: EdgeInsets.only(bottom: 3, left: 3), child: Text('Password')),
-                      CupertinoTextField(
-                        onChanged: (s) => setState(() {}),
-                        controller: passwordController,
-                      ),
-                      Opacity(
-                          opacity: 0.5,
-                          child: Container(
-                              margin: EdgeInsets.only(left: 3),
-                              child: Text(Share.currentProvider?.passAnnotation ?? '', style: TextStyle(fontSize: 14)))),
-                    ]),
-                  ),
-                ]),
-              ),
+                  margin: EdgeInsets.only(top: 20),
+                  child: CupertinoFormSection.insetGrouped(children: [
+                    CupertinoFormRow(
+                        prefix: Text('Username'),
+                        child: CupertinoTextFormFieldRow(
+                          textAlign: TextAlign.end,
+                          placeholder: 'Librus\u00AE Synergia username',
+                          controller: loginController,
+                          onChanged: (s) => setState(() {}),
+                        )),
+                    CupertinoFormRow(
+                        prefix: Text('Password'),
+                        child: CupertinoTextFormFieldRow(
+                          obscureText: true,
+                          textAlign: TextAlign.end,
+                          placeholder: 'Librus\u00AE Synergia password',
+                          controller: passwordController,
+                          onChanged: (s) => setState(() {}),
+                        ))
+                  ])),
               Expanded(
                   child: Align(
                 alignment: Alignment.bottomCenter,
                 child: Opacity(
-                    opacity: 0.6,
+                    opacity: 0.5,
                     child: Container(
-                        width: 320,
-                        margin: EdgeInsets.only(right: 20, left: 20),
+                        margin: EdgeInsets.only(right: 20, left: 20, bottom: 20),
                         child: Text(
-                          "Your login credentials won't be kept by the app, but may be locally saved by the e-register service provider, either as encoded text or an access token. This data is not, and will never be shared with neither us nor any third-parties.",
-                          style: TextStyle(fontSize: 13),
+                          "Any login credentials won't be kept by the app, although they may be locally saved by the e-register service provider, either as encoded text or an access token. This data is not, and will never be shared with neither us nor any third-parties.",
+                          style: TextStyle(fontSize: 12),
                           textAlign: TextAlign.justify,
                         ))),
               )),
-              Opacity(
-                  opacity: (loginController.text.isNotEmpty && passwordController.text.isNotEmpty) ? 1.0 : 0.4,
-                  child: Container(
-                    width: 320,
-                    margin: EdgeInsets.only(top: 15, bottom: 20, left: 20, right: 20),
-                    child: CupertinoButton.filled(
-                        child: const Text('Log in'),
-                        onPressed: () => (loginController.text.isNotEmpty && passwordController.text.isNotEmpty)
-                            ? tryLogin(login: loginController.text, pass: passwordController.text)
-                            : null),
-                  )),
             ]),
       ),
     );
