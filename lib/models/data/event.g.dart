@@ -7,21 +7,24 @@ part of 'event.dart';
 // **************************************************************************
 
 Event _$EventFromJson(Map<String, dynamic> json) => Event(
-      id: json['id'] as int,
+      id: json['id'] as int? ?? -1,
       lessonNo: json['lessonNo'] as int?,
       date:
           json['date'] == null ? null : DateTime.parse(json['date'] as String),
       addDate: json['addDate'] == null
           ? null
           : DateTime.parse(json['addDate'] as String),
-      timeFrom: DateTime.parse(json['timeFrom'] as String),
+      timeFrom: json['timeFrom'] == null
+          ? null
+          : DateTime.parse(json['timeFrom'] as String),
       timeTo: json['timeTo'] == null
           ? null
           : DateTime.parse(json['timeTo'] as String),
       title: json['title'] as String?,
-      content: json['content'] as String,
-      categoryName: json['categoryName'] as String,
-      category: $enumDecode(_$EventCategoryEnumMap, json['category']),
+      content: json['content'] as String? ?? '',
+      categoryName: json['categoryName'] as String? ?? '',
+      category: $enumDecodeNullable(_$EventCategoryEnumMap, json['category']) ??
+          EventCategory.other,
       sender: json['sender'] == null
           ? null
           : Teacher.fromJson(json['sender'] as Map<String, dynamic>),

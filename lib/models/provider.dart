@@ -1,21 +1,23 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
 import 'package:event/event.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:ogaku/models/data/teacher.dart' show Teacher;
 import 'package:ogaku/models/data/student.dart' show Student;
 import 'package:ogaku/models/data/timetables.dart' show Timetables;
 import 'package:ogaku/models/data/messages.dart' show Messages;
 import 'package:ogaku/models/progress.dart' show IProgress;
 
+part 'provider.g.dart';
+
 abstract class IProvider {
   // All the accessible data - provided as models
-  Student? get student;
-  Timetables? get timetables;
-  Messages? get messages;
+  ProviderData? get registerData;
 
   // Provider's header - distinct data
   String get providerName;
   String get providerDescription;
+  Uri? get providerBannerUri;
 
   // Raised by providers to notify about updates
   // To subscribe: event.subscribe((args) => {})
@@ -40,5 +42,23 @@ abstract class IProvider {
 
   // Send a message to selected user/s, fetched from `Messages.Receivers`
   // Don't encode the strings, the provider will need to take care of that
-  Future<({bool success, Exception? message})> sendMessage(List<Teacher> receivers, String topic, String content);
+  Future<({bool success, Exception? message})> sendMessage(
+      {required List<Teacher> receivers, required String topic, required String content});
+}
+
+@JsonSerializable(includeIfNull: false)
+class ProviderData {
+  ProviderData({Student? student, Timetables? timetables, Messages? messages})
+      : student = student ?? Student(),
+        timetables = timetables ?? Timetables(),
+        messages = messages ?? Messages();
+
+  // All the accessible data - provided as models
+  Student student;
+  Timetables timetables;
+  Messages messages;
+
+  factory ProviderData.fromJson(Map<String, dynamic> json) => _$ProviderDataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ProviderDataToJson(this);
 }

@@ -6,15 +6,16 @@ part 'announcement.g.dart';
 @JsonSerializable()
 class Announcement {
   Announcement({
-    required this.id,
-    required this.url,
-    required this.read,
-    required this.subject,
-    required this.content,
+    this.id = -1,
+    this.url = '',
+    this.read = false,
+    this.subject = '',
+    this.content = '',
     this.contact,
-    required this.startDate,
-    required this.endDate,
-  });
+    DateTime? startDate,
+    DateTime? endDate,
+  })  : startDate = startDate ?? DateTime(2000),
+        endDate = endDate ?? DateTime(2000);
 
   int id;
   String url;

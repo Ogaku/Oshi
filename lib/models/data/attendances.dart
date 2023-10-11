@@ -7,14 +7,18 @@ part 'attendances.g.dart';
 @JsonSerializable(includeIfNull: false)
 class Attendance {
   Attendance({
-    required this.id,
-    required this.lessonNo,
-    required this.lesson,
-    required this.date,
-    required this.addDate,
-    required this.type,
-    required this.teacher,
-  });
+    this.id = -1,
+    this.lessonNo = -1,
+    TimetableLesson? lesson,
+    DateTime? date,
+    DateTime? addDate,
+    AttendanceType? type,
+    Teacher? teacher,
+  })  : lesson = lesson ?? TimetableLesson(),
+        date = date ?? DateTime(2000),
+        addDate = addDate ?? DateTime(2000),
+        type = type ?? AttendanceType.other,
+        teacher = teacher ?? Teacher();
 
   int id;
   int lessonNo;
@@ -22,7 +26,7 @@ class Attendance {
   DateTime date;
   DateTime addDate;
   AttendanceType type;
-  Teacher? teacher;
+  Teacher teacher;
 
   factory Attendance.fromJson(Map<String, dynamic> json) => _$AttendanceFromJson(json);
 

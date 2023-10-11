@@ -7,16 +7,18 @@ part of 'messages.dart';
 // **************************************************************************
 
 Message _$MessageFromJson(Map<String, dynamic> json) => Message(
-      id: json['id'] as int,
-      url: json['url'] as String,
-      topic: json['topic'] as String,
+      id: json['id'] as int? ?? -1,
+      url: json['url'] as String? ?? 'https://g.co',
+      topic: json['topic'] as String? ?? '',
       content: json['content'] as String?,
       preview: json['preview'] as String?,
-      hasAttachments: json['hasAttachments'] as bool,
+      hasAttachments: json['hasAttachments'] as bool? ?? false,
       sender: json['sender'] == null
           ? null
           : Teacher.fromJson(json['sender'] as Map<String, dynamic>),
-      sendDate: DateTime.parse(json['sendDate'] as String),
+      sendDate: json['sendDate'] == null
+          ? null
+          : DateTime.parse(json['sendDate'] as String),
       readDate: json['readDate'] == null
           ? null
           : DateTime.parse(json['readDate'] as String),
@@ -72,14 +74,14 @@ $Rec _$recordConvert<$Rec>(
     convert(value as Map<String, dynamic>);
 
 Messages _$MessagesFromJson(Map<String, dynamic> json) => Messages(
-      (json['received'] as List<dynamic>)
-          .map((e) => Message.fromJson(e as Map<String, dynamic>))
+      received: (json['received'] as List<dynamic>?)
+          ?.map((e) => Message.fromJson(e as Map<String, dynamic>))
           .toList(),
-      (json['sent'] as List<dynamic>)
-          .map((e) => Message.fromJson(e as Map<String, dynamic>))
+      sent: (json['sent'] as List<dynamic>?)
+          ?.map((e) => Message.fromJson(e as Map<String, dynamic>))
           .toList(),
-      (json['receivers'] as List<dynamic>)
-          .map((e) => Teacher.fromJson(e as Map<String, dynamic>))
+      receivers: (json['receivers'] as List<dynamic>?)
+          ?.map((e) => Teacher.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 

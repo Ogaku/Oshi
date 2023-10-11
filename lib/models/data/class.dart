@@ -20,17 +20,22 @@ class Class {
   List<Event> events;
 
   Class({
-    required this.id,
-    required this.number,
-    required this.symbol,
-    required this.name,
-    required this.beginSchoolYear,
-    required this.endFirstSemester,
-    required this.endSchoolYear,
-    required this.unit,
-    required this.classTutor,
-    required this.events,
-  });
+    this.id = -1,
+    this.number = -1,
+    this.symbol = '',
+    this.name = '',
+    DateTime? beginSchoolYear,
+    DateTime? endFirstSemester,
+    DateTime? endSchoolYear,
+    Unit? unit,
+    Teacher? classTutor,
+    List<Event>? events,
+  })  : beginSchoolYear = beginSchoolYear ?? DateTime(2000),
+        endFirstSemester = endFirstSemester ?? DateTime(2000),
+        endSchoolYear = endSchoolYear ?? DateTime(2000),
+        unit = unit ?? Unit(),
+        classTutor = classTutor ?? Teacher(),
+        events = events ?? [];
 
   String get className => (name?.isEmpty ?? true) ? (number.toString() + symbol) : name!;
 

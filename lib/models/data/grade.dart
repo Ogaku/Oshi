@@ -9,23 +9,26 @@ part 'grade.g.dart';
 @JsonSerializable()
 class Grade {
   Grade({
-    required this.id,
-    required this.url,
-    required this.name,
-    required this.value,
-    required this.weight,
-    required this.comments,
-    required this.countsToAverage,
-    required this.date,
-    required this.addDate,
-    required this.addedBy,
-    required this.semester,
-    required this.isConstituent,
-    required this.isSemester,
-    required this.isSemesterProposition,
-    required this.isFinal,
-    required this.isFinalProposition,
-  });
+    this.id = -1,
+    this.url = 'https://g.co',
+    this.name = '',
+    this.value = '',
+    this.weight = 0,
+    List<String>? comments,
+    this.countsToAverage = false,
+    DateTime? date,
+    DateTime? addDate,
+    Teacher? addedBy,
+    this.semester = 1,
+    this.isConstituent = false,
+    this.isSemester = false,
+    this.isSemesterProposition = false,
+    this.isFinal = false,
+    this.isFinalProposition = false,
+  })  : comments = comments ?? [],
+        date = date ?? DateTime(2000),
+        addDate = addDate ?? DateTime(2000),
+        addedBy = addedBy ?? Teacher();
 
   int id;
   String url;

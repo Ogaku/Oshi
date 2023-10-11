@@ -9,11 +9,11 @@ part 'student.g.dart';
 @JsonSerializable()
 class Account {
   Account({
-    required this.id,
-    required this.userId,
-    required this.number,
-    required this.firstName,
-    required this.lastName,
+    this.id = -1,
+    this.userId = -1,
+    this.number = -1,
+    this.firstName = '',
+    this.lastName = '',
   });
 
   int id;
@@ -38,12 +38,14 @@ class Student {
   List<Lesson> subjects;
 
   Student({
-    required this.account,
-    required this.mainClass,
-    required this.virtualClasses,
-    required this.attendances,
-    required this.subjects,
-  });
+    Account? account,
+    Class? mainClass,
+    this.virtualClasses,
+    this.attendances,
+    List<Lesson>? subjects,
+  })  : account = account ?? Account(),
+        mainClass = mainClass ?? Class(),
+        subjects = subjects ?? [];
 
   Iterable<Lesson> get subjectsByGrades =>
       subjects.orderByDescending((element) => element.hasGradesCurrentSemester).thenBy((element) => element.name);

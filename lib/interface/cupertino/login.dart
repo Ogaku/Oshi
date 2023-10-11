@@ -7,6 +7,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:ogaku/interface/cupertino/base_app.dart';
 import 'package:ogaku/share/share.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 // Boiler: returned to the main application
 StatefulWidget get loginPage => LoginPage();
@@ -50,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
               fit: BoxFit.fitWidth,
               child: Container(
                 margin: EdgeInsets.only(right: 25),
-                child: Text('Log in - ${Share.currentProvider?.providerName}'),
+                child: Text('Log in - ${Share.session.provider.providerName}'),
               )),
         ),
         child: Column(
@@ -58,13 +59,16 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
-              Opacity(
-                  opacity: 0.7,
+              Visibility(
+                  visible: Share.session.provider.providerBannerUri != null,
                   child: Container(
-                      margin: EdgeInsets.only(top: 60, left: 20, right: 20),
-                      child: Text(Share.currentProvider?.providerDescription ?? '', style: TextStyle(fontSize: 14)))),
+                      margin: EdgeInsets.only(top: 90, left: 100, right: 100),
+                      child: FadeInImage.memoryNetwork(
+                          placeholder: kTransparentImage,
+                          image: Share.session.provider.providerBannerUri?.toString() ??
+                              'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg'))),
               Container(
-                  margin: EdgeInsets.only(top: 20),
+                  margin: EdgeInsets.only(top: 50),
                   child: CupertinoFormSection.insetGrouped(children: [
                     CupertinoFormRow(
                         prefix: Text('Username'),
@@ -84,6 +88,11 @@ class _LoginPageState extends State<LoginPage> {
                           onChanged: (s) => setState(() {}),
                         ))
                   ])),
+              Opacity(
+                  opacity: 0.7,
+                  child: Container(
+                      margin: EdgeInsets.only(top: 10, left: 20, right: 20),
+                      child: Text(Share.session.provider.providerDescription, style: TextStyle(fontSize: 14)))),
               Expanded(
                   child: Align(
                 alignment: Alignment.bottomCenter,
@@ -104,14 +113,13 @@ class _LoginPageState extends State<LoginPage> {
 
   void tryLogin({required String login, required String pass}) async {
     try {
-      var result = await Share.currentProvider!
-          .login(session: '81C59CC9-AA58-4FF4-BE69-91B1028F1C04', username: login, password: pass);
+      var result = await Share.session.login(username: login, password: pass);
 
       if (!result.success && result.message != null) {
         throw result.message!;
       } else {
-        Share.currentProvider!.refresh(); // TODO TEMPORARY
-        Share.currentProvider!.refreshMessages(); // TODO TEMP
+        Share.session.refresh(); // TODO TEMPORARY
+        Share.session.refreshMessages(); // TODO TEMP
 
         Share.changeBase.broadcast(Value(() => baseApp));
       }

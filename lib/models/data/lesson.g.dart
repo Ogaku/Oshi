@@ -7,13 +7,13 @@ part of 'lesson.dart';
 // **************************************************************************
 
 Lesson _$LessonFromJson(Map<String, dynamic> json) => Lesson(
-      id: json['id'] as int,
-      url: json['url'] as String,
-      name: json['name'] as String,
-      no: json['no'] as int,
-      short: json['short'] as String,
-      isExtracurricular: json['isExtracurricular'] as bool,
-      isBlockLesson: json['isBlockLesson'] as bool,
+      id: json['id'] as int? ?? -1,
+      url: json['url'] as String? ?? 'https://g.co',
+      name: json['name'] as String? ?? '',
+      no: json['no'] as int? ?? -1,
+      short: json['short'] as String? ?? '',
+      isExtracurricular: json['isExtracurricular'] as bool? ?? false,
+      isBlockLesson: json['isBlockLesson'] as bool? ?? false,
       hostClass: json['hostClass'] == null
           ? null
           : Class.fromJson(json['hostClass'] as Map<String, dynamic>),

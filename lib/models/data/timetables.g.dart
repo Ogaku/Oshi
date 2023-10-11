@@ -7,7 +7,7 @@ part of 'timetables.dart';
 // **************************************************************************
 
 Timetables _$TimetablesFromJson(Map<String, dynamic> json) => Timetables(
-      (json['timetable'] as Map<String, dynamic>).map(
+      timetable: (json['timetable'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(DateTime.parse(k),
             TimetableDay.fromJson(e as Map<String, dynamic>)),
       ),
@@ -35,7 +35,7 @@ Map<String, dynamic> _$TimetableDayToJson(TimetableDay instance) =>
 TimetableLesson _$TimetableLessonFromJson(Map<String, dynamic> json) =>
     TimetableLesson(
       url: json['url'] as String? ?? '',
-      lessonNo: json['lessonNo'] as int,
+      lessonNo: json['lessonNo'] as int? ?? -1,
       isCanceled: json['isCanceled'] as bool? ?? false,
       lessonClass: json['lessonClass'] == null
           ? null
@@ -55,7 +55,8 @@ TimetableLesson _$TimetableLessonFromJson(Map<String, dynamic> json) =>
           ? null
           : SubstitutionDetails.fromJson(
               json['substitutionDetails'] as Map<String, dynamic>),
-      date: DateTime.parse(json['date'] as String),
+      date:
+          json['date'] == null ? null : DateTime.parse(json['date'] as String),
       hourFrom: json['hourFrom'] == null
           ? null
           : DateTime.parse(json['hourFrom'] as String),
@@ -83,8 +84,8 @@ Map<String, dynamic> _$TimetableLessonToJson(TimetableLesson instance) =>
 
 SubstitutionDetails _$SubstitutionDetailsFromJson(Map<String, dynamic> json) =>
     SubstitutionDetails(
-      originalUrl: json['originalUrl'] as String,
-      originalLessonNo: json['originalLessonNo'] as int,
+      originalUrl: json['originalUrl'] as String? ?? 'htps://g.co',
+      originalLessonNo: json['originalLessonNo'] as int? ?? -1,
       originalSubject: json['originalSubject'] == null
           ? null
           : Lesson.fromJson(json['originalSubject'] as Map<String, dynamic>),
@@ -95,9 +96,15 @@ SubstitutionDetails _$SubstitutionDetailsFromJson(Map<String, dynamic> json) =>
           ? null
           : Classroom.fromJson(
               json['originalClassroom'] as Map<String, dynamic>),
-      originalDate: DateTime.parse(json['originalDate'] as String),
-      originalHourFrom: DateTime.parse(json['originalHourFrom'] as String),
-      originalHourTo: DateTime.parse(json['originalHourTo'] as String),
+      originalDate: json['originalDate'] == null
+          ? null
+          : DateTime.parse(json['originalDate'] as String),
+      originalHourFrom: json['originalHourFrom'] == null
+          ? null
+          : DateTime.parse(json['originalHourFrom'] as String),
+      originalHourTo: json['originalHourTo'] == null
+          ? null
+          : DateTime.parse(json['originalHourTo'] as String),
     );
 
 Map<String, dynamic> _$SubstitutionDetailsToJson(

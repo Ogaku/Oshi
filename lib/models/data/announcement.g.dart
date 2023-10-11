@@ -7,16 +7,20 @@ part of 'announcement.dart';
 // **************************************************************************
 
 Announcement _$AnnouncementFromJson(Map<String, dynamic> json) => Announcement(
-      id: json['id'] as int,
-      url: json['url'] as String,
-      read: json['read'] as bool,
-      subject: json['subject'] as String,
-      content: json['content'] as String,
+      id: json['id'] as int? ?? -1,
+      url: json['url'] as String? ?? '',
+      read: json['read'] as bool? ?? false,
+      subject: json['subject'] as String? ?? '',
+      content: json['content'] as String? ?? '',
       contact: json['contact'] == null
           ? null
           : Teacher.fromJson(json['contact'] as Map<String, dynamic>),
-      startDate: DateTime.parse(json['startDate'] as String),
-      endDate: DateTime.parse(json['endDate'] as String),
+      startDate: json['startDate'] == null
+          ? null
+          : DateTime.parse(json['startDate'] as String),
+      endDate: json['endDate'] == null
+          ? null
+          : DateTime.parse(json['endDate'] as String),
     );
 
 Map<String, dynamic> _$AnnouncementToJson(Announcement instance) =>

@@ -7,17 +7,27 @@ part of 'class.dart';
 // **************************************************************************
 
 Class _$ClassFromJson(Map<String, dynamic> json) => Class(
-      id: json['id'] as int,
-      number: json['number'] as int,
-      symbol: json['symbol'] as String,
-      name: json['name'] as String?,
-      beginSchoolYear: DateTime.parse(json['beginSchoolYear'] as String),
-      endFirstSemester: DateTime.parse(json['endFirstSemester'] as String),
-      endSchoolYear: DateTime.parse(json['endSchoolYear'] as String),
-      unit: Unit.fromJson(json['unit'] as Map<String, dynamic>),
-      classTutor: Teacher.fromJson(json['classTutor'] as Map<String, dynamic>),
-      events: (json['events'] as List<dynamic>)
-          .map((e) => Event.fromJson(e as Map<String, dynamic>))
+      id: json['id'] as int? ?? -1,
+      number: json['number'] as int? ?? -1,
+      symbol: json['symbol'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      beginSchoolYear: json['beginSchoolYear'] == null
+          ? null
+          : DateTime.parse(json['beginSchoolYear'] as String),
+      endFirstSemester: json['endFirstSemester'] == null
+          ? null
+          : DateTime.parse(json['endFirstSemester'] as String),
+      endSchoolYear: json['endSchoolYear'] == null
+          ? null
+          : DateTime.parse(json['endSchoolYear'] as String),
+      unit: json['unit'] == null
+          ? null
+          : Unit.fromJson(json['unit'] as Map<String, dynamic>),
+      classTutor: json['classTutor'] == null
+          ? null
+          : Teacher.fromJson(json['classTutor'] as Map<String, dynamic>),
+      events: (json['events'] as List<dynamic>?)
+          ?.map((e) => Event.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 

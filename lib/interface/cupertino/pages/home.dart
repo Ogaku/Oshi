@@ -3,6 +3,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:intl/intl.dart';
 import 'package:ogaku/share/share.dart';
 
 import 'package:ogaku/interface/cupertino/views/text_chip.dart' show TextChip;
@@ -23,8 +24,8 @@ class _HomePageState extends State<HomePage> {
   bool subscribed = false;
 
   bool get isLucky =>
-      Share.currentProvider!.student?.mainClass.unit.luckyNumber != null &&
-      Share.currentProvider!.student?.account.number == Share.currentProvider!.student?.mainClass.unit.luckyNumber;
+      Share.session.data.student.mainClass.unit.luckyNumber != null &&
+      Share.session.data.student.account.number == Share.session.data.student.mainClass.unit.luckyNumber;
 
   @override
   Widget build(BuildContext context) {
@@ -40,10 +41,13 @@ class _HomePageState extends State<HomePage> {
         controller: scrollController,
         slivers: [
           SliverNavigationBar(
-            scrollController: scrollController,
-            largeTitle: Text('Home'),
-            trailing: Icon(CupertinoIcons.gear),
-          ),
+              scrollController: scrollController,
+              largeTitle: Text('Home'),
+              trailing: Icon(CupertinoIcons.gear),
+              leading: TextChip(
+                text: DateFormat('y.M.d').format(DateTime.now()),
+                margin: EdgeInsets.only(top: 6, bottom: 6),
+              )),
           SliverFillRemaining(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -51,29 +55,46 @@ class _HomePageState extends State<HomePage> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 CupertinoListSection.insetGrouped(
-                  margin: EdgeInsets.only(right: 20, left: 20, bottom: 15),
+                  header: Text('Summary'),
+                  // margin: EdgeInsets.only(right: 20, left: 20, bottom: 15),
                   children: [
-                    CupertinoListTile(title: Text(isLucky ? "You're the lucky one!" : 'No luck today, either...')),
+                    CupertinoListTile(
+                        title: Container(
+                            margin: EdgeInsets.only(top: 10, bottom: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('TODO Conditional lesson text'),
+                                Visibility(
+                                    visible: Share.session.data.student.mainClass.unit.luckyNumber != null,
+                                    child: Opacity(
+                                        opacity: 0.5,
+                                        child: Container(
+                                            margin: EdgeInsets.only(top: 5), child: Text("You're the lucky one today!"))))
+                              ],
+                            ))),
                     CupertinoListTile(title: Text('TODO Conditional lesson text')),
                     CupertinoListTile(
                         title: Container(
                             margin: EdgeInsets.only(top: 10, bottom: 10),
                             child: Column(
-                              children: [Text('TODO Conditional lesson text'), Text('TODO Conditional lesson text')],
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('TODO Conditional lesson text'),
+                                Visibility(
+                                    visible: Share.session.data.student.mainClass.unit.luckyNumber == null,
+                                    child: Opacity(
+                                        opacity: 0.5,
+                                        child: Container(
+                                            margin: EdgeInsets.only(top: 5), child: Text('TODO Conditional lesson text'))))
+                              ],
                             ))),
                     CupertinoListTile(title: Text('TODO Conditional lesson text')),
                   ],
                 ),
                 // Recent grades - always in the middle
                 CupertinoListSection.insetGrouped(
-                  header: Opacity(
-                      opacity: 0.5,
-                      child: Container(
-                          margin: EdgeInsets.only(left: 20, bottom: 5),
-                          child: Text(
-                            'Grades - last week',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                          ))),
+                  header: Text('Recent grades'),
                   children: [
                     CupertinoListTile(
                         title: Opacity(
@@ -88,14 +109,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 // Upcoming events - always below grades
                 CupertinoListSection.insetGrouped(
-                  header: Opacity(
-                      opacity: 0.5,
-                      child: Container(
-                          margin: EdgeInsets.only(left: 20, bottom: 5),
-                          child: Text(
-                            'Upcoming events',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                          ))),
+                  header: Text('Upcoming events'),
                   children: [
                     CupertinoListTile(
                         title: Opacity(
@@ -110,14 +124,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 // Homeworks - first if any(), otherwise last
                 CupertinoListSection.insetGrouped(
-                  header: Opacity(
-                      opacity: 0.5,
-                      child: Container(
-                          margin: EdgeInsets.only(left: 20, bottom: 5),
-                          child: Text(
-                            'Upcoming events',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                          ))),
+                  header: Text('Homeworks'),
                   children: [
                     CupertinoListTile(
                         title: Opacity(

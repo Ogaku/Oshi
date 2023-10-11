@@ -7,7 +7,6 @@ import 'package:event/src/eventargs.dart';
 import 'package:intl/intl.dart';
 import 'package:ogaku/models/data/messages.dart';
 import 'package:ogaku/models/progress.dart';
-import 'package:ogaku/models/provider.dart';
 import 'package:ogaku/providers/librus/librus_login.dart';
 import 'package:ogaku/providers/librus/librus_reader.dart';
 import 'package:ogaku/providers/librus/login_data.dart';
@@ -26,6 +25,7 @@ import 'package:ogaku/models/data/announcement.dart' as models;
 import 'package:ogaku/models/data/event.dart' as models;
 import 'package:ogaku/models/data/grade.dart' as models;
 import 'package:ogaku/models/data/messages.dart' as models;
+import 'package:ogaku/models/provider.dart' as models;
 
 import 'models/shim/classrooms.dart' show Classrooms, Classroom;
 import 'models/shim/event_categories.dart' show EventCategories;
@@ -55,10 +55,8 @@ import 'models/shim/grades.dart' show Grades;
 import 'models/shim/inbox_messages.dart' show InboxMessages, InboxMessage;
 import 'models/shim/outbox_messages.dart' show OutboxMessages, OutboxMessage, MessageToSend, Receivers, Schoolreceiver;
 
-class LibrusDataReader implements IProvider {
-  models.Student? dataStudent;
-  models.Timetables? dataTimetables;
-  models.Messages? dataMessages;
+class LibrusDataReader implements models.IProvider {
+  models.ProviderData dataChunk = models.ProviderData();
 
   String? sessionId;
   SynergiaData? data;
@@ -213,10 +211,17 @@ class LibrusDataReader implements IProvider {
       // Check the lucky number (if exists)
       var luckyNumberData = (await data!.librusApi!.request('LuckyNumbers'));
 
+      var forToday = (DateTime.tryParse(luckyNumberData["LuckyNumber"]?["LuckyNumberDay"]) ?? DateTime(2000))
+          .isSameDate(DateTime.now());
+      var forTomorrow = (DateTime.tryParse(luckyNumberData["LuckyNumber"]?["LuckyNumberDay"]) ?? DateTime(2000))
+          .isSameDate(DateTime.now().add(const Duration(days: 1)));
+
       student.mainClass.unit.luckyNumber = // Check whether the date for the lucky number result is "today"
-          (DateTime.tryParse(luckyNumberData["LuckyNumber"]?["LuckyNumberDay"]) ?? DateTime(2000)).isSameDate(DateTime.now())
+          (forToday || forTomorrow)
               ? int.tryParse(luckyNumberData["LuckyNumber"]?["LuckyNumber"])
               : null; // Parsing the lucky number date has failed
+
+      if (!forToday && forTomorrow) student.mainClass.unit.luckyNumberTomorrow = true;
     } catch (ex) {
       // ignore
     }
@@ -233,65 +238,67 @@ class LibrusDataReader implements IProvider {
             "Timetables?weekStart=${DateFormat('y-M-d').format(weekStart.subtract(Duration(days: weekStart.weekday - 1)))}"))
         : Timetables.fromJson(await data!.librusApi!.request('Timetables'));
 
-    var timetable = models.Timetables(timetableShim.timetable.map((key, value) => MapEntry(
-        DateTime.parse(key),
-        models.TimetableDay(value.select(
-          (lessons, index) {
-            return lessons
-                ?.select((lesson, index) => models.TimetableLesson(
-                      url: lesson.lesson?.url ?? '',
-                      lessonNo: int.tryParse(lesson.lessonNo) ?? -1,
-                      isCanceled: lesson.isCanceled,
-                      modifiedSchedule: lesson.isSubstitutionClass,
-                      substitutionNote: '',
+    var timetable = models.Timetables(
+        timetable: timetableShim.timetable.map((key, value) => MapEntry(
+            DateTime.parse(key),
+            models.TimetableDay(value.select(
+              (lessons, index) {
+                return lessons
+                    ?.select((lesson, index) => models.TimetableLesson(
+                          url: lesson.lesson?.url ?? '',
+                          lessonNo: int.tryParse(lesson.lessonNo) ?? -1,
+                          isCanceled: lesson.isCanceled,
+                          modifiedSchedule: lesson.isSubstitutionClass,
+                          substitutionNote: '',
 
-                      date: DateTime.parse(key),
-                      hourFrom: lesson.hourFrom.asTime(),
-                      hourTo: lesson.hourTo.asTime(),
+                          date: DateTime.parse(key),
+                          hourFrom: lesson.hourFrom.asTime(),
+                          hourTo: lesson.hourTo.asTime(),
 
-                      lessonClass: student.mainClass.id == lesson.timetableLessonClass?.id
-                          ? student.mainClass // Either the regular or virtual one
-                          : classesShim.virtualClasses
-                              ?.firstWhere((y) => y.id == lesson.virtualClass?.id)
-                              .asClass(student.mainClass),
-                      classroom: classroomsShim.classrooms
-                          ?.firstWhere((y) => y.id == int.tryParse(lesson.classroom?.id ?? ''))
-                          .asClassroom(),
+                          lessonClass: student.mainClass.id == lesson.timetableLessonClass?.id
+                              ? student.mainClass // Either the regular or virtual one
+                              : classesShim.virtualClasses
+                                  ?.firstWhere((y) => y.id == lesson.virtualClass?.id)
+                                  .asClass(student.mainClass),
+                          classroom: classroomsShim.classrooms
+                              ?.firstWhere((y) => y.id == int.tryParse(lesson.classroom?.id ?? ''))
+                              .asClassroom(),
 
-                      subject: subjectsShim.subjects
-                          ?.firstWhere((y) => y.id == int.tryParse(lesson.subject?.id ?? ''))
-                          .asSubject(),
-                      teacher:
-                          teachersShim.users?.firstWhere((y) => y.id == int.tryParse(lesson.teacher?.id ?? '')).asTeacher(),
+                          subject: subjectsShim.subjects
+                              ?.firstWhere((y) => y.id == int.tryParse(lesson.subject?.id ?? ''))
+                              .asSubject(),
+                          teacher: teachersShim.users
+                              ?.firstWhere((y) => y.id == int.tryParse(lesson.teacher?.id ?? ''))
+                              .asTeacher(),
 
-                      substitutionDetails: lesson.isSubstitutionClass
-                          ? models.SubstitutionDetails(
-                              originalUrl: '',
-                              originalLessonNo: int.tryParse(lesson.orgLessonNo ?? '') ?? 0,
-                              originalDate: lesson.orgDate ?? DateTime.now(),
-                              originalHourFrom: lesson.orgHourFrom?.asTime() ?? DateTime.now(),
-                              originalHourTo: lesson.orgHourTo?.asTime() ?? DateTime.now(),
-                              originalClassroom: lesson.orgClassroom?.id != null
-                                  ? classroomsShim.classrooms!
-                                      .firstWhere((y) => y.id == int.tryParse(lesson.orgClassroom?.id ?? ''))
-                                      .asClassroom()
-                                  : null,
-                              originalSubject: lesson.orgSubject?.id != null
-                                  ? subjectsShim.subjects!
-                                      .firstWhere((y) => y.id == int.tryParse(lesson.orgSubject?.id ?? ''))
-                                      .asSubject()
-                                  : null,
-                              originalTeacher: lesson.orgTeacher?.id != null
-                                  ? teachersShim.users!
-                                      .firstWhere((y) => y.id == int.tryParse(lesson.orgTeacher?.id ?? ''))
-                                      .asTeacher()
-                                  : null,
-                            )
-                          : null, // Don't provide any details for 'normal' lessons
-                    ))
-                .toList();
-          },
-        ).toList()))));
+                          substitutionDetails: lesson.isSubstitutionClass
+                              ? models.SubstitutionDetails(
+                                  originalUrl: '',
+                                  originalLessonNo: int.tryParse(lesson.orgLessonNo ?? '') ?? 0,
+                                  originalDate: lesson.orgDate ?? DateTime.now(),
+                                  originalHourFrom: lesson.orgHourFrom?.asTime() ?? DateTime.now(),
+                                  originalHourTo: lesson.orgHourTo?.asTime() ?? DateTime.now(),
+                                  originalClassroom: lesson.orgClassroom?.id != null
+                                      ? classroomsShim.classrooms!
+                                          .firstWhere((y) => y.id == int.tryParse(lesson.orgClassroom?.id ?? ''))
+                                          .asClassroom()
+                                      : null,
+                                  originalSubject: lesson.orgSubject?.id != null
+                                      ? subjectsShim.subjects!
+                                          .firstWhere((y) => y.id == int.tryParse(lesson.orgSubject?.id ?? ''))
+                                          .asSubject()
+                                      : null,
+                                  originalTeacher: lesson.orgTeacher?.id != null
+                                      ? teachersShim.users!
+                                          .firstWhere((y) => y.id == int.tryParse(lesson.orgTeacher?.id ?? ''))
+                                          .asTeacher()
+                                      : null,
+                                )
+                              : null, // Don't provide any details for 'normal' lessons
+                        ))
+                    .toList();
+              },
+            ).toList()))));
 
 //#endregion
 
@@ -467,8 +474,7 @@ class LibrusDataReader implements IProvider {
     Grades.fromJson(await data!.librusApi!.request('Grades')).grades?.forEach((x) {
       var category = gradeCategoriesShim.categories?.firstWhere((y) => y.id == x.category?.id);
       var subject = student.subjects.firstWhereOrDefault((lesson) => lesson.id == x.lesson?.id, defaultValue: null);
-      if (subject != null && subject.grades == null) subject.grades = [];
-      subject?.grades!.add(models.Grade(
+      subject?.grades.add(models.Grade(
           id: x.id,
           url: '',
           name: category?.name ?? 'No category',
@@ -495,8 +501,8 @@ class LibrusDataReader implements IProvider {
 //#endregion
 
     progress?.report((progress: 0.8, message: 'Preparing the data...'));
-    dataStudent = student; // Push the data to the outer scope, add or update
-    dataTimetables = timetables; // Push the data to the outer scope, add only
+    dataChunk.student = student; // Push the data to the outer scope, add or update
+    dataChunk.timetables = timetable; // Push the data to the outer scope, add only
 
     return (success: true, message: null);
   }
@@ -531,11 +537,11 @@ class LibrusDataReader implements IProvider {
 //#region Messages
 
     // Copy all valid message users to the shared list
-    dataMessages =
-        Messages([], [], teachersShim.users!.where((x) => x.userId != null).select((x, index) => x.asTeacher()).toList());
+    dataChunk.messages =
+        Messages(receivers: teachersShim.users!.where((x) => x.userId != null).select((x, index) => x.asTeacher()).toList());
 
     // Fetch all received messages (list), set up data handlers
-    dataMessages!.received = InboxMessages.fromJson(await data!.librusApi!.messagesRequest('inbox/messages'))
+    dataChunk.messages.received = InboxMessages.fromJson(await data!.librusApi!.messagesRequest('inbox/messages'))
             .data
             ?.select((x, index) => models.Message(
                 id: int.tryParse(x.messageId) ?? -1,
@@ -579,7 +585,7 @@ class LibrusDataReader implements IProvider {
         [];
 
     // Fetch all sent messages (list), set up data handlers
-    dataMessages!.sent = OutboxMessages.fromJson(await data!.librusApi!.messagesRequest('outbox/messages'))
+    dataChunk.messages.sent = OutboxMessages.fromJson(await data!.librusApi!.messagesRequest('outbox/messages'))
             .data
             ?.select((x, index) => models.Message(
                 id: int.tryParse(x.messageId) ?? -1,
@@ -615,7 +621,8 @@ class LibrusDataReader implements IProvider {
   }
 
   @override
-  Future<({Exception? message, bool success})> sendMessage(List receivers, String topic, String content) async {
+  Future<({Exception? message, bool success})> sendMessage(
+      {required List<models.Teacher> receivers, required String topic, required String content}) async {
     try {
       return (
         success: (await data?.librusApi?.messagesPost(
@@ -625,7 +632,7 @@ class LibrusDataReader implements IProvider {
                         content: base64.encode(utf8.encode(content)),
                         receivers: Receivers(
                             schoolReceivers: receivers
-                                .select((x, index) => Schoolreceiver(accountId: x.UserId?.ToString() ?? ''))
+                                .select((x, index) => Schoolreceiver(accountId: x.userId?.toString() ?? ''))
                                 .toList()))
                     .toJson()))?['data']?['status'] ==
             'sent',
@@ -641,13 +648,7 @@ class LibrusDataReader implements IProvider {
   Event<Value<String>> propertyChanged = Event<Value<String>>();
 
   @override
-  Messages? get messages => dataMessages;
-
-  @override
-  models.Student? get student => dataStudent;
-
-  @override
-  models.Timetables? get timetables => dataTimetables;
+  models.ProviderData? get registerData => dataChunk;
 
   @override
   String get providerName => 'Librus\u00AE Synergia';
@@ -655,6 +656,9 @@ class LibrusDataReader implements IProvider {
   @override
   String get providerDescription =>
       "Log in with your Librus\u00AE Synergia account your school has provided you with. A student's login will typically end with an 'u' letter.";
+
+  @override
+  Uri? get providerBannerUri => Uri.parse('https://api.librus.pl/OAuth/images/synergia-logo.png');
 }
 
 extension UserExtension on User {

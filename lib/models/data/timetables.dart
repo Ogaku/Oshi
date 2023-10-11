@@ -12,9 +12,9 @@ part 'timetables.g.dart';
 class Timetables {
   Map<DateTime, TimetableDay> timetable;
 
-  Timetables(
-    this.timetable,
-  );
+  Timetables({
+    Map<DateTime, TimetableDay>? timetable,
+  }) : timetable = timetable ?? {};
 
   factory Timetables.fromJson(Map<String, dynamic> json) => _$TimetablesFromJson(json);
 
@@ -69,7 +69,7 @@ class TimetableDay {
 class TimetableLesson {
   TimetableLesson({
     this.url = '',
-    required this.lessonNo,
+    this.lessonNo = -1,
     this.isCanceled = false,
     this.lessonClass,
     this.subject,
@@ -78,10 +78,10 @@ class TimetableLesson {
     this.modifiedSchedule = false,
     this.substitutionNote,
     this.substitutionDetails,
-    required this.date,
+    DateTime? date,
     this.hourFrom,
     this.hourTo,
-  });
+  }) : date = date ?? DateTime(2000);
 
   String url;
   int lessonNo;
@@ -147,15 +147,17 @@ class TimetableLesson {
 @JsonSerializable()
 class SubstitutionDetails {
   SubstitutionDetails({
-    required this.originalUrl,
-    required this.originalLessonNo,
-    required this.originalSubject,
-    required this.originalTeacher,
-    required this.originalClassroom,
-    required this.originalDate,
-    required this.originalHourFrom,
-    required this.originalHourTo,
-  });
+    this.originalUrl = 'htps://g.co',
+    this.originalLessonNo = -1,
+    this.originalSubject,
+    this.originalTeacher,
+    this.originalClassroom,
+    DateTime? originalDate,
+    DateTime? originalHourFrom,
+    DateTime? originalHourTo,
+  })  : originalDate = originalDate ?? DateTime(2000),
+        originalHourFrom = originalHourFrom ?? DateTime(2000),
+        originalHourTo = originalHourTo ?? DateTime(2000);
 
   String originalUrl;
   int originalLessonNo;

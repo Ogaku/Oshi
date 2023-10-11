@@ -7,18 +7,18 @@ part of 'unit.dart';
 // **************************************************************************
 
 Unit _$UnitFromJson(Map<String, dynamic> json) => Unit(
-      id: json['id'] as int,
-      url: json['url'] as String,
+      id: json['id'] as int? ?? -1,
+      url: json['url'] as String? ?? 'https://g.co',
       luckyNumber: json['luckyNumber'] as int?,
-      name: json['name'] as String,
-      principalName: json['principalName'] as String,
-      address: json['address'] as String,
-      email: json['email'] as String,
-      phone: json['phone'] as String,
-      type: json['type'] as String,
-      behaviourType: json['behaviourType'] as String,
-      lessonsRange: (json['lessonsRange'] as List<dynamic>)
-          .map((e) => LessonRanges.fromJson(e as Map<String, dynamic>))
+      name: json['name'] as String? ?? '',
+      principalName: json['principalName'] as String? ?? '',
+      address: json['address'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      phone: json['phone'] as String? ?? '',
+      type: json['type'] as String? ?? '',
+      behaviourType: json['behaviourType'] as String? ?? '',
+      lessonsRange: (json['lessonsRange'] as List<dynamic>?)
+          ?.map((e) => LessonRanges.fromJson(e as Map<String, dynamic>))
           .toList(),
       announcements: (json['announcements'] as List<dynamic>?)
           ?.map((e) => Announcement.fromJson(e as Map<String, dynamic>))
@@ -26,6 +26,7 @@ Unit _$UnitFromJson(Map<String, dynamic> json) => Unit(
       teacherAbsences: (json['teacherAbsences'] as List<dynamic>?)
           ?.map((e) => Event.fromJson(e as Map<String, dynamic>))
           .toList(),
+      luckyNumberTomorrow: json['luckyNumberTomorrow'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$UnitToJson(Unit instance) {
@@ -41,6 +42,7 @@ Map<String, dynamic> _$UnitToJson(Unit instance) {
   }
 
   writeNotNull('luckyNumber', instance.luckyNumber);
+  val['luckyNumberTomorrow'] = instance.luckyNumberTomorrow;
   val['name'] = instance.name;
   val['principalName'] = instance.principalName;
   val['address'] = instance.address;

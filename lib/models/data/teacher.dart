@@ -5,13 +5,7 @@ part 'teacher.g.dart';
 @JsonSerializable()
 class Teacher {
   Teacher(
-      {this.id = -1,
-      this.userId,
-      this.url = '',
-      required this.firstName,
-      this.lastName = '',
-      this.isHomeTeacher,
-      this.absent});
+      {this.id = -1, this.userId, this.url = '', this.firstName = '', this.lastName = '', this.isHomeTeacher, this.absent});
 
   int id;
   int? userId;

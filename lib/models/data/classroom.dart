@@ -4,7 +4,7 @@ part 'classroom.g.dart';
 
 @JsonSerializable()
 class Classroom {
-  Classroom({required this.id, required this.url, required this.name, required this.symbol});
+  Classroom({this.id = -1, this.url = 'https://g.co', this.name = '', this.symbol = ''});
 
   int id;
   String url;

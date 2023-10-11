@@ -7,11 +7,11 @@ part of 'student.dart';
 // **************************************************************************
 
 Account _$AccountFromJson(Map<String, dynamic> json) => Account(
-      id: json['id'] as int,
-      userId: json['userId'] as int,
-      number: json['number'] as int,
-      firstName: json['firstName'] as String,
-      lastName: json['lastName'] as String,
+      id: json['id'] as int? ?? -1,
+      userId: json['userId'] as int? ?? -1,
+      number: json['number'] as int? ?? -1,
+      firstName: json['firstName'] as String? ?? '',
+      lastName: json['lastName'] as String? ?? '',
     );
 
 Map<String, dynamic> _$AccountToJson(Account instance) => <String, dynamic>{
@@ -23,16 +23,20 @@ Map<String, dynamic> _$AccountToJson(Account instance) => <String, dynamic>{
     };
 
 Student _$StudentFromJson(Map<String, dynamic> json) => Student(
-      account: Account.fromJson(json['account'] as Map<String, dynamic>),
-      mainClass: Class.fromJson(json['mainClass'] as Map<String, dynamic>),
+      account: json['account'] == null
+          ? null
+          : Account.fromJson(json['account'] as Map<String, dynamic>),
+      mainClass: json['mainClass'] == null
+          ? null
+          : Class.fromJson(json['mainClass'] as Map<String, dynamic>),
       virtualClasses: (json['virtualClasses'] as List<dynamic>?)
           ?.map((e) => Class.fromJson(e as Map<String, dynamic>))
           .toList(),
       attendances: (json['attendances'] as List<dynamic>?)
           ?.map((e) => Attendance.fromJson(e as Map<String, dynamic>))
           .toList(),
-      subjects: (json['subjects'] as List<dynamic>)
-          .map((e) => Lesson.fromJson(e as Map<String, dynamic>))
+      subjects: (json['subjects'] as List<dynamic>?)
+          ?.map((e) => Lesson.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 

@@ -10,6 +10,7 @@ class Unit {
   int id;
   String url;
   int? luckyNumber;
+  bool luckyNumberTomorrow;
   String name;
   String principalName;
   String address;
@@ -22,20 +23,21 @@ class Unit {
   List<Event>? teacherAbsences;
 
   Unit({
-    required this.id,
-    required this.url,
-    required this.luckyNumber,
-    required this.name,
-    required this.principalName,
-    required this.address,
-    required this.email,
-    required this.phone,
-    required this.type,
-    required this.behaviourType,
-    required this.lessonsRange,
-    required this.announcements,
-    required this.teacherAbsences,
-  });
+    this.id = -1,
+    this.url = 'https://g.co',
+    this.luckyNumber,
+    this.name = '',
+    this.principalName = '',
+    this.address = '',
+    this.email = '',
+    this.phone = '',
+    this.type = '',
+    this.behaviourType = '',
+    List<LessonRanges>? lessonsRange,
+    this.announcements,
+    this.teacherAbsences,
+    this.luckyNumberTomorrow = false,
+  }) : lessonsRange = lessonsRange ?? [];
 
   factory Unit.fromJson(Map<String, dynamic> json) => _$UnitFromJson(json);
 

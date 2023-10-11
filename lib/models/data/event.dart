@@ -7,20 +7,21 @@ part 'event.g.dart';
 @JsonSerializable(includeIfNull: false)
 class Event {
   Event(
-      {required this.id,
+      {this.id = -1,
       this.lessonNo,
       this.date,
       this.addDate,
-      required this.timeFrom,
+      DateTime? timeFrom,
       this.timeTo,
       this.title,
-      required this.content,
-      required this.categoryName,
-      required this.category,
+      this.content = '',
+      this.categoryName = '',
+      this.category = EventCategory.other,
       this.sender,
       this.classroom,
       this.markAsViewed,
-      this.markAsDone});
+      this.markAsDone})
+      : timeFrom = timeFrom ?? DateTime(2000);
 
   int id;
   int? lessonNo;

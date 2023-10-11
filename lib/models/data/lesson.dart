@@ -10,19 +10,19 @@ part 'lesson.g.dart';
 @JsonSerializable()
 class Lesson {
   Lesson({
-    required this.id,
-    required this.url,
-    required this.name,
-    required this.no,
-    required this.short,
-    required this.isExtracurricular,
-    required this.isBlockLesson,
-    this.hostClass,
-    this.teacher,
-    this.grades,
-  }) {
-    grades ??= [];
-  }
+    this.id = -1,
+    this.url = 'https://g.co',
+    this.name = '',
+    this.no = -1,
+    this.short = '',
+    this.isExtracurricular = false,
+    this.isBlockLesson = false,
+    Class? hostClass,
+    Teacher? teacher,
+    List<Grade>? grades,
+  })  : hostClass = hostClass ?? Class(),
+        teacher = teacher ?? Teacher(),
+        grades = grades ?? [];
 
   int id;
   String url;
@@ -32,23 +32,21 @@ class Lesson {
   bool isExtracurricular;
   bool isBlockLesson;
 
-  Class? hostClass;
-  Teacher? teacher;
-  List<Grade>? grades;
+  Class hostClass;
+  Teacher teacher;
+  List<Grade> grades;
 
-  Iterable<Grade> get gradesFirstSemester => grades!.where((element) => element.semester == 1);
-  Iterable<Grade> get gradesSecondSemester => grades!.where((element) => element.semester == 2);
+  Iterable<Grade> get gradesFirstSemester => grades.where((element) => element.semester == 1);
+  Iterable<Grade> get gradesSecondSemester => grades.where((element) => element.semester == 2);
 
   Iterable<Grade> get gradesCurrentSemester =>
-      DateTime.now().getDateOnly().isBefore(hostClass?.endFirstSemester ?? DateTime.now())
-          ? gradesFirstSemester
-          : gradesSecondSemester;
+      DateTime.now().getDateOnly().isBefore(hostClass.endFirstSemester) ? gradesFirstSemester : gradesSecondSemester;
 
-  bool get hasGrades => grades!.isNotEmpty;
+  bool get hasGrades => grades.isNotEmpty;
   bool get hasGradesCurrentSemester => gradesCurrentSemester.isNotEmpty;
 
   String get nameExtra => name + (isExtracurricular ? '*' : '');
-  double get gradesAverage => grades!.weightedAverage();
+  double get gradesAverage => grades.where((x) => x.countsToAverage).toList().weightedAverage();
 
   factory Lesson.fromJson(Map<String, dynamic> json) => _$LessonFromJson(json);
 
@@ -87,38 +85,3 @@ extension AverageExtension on List<Grade> {
     return -1;
   }
 }
-
-/*
-  public static double WeightedAverage<T>(this IEnumerable<T> records, Func<T, double> value, Func<T, double> weight)
-    {
-        if (records == null)
-            return -1;
-
-        var count = 0;
-        double valueSum = 0;
-        double weightSum = 0;
-
-        var enumerable = records.ToList();
-        foreach (var record in enumerable)
-        {
-            count++;
-            var recordWeight = weight(record);
-
-            valueSum += value(record) * recordWeight;
-            weightSum += recordWeight;
-        }
-
-        switch (count)
-        {
-            case 0:
-                return -1;
-            case 1:
-                return value(enumerable.Single());
-        }
-
-        if (weightSum != 0)
-            return valueSum / weightSum;
-
-        return -1;
-    }
- */

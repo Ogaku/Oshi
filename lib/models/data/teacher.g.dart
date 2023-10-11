@@ -10,7 +10,7 @@ Teacher _$TeacherFromJson(Map<String, dynamic> json) => Teacher(
       id: json['id'] as int? ?? -1,
       userId: json['userId'] as int?,
       url: json['url'] as String? ?? '',
-      firstName: json['firstName'] as String,
+      firstName: json['firstName'] as String? ?? '',
       lastName: json['lastName'] as String? ?? '',
       isHomeTeacher: json['isHomeTeacher'] as bool?,
       absent: _$recordConvertNullable(

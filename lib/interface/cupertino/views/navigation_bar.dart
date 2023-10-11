@@ -54,6 +54,11 @@ class _NavState extends State<SliverNavigationBar> {
 
     return CupertinoSliverNavigationBar(
       largeTitle: widget.largeTitle,
+      leading: widget.leading,
+      trailing: widget.trailing,
+      alwaysShowMiddle: widget.alwaysShowMiddle ?? false,
+      previousPageTitle: widget.previousPageTitle,
+      middle: widget.middle,
       stretch: true,
       backgroundColor: _isCollapsed
           ? isDark

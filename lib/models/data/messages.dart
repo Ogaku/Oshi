@@ -9,20 +9,20 @@ part 'messages.g.dart';
 @JsonSerializable(includeIfNull: false)
 class Message {
   Message({
-    required this.id,
-    required this.url,
-    required this.topic,
+    this.id = -1,
+    this.url = 'https://g.co',
+    this.topic = '',
     this.content,
     this.preview,
-    required this.hasAttachments,
+    this.hasAttachments = false,
     this.sender,
-    required this.sendDate,
+    DateTime? sendDate,
     this.readDate,
     this.attachments,
     this.receivers,
     this.fetchMessageContent,
     this.moveMessageToTrash,
-  });
+  }) : sendDate = sendDate ?? DateTime(2000);
 
   int id;
   String url;
@@ -74,11 +74,13 @@ class Messages {
   List<Message> sent;
   List<Teacher> receivers;
 
-  Messages(
-    this.received,
-    this.sent,
-    this.receivers,
-  );
+  Messages({
+    List<Message>? received,
+    List<Message>? sent,
+    List<Teacher>? receivers,
+  })  : received = received ?? [],
+        sent = sent ?? [],
+        receivers = receivers ?? [];
 
   factory Messages.fromJson(Map<String, dynamic> json) => _$MessagesFromJson(json);
 

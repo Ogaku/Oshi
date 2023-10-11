@@ -7,23 +7,29 @@ part of 'grade.dart';
 // **************************************************************************
 
 Grade _$GradeFromJson(Map<String, dynamic> json) => Grade(
-      id: json['id'] as int,
-      url: json['url'] as String,
-      name: json['name'] as String,
-      value: json['value'] as String,
-      weight: json['weight'] as int,
-      comments:
-          (json['comments'] as List<dynamic>).map((e) => e as String).toList(),
-      countsToAverage: json['countsToAverage'] as bool,
-      date: DateTime.parse(json['date'] as String),
-      addDate: DateTime.parse(json['addDate'] as String),
-      addedBy: Teacher.fromJson(json['addedBy'] as Map<String, dynamic>),
-      semester: json['semester'] as int,
-      isConstituent: json['isConstituent'] as bool,
-      isSemester: json['isSemester'] as bool,
-      isSemesterProposition: json['isSemesterProposition'] as bool,
-      isFinal: json['isFinal'] as bool,
-      isFinalProposition: json['isFinalProposition'] as bool,
+      id: json['id'] as int? ?? -1,
+      url: json['url'] as String? ?? 'https://g.co',
+      name: json['name'] as String? ?? '',
+      value: json['value'] as String? ?? '',
+      weight: json['weight'] as int? ?? 0,
+      comments: (json['comments'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      countsToAverage: json['countsToAverage'] as bool? ?? false,
+      date:
+          json['date'] == null ? null : DateTime.parse(json['date'] as String),
+      addDate: json['addDate'] == null
+          ? null
+          : DateTime.parse(json['addDate'] as String),
+      addedBy: json['addedBy'] == null
+          ? null
+          : Teacher.fromJson(json['addedBy'] as Map<String, dynamic>),
+      semester: json['semester'] as int? ?? 1,
+      isConstituent: json['isConstituent'] as bool? ?? false,
+      isSemester: json['isSemester'] as bool? ?? false,
+      isSemesterProposition: json['isSemesterProposition'] as bool? ?? false,
+      isFinal: json['isFinal'] as bool? ?? false,
+      isFinalProposition: json['isFinalProposition'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$GradeToJson(Grade instance) => <String, dynamic>{

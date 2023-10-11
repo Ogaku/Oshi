@@ -21,7 +21,7 @@ void main() async {
   //   print(e);
   // }
 
-  Share.currentProvider = LibrusDataReader();
+  Share.session = Session(sessionId: '81C59CC9-AA58-4FF4-BE69-91B1028F1C04', provider: LibrusDataReader());
 
   runApp(const MainApp());
 }
