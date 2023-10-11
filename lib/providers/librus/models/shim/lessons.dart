@@ -16,22 +16,26 @@ class Lessons {
   Map<String, dynamic> toJson() => _$LessonsToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class Lesson {
   Lesson({
     required this.id,
     required this.teacher,
     required this.subject,
+    this.lessonClass
   });
 
   @JsonKey(name: 'Id')
   final int id;
 
   @JsonKey(name: 'Teacher')
-  final Subject? teacher;
+  final Link? teacher;
 
   @JsonKey(name: 'Subject')
-  final Subject? subject;
+  final Link? subject;
+
+  @JsonKey(name: 'Class')
+  final Link? lessonClass;
 
   factory Lesson.fromJson(Map<String, dynamic> json) => _$LessonFromJson(json);
 
@@ -39,8 +43,8 @@ class Lesson {
 }
 
 @JsonSerializable()
-class Subject {
-  Subject({
+class Link {
+  Link({
     required this.id,
     required this.url,
   });
@@ -51,7 +55,7 @@ class Subject {
   @JsonKey(name: 'Url')
   final String url;
 
-  factory Subject.fromJson(Map<String, dynamic> json) => _$SubjectFromJson(json);
+  factory Link.fromJson(Map<String, dynamic> json) => _$LinkFromJson(json);
 
-  Map<String, dynamic> toJson() => _$SubjectToJson(this);
+  Map<String, dynamic> toJson() => _$LinkToJson(this);
 }

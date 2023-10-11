@@ -1,9 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
+import 'package:ogaku/models/data/event.dart';
 import 'package:ogaku/share/share.dart';
 
 import 'package:ogaku/interface/cupertino/views/text_chip.dart' show TextChip;
@@ -33,6 +35,45 @@ class _HomePageState extends State<HomePage> {
       SchedulerBinding.instance.platformDispatcher.onPlatformBrightnessChanged = () => setState(() {});
       subscribed = true;
     }
+
+    // Event list for the next week (7 days), exc homeworks and teacher absences
+    var eventsWeek = Share.session.data.student.mainClass.events
+        .where((x) => x.category != EventCategory.homework && x.category != EventCategory.teacher)
+        .where((x) => x.date?.isAfter(DateTime.now().asDate()) ?? false)
+        .where((x) => x.date?.isBefore(DateTime.now().add(Duration(days: 7)).asDate()) ?? false)
+        .toList();
+
+    // Event list for the next week (7 days), exc homeworks and teacher absences
+    var gradesWeek = Share.session.data.student.subjects
+        .where((x) => x.grades.isNotEmpty)
+        .select((x, index) => x.grades)
+        .flatten()
+        .where((x) => x.addDate.isAfter(DateTime.now().subtract(Duration(days: 7)).asDate()))
+        .toList();
+
+    // Homework list for the next week (7 days)
+    var homeworksWeek = Share.session.data.student.mainClass.events
+        .where((x) => x.category == EventCategory.homework)
+        .where((x) => x.timeTo?.isAfter(DateTime.now().asDate()) ?? false)
+        .where((x) => x.timeTo?.isBefore(DateTime.now().add(Duration(days: 7)).asDate()) ?? false)
+        .toList();
+
+    // Homeworks - first if any(), otherwise last
+    var homeworksLast = homeworksWeek.isEmpty || homeworksWeek.all((x) => x.done);
+    var homeworksWidget = CupertinoListSection.insetGrouped(
+      header: Text('Homeworks'),
+      children: [
+        CupertinoListTile(
+            title: Opacity(
+                opacity: 0.5,
+                child: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'All done, yay!',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                    )))),
+      ],
+    );
 
     return CupertinoPageScaffold(
       backgroundColor:
@@ -92,7 +133,9 @@ class _HomePageState extends State<HomePage> {
                     CupertinoListTile(title: Text('TODO Conditional lesson text')),
                   ],
                 ),
-                // Recent grades - always in the middle
+                // Homeworks - first if any(), otherwise last
+                Visibility(visible: !homeworksLast, child: homeworksWidget),
+                // Recent grades - in the middle, or top
                 CupertinoListSection.insetGrouped(
                   header: Text('Recent grades'),
                   children: [
@@ -123,20 +166,7 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 // Homeworks - first if any(), otherwise last
-                CupertinoListSection.insetGrouped(
-                  header: Text('Homeworks'),
-                  children: [
-                    CupertinoListTile(
-                        title: Opacity(
-                            opacity: 0.5,
-                            child: Container(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'All done, yay!',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                                )))),
-                  ],
-                ),
+                Visibility(visible: homeworksLast, child: homeworksWidget)
               ],
             ),
           )
@@ -144,4 +174,8 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+}
+
+extension DateTimeExtension on DateTime {
+  DateTime asDate() => DateTime(year, month, day);
 }

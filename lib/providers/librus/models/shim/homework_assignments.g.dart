@@ -45,6 +45,8 @@ HomeWorkAssignment _$HomeWorkAssignmentFromJson(Map<String, dynamic> json) =>
       category: json['Category'] == null
           ? null
           : Category.fromJson(json['Category'] as Map<String, dynamic>),
+      studentsWhoMarkedAsDone:
+          json['StudentsWhoMarkedAsDone'] as List<dynamic>?,
     );
 
 Map<String, dynamic> _$HomeWorkAssignmentToJson(HomeWorkAssignment instance) =>
@@ -61,6 +63,7 @@ Map<String, dynamic> _$HomeWorkAssignmentToJson(HomeWorkAssignment instance) =>
       'SendFilePossible': instance.sendFilePossible,
       'AddedFiles': instance.addedFiles,
       'HomeworkAssigmentFiles': instance.homeworkAssigmentFiles,
+      'StudentsWhoMarkedAsDone': instance.studentsWhoMarkedAsDone,
       'Category': instance.category,
     };
 
@@ -72,18 +75,4 @@ Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
 Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
       'Id': instance.id,
       'Url': instance.url,
-    };
-
-StudentsMarkedAsDoneDateClass _$StudentsMarkedAsDoneDateClassFromJson(
-        Map<String, dynamic> json) =>
-    StudentsMarkedAsDoneDateClass(
-      the2071133: json['2071133'] == null
-          ? null
-          : DateTime.parse(json['2071133'] as String),
-    );
-
-Map<String, dynamic> _$StudentsMarkedAsDoneDateClassToJson(
-        StudentsMarkedAsDoneDateClass instance) =>
-    <String, dynamic>{
-      '2071133': instance.the2071133?.toIso8601String(),
     };

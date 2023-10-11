@@ -190,7 +190,7 @@ class LibrusDataReader implements models.IProvider {
         mainClass: mainStudentClass,
         virtualClasses: classesShim.virtualClasses?.select((element, index) => element.asClass(mainStudentClass)).toList(),
         attendances: attendance?.toList(),
-        subjects: lessonsShim.lessons!.groupBy((x) => x.subject!.id).select((x, index) => x.first).select((x, index) {
+        subjects: lessonsShim.lessons!.where((x) => x.lessonClass != null).select((x, index) {
           var lessonData = subjectsShim.subjects!.firstWhere((y) => y.id == x.subject!.id);
 
           return models.Lesson(
@@ -401,6 +401,7 @@ class LibrusDataReader implements models.IProvider {
                     timeTo: x.dueDate,
                     title: x.topic,
                     content: x.text,
+                    done: x.studentsWhoMarkedAsDone?.isNotEmpty ?? false,
                     category: models.EventCategory.homework,
                     categoryName: homeworkCatgShim.categories!
                             .firstWhereOrDefault((y) => y.id == x.category?.id, defaultValue: null)

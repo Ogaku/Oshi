@@ -32,6 +32,7 @@ class HomeWorkAssignment {
     required this.addedFiles,
     required this.homeworkAssigmentFiles,
     required this.category,
+    required this.studentsWhoMarkedAsDone,
   });
 
   @JsonKey(name: 'Id')
@@ -70,6 +71,9 @@ class HomeWorkAssignment {
   @JsonKey(name: 'HomeworkAssigmentFiles')
   final List<dynamic>? homeworkAssigmentFiles;
 
+  @JsonKey(name: 'StudentsWhoMarkedAsDone')
+  final List<dynamic>? studentsWhoMarkedAsDone;
+
   @JsonKey(name: 'Category')
   final Category? category;
 
@@ -94,18 +98,4 @@ class Category {
   factory Category.fromJson(Map<String, dynamic> json) => _$CategoryFromJson(json);
 
   Map<String, dynamic> toJson() => _$CategoryToJson(this);
-}
-
-@JsonSerializable()
-class StudentsMarkedAsDoneDateClass {
-  StudentsMarkedAsDoneDateClass({
-    required this.the2071133,
-  });
-
-  @JsonKey(name: '2071133')
-  final DateTime? the2071133;
-
-  factory StudentsMarkedAsDoneDateClass.fromJson(Map<String, dynamic> json) => _$StudentsMarkedAsDoneDateClassFromJson(json);
-
-  Map<String, dynamic> toJson() => _$StudentsMarkedAsDoneDateClassToJson(this);
 }

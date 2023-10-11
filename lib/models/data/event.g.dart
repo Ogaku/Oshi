@@ -25,6 +25,7 @@ Event _$EventFromJson(Map<String, dynamic> json) => Event(
       categoryName: json['categoryName'] as String? ?? '',
       category: $enumDecodeNullable(_$EventCategoryEnumMap, json['category']) ??
           EventCategory.other,
+      done: json['done'] as bool? ?? false,
       sender: json['sender'] == null
           ? null
           : Teacher.fromJson(json['sender'] as Map<String, dynamic>),
@@ -52,6 +53,7 @@ Map<String, dynamic> _$EventToJson(Event instance) {
   writeNotNull('title', instance.title);
   val['content'] = instance.content;
   val['categoryName'] = instance.categoryName;
+  val['done'] = instance.done;
   val['category'] = _$EventCategoryEnumMap[instance.category]!;
   writeNotNull('sender', instance.sender);
   writeNotNull('classroom', instance.classroom);

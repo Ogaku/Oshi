@@ -17,6 +17,7 @@ class Event {
       this.content = '',
       this.categoryName = '',
       this.category = EventCategory.other,
+      this.done = false,
       this.sender,
       this.classroom,
       this.markAsViewed,
@@ -32,6 +33,7 @@ class Event {
   String? title;
   String content;
   String categoryName;
+  bool done; // For homeworks
 
   EventCategory category;
   Teacher? sender;

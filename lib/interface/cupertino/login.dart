@@ -118,8 +118,8 @@ class _LoginPageState extends State<LoginPage> {
       if (!result.success && result.message != null) {
         throw result.message!;
       } else {
-        Share.session.refresh(); // TODO TEMPORARY
-        Share.session.refreshMessages(); // TODO TEMP
+        await Share.session.refresh(); // TODO TEMPORARY
+        await Share.session.refreshMessages(); // TODO TEMP
 
         Share.changeBase.broadcast(Value(() => baseApp));
       }

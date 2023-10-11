@@ -20,24 +20,38 @@ Lesson _$LessonFromJson(Map<String, dynamic> json) => Lesson(
       id: json['Id'] as int,
       teacher: json['Teacher'] == null
           ? null
-          : Subject.fromJson(json['Teacher'] as Map<String, dynamic>),
+          : Link.fromJson(json['Teacher'] as Map<String, dynamic>),
       subject: json['Subject'] == null
           ? null
-          : Subject.fromJson(json['Subject'] as Map<String, dynamic>),
+          : Link.fromJson(json['Subject'] as Map<String, dynamic>),
+      lessonClass: json['Class'] == null
+          ? null
+          : Link.fromJson(json['Class'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$LessonToJson(Lesson instance) => <String, dynamic>{
-      'Id': instance.id,
-      'Teacher': instance.teacher,
-      'Subject': instance.subject,
-    };
+Map<String, dynamic> _$LessonToJson(Lesson instance) {
+  final val = <String, dynamic>{
+    'Id': instance.id,
+  };
 
-Subject _$SubjectFromJson(Map<String, dynamic> json) => Subject(
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('Teacher', instance.teacher);
+  writeNotNull('Subject', instance.subject);
+  writeNotNull('Class', instance.lessonClass);
+  return val;
+}
+
+Link _$LinkFromJson(Map<String, dynamic> json) => Link(
       id: json['Id'] as int,
       url: json['Url'] as String,
     );
 
-Map<String, dynamic> _$SubjectToJson(Subject instance) => <String, dynamic>{
+Map<String, dynamic> _$LinkToJson(Link instance) => <String, dynamic>{
       'Id': instance.id,
       'Url': instance.url,
     };
