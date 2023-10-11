@@ -33,8 +33,9 @@ class _LoginPageState extends State<LoginPage> {
 
     return CupertinoApp(
       home: CupertinoPageScaffold(
-        backgroundColor: Color(
-            WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark ? 0x00000000 : 0xFFF2F2F7),
+        backgroundColor: WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark
+            ? CupertinoColors.systemBackground
+            : CupertinoColors.secondarySystemBackground,
         navigationBar: CupertinoNavigationBar(
           automaticallyImplyLeading: true,
           trailing: CupertinoButton(
@@ -42,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Text('Next',
                   style: TextStyle(
                       color: (loginController.text.isNotEmpty && passwordController.text.isNotEmpty)
-                          ? CupertinoColors.activeBlue
+                          ? CupertinoColors.systemBlue
                           : CupertinoColors.inactiveGray)),
               onPressed: () => (loginController.text.isNotEmpty && passwordController.text.isNotEmpty)
                   ? tryLogin(login: loginController.text, pass: passwordController.text)
@@ -101,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Container(
                         margin: EdgeInsets.only(right: 20, left: 20, bottom: 20),
                         child: Text(
-                          "Any login credentials won't be kept by the app, although they may be locally saved by the e-register service provider, either as encoded text or an access token. This data is not, and will never be shared with neither us nor any third-parties.",
+                          "No login credentials will be kept by the app, although they may be locally saved by the e-register service provider, either as encoded text or an access token. This data is not, and will never be shared with neither us nor any third-parties.",
                           style: TextStyle(fontSize: 12),
                           textAlign: TextAlign.justify,
                         ))),
