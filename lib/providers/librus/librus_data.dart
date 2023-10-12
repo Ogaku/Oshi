@@ -64,17 +64,13 @@ class LibrusDataReader implements models.IProvider {
   @override
   Future<({Exception? message, bool success})> login({String? session, String? username, String? password}) async {
     sessionId = session ?? const Uuid().v4();
-    data = SynergiaData(sessionId); // Reset
-
-    // Load the authentication data
-    await data?.loginData?.load();
+    data = SynergiaData(); // Reset
 
     // Instantiate a portal login
-    data?.synergiaLogin =
-        LibrusLogin(synergiaData: data, login: username ?? data?.loginData?.login, pass: password ?? data?.loginData?.pass);
+    data?.synergiaLogin = LibrusLogin(synergiaData: data, login: username, pass: password);
 
     // Check whether there is data to log in with
-    if (!((await data?.loginData?.exists()) ?? false) && (username?.isEmpty ?? true) && (password?.isEmpty ?? true))
+    if ((username?.isEmpty ?? true) || (password?.isEmpty ?? true))
       return (success: false, message: Exception('No data to log in with!'));
 
     try {
@@ -83,25 +79,6 @@ class LibrusDataReader implements models.IProvider {
 
       // Create a new instance of the portal API scraper
       data?.librusApi = LibrusReader(data!);
-
-      // Save the data for future use
-      await data?.loginData?.save();
-    } on Exception catch (e) {
-      // Emotional damage!
-      await clearSettings();
-      return (success: false, message: e);
-    }
-
-    // Still here? That's good news!
-    return (success: true, message: null);
-  }
-
-  @override
-  Future<({Exception? message, bool success})> clearSettings({String? session}) async {
-    try {
-      // Load token data from empty settings
-      data?.loginData = SyngergiaLoginData(session);
-      await data?.loginData?.save();
     } on Exception catch (e) {
       // Emotional damage!
       return (success: false, message: e);

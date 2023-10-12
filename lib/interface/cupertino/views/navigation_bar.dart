@@ -11,10 +11,12 @@ class SliverNavigationBar extends StatefulWidget {
   final Widget? trailing;
   final Color color;
   final Color darkColor;
+  final bool? transitionBetweenRoutes;
 
   const SliverNavigationBar(
       {super.key,
       required this.scrollController,
+      this.transitionBetweenRoutes,
       this.largeTitle,
       this.leading,
       this.alwaysShowMiddle = false,
@@ -53,6 +55,7 @@ class _NavState extends State<SliverNavigationBar> {
     final isDark = CupertinoTheme.maybeBrightnessOf(context) == Brightness.dark;
 
     return CupertinoSliverNavigationBar(
+      transitionBetweenRoutes: widget.transitionBetweenRoutes ?? true,
       largeTitle: widget.largeTitle,
       leading: widget.leading,
       trailing: widget.trailing,

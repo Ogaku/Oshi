@@ -1,10 +1,10 @@
 name: ogaku
 description: A new Flutter project.
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
-  sdk: '>=3.1.3 <4.0.0'
+  sdk: ">=3.1.3 <4.0.0"
 
 dependencies:
   cookie_jar: ^4.0.8
@@ -22,6 +22,9 @@ dependencies:
   shared_preferences: ^2.2.1
   transparent_image: ^2.0.1
   uuid: ^4.1.0
+  modal_bottom_sheet: ^3.0.0-pre
+  url_launcher: ^6.1.14
+  flutter_secure_storage: ^9.0.0
 
 dev_dependencies:
   flutter_test:

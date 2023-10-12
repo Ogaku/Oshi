@@ -2,11 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:ogaku/share/share.dart';
-import 'package:ogaku/providers/librus/librus_data.dart' show LibrusDataReader;
 import 'package:ogaku/share/config.dart' show Config;
 
-import 'package:ogaku/interface/cupertino/login.dart' as cupertinoapp show loginPage;
-import 'package:ogaku/interface/material/login.dart' as materialapp show loginPage;
+import 'package:ogaku/interface/material/sessions_page.dart' as materialapp show sessionsPage;
+import 'package:ogaku/interface/cupertino/sessions_page.dart' as cupertinoapp show sessionsPage;
 
 void main() async {
   // try {
@@ -21,7 +20,7 @@ void main() async {
   //   print(e);
   // }
 
-  Share.session = Session(sessionId: '81C59CC9-AA58-4FF4-BE69-91B1028F1C04', provider: LibrusDataReader());
+  Share.session = Share.sessions.first;
 
   runApp(const MainApp());
 }
@@ -34,7 +33,7 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  StatefulWidget Function() child = Config.useCupertino ? () => cupertinoapp.loginPage : () => materialapp.loginPage;
+  StatefulWidget Function() child = Config.useCupertino ? () => cupertinoapp.sessionsPage : () => materialapp.sessionsPage;
   bool subscribed = false;
 
   @override

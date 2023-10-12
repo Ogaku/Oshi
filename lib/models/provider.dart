@@ -26,9 +26,6 @@ abstract class IProvider {
   // Login and reset methods for early setup - implement as async
   Future<({bool success, Exception? message})> login({String? session, String? username, String? password});
 
-  // Clear provider settings - login data, other custom settings
-  Future<({bool success, Exception? message})> clearSettings({String? session});
-
   // Login and refresh methods for runtime - implement as async
   // For null 'weekStart' - get (only) the current week's data
   // For reporting 'progress' - mark 'Progress' as null for indeterminate status

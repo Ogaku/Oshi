@@ -15,12 +15,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Material App',
-      home: Scaffold(
-        body: const Center(
-          child: Text('Hello World'),
-        ),
+    return Scaffold(
+      body: const Center(
+        child: Text('Hello World'),
       ),
     );
   }
