@@ -6,10 +6,13 @@ import 'package:ogaku/models/data/classroom.dart';
 import 'package:ogaku/models/data/lesson.dart';
 import 'package:ogaku/models/data/teacher.dart';
 
+import 'package:hive/hive.dart';
 part 'timetables.g.dart';
 
+@HiveType(typeId: 33)
 @JsonSerializable()
-class Timetables {
+class Timetables extends HiveObject {
+  @HiveField(1)
   Map<DateTime, TimetableDay> timetable;
 
   Timetables({
@@ -21,13 +24,15 @@ class Timetables {
   Map<String, dynamic> toJson() => _$TimetablesToJson(this);
 }
 
+@HiveType(typeId: 34)
 @JsonSerializable()
-class TimetableDay {
+class TimetableDay extends HiveObject {
+  @HiveField(1)
   List<List<TimetableLesson>?> lessons;
 
-  TimetableDay(
-    this.lessons,
-  );
+  TimetableDay({
+    List<List<TimetableLesson>?>? lessons,
+  }) : lessons = lessons ?? [];
 
   // The start time of the first non-cancelled lesson
   @JsonKey(includeToJson: false, includeFromJson: false)
@@ -65,8 +70,9 @@ class TimetableDay {
   Map<String, dynamic> toJson() => _$TimetableDayToJson(this);
 }
 
+@HiveType(typeId: 35)
 @JsonSerializable()
-class TimetableLesson {
+class TimetableLesson extends HiveObject {
   TimetableLesson({
     this.url = '',
     this.lessonNo = -1,
@@ -83,18 +89,43 @@ class TimetableLesson {
     this.hourTo,
   }) : date = date ?? DateTime(2000);
 
+  @HiveField(1)
   String url;
+
+  @HiveField(2)
   int lessonNo;
+
+  @HiveField(3)
   bool isCanceled;
+
+  @HiveField(4)
   Class? lessonClass;
+
+  @HiveField(5)
   Lesson? subject;
+
+  @HiveField(6)
   Teacher? teacher;
+
+  @HiveField(7)
   Classroom? classroom;
+
+  @HiveField(8)
   bool modifiedSchedule;
+
+  @HiveField(9)
   String? substitutionNote;
+
+  @HiveField(10)
   SubstitutionDetails? substitutionDetails;
+
+  @HiveField(11)
   DateTime date;
+
+  @HiveField(12)
   DateTime? hourFrom;
+
+  @HiveField(13)
   DateTime? hourTo;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
@@ -144,8 +175,9 @@ class TimetableLesson {
 
 // Details of the ORIGINAL lesson
 // Put the new data in the base object
+@HiveType(typeId: 36)
 @JsonSerializable()
-class SubstitutionDetails {
+class SubstitutionDetails extends HiveObject {
   SubstitutionDetails({
     this.originalUrl = 'htps://g.co',
     this.originalLessonNo = -1,
@@ -159,13 +191,28 @@ class SubstitutionDetails {
         originalHourFrom = originalHourFrom ?? DateTime(2000),
         originalHourTo = originalHourTo ?? DateTime(2000);
 
+  @HiveField(1)
   String originalUrl;
+
+  @HiveField(2)
   int originalLessonNo;
+
+  @HiveField(3)
   Lesson? originalSubject;
+
+  @HiveField(4)
   Teacher? originalTeacher;
+
+  @HiveField(5)
   Classroom? originalClassroom;
+
+  @HiveField(6)
   DateTime originalDate;
+
+  @HiveField(7)
   DateTime originalHourFrom;
+
+  @HiveField(8)
   DateTime originalHourTo;
 
   factory SubstitutionDetails.fromJson(Map<String, dynamic> json) => _$SubstitutionDetailsFromJson(json);

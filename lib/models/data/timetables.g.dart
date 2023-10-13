@@ -3,6 +3,205 @@
 part of 'timetables.dart';
 
 // **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class TimetablesAdapter extends TypeAdapter<Timetables> {
+  @override
+  final int typeId = 33;
+
+  @override
+  Timetables read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Timetables(
+      timetable: (fields[1] as Map?)?.cast<DateTime, TimetableDay>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Timetables obj) {
+    writer
+      ..writeByte(1)
+      ..writeByte(1)
+      ..write(obj.timetable);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TimetablesAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class TimetableDayAdapter extends TypeAdapter<TimetableDay> {
+  @override
+  final int typeId = 34;
+
+  @override
+  TimetableDay read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return TimetableDay(
+      lessons: (fields[1] as List?)
+          ?.map((dynamic e) => (e as List?)?.cast<TimetableLesson>())
+          .toList(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, TimetableDay obj) {
+    writer
+      ..writeByte(1)
+      ..writeByte(1)
+      ..write(obj.lessons);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TimetableDayAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class TimetableLessonAdapter extends TypeAdapter<TimetableLesson> {
+  @override
+  final int typeId = 35;
+
+  @override
+  TimetableLesson read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return TimetableLesson(
+      url: fields[1] as String,
+      lessonNo: fields[2] as int,
+      isCanceled: fields[3] as bool,
+      lessonClass: fields[4] as Class?,
+      subject: fields[5] as Lesson?,
+      teacher: fields[6] as Teacher?,
+      classroom: fields[7] as Classroom?,
+      modifiedSchedule: fields[8] as bool,
+      substitutionNote: fields[9] as String?,
+      substitutionDetails: fields[10] as SubstitutionDetails?,
+      date: fields[11] as DateTime?,
+      hourFrom: fields[12] as DateTime?,
+      hourTo: fields[13] as DateTime?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, TimetableLesson obj) {
+    writer
+      ..writeByte(13)
+      ..writeByte(1)
+      ..write(obj.url)
+      ..writeByte(2)
+      ..write(obj.lessonNo)
+      ..writeByte(3)
+      ..write(obj.isCanceled)
+      ..writeByte(4)
+      ..write(obj.lessonClass)
+      ..writeByte(5)
+      ..write(obj.subject)
+      ..writeByte(6)
+      ..write(obj.teacher)
+      ..writeByte(7)
+      ..write(obj.classroom)
+      ..writeByte(8)
+      ..write(obj.modifiedSchedule)
+      ..writeByte(9)
+      ..write(obj.substitutionNote)
+      ..writeByte(10)
+      ..write(obj.substitutionDetails)
+      ..writeByte(11)
+      ..write(obj.date)
+      ..writeByte(12)
+      ..write(obj.hourFrom)
+      ..writeByte(13)
+      ..write(obj.hourTo);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TimetableLessonAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class SubstitutionDetailsAdapter extends TypeAdapter<SubstitutionDetails> {
+  @override
+  final int typeId = 36;
+
+  @override
+  SubstitutionDetails read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return SubstitutionDetails(
+      originalUrl: fields[1] as String,
+      originalLessonNo: fields[2] as int,
+      originalSubject: fields[3] as Lesson?,
+      originalTeacher: fields[4] as Teacher?,
+      originalClassroom: fields[5] as Classroom?,
+      originalDate: fields[6] as DateTime?,
+      originalHourFrom: fields[7] as DateTime?,
+      originalHourTo: fields[8] as DateTime?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, SubstitutionDetails obj) {
+    writer
+      ..writeByte(8)
+      ..writeByte(1)
+      ..write(obj.originalUrl)
+      ..writeByte(2)
+      ..write(obj.originalLessonNo)
+      ..writeByte(3)
+      ..write(obj.originalSubject)
+      ..writeByte(4)
+      ..write(obj.originalTeacher)
+      ..writeByte(5)
+      ..write(obj.originalClassroom)
+      ..writeByte(6)
+      ..write(obj.originalDate)
+      ..writeByte(7)
+      ..write(obj.originalHourFrom)
+      ..writeByte(8)
+      ..write(obj.originalHourTo);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SubstitutionDetailsAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
@@ -20,8 +219,8 @@ Map<String, dynamic> _$TimetablesToJson(Timetables instance) =>
     };
 
 TimetableDay _$TimetableDayFromJson(Map<String, dynamic> json) => TimetableDay(
-      (json['lessons'] as List<dynamic>)
-          .map((e) => (e as List<dynamic>?)
+      lessons: (json['lessons'] as List<dynamic>?)
+          ?.map((e) => (e as List<dynamic>?)
               ?.map((e) => TimetableLesson.fromJson(e as Map<String, dynamic>))
               .toList())
           .toList(),

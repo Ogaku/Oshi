@@ -3,6 +3,102 @@
 part of 'student.dart';
 
 // **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class AccountAdapter extends TypeAdapter<Account> {
+  @override
+  final int typeId = 30;
+
+  @override
+  Account read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Account(
+      id: fields[1] as int,
+      userId: fields[2] as int,
+      number: fields[3] as int,
+      firstName: fields[4] as String,
+      lastName: fields[5] as String,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Account obj) {
+    writer
+      ..writeByte(5)
+      ..writeByte(1)
+      ..write(obj.id)
+      ..writeByte(2)
+      ..write(obj.userId)
+      ..writeByte(3)
+      ..write(obj.number)
+      ..writeByte(4)
+      ..write(obj.firstName)
+      ..writeByte(5)
+      ..write(obj.lastName);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AccountAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class StudentAdapter extends TypeAdapter<Student> {
+  @override
+  final int typeId = 31;
+
+  @override
+  Student read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Student(
+      account: fields[1] as Account?,
+      mainClass: fields[2] as Class?,
+      virtualClasses: (fields[3] as List?)?.cast<Class>(),
+      attendances: (fields[4] as List?)?.cast<Attendance>(),
+      subjects: (fields[5] as List?)?.cast<Lesson>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Student obj) {
+    writer
+      ..writeByte(5)
+      ..writeByte(1)
+      ..write(obj.account)
+      ..writeByte(2)
+      ..write(obj.mainClass)
+      ..writeByte(3)
+      ..write(obj.virtualClasses)
+      ..writeByte(4)
+      ..write(obj.attendances)
+      ..writeByte(5)
+      ..write(obj.subjects);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is StudentAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 

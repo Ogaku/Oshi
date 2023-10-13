@@ -1,12 +1,18 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:io';
+
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:event/event.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ogaku/interface/cupertino/new_session.dart';
 import 'package:ogaku/share/share.dart';
+import 'package:ogaku/interface/cupertino/base_app.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import 'package:ogaku/interface/cupertino/views/navigation_bar.dart' show SliverNavigationBar;
+import 'package:url_launcher/url_launcher_string.dart';
 
 // Boiler: returned to the main application
 StatefulWidget get sessionsPage => SessionsPage();
@@ -20,54 +26,118 @@ class SessionsPage extends StatefulWidget {
 
 class _SessionsPageState extends State<SessionsPage> {
   final scrollController = ScrollController();
-  bool subscribed = false;
+  bool isWorking = false; // Logging in right now?
 
   @override
   Widget build(BuildContext context) {
-    var providersList = Share.sessions
+    var sessionsList = Share.settings.sessions.sessions.keys
         .select(
           (x, index) => CupertinoListTile(
               padding: EdgeInsets.all(0),
               title: Builder(
-                  builder: (context) => CupertinoButton(
-                        padding: EdgeInsets.only(left: 20),
-                        child: Row(
-                          children: [
-                            Container(
-                                width: 120,
-                                margin: EdgeInsets.only(top: 20, bottom: 20),
-                                child: FadeInImage.memoryNetwork(
-                                    height: 37,
-                                    placeholder: kTransparentImage,
-                                    image: x.provider.providerBannerUri?.toString() ??
-                                        'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg')),
-                            Container(
-                              width: 1,
-                              height: 40,
-                              margin: EdgeInsets.only(left: 20, right: 20),
-                              decoration: const BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(10)), color: Color(0x33AAAAAA)),
+                  builder: (context) => CupertinoContextMenu(
+                          actions: [
+                            CupertinoContextMenuAction(
+                              onPressed: () async {
+                                setState(() {
+                                  Share.settings.sessions.sessions.remove(x);
+                                  if (Share.settings.sessions.lastSessionId == x) {
+                                    Share.settings.sessions.lastSessionId =
+                                        Share.settings.sessions.sessions.keys.firstOrDefault(defaultValue: null);
+                                  }
+                                  // Dismiss the context menu
+                                  Navigator.pop(context);
+                                });
+
+                                // Save our session changes
+                                await Share.settings.save();
+                              },
+                              isDestructiveAction: true,
+                              trailingIcon: CupertinoIcons.delete,
+                              child: const Text('Delete'),
                             ),
-                            Expanded(
-                                child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Flexible(
-                                        child: Text(
-                                      x.sessionName,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-                                                  Brightness.dark
-                                              ? CupertinoColors.white
-                                              : CupertinoColors.black),
-                                    ))))
                           ],
-                        ),
-                        onPressed: () {
-                          // showCupertinoModalBottomSheet(context: context, builder: (context) => LoginPage(provider: x));
-                        },
-                      ))),
+                          child: CupertinoButton(
+                            color: WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark
+                                ? CupertinoColors.secondarySystemBackground
+                                : CupertinoColors.systemBackground,
+                            padding: EdgeInsets.only(left: 20),
+                            child: Row(
+                              children: [
+                                Container(
+                                    width: 120,
+                                    margin: EdgeInsets.only(top: 20, bottom: 20),
+                                    child: FadeInImage.memoryNetwork(
+                                        height: 37,
+                                        placeholder: kTransparentImage,
+                                        image: Share.settings.sessions.sessions[x]!.provider.providerBannerUri?.toString() ??
+                                            'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg')),
+                                Container(
+                                  width: 1,
+                                  height: 40,
+                                  margin: EdgeInsets.only(left: 20, right: 20),
+                                  decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.all(Radius.circular(10)), color: Color(0x33AAAAAA)),
+                                ),
+                                Expanded(
+                                    flex: 0,
+                                    child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Container(
+                                            margin: EdgeInsets.only(right: 20),
+                                            child: Flexible(
+                                                flex: 0,
+                                                child: Text(
+                                                  Share.settings.sessions.sessions[x]!.sessionName,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.w600,
+                                                      color: WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+                                                              Brightness.dark
+                                                          ? CupertinoColors.white
+                                                          : CupertinoColors.black),
+                                                )))))
+                              ],
+                            ),
+                            onPressed: () async {
+                              if (isWorking) return; // Already handling something, give up
+                              setState(() {
+                                // Mark as working, the 1st refresh is gonna take a while
+                                isWorking = true;
+                              });
+
+                              // showCupertinoModalBottomSheet(context: context, builder: (context) => LoginPage(provider: x));
+                              Share.settings.sessions.lastSessionId = x; // Update
+                              Share.session = Share.settings.sessions.lastSession!;
+                              var result = await Share.session.login(); // Log in now
+
+                              if (!result.success) {
+                                if (Platform.isAndroid || Platform.isIOS) {
+                                  Fluttertoast.showToast(
+                                    msg: '${result.message}',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.CENTER,
+                                    timeInSecForIosWeb: 1,
+                                  );
+                                }
+                                setState(() {
+                                  // Reset the animation in case the login method hasn't finished
+                                  isWorking = false;
+                                });
+                                return; // Give up, not this time
+                              }
+
+                              await Share.settings.save(); // Save our settings now
+                              await Share.session.refresh(); // Refresh everything
+                              await Share.session.refreshMessages(); // And messages
+
+                              // Change the main page to the base application
+                              Share.changeBase.broadcast(Value(() => baseApp));
+
+                              // Reset the animation in case we go back somehow
+                              isWorking = false;
+                            },
+                          )))),
         )
         .toList();
 
@@ -83,12 +153,19 @@ class _SessionsPageState extends State<SessionsPage> {
                 largeTitle: FittedBox(
                     fit: BoxFit.fitWidth,
                     child: Container(margin: EdgeInsets.only(right: 20), child: Text('E-register accounts'))),
-                trailing: GestureDetector(
-                  child: Icon(CupertinoIcons.question_circle),
-                  onTap: () {},
-                ),
+                trailing: isWorking
+                    ? CupertinoActivityIndicator()
+                    : GestureDetector(
+                        child: Icon(CupertinoIcons.question_circle),
+                        onTap: () async {
+                          try {
+                            await launchUrlString('https://github.com/Ogaku');
+                          } catch (ex) {
+                            // ignored
+                          }
+                        },
+                      ),
               ),
-              //leading: TextChip(text: DateFormat('y.M.d').format(DateTime.now()), margin: EdgeInsets.only(top: 6, bottom: 6))
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: Container(
@@ -106,7 +183,10 @@ class _SessionsPageState extends State<SessionsPage> {
                                   'These are your currently set up e-register accounts. Choose one of currently logged-in sessions, or go on and create a new one.',
                                   style: TextStyle(fontSize: 14),
                                 ))),
-                        CupertinoListSection.insetGrouped(children: providersList),
+                        Visibility(
+                            visible: sessionsList.isNotEmpty,
+                            child: CupertinoListSection.insetGrouped(
+                                header: sessionsList.isEmpty ? Text('Sessions') : null, children: sessionsList)),
                         CupertinoListSection.insetGrouped(margin: EdgeInsets.only(left: 20, right: 20, top: 5), children: [
                           CupertinoListTile(
                               padding: EdgeInsets.all(0),

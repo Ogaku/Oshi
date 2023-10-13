@@ -3,6 +3,62 @@
 part of 'teacher.dart';
 
 // **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class TeacherAdapter extends TypeAdapter<Teacher> {
+  @override
+  final int typeId = 32;
+
+  @override
+  Teacher read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Teacher(
+      id: fields[1] as int,
+      userId: fields[2] as int?,
+      url: fields[3] as String,
+      firstName: fields[4] as String,
+      lastName: fields[5] as String,
+      isHomeTeacher: fields[6] as bool?,
+      absent: fields[7] as ({DateTime from, DateTime to})?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Teacher obj) {
+    writer
+      ..writeByte(7)
+      ..writeByte(1)
+      ..write(obj.id)
+      ..writeByte(2)
+      ..write(obj.userId)
+      ..writeByte(3)
+      ..write(obj.url)
+      ..writeByte(4)
+      ..write(obj.firstName)
+      ..writeByte(5)
+      ..write(obj.lastName)
+      ..writeByte(6)
+      ..write(obj.isHomeTeacher)
+      ..writeByte(7)
+      ..write(obj.absent);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TeacherAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 

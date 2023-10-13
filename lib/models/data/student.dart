@@ -4,10 +4,12 @@ import 'package:ogaku/models/data/class.dart';
 import 'package:ogaku/models/data/attendances.dart';
 import 'package:ogaku/models/data/lesson.dart';
 
+import 'package:hive/hive.dart';
 part 'student.g.dart';
 
+@HiveType(typeId: 30)
 @JsonSerializable()
-class Account {
+class Account extends HiveObject {
   Account({
     this.id = -1,
     this.userId = -1,
@@ -16,10 +18,19 @@ class Account {
     this.lastName = '',
   });
 
+  @HiveField(1)
   int id;
+
+  @HiveField(2)
   int userId;
+
+  @HiveField(3)
   int number;
+
+  @HiveField(4)
   String firstName;
+
+  @HiveField(5)
   String lastName;
 
   String get name => '$firstName $lastName';
@@ -29,12 +40,22 @@ class Account {
   Map<String, dynamic> toJson() => _$AccountToJson(this);
 }
 
+@HiveType(typeId: 31)
 @JsonSerializable(includeIfNull: false)
-class Student {
+class Student extends HiveObject {
+  @HiveField(1)
   Account account;
+
+  @HiveField(2)
   Class mainClass;
+
+  @HiveField(3)
   List<Class>? virtualClasses;
+
+  @HiveField(4)
   List<Attendance>? attendances;
+
+  @HiveField(5)
   List<Lesson> subjects;
 
   Student({

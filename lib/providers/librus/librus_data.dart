@@ -10,7 +10,6 @@ import 'package:ogaku/models/progress.dart';
 import 'package:ogaku/providers/librus/librus_login.dart';
 import 'package:ogaku/providers/librus/librus_reader.dart';
 import 'package:ogaku/providers/librus/login_data.dart';
-import 'package:uuid/uuid.dart';
 import 'package:darq/darq.dart';
 
 import 'package:ogaku/models/data/attendances.dart' as models;
@@ -57,13 +56,10 @@ import 'models/shim/outbox_messages.dart' show OutboxMessages, OutboxMessage, Me
 
 class LibrusDataReader implements models.IProvider {
   models.ProviderData dataChunk = models.ProviderData();
-
-  String? sessionId;
   SynergiaData? data;
 
   @override
-  Future<({Exception? message, bool success})> login({String? session, String? username, String? password}) async {
-    sessionId = session ?? const Uuid().v4();
+  Future<({Exception? message, bool success})> login({String? username, String? password}) async {
     data = SynergiaData(); // Reset
 
     // Instantiate a portal login
@@ -218,7 +214,8 @@ class LibrusDataReader implements models.IProvider {
     var timetable = models.Timetables(
         timetable: timetableShim.timetable.map((key, value) => MapEntry(
             DateTime.parse(key),
-            models.TimetableDay(value.select(
+            models.TimetableDay(
+                lessons: value.select(
               (lessons, index) {
                 return lessons
                     ?.select((lesson, index) => models.TimetableLesson(

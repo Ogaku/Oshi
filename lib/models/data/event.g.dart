@@ -3,6 +3,179 @@
 part of 'event.dart';
 
 // **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class EventAdapter extends TypeAdapter<Event> {
+  @override
+  final int typeId = 25;
+
+  @override
+  Event read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Event(
+      id: fields[0] as int,
+      lessonNo: fields[1] as int?,
+      date: fields[2] as DateTime?,
+      addDate: fields[3] as DateTime?,
+      timeFrom: fields[4] as DateTime?,
+      timeTo: fields[5] as DateTime?,
+      title: fields[6] as String?,
+      content: fields[7] as String,
+      categoryName: fields[8] as String,
+      category: fields[10] as EventCategory,
+      done: fields[9] as bool,
+      sender: fields[11] as Teacher?,
+      classroom: fields[12] as Classroom?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Event obj) {
+    writer
+      ..writeByte(13)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.lessonNo)
+      ..writeByte(2)
+      ..write(obj.date)
+      ..writeByte(3)
+      ..write(obj.addDate)
+      ..writeByte(4)
+      ..write(obj.timeFrom)
+      ..writeByte(5)
+      ..write(obj.timeTo)
+      ..writeByte(6)
+      ..write(obj.title)
+      ..writeByte(7)
+      ..write(obj.content)
+      ..writeByte(8)
+      ..write(obj.categoryName)
+      ..writeByte(9)
+      ..write(obj.done)
+      ..writeByte(10)
+      ..write(obj.category)
+      ..writeByte(11)
+      ..write(obj.sender)
+      ..writeByte(12)
+      ..write(obj.classroom);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class EventCategoryAdapter extends TypeAdapter<EventCategory> {
+  @override
+  final int typeId = 101;
+
+  @override
+  EventCategory read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return EventCategory.gathering;
+      case 1:
+        return EventCategory.lecture;
+      case 2:
+        return EventCategory.test;
+      case 3:
+        return EventCategory.classWork;
+      case 4:
+        return EventCategory.semCorrection;
+      case 5:
+        return EventCategory.other;
+      case 6:
+        return EventCategory.lessonWork;
+      case 7:
+        return EventCategory.shortTest;
+      case 8:
+        return EventCategory.correction;
+      case 9:
+        return EventCategory.onlineLesson;
+      case 10:
+        return EventCategory.homework;
+      case 11:
+        return EventCategory.teacher;
+      case 12:
+        return EventCategory.freeDay;
+      case 13:
+        return EventCategory.conference;
+      default:
+        return EventCategory.gathering;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, EventCategory obj) {
+    switch (obj) {
+      case EventCategory.gathering:
+        writer.writeByte(0);
+        break;
+      case EventCategory.lecture:
+        writer.writeByte(1);
+        break;
+      case EventCategory.test:
+        writer.writeByte(2);
+        break;
+      case EventCategory.classWork:
+        writer.writeByte(3);
+        break;
+      case EventCategory.semCorrection:
+        writer.writeByte(4);
+        break;
+      case EventCategory.other:
+        writer.writeByte(5);
+        break;
+      case EventCategory.lessonWork:
+        writer.writeByte(6);
+        break;
+      case EventCategory.shortTest:
+        writer.writeByte(7);
+        break;
+      case EventCategory.correction:
+        writer.writeByte(8);
+        break;
+      case EventCategory.onlineLesson:
+        writer.writeByte(9);
+        break;
+      case EventCategory.homework:
+        writer.writeByte(10);
+        break;
+      case EventCategory.teacher:
+        writer.writeByte(11);
+        break;
+      case EventCategory.freeDay:
+        writer.writeByte(12);
+        break;
+      case EventCategory.conference:
+        writer.writeByte(13);
+        break;
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventCategoryAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 

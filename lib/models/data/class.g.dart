@@ -3,6 +3,71 @@
 part of 'class.dart';
 
 // **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class ClassAdapter extends TypeAdapter<Class> {
+  @override
+  final int typeId = 23;
+
+  @override
+  Class read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Class(
+      id: fields[0] as int,
+      number: fields[1] as int,
+      symbol: fields[2] as String,
+      name: fields[3] as String?,
+      beginSchoolYear: fields[4] as DateTime?,
+      endFirstSemester: fields[5] as DateTime?,
+      endSchoolYear: fields[6] as DateTime?,
+      unit: fields[7] as Unit?,
+      classTutor: fields[8] as Teacher?,
+      events: (fields[9] as List?)?.cast<Event>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Class obj) {
+    writer
+      ..writeByte(10)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.number)
+      ..writeByte(2)
+      ..write(obj.symbol)
+      ..writeByte(3)
+      ..write(obj.name)
+      ..writeByte(4)
+      ..write(obj.beginSchoolYear)
+      ..writeByte(5)
+      ..write(obj.endFirstSemester)
+      ..writeByte(6)
+      ..write(obj.endSchoolYear)
+      ..writeByte(7)
+      ..write(obj.unit)
+      ..writeByte(8)
+      ..write(obj.classTutor)
+      ..writeByte(9)
+      ..write(obj.events);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ClassAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 

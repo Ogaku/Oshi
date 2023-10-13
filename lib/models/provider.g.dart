@@ -3,6 +3,50 @@
 part of 'provider.dart';
 
 // **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class ProviderDataAdapter extends TypeAdapter<ProviderData> {
+  @override
+  final int typeId = 10;
+
+  @override
+  ProviderData read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return ProviderData(
+      student: fields[1] as Student?,
+      timetables: fields[2] as Timetables?,
+      messages: fields[3] as Messages?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, ProviderData obj) {
+    writer
+      ..writeByte(3)
+      ..writeByte(1)
+      ..write(obj.student)
+      ..writeByte(2)
+      ..write(obj.timetables)
+      ..writeByte(3)
+      ..write(obj.messages);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ProviderDataAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 

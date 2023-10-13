@@ -3,6 +3,89 @@
 part of 'grade.dart';
 
 // **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class GradeAdapter extends TypeAdapter<Grade> {
+  @override
+  final int typeId = 26;
+
+  @override
+  Grade read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Grade(
+      id: fields[0] as int,
+      url: fields[1] as String,
+      name: fields[2] as String,
+      value: fields[3] as String,
+      weight: fields[4] as int,
+      comments: (fields[5] as List?)?.cast<String>(),
+      countsToAverage: fields[6] as bool,
+      date: fields[7] as DateTime?,
+      addDate: fields[8] as DateTime?,
+      addedBy: fields[9] as Teacher?,
+      semester: fields[10] as int,
+      isConstituent: fields[11] as bool,
+      isSemester: fields[12] as bool,
+      isSemesterProposition: fields[13] as bool,
+      isFinal: fields[14] as bool,
+      isFinalProposition: fields[15] as bool,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Grade obj) {
+    writer
+      ..writeByte(16)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.url)
+      ..writeByte(2)
+      ..write(obj.name)
+      ..writeByte(3)
+      ..write(obj.value)
+      ..writeByte(4)
+      ..write(obj.weight)
+      ..writeByte(5)
+      ..write(obj.comments)
+      ..writeByte(6)
+      ..write(obj.countsToAverage)
+      ..writeByte(7)
+      ..write(obj.date)
+      ..writeByte(8)
+      ..write(obj.addDate)
+      ..writeByte(9)
+      ..write(obj.addedBy)
+      ..writeByte(10)
+      ..write(obj.semester)
+      ..writeByte(11)
+      ..write(obj.isConstituent)
+      ..writeByte(12)
+      ..write(obj.isSemester)
+      ..writeByte(13)
+      ..write(obj.isSemesterProposition)
+      ..writeByte(14)
+      ..write(obj.isFinal)
+      ..writeByte(15)
+      ..write(obj.isFinalProposition);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GradeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 

@@ -4,10 +4,12 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:ogaku/models/data/teacher.dart';
 import 'package:ogaku/share/config.dart';
 
+import 'package:hive/hive.dart';
 part 'grade.g.dart';
 
+@HiveType(typeId: 26)
 @JsonSerializable()
-class Grade {
+class Grade extends HiveObject {
   Grade({
     this.id = -1,
     this.url = 'https://g.co',
@@ -30,21 +32,52 @@ class Grade {
         addDate = addDate ?? DateTime(2000),
         addedBy = addedBy ?? Teacher();
 
+  @HiveField(0)
   int id;
+  
+  @HiveField(1)
   String url;
+  
+  @HiveField(2)
   String name;
+  
+  @HiveField(3)
   String value;
+  
+  @HiveField(4)
   int weight;
+  
+  @HiveField(5)
   List<String> comments;
+  
+  @HiveField(6)
   bool countsToAverage;
+  
+  @HiveField(7)
   DateTime date;
+  
+  @HiveField(8)
   DateTime addDate;
+  
+  @HiveField(9)
   Teacher addedBy;
+  
+  @HiveField(10)
   int semester;
+  
+  @HiveField(11)
   bool isConstituent;
+  
+  @HiveField(12)
   bool isSemester;
+  
+  @HiveField(13)
   bool isSemesterProposition;
+  
+  @HiveField(14)
   bool isFinal;
+  
+  @HiveField(15)
   bool isFinalProposition;
 
   String get nameWithWeight => '$name, weight $weight';

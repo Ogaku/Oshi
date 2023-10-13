@@ -8,6 +8,7 @@ import 'package:ogaku/models/data/timetables.dart' show Timetables;
 import 'package:ogaku/models/data/messages.dart' show Messages;
 import 'package:ogaku/models/progress.dart' show IProgress;
 
+import 'package:hive/hive.dart';
 part 'provider.g.dart';
 
 abstract class IProvider {
@@ -24,7 +25,7 @@ abstract class IProvider {
   Event<Value<String>> propertyChanged = Event<Value<String>>();
 
   // Login and reset methods for early setup - implement as async
-  Future<({bool success, Exception? message})> login({String? session, String? username, String? password});
+  Future<({bool success, Exception? message})> login({String? username, String? password});
 
   // Login and refresh methods for runtime - implement as async
   // For null 'weekStart' - get (only) the current week's data
@@ -43,16 +44,22 @@ abstract class IProvider {
       {required List<Teacher> receivers, required String topic, required String content});
 }
 
+@HiveType(typeId: 10)
 @JsonSerializable(includeIfNull: false)
-class ProviderData {
+class ProviderData extends HiveObject {
   ProviderData({Student? student, Timetables? timetables, Messages? messages})
       : student = student ?? Student(),
         timetables = timetables ?? Timetables(),
         messages = messages ?? Messages();
 
   // All the accessible data - provided as models
+  @HiveField(1)
   Student student;
+
+  @HiveField(2)
   Timetables timetables;
+
+  @HiveField(3)
   Messages messages;
 
   factory ProviderData.fromJson(Map<String, dynamic> json) => _$ProviderDataFromJson(json);

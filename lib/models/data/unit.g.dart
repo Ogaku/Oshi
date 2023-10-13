@@ -3,6 +3,120 @@
 part of 'unit.dart';
 
 // **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class UnitAdapter extends TypeAdapter<Unit> {
+  @override
+  final int typeId = 37;
+
+  @override
+  Unit read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Unit(
+      id: fields[1] as int,
+      url: fields[2] as String,
+      luckyNumber: fields[3] as int?,
+      name: fields[5] as String,
+      principalName: fields[6] as String,
+      address: fields[7] as String,
+      email: fields[8] as String,
+      phone: fields[9] as String,
+      type: fields[10] as String,
+      behaviourType: fields[11] as String,
+      lessonsRange: (fields[12] as List?)?.cast<LessonRanges>(),
+      announcements: (fields[13] as List?)?.cast<Announcement>(),
+      teacherAbsences: (fields[14] as List?)?.cast<Event>(),
+      luckyNumberTomorrow: fields[4] as bool,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Unit obj) {
+    writer
+      ..writeByte(14)
+      ..writeByte(1)
+      ..write(obj.id)
+      ..writeByte(2)
+      ..write(obj.url)
+      ..writeByte(3)
+      ..write(obj.luckyNumber)
+      ..writeByte(4)
+      ..write(obj.luckyNumberTomorrow)
+      ..writeByte(5)
+      ..write(obj.name)
+      ..writeByte(6)
+      ..write(obj.principalName)
+      ..writeByte(7)
+      ..write(obj.address)
+      ..writeByte(8)
+      ..write(obj.email)
+      ..writeByte(9)
+      ..write(obj.phone)
+      ..writeByte(10)
+      ..write(obj.type)
+      ..writeByte(11)
+      ..write(obj.behaviourType)
+      ..writeByte(12)
+      ..write(obj.lessonsRange)
+      ..writeByte(13)
+      ..write(obj.announcements)
+      ..writeByte(14)
+      ..write(obj.teacherAbsences);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UnitAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class LessonRangesAdapter extends TypeAdapter<LessonRanges> {
+  @override
+  final int typeId = 38;
+
+  @override
+  LessonRanges read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return LessonRanges(
+      from: fields[1] as DateTime?,
+      to: fields[2] as DateTime?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, LessonRanges obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(1)
+      ..write(obj.from)
+      ..writeByte(2)
+      ..write(obj.to);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LessonRangesAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
@@ -57,8 +171,9 @@ Map<String, dynamic> _$UnitToJson(Unit instance) {
 }
 
 LessonRanges _$LessonRangesFromJson(Map<String, dynamic> json) => LessonRanges(
-      from: DateTime.parse(json['from'] as String),
-      to: DateTime.parse(json['to'] as String),
+      from:
+          json['from'] == null ? null : DateTime.parse(json['from'] as String),
+      to: json['to'] == null ? null : DateTime.parse(json['to'] as String),
     );
 
 Map<String, dynamic> _$LessonRangesToJson(LessonRanges instance) =>

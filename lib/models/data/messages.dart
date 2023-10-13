@@ -4,10 +4,12 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:ogaku/models/data/lesson.dart';
 import 'package:ogaku/models/data/teacher.dart';
 
+import 'package:hive/hive.dart';
 part 'messages.g.dart';
 
+@HiveType(typeId: 28)
 @JsonSerializable(includeIfNull: false)
-class Message {
+class Message extends HiveObject {
   Message({
     this.id = -1,
     this.url = 'https://g.co',
@@ -24,19 +26,39 @@ class Message {
     this.moveMessageToTrash,
   }) : sendDate = sendDate ?? DateTime(2000);
 
+  
+  @HiveField(1)
   int id;
+  
+  @HiveField(2)
   String url;
+  
+  @HiveField(3)
   String topic;
+  
+  @HiveField(4)
   String? content;
+  
+  @HiveField(5)
   String? preview;
+  
+  @HiveField(6)
   bool hasAttachments;
+  
+  @HiveField(7)
   Teacher? sender;
+  
+  @HiveField(8)
   DateTime sendDate;
+  
+  @HiveField(9)
   DateTime? readDate;
 
   // Set to null for no attachments
+  @HiveField(10)
   List<({String name, String location})>? attachments;
   // For messages sent by the student - otherwise null
+  @HiveField(11)
   List<Teacher>? receivers;
 
   // Fetch the actual content, sender details
@@ -68,10 +90,16 @@ class Message {
   Map<String, dynamic> toJson() => _$MessageToJson(this);
 }
 
+@HiveType(typeId: 29)
 @JsonSerializable()
-class Messages {
+class Messages extends HiveObject {
+  @HiveField(1)
   List<Message> received;
+  
+  @HiveField(2)
   List<Message> sent;
+  
+  @HiveField(3)
   List<Teacher> receivers;
 
   Messages({

@@ -1,76 +1,140 @@
-import 'dart:convert';
-
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:ogaku/models/provider.dart';
 
+import 'package:hive/hive.dart';
+import 'package:json_annotation/json_annotation.dart';
+
 import 'package:ogaku/models/data/teacher.dart' show Teacher;
 import 'package:ogaku/models/progress.dart' show IProgress;
-import 'package:uuid/uuid.dart';
 
 import 'package:ogaku/providers/librus/librus_data.dart' show LibrusDataReader;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:ogaku/providers/sample/sample_data.dart' show FakeDataReader;
+
+part 'share.g.dart';
 
 class Share {
   // The provider and register data for the current session
   // MUST be initialized before switching to the base app
   static late Session session;
 
+  // Shared settings data for managing sessions
+  static Settings settings = Settings();
+
   // Raised by the app to notify that the uses's just logged in
   // To subscribe: event.subscribe((args) => {})
   static Event<Value<StatefulWidget Function()>> changeBase = Event<Value<StatefulWidget Function()>>();
 
-  // All sessions maintained by the app, including the current one
-  static List<Session> sessions = [Session(sessionId: '81C59CC9-AA58-4FF4-BE69-91B1028F1C04', provider: LibrusDataReader())];
-
   // Currently supported provider types, maps sample instances to factories
-  static Map<IProvider, IProvider Function()> providers = {
+  static Map<String, ({IProvider instance, IProvider Function() factory})> providers = {
+    // Sample data provider, only for debugging purposes
+    'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER': (instance: FakeDataReader(), factory: () => FakeDataReader()),
     // Librus synergia: log in with a synergia account
-    LibrusDataReader(): () => LibrusDataReader()
+    'PROVGUID-RGLR-PROV-LIBR-LIBRSYNERGIA': (instance: LibrusDataReader(), factory: () => LibrusDataReader()),
   };
 }
 
-class Session {
+class Settings {
+  // All sessions maintained by the app, including the current one
+  SessionsData sessions = SessionsData();
+
+  // Load all the data from storage, called manually
+  Future<({bool success, Exception? message})> load() async {
+    try {
+      sessions = (await Hive.openBox('sessions')).get('sessions', defaultValue: SessionsData());
+    } on Exception catch (ex) {
+      return (success: false, message: ex);
+    }
+    return (success: true, message: null);
+  }
+
+  // Save all received data to storage, called automatically
+  Future<({bool success, Exception? message})> save() async {
+    try {
+      (await Hive.openBox('sessions')).put('sessions', sessions);
+    } on Exception catch (ex) {
+      return (success: false, message: ex);
+    }
+    return (success: true, message: null);
+  }
+
+  // Clear provider settings - login data, other custom settings
+  Future<({bool success, Exception? message})> clear() async {
+    try {
+      (await Hive.openBox('sessions')).clear();
+    } on Exception catch (ex) {
+      return (success: false, message: ex);
+    }
+    return (success: true, message: null);
+  }
+}
+
+@HiveType(typeId: 2)
+@JsonSerializable(includeIfNull: false)
+class SessionsData extends HiveObject {
+  SessionsData({Map<String, Session>? sessions, this.lastSessionId = 'SESSIONS-SHIM-SMPL-FAKE-DATAPROVIDER'})
+      : sessions = sessions ?? {};
+
+  // The last session's identifier
+  @HiveField(1)
+  String? lastSessionId;
+
+  // Last session's getter
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  Session? get lastSession =>
+      ((lastSessionId?.isNotEmpty ?? false) && sessions.containsKey(lastSessionId)) ? sessions[lastSessionId!] : null;
+
+  // All sessions maintained by the app, including the current one
+  // The 'fake' one is kept here for debugging, overwritten on startup anyway
+  @HiveField(2)
+  Map<String, Session> sessions = {
+    'SESSIONS-SHIM-SMPL-FAKE-DATAPROVIDER': Session(providerGuid: 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER')
+  };
+
+  factory SessionsData.fromJson(Map<String, dynamic> json) => _$SessionsDataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SessionsDataToJson(this);
+}
+
+@HiveType(typeId: 3)
+@JsonSerializable(includeIfNull: false)
+class Session extends HiveObject {
   Session(
-      {String? sessionId,
-      this.sessionName = 'John Doe',
+      {this.sessionName = 'John Doe',
       this.sessionUsername = '',
       this.sessionPassword = '',
-      required this.provider})
-      : sessionId = sessionId ?? const Uuid().v4(),
+      this.providerGuid = 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER',
+      IProvider? provider})
+      : provider = provider ?? Share.providers[providerGuid]!.factory(),
         data = ProviderData();
 
-  // Internal ID and 'pretty' name
-  String sessionId;
+  // Internal 'pretty' name
+  @HiveField(1)
   String sessionName;
 
+  @HiveField(5)
+  String providerGuid;
+
   // Persistent login and pass
+  @HiveField(2)
   String sessionUsername;
+
+  @HiveField(3)
   String sessionPassword;
 
-  // Gneral data and the provider
+  // Downlaoded data
+  @HiveField(4)
   ProviderData data;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
   IProvider provider;
-
-  // Shared storage container
-  final storage = const FlutterSecureStorage();
-
-  // Load all the data from storage, called manually, TODO USE SECURESTORAGE
-  Future<({bool success, Exception? message})> loadData() async => (success: true, message: null);
-
-  // Save all received data to storage, called automatically, TODO USE SECURESTORAGE
-  Future<({bool success, Exception? message})> saveData() async => (success: true, message: null);
-
-  // Clear provider settings - login data, other custom settings, TODO USE SECURESTORAGE
-  Future<({bool success, Exception? message})> clearSettings() async => (success: true, message: null);
 
   // Login and reset methods for early setup - implement as async
   Future<({bool success, Exception? message})> login({String? username, String? password}) async {
     if (username?.isNotEmpty ?? false) sessionUsername = username ?? '';
     if (password?.isNotEmpty ?? false) sessionPassword = password ?? '';
 
-    return await provider.login(
-        session: sessionId, username: username ?? sessionUsername, password: password ?? sessionPassword);
+    return await provider.login(username: username ?? sessionUsername, password: password ?? sessionPassword);
   }
 
   // Login and refresh methods for runtime - implement as async
@@ -114,40 +178,10 @@ class Session {
             ifAbsent: () => value,
           ));
     }
-    await saveData();
+    await Share.settings.save();
   }
 
-  Future load() async {
-    sessionUsername = await getSetting('login');
-    sessionPassword = await getSetting('pass');
-    sessionName = await getSetting('name', 'John Doe');
+  factory Session.fromJson(Map<String, dynamic> json) => _$SessionFromJson(json);
 
-    try {
-      data = ProviderData.fromJson(jsonDecode(await getSetting('data' '{}')));
-    } catch (ex) {
-      // ignored
-    }
-  }
-
-  Future save() async {
-    await setSetting('login', sessionUsername);
-    await setSetting('pass', sessionPassword);
-    await setSetting('name', sessionName);
-
-    try {
-      await setSetting('data', jsonEncode(data.toJson()));
-    } catch (ex) {
-      // ignored
-    }
-  }
-
-//#region Internal management
-  Future<String> getSetting(String key, [String? fallback]) async {
-    return await storage.read(key: '$sessionId+$key') ?? fallback ?? '';
-  }
-
-  Future setSetting(String key, String value) async {
-    return await storage.write(key: '$sessionId+$key', value: value);
-  }
-//#endregion}
+  Map<String, dynamic> toJson() => _$SessionToJson(this);
 }

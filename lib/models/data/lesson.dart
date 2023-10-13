@@ -5,10 +5,12 @@ import 'package:ogaku/models/data/class.dart';
 import 'package:ogaku/models/data/grade.dart';
 import 'package:ogaku/models/data/teacher.dart';
 
+import 'package:hive/hive.dart';
 part 'lesson.g.dart';
 
+@HiveType(typeId: 27)
 @JsonSerializable()
-class Lesson {
+class Lesson extends HiveObject {
   Lesson({
     this.id = -1,
     this.url = 'https://g.co',
@@ -24,16 +26,34 @@ class Lesson {
         teacher = teacher ?? Teacher(),
         grades = grades ?? [];
 
+  @HiveField(1)
   int id;
+  
+  @HiveField(2)
   String url;
+  
+  @HiveField(3)
   String name;
+  
+  @HiveField(4)
   int no;
+  
+  @HiveField(5)
   String short;
+  
+  @HiveField(6)
   bool isExtracurricular;
+  
+  @HiveField(7)
   bool isBlockLesson;
 
+  @HiveField(8)
   Class hostClass;
+  
+  @HiveField(9)
   Teacher teacher;
+  
+  @HiveField(10)
   List<Grade> grades;
 
   Iterable<Grade> get gradesFirstSemester => grades.where((element) => element.semester == 1);

@@ -10,12 +10,13 @@ import 'package:ogaku/models/provider.dart';
 import 'package:ogaku/share/share.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:uuid/uuid.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key, required this.provider, required this.factory});
+  const LoginPage({super.key, required this.instance, required this.providerGuid});
 
-  final IProvider provider;
-  final IProvider Function() factory;
+  final String providerGuid;
+  final IProvider instance;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -33,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
           ? CupertinoColors.systemBackground
           : CupertinoColors.secondarySystemBackground,
       navigationBar: CupertinoNavigationBar(
-        transitionBetweenRoutes: false,
+          transitionBetweenRoutes: false,
           automaticallyImplyLeading: true,
           border: null,
           backgroundColor: WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark
@@ -49,12 +50,14 @@ class _LoginPageState extends State<LoginPage> {
                               ? CupertinoColors.systemBlue
                               : CupertinoColors.inactiveGray)),
               onPressed: () async {
+                if (isWorking) return; // Already handling something, give up
                 if (loginController.text.isNotEmpty && passwordController.text.isNotEmpty) {
                   setState(() {
                     // Mark as working, the 1st refresh is gonna take a while
                     isWorking = true;
                   });
-                  if (!await tryLogin(factory: widget.factory, login: loginController.text, pass: passwordController.text)) {
+                  if (!await tryLogin(
+                      guid: widget.providerGuid, login: loginController.text, pass: passwordController.text)) {
                     setState(() {
                       // Reset the animation in case the login method hasn't finished
                       isWorking = false;
@@ -68,12 +71,12 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisSize: MainAxisSize.max,
           children: [
             Visibility(
-                visible: widget.provider.providerBannerUri != null,
+                visible: widget.instance.providerBannerUri != null,
                 child: Container(
                     margin: EdgeInsets.only(top: 30, left: 100, right: 100),
                     child: FadeInImage.memoryNetwork(
                         placeholder: kTransparentImage,
-                        image: widget.provider.providerBannerUri?.toString() ??
+                        image: widget.instance.providerBannerUri?.toString() ??
                             'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg'))),
             Container(
                 margin: EdgeInsets.only(top: 50),
@@ -98,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                 opacity: 0.7,
                 child: Container(
                     margin: EdgeInsets.only(top: 10, left: 20, right: 20),
-                    child: Text(widget.provider.providerDescription, style: TextStyle(fontSize: 14)))),
+                    child: Text(widget.instance.providerDescription, style: TextStyle(fontSize: 14)))),
             Expanded(
                 child: Align(
               alignment: Alignment.bottomCenter,
@@ -116,21 +119,21 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<bool> tryLogin({required String login, required String pass, required IProvider Function() factory}) async {
+  Future<bool> tryLogin({required String login, required String pass, required String guid}) async {
     try {
-      // Instantiate the provider, this MUST be a separate value
-      var provider = factory(); // Call the passed provider factory
-
-      // Create a new session: ID/name are automatic
-      var session = Session(provider: provider);
+      // Create a new session: ID/name/provider are automatic
+      var session = Session(providerGuid: guid);
       var result = await session.login(username: login, password: pass);
 
       if (!result.success && result.message != null) {
         throw result.message!; // Didn't work, uh
       } else {
-        Share.sessions.add(session); // Add the session
-        Share.session = session; // Set as the current one
+        var id = Uuid().v4(); // Genereate a new session identifier
+        Share.settings.sessions.sessions.update(id, (s) => session, ifAbsent: () => session);
+        Share.settings.sessions.lastSessionId = id; // Update
+        Share.session = session; // Set as the currently active one
 
+        await Share.settings.save(); // Save our settings now
         await Share.session.refresh(); // Refresh everything
         await Share.session.refreshMessages(); // And messages
 
