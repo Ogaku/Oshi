@@ -59,10 +59,10 @@ class _NewSessionPageState extends State<NewSessionPage> {
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                           fontWeight: FontWeight.w600,
-                                          color: WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-                                                  Brightness.dark
-                                              ? CupertinoColors.white
-                                              : CupertinoColors.black),
+                                          color: CupertinoDynamicColor.resolve(
+                                              CupertinoDynamicColor.withBrightness(
+                                                  color: CupertinoColors.black, darkColor: CupertinoColors.white),
+                                              context)),
                                     ))))
                           ],
                         ),
@@ -76,9 +76,8 @@ class _NewSessionPageState extends State<NewSessionPage> {
         .toList();
 
     return CupertinoPageScaffold(
-        backgroundColor: WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark
-            ? CupertinoColors.systemBackground
-            : CupertinoColors.secondarySystemBackground,
+        backgroundColor: CupertinoDynamicColor.withBrightness(
+            color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 0, 0, 0)),
         child: CustomScrollView(controller: scrollController, slivers: [
           SliverNavigationBar(
             transitionBetweenRoutes: true,
@@ -114,7 +113,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
                               'Choose the e-register system, depending on which one your school uses. You will be able to set up more accounts later.',
                               style: TextStyle(fontSize: 14),
                             ))),
-                    CupertinoListSection.insetGrouped(children: providersList),
+                    CupertinoListSection.insetGrouped(hasLeading: false, children: providersList),
                     Expanded(
                         child: Align(
                             alignment: Alignment.bottomCenter,

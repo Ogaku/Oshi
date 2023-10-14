@@ -2,8 +2,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'package:flutter/cupertino.dart';
-
-import 'package:ogaku/interface/cupertino/views/navigation_bar.dart' show SliverNavigationBar;
+import 'package:ogaku/interface/cupertino/views/searchable_bar.dart';
 
 // Boiler: returned to the app tab builder
 StatefulWidget get messagesPage => MessagesPage();
@@ -16,30 +15,37 @@ class MessagesPage extends StatefulWidget {
 }
 
 class _MessagesPageState extends State<MessagesPage> {
-  final scrollController = ScrollController();
+  final searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      child: CustomScrollView(
-        controller: scrollController,
-        slivers: [
-          SliverNavigationBar(
-            scrollController: scrollController,
-            leading: Icon(CupertinoIcons.person_2),
-            largeTitle: Text('Messages'),
-            trailing: Icon(CupertinoIcons.gear),
-          ),
-          SliverFillRemaining(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [Text('Hey vsauce, MessagesPage here!')],
-            ),
-          )
+    return SearchableSliverNavigationBar(
+      largeTitle: Text('Messages'),
+      searchController: searchController,
+      trailing: Icon(CupertinoIcons.pencil),
+      children: [
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
+        Text('message', style: TextStyle(fontSize: 50),),
         ],
-      ),
     );
   }
 }

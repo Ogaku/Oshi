@@ -30,16 +30,14 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      backgroundColor: WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark
-          ? CupertinoColors.systemBackground
-          : CupertinoColors.secondarySystemBackground,
+      backgroundColor: CupertinoDynamicColor.withBrightness(
+          color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 0, 0, 0)),
       navigationBar: CupertinoNavigationBar(
           transitionBetweenRoutes: false,
           automaticallyImplyLeading: true,
           border: null,
-          backgroundColor: WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark
-              ? CupertinoColors.systemBackground
-              : CupertinoColors.secondarySystemBackground,
+          backgroundColor: CupertinoDynamicColor.withBrightness(
+              color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 0, 0, 0)),
           trailing: CupertinoButton(
               padding: EdgeInsets.all(10),
               child: isWorking

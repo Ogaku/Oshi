@@ -29,7 +29,7 @@ class _BaseAppState extends State<BaseApp> {
           BottomNavigationBarItem(icon: Icon(CupertinoIcons.rosette), label: 'Grades'),
           BottomNavigationBarItem(icon: Icon(CupertinoIcons.calendar), label: 'Timetable'),
           BottomNavigationBarItem(icon: Icon(CupertinoIcons.envelope_fill), label: 'Messages'),
-          BottomNavigationBarItem(icon: Icon(CupertinoIcons.person_crop_circle_badge_checkmark), label: 'Absences'),
+          BottomNavigationBarItem(icon: Icon(CupertinoIcons.person_crop_circle_badge_minus), label: 'Absences'),
         ]),
         tabBuilder: (context, index) => CupertinoTabView(
           builder: (context) => switch (index) {

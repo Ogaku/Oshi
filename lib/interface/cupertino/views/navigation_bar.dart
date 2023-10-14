@@ -12,6 +12,7 @@ class SliverNavigationBar extends StatefulWidget {
   final Color color;
   final Color darkColor;
   final bool? transitionBetweenRoutes;
+  final double threshold;
 
   const SliverNavigationBar(
       {super.key,
@@ -23,6 +24,7 @@ class SliverNavigationBar extends StatefulWidget {
       this.previousPageTitle,
       this.middle,
       this.trailing,
+      this.threshold = 52,
       this.color = Colors.white,
       this.darkColor = Colors.black});
 
@@ -31,18 +33,17 @@ class SliverNavigationBar extends StatefulWidget {
 }
 
 class _NavState extends State<SliverNavigationBar> {
-  final _threshold = 52;
   bool _isCollapsed = false;
 
   @override
   void initState() {
     super.initState();
     widget.scrollController.addListener(() {
-      if (widget.scrollController.offset >= _threshold && !_isCollapsed) {
+      if (widget.scrollController.offset >= widget.threshold && !_isCollapsed) {
         setState(() {
           _isCollapsed = true;
         });
-      } else if (widget.scrollController.offset < _threshold && _isCollapsed) {
+      } else if (widget.scrollController.offset < widget.threshold && _isCollapsed) {
         setState(() {
           _isCollapsed = false;
         });

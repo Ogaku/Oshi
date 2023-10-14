@@ -57,10 +57,11 @@ class _SessionsPageState extends State<SessionsPage> {
                               child: const Text('Delete'),
                             ),
                           ],
+                          // I know there's onTap too, but we need an opaque background
                           child: CupertinoButton(
-                            color: WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark
-                                ? CupertinoColors.secondarySystemBackground
-                                : CupertinoColors.systemBackground,
+                            color: CupertinoDynamicColor.withBrightness(
+                                color: const Color.fromARGB(255, 255, 255, 255),
+                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
                             padding: EdgeInsets.only(left: 20),
                             child: Row(
                               children: [
@@ -91,11 +92,12 @@ class _SessionsPageState extends State<SessionsPage> {
                                                   Share.settings.sessions.sessions[x]!.sessionName,
                                                   overflow: TextOverflow.ellipsis,
                                                   style: TextStyle(
-                                                      fontWeight: FontWeight.w600,
-                                                      color: WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-                                                              Brightness.dark
-                                                          ? CupertinoColors.white
-                                                          : CupertinoColors.black),
+                                                    fontWeight: FontWeight.w600,
+                                                    color: CupertinoDynamicColor.resolve(
+                                                        CupertinoDynamicColor.withBrightness(
+                                                            color: CupertinoColors.black, darkColor: CupertinoColors.white),
+                                                        context),
+                                                  ),
                                                 )))))
                               ],
                             ),
@@ -143,9 +145,8 @@ class _SessionsPageState extends State<SessionsPage> {
 
     return CupertinoApp(
         home: CupertinoPageScaffold(
-            backgroundColor: WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark
-                ? CupertinoColors.systemBackground
-                : CupertinoColors.secondarySystemBackground,
+            backgroundColor: CupertinoDynamicColor.withBrightness(
+                color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 0, 0, 0)),
             child: CustomScrollView(controller: scrollController, slivers: [
               SliverNavigationBar(
                 transitionBetweenRoutes: true,
@@ -186,25 +187,30 @@ class _SessionsPageState extends State<SessionsPage> {
                         Visibility(
                             visible: sessionsList.isNotEmpty,
                             child: CupertinoListSection.insetGrouped(
-                                header: sessionsList.isEmpty ? Text('Sessions') : null, children: sessionsList)),
-                        CupertinoListSection.insetGrouped(margin: EdgeInsets.only(left: 20, right: 20, top: 5), children: [
-                          CupertinoListTile(
-                              padding: EdgeInsets.all(0),
-                              title: Builder(
-                                  builder: (context) => CupertinoButton(
-                                        padding: EdgeInsets.only(left: 20),
-                                        child: Align(
-                                            alignment: Alignment.center,
-                                            child: Container(
-                                              margin: EdgeInsets.all(25),
-                                              child: Icon(CupertinoIcons.add_circled),
-                                            )),
-                                        onPressed: () {
-                                          Navigator.push(
-                                              context, CupertinoPageRoute(builder: (context) => NewSessionPage()));
-                                        },
-                                      )))
-                        ]),
+                                hasLeading: false,
+                                header: sessionsList.isEmpty ? Text('Sessions') : null,
+                                children: sessionsList)),
+                        CupertinoListSection.insetGrouped(
+                            hasLeading: false,
+                            margin: EdgeInsets.only(left: 20, right: 20, top: 5),
+                            children: [
+                              CupertinoListTile(
+                                  padding: EdgeInsets.all(0),
+                                  title: Builder(
+                                      builder: (context) => CupertinoButton(
+                                            padding: EdgeInsets.only(left: 20),
+                                            child: Align(
+                                                alignment: Alignment.center,
+                                                child: Container(
+                                                  margin: EdgeInsets.all(25),
+                                                  child: Icon(CupertinoIcons.add_circled),
+                                                )),
+                                            onPressed: () {
+                                              Navigator.push(
+                                                  context, CupertinoPageRoute(builder: (context) => NewSessionPage()));
+                                            },
+                                          )))
+                            ]),
                         Expanded(
                             child: Align(
                                 alignment: Alignment.bottomCenter,
