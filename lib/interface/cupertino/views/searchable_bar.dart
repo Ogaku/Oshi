@@ -98,7 +98,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                   margin: const EdgeInsets.only(top: 5),
                   height: isVisibleSearchBar,
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 15, top: 3),
+                    padding: const EdgeInsets.only(left: 5, right: 20, top: 3),
                     child: CupertinoSearchTextField(
                       onChanged: widget.onChanged,
                       placeholderStyle: TextStyle(

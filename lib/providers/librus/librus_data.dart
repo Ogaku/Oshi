@@ -528,7 +528,7 @@ class LibrusDataReader implements models.IProvider {
                 readDate: x.readDate,
                 sender: teachersShim.users!
                     .firstWhereOrDefault((user) => user.nameInv == x.senderName, defaultValue: null)
-                    ?.asTeacher(),
+                    ?.asTeacher() ?? models.Teacher(firstName: x.senderName),
                 moveMessageToTrash: (parent) async => await data!.librusApi!.messagesDelete('messages/${parent.id}'),
                 fetchMessageContent: (parent) async {
                   // Get the actual underlying message
