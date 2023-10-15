@@ -56,6 +56,12 @@ class _NavState extends State<SliverNavigationBar> {
     final isDark = CupertinoTheme.maybeBrightnessOf(context) == Brightness.dark;
 
     return CupertinoSliverNavigationBar(
+      backgroundColor: _isCollapsed
+          ? isDark
+              ? const Color.fromRGBO(45, 45, 45, 0.5)
+              : Colors.white.withOpacity(0.5)
+          : const CupertinoDynamicColor.withBrightness(
+              color: Color.fromARGB(255, 242, 242, 247), darkColor: Color.fromARGB(255, 0, 0, 0)),
       transitionBetweenRoutes: widget.transitionBetweenRoutes ?? true,
       largeTitle: widget.largeTitle,
       leading: widget.leading,
@@ -64,19 +70,10 @@ class _NavState extends State<SliverNavigationBar> {
       previousPageTitle: widget.previousPageTitle,
       middle: widget.middle,
       stretch: true,
-      backgroundColor: _isCollapsed
-          ? isDark
-              ? const Color.fromRGBO(45, 45, 45, 0.5)
-              : Colors.white.withOpacity(0.5)
-          : const SpecialColor(),
       border: Border(
         bottom: BorderSide(
-          color: _isCollapsed
-              ? isDark
-                  ? Colors.white.withOpacity(0.5)
-                  : Colors.black.withOpacity(0.5)
-              : const SpecialColor(),
-          width: 0.0, // 0.0 means one physical pixel
+          color: _isCollapsed ? Color(0x4D000000) : Color(0x00000000),
+          width: 0.0,
         ),
       ),
     );

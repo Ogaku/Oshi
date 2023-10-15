@@ -48,54 +48,71 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
           // Bindable messages layout
           : gradesToDisplay
               .select((x, index) => CupertinoListTile(
-                  title: Container(
-                      padding: EdgeInsets.only(top: 15, bottom: 15),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                                padding: EdgeInsets.only(bottom: 5),
-                                child: Text(
-                                  x.value,
-                                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
-                                )),
-                            Expanded(
-                                flex: 2,
-                                child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      Opacity(
-                                          opacity: x.name.isNotEmpty ? 1.0 : 0.5,
-                                          child: Text(
-                                            x.name.isNotEmpty ? x.name.capitalize() : 'No description',
-                                            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                          )),
-                                      Visibility(
-                                          visible: x.commentsString.isNotEmpty,
-                                          child: Opacity(
+                  padding: EdgeInsets.all(0),
+                  title: CupertinoContextMenu(
+                      actions: [
+                        CupertinoContextMenuAction(
+                          onPressed: () {},
+                          isDestructiveAction: true,
+                          trailingIcon: CupertinoIcons.delete,
+                          child: const Text('Delete'),
+                        ),
+                      ],
+                      child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                              color: CupertinoDynamicColor.resolve(
+                                  CupertinoDynamicColor.withBrightness(
+                                      color: const Color.fromARGB(255, 255, 255, 255),
+                                      darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                                  context)),
+                          padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                    padding: EdgeInsets.only(bottom: 5),
+                                    child: Text(
+                                      x.value,
+                                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
+                                    )),
+                                Expanded(
+                                    flex: 0,
+                                    child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: [
+                                          Opacity(
+                                              opacity: x.name.isNotEmpty ? 1.0 : 0.5,
+                                              child: Text(
+                                                x.name.isNotEmpty ? x.name.capitalize() : 'No description',
+                                                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                              )),
+                                          Visibility(
+                                              visible: x.commentsString.isNotEmpty,
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Container(
+                                                      margin: EdgeInsets.only(left: 35, top: 4),
+                                                      child: Text(
+                                                        x.commentsString,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        maxLines: 2,
+                                                        textAlign: TextAlign.end,
+                                                        style: TextStyle(fontSize: 16),
+                                                      )))),
+                                          Opacity(
                                               opacity: 0.5,
                                               child: Container(
-                                                  margin: EdgeInsets.only(left: 35, top: 4),
+                                                  margin: EdgeInsets.only(top: 4),
                                                   child: Text(
-                                                    x.commentsString,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    maxLines: 2,
-                                                    textAlign: TextAlign.end,
+                                                    x.detailsDateString,
                                                     style: TextStyle(fontSize: 16),
-                                                  )))),
-                                      Opacity(
-                                          opacity: 0.5,
-                                          child: Container(
-                                              margin: EdgeInsets.only(top: 4),
-                                              child: Text(
-                                                x.detailsDateString,
-                                                style: TextStyle(fontSize: 16),
-                                              ))),
-                                    ]))
-                          ]))))
+                                                  ))),
+                                        ]))
+                              ])))))
               .toList(),
     );
 
