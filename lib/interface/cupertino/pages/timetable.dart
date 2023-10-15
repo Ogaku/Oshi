@@ -1,11 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
-import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
-
-import 'package:ogaku/interface/cupertino/views/navigation_bar.dart' show SliverNavigationBar;
+import 'package:ogaku/interface/cupertino/widgets/navigation_bar.dart' show SliverNavigationBar;
 
 // Boiler: returned to the app tab builder
 StatefulWidget get timetablePage => TimetablePage();

@@ -3,7 +3,7 @@
 
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:ogaku/interface/cupertino/views/searchable_bar.dart';
+import 'package:ogaku/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:ogaku/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 

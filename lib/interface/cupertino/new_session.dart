@@ -7,7 +7,7 @@ import 'package:ogaku/share/share.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import 'package:ogaku/interface/cupertino/session_login.dart' show LoginPage;
-import 'package:ogaku/interface/cupertino/views/navigation_bar.dart' show SliverNavigationBar;
+import 'package:ogaku/interface/cupertino/widgets/navigation_bar.dart' show SliverNavigationBar;
 import 'package:url_launcher/url_launcher_string.dart';
 
 // Boiler: returned to the main application

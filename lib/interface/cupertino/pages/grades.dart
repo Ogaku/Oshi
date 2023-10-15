@@ -3,7 +3,8 @@
 
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:ogaku/interface/cupertino/views/searchable_bar.dart';
+import 'package:ogaku/interface/cupertino/views/grades_detailed.dart';
+import 'package:ogaku/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:ogaku/share/share.dart';
 
 // Boiler: returned to the app tab builder
@@ -28,7 +29,7 @@ class _GradesPageState extends State<GradesPage> {
             x.teacher.name.contains(RegExp(searchQuery, caseSensitive: false)))
         .toList();
 
-    var messagesWidget = CupertinoListSection.insetGrouped(
+    var subjectsWidget = CupertinoListSection.insetGrouped(
       margin: EdgeInsets.only(left: 20, right: 20, bottom: 10),
       additionalDividerMargin: 5,
       children: subjectsToDisplay.isEmpty
@@ -46,28 +47,35 @@ class _GradesPageState extends State<GradesPage> {
             ]
           // Bindable messages layout
           : subjectsToDisplay
-              .select((x, index) => CupertinoListTile(
-                  trailing: Container(margin: EdgeInsets.only(left: 3), child: CupertinoListTileChevron()),
-                  title: Container(
-                      padding: EdgeInsets.only(top: 15, bottom: 15),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Text(
-                              x.name,
-                              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                            ),
-                            Opacity(
-                                opacity: 0.5,
-                                child: Container(
-                                    margin: EdgeInsets.only(top: 5),
-                                    child: Text(
-                                      x.teacher.name,
-                                      style: TextStyle(fontSize: 16),
-                                    ))),
-                          ]))))
+              .select((x, index) => Builder(
+                  builder: (context) => CupertinoListTile(
+                      onTap: () => Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (context) => GradesDetailedPage(
+                                    lesson: x,
+                                  ))),
+                      trailing: Container(margin: EdgeInsets.only(left: 3), child: CupertinoListTileChevron()),
+                      title: Container(
+                          padding: EdgeInsets.only(top: 15, bottom: 15),
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Text(
+                                  x.name,
+                                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                ),
+                                Opacity(
+                                    opacity: 0.5,
+                                    child: Container(
+                                        margin: EdgeInsets.only(top: 5),
+                                        child: Text(
+                                          x.teacher.name,
+                                          style: TextStyle(fontSize: 16),
+                                        ))),
+                              ])))))
               .toList(),
     );
 
@@ -75,7 +83,7 @@ class _GradesPageState extends State<GradesPage> {
       largeTitle: Text('Grades'),
       searchController: searchController,
       onChanged: (s) => setState(() => searchQuery = s),
-      children: [messagesWidget],
+      children: [subjectsWidget],
     );
   }
 }

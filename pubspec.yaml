@@ -27,6 +27,7 @@ dependencies:
   hive_generator: ^2.0.1
   hive_flutter: ^1.1.0
   pull_down_button: ^0.9.3
+  dynamic_color: ^1.6.7
 
 dev_dependencies:
   flutter_test:

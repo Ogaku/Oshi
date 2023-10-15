@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ogaku/interface/cupertino/views/navigation_bar.dart';
+import 'package:ogaku/interface/cupertino/widgets/navigation_bar.dart';
 
 class SearchableSliverNavigationBar extends StatefulWidget {
   final Widget? largeTitle;

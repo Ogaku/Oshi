@@ -184,7 +184,7 @@ class LibrusDataReader implements models.IProvider {
             .select((x, index) {
           var lessonData = subjectsShim.subjects!.firstWhere((y) => y.id == x.subject!.id);
           return models.Lesson(
-            id: x.id,
+            id: x.subject!.id,
             url: x.subject!.url,
             name: lessonData.name,
             no: lessonData.no,
@@ -460,7 +460,7 @@ class LibrusDataReader implements models.IProvider {
     // Push all grades to their respective subjects within our student object
     Grades.fromJson(await data!.librusApi!.request('Grades')).grades?.forEach((x) {
       var category = gradeCategoriesShim.categories?.firstWhere((y) => y.id == x.category?.id);
-      var subject = student.subjects.firstWhereOrDefault((lesson) => lesson.id == x.lesson?.id, defaultValue: null);
+      var subject = student.subjects.firstWhereOrDefault((y) => y.id == x.subject?.id, defaultValue: null);
       subject?.grades.add(models.Grade(
           id: x.id,
           url: '',
