@@ -1,5 +1,6 @@
 import 'package:event/src/event.dart';
 import 'package:event/src/eventargs.dart';
+import 'package:ogaku/models/data/messages.dart';
 import 'package:ogaku/models/data/student.dart';
 import 'package:ogaku/models/data/teacher.dart';
 import 'package:ogaku/models/progress.dart';
@@ -10,7 +11,7 @@ class FakeDataReader implements IProvider {
   Event<Value<String>> propertyChanged = Event<Value<String>>();
 
   @override
-  Future<({Exception? message, bool success})> login({String? username, String? password}) async {
+  Future<({Exception? message, bool success})> login({Map<String, String>? credentials}) async {
     return (success: true, message: null);
   }
 
@@ -44,4 +45,18 @@ class FakeDataReader implements IProvider {
 
   @override
   ProviderData? get registerData => ProviderData(student: Student(account: Account(firstName: 'John', lastName: 'Doe')));
+
+  @override
+  Map<String, ({String name, bool obscure})> get credentialsConfig => {};
+
+  @override
+  Future<({Exception? message, Message? result, bool success})> fetchMessageContent(
+      {required Message parent, required bool byMe}) async {
+    return (success: true, message: null, result: null);
+  }
+
+  @override
+  Future<({Exception? message, bool success})> moveMessageToTrash({required Message parent, required bool byMe}) async {
+    return (success: true, message: null);
+  }
 }

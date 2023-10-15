@@ -55,24 +55,22 @@ class SessionAdapter extends TypeAdapter<Session> {
     };
     return Session(
       sessionName: fields[1] as String,
-      sessionUsername: fields[2] as String,
-      sessionPassword: fields[3] as String,
       providerGuid: fields[5] as String,
-    )..data = fields[4] as ProviderData;
+    )
+      ..sessionCredentials = (fields[2] as Map).cast<String, String>()
+      ..data = fields[4] as ProviderData;
   }
 
   @override
   void write(BinaryWriter writer, Session obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(4)
       ..writeByte(1)
       ..write(obj.sessionName)
       ..writeByte(5)
       ..write(obj.providerGuid)
       ..writeByte(2)
-      ..write(obj.sessionUsername)
-      ..writeByte(3)
-      ..write(obj.sessionPassword)
+      ..write(obj.sessionCredentials)
       ..writeByte(4)
       ..write(obj.data);
   }
@@ -116,16 +114,16 @@ Map<String, dynamic> _$SessionsDataToJson(SessionsData instance) {
 
 Session _$SessionFromJson(Map<String, dynamic> json) => Session(
       sessionName: json['sessionName'] as String? ?? 'John Doe',
-      sessionUsername: json['sessionUsername'] as String? ?? '',
-      sessionPassword: json['sessionPassword'] as String? ?? '',
       providerGuid: json['providerGuid'] as String? ??
           'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER',
-    )..data = ProviderData.fromJson(json['data'] as Map<String, dynamic>);
+    )
+      ..sessionCredentials =
+          Map<String, String>.from(json['sessionCredentials'] as Map)
+      ..data = ProviderData.fromJson(json['data'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$SessionToJson(Session instance) => <String, dynamic>{
       'sessionName': instance.sessionName,
       'providerGuid': instance.providerGuid,
-      'sessionUsername': instance.sessionUsername,
-      'sessionPassword': instance.sessionPassword,
+      'sessionCredentials': instance.sessionCredentials,
       'data': instance.data,
     };

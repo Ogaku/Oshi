@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,39 +24,51 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController loginController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  Map<String, TextEditingController>? credentialControllers;
   bool isWorking = false; // Logging in right now?
 
   @override
   Widget build(BuildContext context) {
+    // Generate a map of credential controllers for the login page
+    credentialControllers ??= widget.instance.credentialsConfig.keys.toMap((x) => MapEntry(x, TextEditingController()));
+
+    var credentialEntries = widget.instance.credentialsConfig.entries
+        .select((x, index) => CupertinoFormRow(
+            prefix: SizedBox(width: 90, child: Text(x.value.name)),
+            child: CupertinoTextFormFieldRow(
+              placeholder: 'Required',
+              obscureText: x.value.obscure,
+              controller: credentialControllers![x.key],
+              onChanged: (s) => setState(() {}),
+            )))
+        .toList();
+
     return CupertinoPageScaffold(
-      backgroundColor: CupertinoDynamicColor.withBrightness(
-          color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 0, 0, 0)),
       navigationBar: CupertinoNavigationBar(
           transitionBetweenRoutes: false,
           automaticallyImplyLeading: true,
           border: null,
           backgroundColor: CupertinoDynamicColor.withBrightness(
-              color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 0, 0, 0)),
+              color: const Color.fromARGB(255, 255, 255, 255), darkColor: const Color.fromARGB(255, 28, 28, 30)),
           trailing: CupertinoButton(
               padding: EdgeInsets.all(10),
               child: isWorking
                   ? CupertinoActivityIndicator()
                   : Text('Next',
                       style: TextStyle(
-                          color: (loginController.text.isNotEmpty && passwordController.text.isNotEmpty)
+                          color: (credentialControllers!.values.every((x) => x.text.isNotEmpty))
                               ? CupertinoColors.systemBlue
                               : CupertinoColors.inactiveGray)),
               onPressed: () async {
                 if (isWorking) return; // Already handling something, give up
-                if (loginController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+                if (credentialControllers!.values.every((x) => x.text.isNotEmpty)) {
                   setState(() {
                     // Mark as working, the 1st refresh is gonna take a while
                     isWorking = true;
                   });
                   if (!await tryLogin(
-                      guid: widget.providerGuid, login: loginController.text, pass: passwordController.text)) {
+                      guid: widget.providerGuid,
+                      credentials: credentialControllers!.entries.toMap((x) => MapEntry(x.key, x.value.text)))) {
                     setState(() {
                       // Reset the animation in case the login method hasn't finished
                       isWorking = false;
@@ -78,23 +91,9 @@ class _LoginPageState extends State<LoginPage> {
                             'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg'))),
             Container(
                 margin: EdgeInsets.only(top: 50),
-                child: CupertinoFormSection.insetGrouped(children: [
-                  CupertinoFormRow(
-                      prefix: SizedBox(width: 90, child: Text('Username')),
-                      child: CupertinoTextFormFieldRow(
-                        placeholder: 'Required',
-                        controller: loginController,
-                        onChanged: (s) => setState(() {}),
-                      )),
-                  CupertinoFormRow(
-                      prefix: SizedBox(width: 90, child: Text('Password')),
-                      child: CupertinoTextFormFieldRow(
-                        obscureText: true,
-                        placeholder: 'Required',
-                        controller: passwordController,
-                        onChanged: (s) => setState(() {}),
-                      ))
-                ])),
+                child: credentialEntries.isNotEmpty
+                    ? CupertinoFormSection.insetGrouped(children: credentialEntries)
+                    : Opacity(opacity: 0.5, child: Text('No additional data required'))),
             Opacity(
                 opacity: 0.7,
                 child: Container(
@@ -117,11 +116,11 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<bool> tryLogin({required String login, required String pass, required String guid}) async {
+  Future<bool> tryLogin({required Map<String, String> credentials, required String guid}) async {
     try {
       // Create a new session: ID/name/provider are automatic
       var session = Session(providerGuid: guid);
-      var result = await session.login(username: login, password: pass);
+      var result = await session.login(credentials: credentials);
 
       if (!result.success && result.message != null) {
         throw result.message!; // Didn't work, uh

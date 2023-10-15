@@ -44,6 +44,8 @@ class Settings {
       sessions = (await Hive.openBox('sessions')).get('sessions', defaultValue: SessionsData());
     } on Exception catch (ex) {
       return (success: false, message: ex);
+    } catch (ex) {
+      return (success: false, message: Exception(ex));
     }
     return (success: true, message: null);
   }
@@ -54,6 +56,8 @@ class Settings {
       (await Hive.openBox('sessions')).put('sessions', sessions);
     } on Exception catch (ex) {
       return (success: false, message: ex);
+    } catch (ex) {
+      return (success: false, message: Exception(ex));
     }
     return (success: true, message: null);
   }
@@ -64,6 +68,8 @@ class Settings {
       (await Hive.openBox('sessions')).clear();
     } on Exception catch (ex) {
       return (success: false, message: ex);
+    } catch (ex) {
+      return (success: false, message: Exception(ex));
     }
     return (success: true, message: null);
   }
@@ -101,11 +107,11 @@ class SessionsData extends HiveObject {
 class Session extends HiveObject {
   Session(
       {this.sessionName = 'John Doe',
-      this.sessionUsername = '',
-      this.sessionPassword = '',
       this.providerGuid = 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER',
+      Map<String, String>? credentials,
       IProvider? provider})
       : provider = provider ?? Share.providers[providerGuid]!.factory(),
+        sessionCredentials = credentials ?? {},
         data = ProviderData();
 
   // Internal 'pretty' name
@@ -115,12 +121,9 @@ class Session extends HiveObject {
   @HiveField(5)
   String providerGuid;
 
-  // Persistent login and pass
+  // Persistent login, pass, etc
   @HiveField(2)
-  String sessionUsername;
-
-  @HiveField(3)
-  String sessionPassword;
+  Map<String, String> sessionCredentials;
 
   // Downlaoded data
   @HiveField(4)
@@ -130,11 +133,9 @@ class Session extends HiveObject {
   IProvider provider;
 
   // Login and reset methods for early setup - implement as async
-  Future<({bool success, Exception? message})> login({String? username, String? password}) async {
-    if (username?.isNotEmpty ?? false) sessionUsername = username ?? '';
-    if (password?.isNotEmpty ?? false) sessionPassword = password ?? '';
-
-    return await provider.login(username: username ?? sessionUsername, password: password ?? sessionPassword);
+  Future<({bool success, Exception? message})> login({Map<String, String>? credentials}) async {
+    if (credentials?.isNotEmpty ?? false) sessionCredentials = credentials ?? {};
+    return await provider.login(credentials: credentials ?? sessionCredentials);
   }
 
   // Login and refresh methods for runtime - implement as async

@@ -5,7 +5,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:ogaku/models/data/teacher.dart' show Teacher;
 import 'package:ogaku/models/data/student.dart' show Student;
 import 'package:ogaku/models/data/timetables.dart' show Timetables;
-import 'package:ogaku/models/data/messages.dart' show Messages;
+import 'package:ogaku/models/data/messages.dart' show Messages, Message;
 import 'package:ogaku/models/progress.dart' show IProgress;
 
 import 'package:hive/hive.dart';
@@ -14,6 +14,11 @@ part 'provider.g.dart';
 abstract class IProvider {
   // All the accessible data - provided as models
   ProviderData? get registerData;
+
+  // Login, password, etc configuration
+  // Maps KEY (data) to <(field name), (obscure?)?
+  // Passed to login(...) as <KEY, value>
+  Map<String, ({String name, bool obscure})> get credentialsConfig;
 
   // Provider's header - distinct data
   String get providerName;
@@ -25,7 +30,8 @@ abstract class IProvider {
   Event<Value<String>> propertyChanged = Event<Value<String>>();
 
   // Login and reset methods for early setup - implement as async
-  Future<({bool success, Exception? message})> login({String? username, String? password});
+  // Credentials are passed from credentialsConfig - make sure it's set up
+  Future<({bool success, Exception? message})> login({Map<String, String>? credentials});
 
   // Login and refresh methods for runtime - implement as async
   // For null 'weekStart' - get (only) the current week's data
@@ -42,6 +48,13 @@ abstract class IProvider {
   // Don't encode the strings, the provider will need to take care of that
   Future<({bool success, Exception? message})> sendMessage(
       {required List<Teacher> receivers, required String topic, required String content});
+
+  // Fetch the actual content, sender details, and mark as read
+  Future<({bool success, Exception? message, Message? result})> fetchMessageContent(
+      {required Message parent, required bool byMe});
+
+  // Move the message to trash
+  Future<({bool success, Exception? message})> moveMessageToTrash({required Message parent, required bool byMe});
 }
 
 @HiveType(typeId: 10)

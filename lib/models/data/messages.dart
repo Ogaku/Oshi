@@ -21,9 +21,7 @@ class Message extends HiveObject {
     DateTime? sendDate,
     this.readDate,
     this.attachments,
-    this.receivers,
-    this.fetchMessageContent,
-    this.moveMessageToTrash,
+    this.receivers
   }) : sendDate = sendDate ?? DateTime(2000);
 
   
@@ -60,14 +58,6 @@ class Message extends HiveObject {
   // For messages sent by the student - otherwise null
   @HiveField(11)
   List<Teacher>? receivers;
-
-  // Fetch the actual content, sender details
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  Future Function(Message)? fetchMessageContent;
-
-  // Move the message to trash
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  Future Function(Message)? moveMessageToTrash;
 
   bool get read => readDate == null || readDate!.isAfter(DateTime.now());
 

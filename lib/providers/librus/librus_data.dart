@@ -59,8 +59,12 @@ class LibrusDataReader implements models.IProvider {
   SynergiaData? data;
 
   @override
-  Future<({Exception? message, bool success})> login({String? username, String? password}) async {
+  Future<({Exception? message, bool success})> login({Map<String, String>? credentials}) async {
     data = SynergiaData(); // Reset
+
+    // Grab our credentials from the map
+    var username = credentials?['login'];
+    var password = credentials?['pass'];
 
     // Instantiate a portal login
     data?.synergiaLogin = LibrusLogin(synergiaData: data, login: username, pass: password);
@@ -527,35 +531,9 @@ class LibrusDataReader implements models.IProvider {
                 sendDate: x.sendDate ?? DateTime.now(),
                 readDate: x.readDate,
                 sender: teachersShim.users!
-                    .firstWhereOrDefault((user) => user.nameInv == x.senderName, defaultValue: null)
-                    ?.asTeacher() ?? models.Teacher(firstName: x.senderName),
-                moveMessageToTrash: (parent) async => await data!.librusApi!.messagesDelete('messages/${parent.id}'),
-                fetchMessageContent: (parent) async {
-                  // Get the actual underlying message
-                  var message = InboxMessage.fromJson(await data!.librusApi!.messagesRequest('inbox/messages/${parent.id}'));
-
-                  parent.sendDate = message.data?.sendDate ?? DateTime.now();
-                  parent.readDate = message.data?.readDate ?? DateTime.now();
-
-                  parent.topic = message.data?.topic ?? 'No topic';
-                  parent.content = utf8.decode(base64.decode(message.data?.message ?? ''));
-                  parent.sender = teachersShim.users!
-                      .firstWhereOrDefault((user) => user.userId == int.tryParse(message.data?.senderId ?? ''),
-                          defaultValue: null)
-                      ?.asTeacher();
-
-                  parent.attachments = (await message.data?.attachments
-                          ?.select((y, index) async => (
-                                name: y.filename,
-                                location: (await data!.librusApi!
-                                                .messagesRequest('attachments/${y.id}/messages/${parent.id}'))['data']
-                                            ?['downloadLink']
-                                        ?.toString() ??
-                                    "https://youtu.be/dQw4w9WgXcQ?si=2wQpMrQoFsQbQoKk"
-                              ))
-                          .awaitAll())
-                      ?.toList();
-                }))
+                        .firstWhereOrDefault((user) => user.nameInv == x.senderName, defaultValue: null)
+                        ?.asTeacher() ??
+                    models.Teacher(firstName: x.senderName)))
             .toList() ??
         [];
 
@@ -569,24 +547,7 @@ class LibrusDataReader implements models.IProvider {
                 sendDate: x.sendDate ?? DateTime.now(),
                 preview: utf8.decode(base64.decode(x.content)),
                 hasAttachments: false,
-                receivers: [models.Teacher(firstName: x.receiverName)],
-                moveMessageToTrash: (parent) async => await data!.librusApi!.messagesDelete('messages/${parent.id}'),
-                fetchMessageContent: (parent) async {
-                  // Get the actual underlying message
-                  var message =
-                      OutboxMessage.fromJson(await data!.librusApi!.messagesRequest('outbox/messages/${parent.id}'));
-
-                  parent.sendDate = message.data?.sendDate ?? DateTime.now();
-                  parent.readDate = message.data?.readDate ?? DateTime.now();
-
-                  parent.topic = message.data?.topic ?? 'No topic';
-                  parent.content = utf8.decode(base64.decode(message.data?.message ?? ''));
-
-                  parent.receivers = message.data?.receivers
-                      ?.select((y, index) =>
-                          teachersShim.users!.firstWhere((user) => user.userId == int.tryParse(y.receiverId)).asTeacher())
-                      .toList();
-                }))
+                receivers: [models.Teacher(firstName: x.receiverName)]))
             .toList() ??
         [];
 
@@ -634,6 +595,83 @@ class LibrusDataReader implements models.IProvider {
 
   @override
   Uri? get providerBannerUri => Uri.parse('https://api.librus.pl/OAuth/images/synergia-logo.png');
+
+  @override
+  Map<String, ({String name, bool obscure})> get credentialsConfig =>
+      {'login': (name: 'Username', obscure: false), 'pass': (name: 'Password', obscure: true)};
+
+  @override
+  Future<({Exception? message, Message? result, bool success})> fetchMessageContent(
+      {required Message parent, required bool byMe}) async {
+    try {
+      // Cache other data to access it faster (the API is shit and splits everything)
+      var teachersShim = Users.fromJson(await data!.librusApi!.request("Users"));
+      var result = parent; // Cache the message for overwriting
+
+      try {
+        var messagesUsers =
+            MessagesUsers.fromJson(await data!.librusApi!.messagesRequest("receivers/groups/school-employees"));
+
+        teachersShim.users
+            ?.where((user) => messagesUsers.receivers?.any((receiver) => receiver.userIdInt == user.id) ?? false)
+            .forEach((user) {
+          user.userId = messagesUsers.receivers!.firstWhere((receiver) => receiver.userIdInt == user.id).accountIdInt;
+        });
+      } catch (ex) {
+        // ignored
+      }
+
+      if (!byMe) {
+        // Get the actual underlying message
+        var message = InboxMessage.fromJson(await data!.librusApi!.messagesRequest('inbox/messages/${parent.id}'));
+
+        result.sendDate = message.data?.sendDate ?? DateTime.now();
+        result.readDate = message.data?.readDate ?? DateTime.now();
+
+        result.topic = message.data?.topic ?? 'No topic';
+        result.content = utf8.decode(base64.decode(message.data?.message ?? ''));
+
+        result.sender = teachersShim.users!
+            .firstWhereOrDefault((user) => user.userId == int.tryParse(message.data?.senderId ?? ''), defaultValue: null)
+            ?.asTeacher();
+
+        result.attachments = (await message.data?.attachments
+                ?.select((y, index) async => (
+                      name: y.filename,
+                      location: (await data!.librusApi!.messagesRequest('attachments/${y.id}/messages/${parent.id}'))['data']
+                                  ?['downloadLink']
+                              ?.toString() ??
+                          "https://youtu.be/dQw4w9WgXcQ?si=2wQpMrQoFsQbQoKk"
+                    ))
+                .awaitAll())
+            ?.toList();
+      } else {
+        // Get the actual underlying message
+        var message = OutboxMessage.fromJson(await data!.librusApi!.messagesRequest('outbox/messages/${parent.id}'));
+
+        result.sendDate = message.data?.sendDate ?? DateTime.now();
+        result.readDate = message.data?.readDate ?? DateTime.now();
+
+        result.topic = message.data?.topic ?? 'No topic';
+        result.content = utf8.decode(base64.decode(message.data?.message ?? ''));
+
+        result.receivers = message.data?.receivers
+            ?.select((y, index) =>
+                teachersShim.users!.firstWhere((user) => user.userId == int.tryParse(y.receiverId)).asTeacher())
+            .toList();
+      }
+
+      return (success: true, message: null, result: result);
+    } on Exception catch (ex) {
+      return (success: false, message: ex, result: null);
+    }
+  }
+
+  @override
+  Future<({Exception? message, bool success})> moveMessageToTrash({required Message parent, required bool byMe}) async {
+    await data!.librusApi!.messagesDelete('messages/${parent.id}');
+    return (success: true, message: null);
+  }
 }
 
 extension UserExtension on User {
