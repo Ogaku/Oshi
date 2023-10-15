@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 
 import 'package:ogaku/interface/cupertino/views/navigation_bar.dart' show SliverNavigationBar;
@@ -22,12 +24,15 @@ class _TimetablePageState extends State<TimetablePage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       child: CustomScrollView(
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
         controller: scrollController,
         slivers: [
           SliverNavigationBar(
             scrollController: scrollController,
             leading: Icon(CupertinoIcons.person_2),
-            largeTitle: Text('Timetable'),
+            largeTitle: Text('Absences'),
             trailing: Icon(CupertinoIcons.gear),
           ),
           SliverFillRemaining(

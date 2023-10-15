@@ -5,6 +5,7 @@ import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:ogaku/interface/cupertino/views/searchable_bar.dart';
 import 'package:ogaku/share/share.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 
 // Boiler: returned to the app tab builder
 StatefulWidget get messagesPage => MessagesPage();
@@ -69,7 +70,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                           margin: EdgeInsets.only(right: 10),
                                           child: Text(
                                             x.senderName,
-                                            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+                                            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                                           ))),
                                   Opacity(
                                       opacity: 0.5,
@@ -102,16 +103,31 @@ class _MessagesPageState extends State<MessagesPage> {
       largeTitle: Text('Messages'),
       searchController: searchController,
       onChanged: (s) => setState(() => searchQuery = s),
-      trailing: Row(mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.center, children: [
-        GestureDetector(
-            onTap: () => setState(() => showInbox = !showInbox),
-            child: Transform.scale(
-                scale: 0.8, child: Icon(showInbox ? CupertinoIcons.tray_arrow_down : CupertinoIcons.tray_arrow_up_fill))),
-        GestureDetector(
-            onTap: () => {},
-            child: Transform.scale(
-                scale: 0.9, child: Container(margin: EdgeInsets.only(left: 5), child: Icon(CupertinoIcons.pencil))))
-      ]),
+      trailing: PullDownButton(
+        itemBuilder: (context) => [
+          PullDownMenuItem(
+            title: 'New',
+            icon: CupertinoIcons.add,
+            onTap: () {},
+          ),
+          PullDownMenuDivider.large(),
+          PullDownMenuTitle(title: Text('Folders')),
+          PullDownMenuItem(
+            title: 'Received',
+            icon: showInbox ? CupertinoIcons.tray_fill : CupertinoIcons.tray,
+            onTap: () => setState(() => showInbox = true),
+          ),
+          PullDownMenuItem(
+            title: 'Sent',
+            icon: showInbox ? CupertinoIcons.paperplane : CupertinoIcons.paperplane_fill,
+            onTap: () => setState(() => showInbox = false),
+          )
+        ],
+        buttonBuilder: (context, showMenu) => GestureDetector(
+          onTap: showMenu,
+          child: const Icon(CupertinoIcons.ellipsis_circle),
+        ),
+      ),
       children: [messagesWidget],
     );
   }

@@ -107,6 +107,11 @@ class LibrusDataReader implements models.IProvider {
     var classesShim = VirtualClasses.fromJson(await data!.librusApi!.request("VirtualClasses"));
     var homeworkCatgShim = HomeworkCategories.fromJson(await data!.librusApi!.request("HomeWorkAssignments/Categories"));
 
+    var timetableShim = weekStart != null
+        ? Timetables.fromJson(await data!.librusApi!.request(
+            "Timetables?weekStart=${DateFormat('y-M-d').format(weekStart.subtract(Duration(days: weekStart.weekday - 1)))}"))
+        : Timetables.fromJson(await data!.librusApi!.request('Timetables'));
+
 //#endregion
 
     progress?.report((progress: 0.1, message: "Checking how many lessons you've skipped..."));
@@ -167,9 +172,17 @@ class LibrusDataReader implements models.IProvider {
         mainClass: mainStudentClass,
         virtualClasses: classesShim.virtualClasses?.select((element, index) => element.asClass(mainStudentClass)).toList(),
         attendances: attendance?.toList(),
-        subjects: lessonsShim.lessons!.where((x) => x.lessonClass != null).select((x, index) {
+        subjects: lessonsShim.lessons!
+            .groupBy((x) => x.subject?.id)
+            .where((x) => x.key != null)
+            .select((x, index) =>
+                x.firstWhereOrDefault(
+                    (y) => timetableShim.timetable.values
+                        .any((z) => z.any((w) => w?.any((a) => a.teacher?.id == y.teacher?.id.toString()) ?? false)),
+                    defaultValue: x.first) ??
+                x.first)
+            .select((x, index) {
           var lessonData = subjectsShim.subjects!.firstWhere((y) => y.id == x.subject!.id);
-
           return models.Lesson(
             id: x.id,
             url: x.subject!.url,
@@ -210,11 +223,6 @@ class LibrusDataReader implements models.IProvider {
 //#region Timetable
 
     // Timetable - the timetable, including classrooms, teacher names, subjects
-    var timetableShim = weekStart != null
-        ? Timetables.fromJson(await data!.librusApi!.request(
-            "Timetables?weekStart=${DateFormat('y-M-d').format(weekStart.subtract(Duration(days: weekStart.weekday - 1)))}"))
-        : Timetables.fromJson(await data!.librusApi!.request('Timetables'));
-
     var timetable = models.Timetables(
         timetable: timetableShim.timetable.map((key, value) => MapEntry(
             DateTime.parse(key),
