@@ -49,78 +49,269 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
           : gradesToDisplay
               .select((x, index) => CupertinoListTile(
                   padding: EdgeInsets.all(0),
-                  title: CupertinoContextMenu(
+                  title: CupertinoContextMenu.builder(
                       actions: [
                         CupertinoContextMenuAction(
                           onPressed: () {},
+                          trailingIcon: CupertinoIcons.share,
+                          child: const Text('Share'),
+                        ),
+                        CupertinoContextMenuAction(
+                          onPressed: () {},
                           isDestructiveAction: true,
-                          trailingIcon: CupertinoIcons.delete,
-                          child: const Text('Delete'),
+                          trailingIcon: CupertinoIcons.chat_bubble_2,
+                          child: const Text('Inquiry'),
                         ),
                       ],
-                      child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                              color: CupertinoDynamicColor.resolve(
-                                  CupertinoDynamicColor.withBrightness(
-                                      color: const Color.fromARGB(255, 255, 255, 255),
-                                      darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                                  context)),
-                          padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                    padding: EdgeInsets.only(bottom: 5),
-                                    child: Text(
-                                      x.value,
-                                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
-                                    )),
-                                Expanded(
-                                    flex: 0,
-                                    child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.end,
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                          Opacity(
-                                              opacity: x.name.isNotEmpty ? 1.0 : 0.5,
-                                              child: Text(
-                                                x.name.isNotEmpty ? x.name.capitalize() : 'No description',
-                                                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                              )),
-                                          Visibility(
-                                              visible: x.commentsString.isNotEmpty,
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Container(
-                                                      margin: EdgeInsets.only(left: 35, top: 4),
-                                                      child: Text(
-                                                        x.commentsString,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        maxLines: 2,
-                                                        textAlign: TextAlign.end,
-                                                        style: TextStyle(fontSize: 16),
-                                                      )))),
-                                          Opacity(
-                                              opacity: 0.5,
-                                              child: Container(
-                                                  margin: EdgeInsets.only(top: 4),
-                                                  child: Text(
-                                                    x.detailsDateString,
-                                                    style: TextStyle(fontSize: 16),
-                                                  ))),
-                                        ]))
-                              ])))))
+                      builder: (BuildContext context, Animation<double> animation) {
+                        return Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                color: CupertinoDynamicColor.resolve(
+                                    CupertinoDynamicColor.withBrightness(
+                                        color: const Color.fromARGB(255, 255, 255, 255),
+                                        darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                                    context)),
+                            padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
+                            child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                    maxHeight:
+                                        animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
+                                    maxWidth:
+                                        animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
+                                child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                          padding: EdgeInsets.only(bottom: 5),
+                                          child: Text(
+                                            x.value,
+                                            style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
+                                          )),
+                                      Expanded(
+                                          flex: 2,
+                                          child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.end,
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: [
+                                                Opacity(
+                                                    opacity: x.name.isNotEmpty ? 1.0 : 0.5,
+                                                    child: Text(
+                                                      x.name.isNotEmpty ? x.name.capitalize() : 'No description',
+                                                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                                    )),
+                                                Visibility(
+                                                    visible: x.commentsString.isNotEmpty,
+                                                    child: Opacity(
+                                                        opacity: 0.5,
+                                                        child: Container(
+                                                            margin: EdgeInsets.only(left: 35, top: 4),
+                                                            child: Text(
+                                                              x.commentsString,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              maxLines: 2,
+                                                              textAlign: TextAlign.end,
+                                                              style: TextStyle(fontSize: 16),
+                                                            )))),
+                                                Opacity(
+                                                    opacity: 0.5,
+                                                    child: Container(
+                                                        margin: EdgeInsets.only(top: 4),
+                                                        child: Text(
+                                                          x.detailsDateString,
+                                                          overflow: TextOverflow.ellipsis,
+                                                          maxLines: 1,
+                                                          textAlign: TextAlign.end,
+                                                          style: TextStyle(fontSize: 16),
+                                                        ))),
+                                              ]))
+                                    ])));
+                      })))
               .toList(),
     );
+
+    var gradesBottomWidgets = <Widget>[
+      // Average (yearly - for now)
+      Visibility(
+          visible: widget.lesson.gradesAverage >= 0,
+          child: CupertinoListTile(
+              padding: EdgeInsets.all(0),
+              title: CupertinoContextMenu.builder(
+                  actions: [
+                    CupertinoContextMenuAction(
+                      onPressed: () {},
+                      trailingIcon: CupertinoIcons.share,
+                      child: const Text('Share'),
+                    ),
+                    CupertinoContextMenuAction(
+                      onPressed: () {},
+                      isDestructiveAction: true,
+                      trailingIcon: CupertinoIcons.chat_bubble_2,
+                      child: const Text('Inquiry'),
+                    ),
+                  ],
+                  builder: (BuildContext context, Animation<double> animation) {
+                    return Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            color: CupertinoDynamicColor.resolve(
+                                CupertinoDynamicColor.withBrightness(
+                                    color: const Color.fromARGB(255, 255, 255, 255),
+                                    darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                                context)),
+                        padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
+                        child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                                maxHeight: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
+                                maxWidth: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                      padding: EdgeInsets.only(bottom: 5),
+                                      child: Text(
+                                        'Average',
+                                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                      )),
+                                  Container(
+                                      padding: EdgeInsets.only(bottom: 5),
+                                      child: Text(
+                                        widget.lesson.gradesAverage.toStringAsFixed(2),
+                                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                      )),
+                                ])));
+                  })))
+    ];
+
+    // Proposed grade (semester / year)
+    if (widget.lesson.grades.firstWhereOrDefault((x) => x.isFinalProposition || x.isSemesterProposition)?.value != null) {
+      gradesBottomWidgets.add(CupertinoListTile(
+          padding: EdgeInsets.all(0),
+          title: CupertinoContextMenu.builder(
+              actions: [
+                CupertinoContextMenuAction(
+                  onPressed: () {},
+                  trailingIcon: CupertinoIcons.share,
+                  child: const Text('Share'),
+                ),
+                CupertinoContextMenuAction(
+                  onPressed: () {},
+                  isDestructiveAction: true,
+                  trailingIcon: CupertinoIcons.chat_bubble_2,
+                  child: const Text('Inquiry'),
+                ),
+              ],
+              builder: (BuildContext context, Animation<double> animation) {
+                return Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        color: CupertinoDynamicColor.resolve(
+                            CupertinoDynamicColor.withBrightness(
+                                color: const Color.fromARGB(255, 255, 255, 255),
+                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                            context)),
+                    padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
+                    child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                            maxHeight: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
+                            maxWidth: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                  padding: EdgeInsets.only(bottom: 5),
+                                  child: Text(
+                                    'Proposed grade',
+                                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                  )),
+                              Container(
+                                  padding: EdgeInsets.only(bottom: 5),
+                                  child: Text(
+                                    widget.lesson.grades
+                                            .firstWhereOrDefault((x) => x.isFinalProposition || x.isSemesterProposition)
+                                            ?.value
+                                            .toString() ??
+                                        'Unknown',
+                                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                  )),
+                            ])));
+              })));
+    }
+
+    // Final grade (semester / year)
+    if (widget.lesson.grades.firstWhereOrDefault((x) => x.isFinal || x.isSemester)?.value != null) {
+      gradesBottomWidgets.add(CupertinoListTile(
+          padding: EdgeInsets.all(0),
+          title: CupertinoContextMenu.builder(
+              actions: [
+                CupertinoContextMenuAction(
+                  onPressed: () {},
+                  trailingIcon: CupertinoIcons.share,
+                  child: const Text('Share'),
+                ),
+                CupertinoContextMenuAction(
+                  onPressed: () {},
+                  isDestructiveAction: true,
+                  trailingIcon: CupertinoIcons.chat_bubble_2,
+                  child: const Text('Inquiry'),
+                ),
+              ],
+              builder: (BuildContext context, Animation<double> animation) {
+                return Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        color: CupertinoDynamicColor.resolve(
+                            CupertinoDynamicColor.withBrightness(
+                                color: const Color.fromARGB(255, 255, 255, 255),
+                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                            context)),
+                    padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
+                    child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                            maxHeight: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
+                            maxWidth: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                  padding: EdgeInsets.only(bottom: 5),
+                                  child: Text(
+                                    'Final grade',
+                                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                  )),
+                              Container(
+                                  padding: EdgeInsets.only(bottom: 5),
+                                  child: Text(
+                                    widget.lesson.grades
+                                            .firstWhereOrDefault((x) => x.isFinal || x.isSemester)
+                                            ?.value
+                                            .toString() ??
+                                        'Unknown',
+                                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                  )),
+                            ])));
+              })));
+    }
 
     return SearchableSliverNavigationBar(
       largeTitle: Text(widget.lesson.name),
       searchController: searchController,
       onChanged: (s) => setState(() => searchQuery = s),
-      children: [gradesWidget],
+      children: [
+        gradesWidget,
+        Container(
+            margin: EdgeInsets.only(top: 20),
+            child: CupertinoListSection.insetGrouped(
+              margin: EdgeInsets.only(left: 20, right: 20, bottom: 10),
+              additionalDividerMargin: 5,
+              children: gradesBottomWidgets,
+            ))
+      ],
     );
   }
 }
