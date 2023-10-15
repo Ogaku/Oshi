@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:ogaku/interface/cupertino/views/grades_detailed.dart';
 import 'package:ogaku/models/data/classroom.dart';
 import 'package:ogaku/models/data/teacher.dart';
 
@@ -64,6 +65,15 @@ class Event extends HiveObject {
 
   @HiveField(12)
   Classroom? classroom;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  String get titleString => "${categoryName.capitalize()}: ${title ?? content}";
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  String get subtitleString => (title != null && title != content) ? content : '';
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  String get locationString => (lessonNo != null ? 'Lesson no. $lessonNo • ' : '') + (sender?.name ?? '');
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   Future Function()? markAsViewed;

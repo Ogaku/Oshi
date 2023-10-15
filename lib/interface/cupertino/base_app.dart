@@ -27,7 +27,7 @@ class _BaseAppState extends State<BaseApp> {
         tabBar: CupertinoTabBar(items: [
           BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(CupertinoIcons.rosette), label: 'Grades'),
-          BottomNavigationBarItem(icon: Icon(CupertinoIcons.calendar), label: 'Timetable'),
+          BottomNavigationBarItem(icon: Icon(CupertinoIcons.calendar), label: 'Schedule'),
           BottomNavigationBarItem(icon: Icon(CupertinoIcons.envelope_fill), label: 'Messages'),
           BottomNavigationBarItem(icon: Icon(CupertinoIcons.person_crop_circle_badge_minus), label: 'Absences'),
         ]),

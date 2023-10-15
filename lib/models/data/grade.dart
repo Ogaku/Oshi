@@ -82,14 +82,20 @@ class Grade extends HiveObject {
   @HiveField(15)
   bool isFinalProposition;
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
   String get nameWithWeight => '$name, weight $weight';
+  
+  @JsonKey(includeToJson: false, includeFromJson: false)
   String get addedByString => 'Added by ${addedBy.name}';
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
   String get detailsDateString =>
       (countsToAverage ? '${weight.toString()} • ' : '') + DateFormat('EEEE, d MMMM y').format(date);
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
   String get commentsString => comments.select((x, index) => x.replaceAll('\n', ' ').replaceAll('  ', ' ')).join(' • ');
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
   double get asValue {
     double val = switch (value) {
           _ when (Config.customGradeValues?.containsKey(value) ?? false) => Config.customGradeValues![value],

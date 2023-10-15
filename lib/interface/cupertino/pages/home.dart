@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
     // Homeworks - first if any(), otherwise last
     var homeworksLast = homeworksWeek.isEmpty || homeworksWeek.all((x) => x.done);
     var homeworksWidget = CupertinoListSection.insetGrouped(
-      dividerMargin: 30,
+      dividerMargin: 35,
       header: Text('Homeworks'),
       children: homeworksWeek.isEmpty
           // No homeworks to display
@@ -166,7 +166,7 @@ class _HomePageState extends State<HomePage> {
           Visibility(visible: !homeworksLast, child: homeworksWidget),
           // Upcoming events - in the middle, or top
           CupertinoListSection.insetGrouped(
-            dividerMargin: 30,
+            dividerMargin: 35,
             header: Text('Upcoming events'),
             children: eventsWeek.isEmpty
                 // No events to display

@@ -156,6 +156,10 @@ class TimetableLesson extends HiveObject {
       'Moved from ${DateFormat.MMMMd().format(substitutionDetails?.originalDate ?? DateTime.now())}, lesson no. ${substitutionDetails?.originalLessonNo}';
 
   @JsonKey(includeToJson: false, includeFromJson: false)
+  String get detailsTimeTeacherString =>
+      "${DateFormat('HH:mm').format(hourFrom ?? DateTime.now())} - ${DateFormat('HH:mm').format(hourTo ?? DateTime.now())} • ${teacher?.name}";
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
   String get substitutionDetailsString => isSubstitution
       ? detailsStringSubstitution
       : isMovedLesson

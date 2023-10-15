@@ -41,7 +41,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                       child: Container(
                           alignment: Alignment.center,
                           child: Text(
-                            'No grades matching the query',
+                            searchQuery.isNotEmpty ? 'No grades matching the query' : 'No grades',
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                           ))))
             ]
@@ -161,7 +161,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                     color: const Color.fromARGB(255, 255, 255, 255),
                                     darkColor: const Color.fromARGB(255, 28, 28, 30)),
                                 context)),
-                        padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
+                        padding: EdgeInsets.only(top: 18, bottom: 15, right: 15, left: 20),
                         child: ConstrainedBox(
                             constraints: BoxConstraints(
                                 maxHeight: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,

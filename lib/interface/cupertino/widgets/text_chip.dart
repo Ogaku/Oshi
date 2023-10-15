@@ -18,14 +18,16 @@ class _NavState extends State<TextChip> {
   Widget build(BuildContext context) {
     return Container(
       width: widget.width,
-      padding: widget.insets ?? const EdgeInsets.only(left: 8, top: 4, right: 8, bottom: 5),
+      padding: widget.insets ?? const EdgeInsets.only(left: 10, top: 4, right: 10, bottom: 5),
       margin: widget.margin ?? const EdgeInsets.all(0),
-      decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)), color: Color(0x33AAAAAA)),
-      child: Text(
-        widget.text,
-        textAlign: TextAlign.center,
-        style: const TextStyle(color: CupertinoColors.systemBlue, fontSize: 16),
-      ),
+      decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)), color: Color(0x33AAAAAA)),
+      child: Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            widget.text,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: CupertinoColors.systemBlue, fontSize: 17, fontWeight: FontWeight.w400),
+          )),
     );
   }
 }
