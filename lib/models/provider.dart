@@ -6,6 +6,7 @@ import 'package:ogaku/models/data/teacher.dart' show Teacher;
 import 'package:ogaku/models/data/student.dart' show Student;
 import 'package:ogaku/models/data/timetables.dart' show Timetables;
 import 'package:ogaku/models/data/messages.dart' show Messages, Message;
+import 'package:ogaku/models/data/event.dart' as models show Event;
 import 'package:ogaku/models/progress.dart' show IProgress;
 
 import 'package:hive/hive.dart';
@@ -55,6 +56,12 @@ abstract class IProvider {
 
   // Move the message to trash
   Future<({bool success, Exception? message})> moveMessageToTrash({required Message parent, required bool byMe});
+
+  // Mark event/homework as viewed (may be needed in some cases)
+  Future<({bool success, Exception? message})> markEventAsViewed({required models.Event parent});
+
+  // Mark event/homework as done (may be needed in some cases)
+  Future<({bool success, Exception? message})> markEventAsDone({required models.Event parent});
 }
 
 @HiveType(typeId: 10)

@@ -360,8 +360,8 @@ class LibrusDataReader implements models.IProvider {
                 .teacherFreeDays
                 ?.select((x, index) => models.Event(
                     id: x.id,
-                    timeFrom: x.timeFrom?.asTime() ?? DateTime.now(),
-                    timeTo: x.timeTo?.asTime() ?? DateTime.now(),
+                    timeFrom: x.dateFrom?.withTime(x.timeFrom?.asTime()) ?? DateTime.now(),
+                    timeTo: x.dateTo?.withTime(x.timeTo?.asTime()) ?? DateTime.now(),
                     category: models.EventCategory.teacher,
                     content: '',
                     categoryName: 'Nieobecność nauczyciela',
@@ -392,11 +392,8 @@ class LibrusDataReader implements models.IProvider {
                     categoryName: homeworkCatgShim.categories!
                             .firstWhereOrDefault((y) => y.id == x.category?.id, defaultValue: null)
                             ?.categoryName ??
-                        'Other',
-                    sender: teachersShim.users!.firstWhere((y) => y.id == x.teacher?.id).asTeacher(),
-                    markAsViewed: () async => await data!.librusApi!.request('HomeWorkAssignments/${x.id}'),
-                    markAsDone: () async =>
-                        await data!.librusApi!.post('HomeWorkAssignments/MarkAsDone', {'homework': x.id})))
+                        'Homework',
+                    sender: teachersShim.users!.firstWhere((y) => y.id == x.teacher?.id).asTeacher()))
                 .toList() ??
             []);
 
@@ -677,8 +674,32 @@ class LibrusDataReader implements models.IProvider {
 
   @override
   Future<({Exception? message, bool success})> moveMessageToTrash({required Message parent, required bool byMe}) async {
-    await data!.librusApi!.messagesDelete('messages/${parent.id}');
-    return (success: true, message: null);
+    try {
+      await data!.librusApi!.messagesDelete('messages/${parent.id}');
+      return (success: true, message: null);
+    } on Exception catch (ex) {
+      return (success: false, message: ex);
+    }
+  }
+
+  @override
+  Future<({Exception? message, bool success})> markEventAsViewed({required models.Event parent}) async {
+    try {
+      await data!.librusApi!.request('HomeWorkAssignments/${parent.id}');
+      return (success: true, message: null);
+    } on Exception catch (ex) {
+      return (success: false, message: ex);
+    }
+  }
+
+  @override
+  Future<({Exception? message, bool success})> markEventAsDone({required models.Event parent}) async {
+    try {
+      await data!.librusApi!.post('HomeWorkAssignments/MarkAsDone', {'homework': parent.id});
+      return (success: true, message: null);
+    } on Exception catch (ex) {
+      return (success: false, message: ex);
+    }
   }
 }
 
@@ -784,8 +805,11 @@ extension CategoryExtension on Category {
 }
 
 extension DateTimeExtension on DateTime {
+  DateTime asDate() => DateTime(year, month, day);
   bool isAfterOrSame(DateTime? other) => this == other || isAfter(other ?? DateTime.now());
   bool isBeforeOrSame(DateTime? other) => this == other || isBefore(other ?? DateTime.now());
+  DateTime withTime(DateTime? other) =>
+      other == null ? this : DateTime(year, month, day, other.hour, other.minute, other.second);
 }
 
 List<T> addOrReplace<T>(List<T>? oldList, List<T> newList) {

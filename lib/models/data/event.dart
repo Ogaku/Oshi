@@ -22,9 +22,7 @@ class Event extends HiveObject {
       this.category = EventCategory.other,
       this.done = false,
       this.sender,
-      this.classroom,
-      this.markAsViewed,
-      this.markAsDone})
+      this.classroom})
       : timeFrom = timeFrom ?? DateTime(2000);
 
   @HiveField(0)
@@ -67,19 +65,13 @@ class Event extends HiveObject {
   Classroom? classroom;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get titleString => "${categoryName.capitalize()}: ${title ?? content}";
+  String get titleString => "${categoryName.capitalize()}${(title ?? content).isNotEmpty ? ':' : ''} ${title ?? content}";
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get subtitleString => (title != null && title != content) ? content : '';
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get locationString => (lessonNo != null ? 'Lesson no. $lessonNo • ' : '') + (sender?.name ?? '');
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  Future Function()? markAsViewed;
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  Future Function()? markAsDone;
 
   factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
 

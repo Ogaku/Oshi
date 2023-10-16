@@ -16,6 +16,7 @@ class SearchableSliverNavigationBar extends StatefulWidget {
   final bool? transitionBetweenRoutes;
   final TextEditingController searchController;
   final List<Widget>? children;
+  final Widget? child;
   final Function(String)? onChanged;
   final Function(String)? onSubmitted;
 
@@ -32,6 +33,7 @@ class SearchableSliverNavigationBar extends StatefulWidget {
       this.previousPageTitle,
       this.middle,
       this.trailing,
+      this.child,
       this.color = Colors.white,
       this.darkColor = Colors.black});
 
@@ -45,11 +47,57 @@ class _NavState extends State<SearchableSliverNavigationBar> {
 
   @override
   Widget build(BuildContext context) {
+    var navBarSliver = SliverNavigationBar(
+      transitionBetweenRoutes: widget.transitionBetweenRoutes,
+      leading: widget.leading,
+      previousPageTitle: widget.previousPageTitle,
+      threshold: 97,
+      middle: widget.middle ?? widget.largeTitle,
+      largeTitle: Column(
+        children: [
+          Align(alignment: Alignment.centerLeft, child: widget.largeTitle),
+          Visibility(
+              visible: widget.child == null,
+              child: Container(
+                margin: const EdgeInsets.only(top: 5),
+                height: lerpDouble(0, 42, isVisibleSearchBar.clamp(0.0, 40.0) / 40.0),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 5, right: 20, top: 3),
+                  child: CupertinoSearchTextField(
+                    onChanged: widget.onChanged,
+                    placeholderStyle: TextStyle(
+                        fontSize: lerpDouble(13, 17, ((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0)),
+                        color: CupertinoDynamicColor.withBrightness(
+                            color: const Color.fromARGB(153, 60, 60, 67)
+                                .withAlpha((((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0) * 153).round()),
+                            darkColor: const Color.fromARGB(153, 235, 235, 245)
+                                .withAlpha((((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0) * 153).round()))),
+                    prefixIcon: AnimatedOpacity(
+                      duration: const Duration(milliseconds: 1),
+                      opacity: ((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0),
+                      child: Transform.scale(
+                          scale: lerpDouble(0.7, 1.1, ((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0)),
+                          child: Container(
+                              margin: const EdgeInsets.only(top: 2, left: 2), child: const Icon(CupertinoIcons.search))),
+                    ),
+                    controller: widget.searchController,
+                    onSubmitted: widget.onSubmitted,
+                  ),
+                ),
+              )),
+        ],
+      ),
+      scrollController: scrollController,
+      alwaysShowMiddle: false,
+      trailing: widget.trailing,
+    );
+
     return CupertinoPageScaffold(
         backgroundColor: const CupertinoDynamicColor.withBrightness(
             color: Color.fromARGB(255, 242, 242, 247), darkColor: Color.fromARGB(255, 0, 0, 0)),
         child: NotificationListener<ScrollNotification>(
           onNotification: (ScrollNotification scrollInfo) {
+            if (widget.child != null) return true;
             if (scrollInfo is ScrollUpdateNotification) {
               if (scrollInfo.metrics.pixels > previousScrollPosition) {
                 if (isVisibleSearchBar > 0 && scrollInfo.metrics.pixels > 0) {
@@ -82,64 +130,30 @@ class _NavState extends State<SearchableSliverNavigationBar> {
             }
             return true;
           },
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            controller: scrollController,
-            anchor: 0.055,
-            slivers: <Widget>[
-              SliverNavigationBar(
-                transitionBetweenRoutes: widget.transitionBetweenRoutes,
-                leading: widget.leading,
-                previousPageTitle: widget.previousPageTitle,
-                threshold: 97,
-                middle: widget.middle ?? widget.largeTitle,
-                largeTitle: Column(
-                  children: [
-                    Align(alignment: Alignment.centerLeft, child: widget.largeTitle),
-                    Container(
-                      margin: const EdgeInsets.only(top: 5),
-                      height: isVisibleSearchBar,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 5, right: 20, top: 3),
-                        child: CupertinoSearchTextField(
-                          onChanged: widget.onChanged,
-                          placeholderStyle: TextStyle(
-                              fontSize: lerpDouble(13, 17, ((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0)),
-                              color: CupertinoDynamicColor.withBrightness(
-                                  color: const Color.fromARGB(153, 60, 60, 67)
-                                      .withAlpha((((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0) * 153).round()),
-                                  darkColor: const Color.fromARGB(153, 235, 235, 245)
-                                      .withAlpha((((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0) * 153).round()))),
-                          prefixIcon: AnimatedOpacity(
-                            duration: const Duration(milliseconds: 1),
-                            opacity: ((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0),
-                            child: Transform.scale(
-                                scale: lerpDouble(0.7, 1.0, ((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0)),
-                                child: const Icon(CupertinoIcons.search)),
-                          ),
-                          controller: widget.searchController,
-                          onSubmitted: widget.onSubmitted,
-                        ),
-                      ),
-                    ),
+          child: widget.child != null
+              ? NestedScrollView(
+                  headerSliverBuilder: (context, innerBoxIsScrolled) => [navBarSliver],
+                  body: widget.child!,
+                  controller: scrollController)
+              : CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  controller: scrollController,
+                  anchor: 0.055,
+                  slivers: <Widget>[
+                    navBarSliver,
+                    SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Container(
+                            padding: const EdgeInsets.only(bottom: 60),
+                            child: widget.child ??
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: widget.children ?? [],
+                                ))),
                   ],
                 ),
-                scrollController: scrollController,
-                alwaysShowMiddle: false,
-                trailing: widget.trailing,
-              ),
-              SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Container(
-                      padding: const EdgeInsets.only(bottom: 60),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        children: widget.children ?? [],
-                      ))),
-            ],
-          ),
         ));
   }
 }

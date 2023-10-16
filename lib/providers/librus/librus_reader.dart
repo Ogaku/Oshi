@@ -1,7 +1,6 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
 import 'dart:io';
-import 'dart:convert';
 import 'constants.dart';
 
 import 'package:dio/dio.dart';
@@ -29,23 +28,23 @@ class LibrusReader {
 
   Future<Map<String, dynamic>> post(String endpoint, Object data) async {
     try {
-      return (await synergiaData.session.get(
+      return (await synergiaData.session.post(
               '$gatewayApiBaseUri/${endpoint.replaceAll('https://api.librus.pl', 'https://synergia.librus.pl/gateway/api')}',
-              options: Options(headers: {
+              options: Options(method: 'POST', headers: {
                 HttpHeaders.contentTypeHeader: "application/json",
               }),
-              data: jsonEncode(data)))
+              data: data))
           .data as Map<String, dynamic>;
     } on DioException catch (e) {
       if (e.response?.statusCode != 401) rethrow;
 
       await synergiaData.synergiaLogin!.setupToken(); // Re-authorize
-      return (await synergiaData.session.get(
+      return (await synergiaData.session.post(
               '$gatewayApiBaseUri/${endpoint.replaceAll('https://api.librus.pl', 'https://synergia.librus.pl/gateway/api')}',
-              options: Options(headers: {
+              options: Options(method: 'POST', headers: {
                 HttpHeaders.contentTypeHeader: "application/json",
               }),
-              data: jsonEncode(data)))
+              data: data))
           .data as Map<String, dynamic>;
     }
   }
@@ -82,10 +81,10 @@ class LibrusReader {
     try {
       return (await synergiaData.session.post(
               '$messagesApiBaseUri/${endpoint.replaceAll('https://api.librus.pl', 'https://synergia.librus.pl/gateway/api')}',
-              options: Options(headers: {
+              options: Options(method: 'POST', headers: {
                 HttpHeaders.contentTypeHeader: "application/json",
               }),
-              data: jsonEncode(data)))
+              data: data))
           .data as Map<String, dynamic>;
     } on DioException catch (e) {
       if (e.response?.statusCode != 401) rethrow;
@@ -93,10 +92,10 @@ class LibrusReader {
       await synergiaData.synergiaLogin!.setupToken(); // Re-authorize
       return (await synergiaData.session.post(
               '$messagesApiBaseUri/${endpoint.replaceAll('https://api.librus.pl', 'https://synergia.librus.pl/gateway/api')}',
-              options: Options(headers: {
+              options: Options(method: 'POST', headers: {
                 HttpHeaders.contentTypeHeader: "application/json",
               }),
-              data: jsonEncode(data)))
+              data: data))
           .data as Map<String, dynamic>;
     }
   }

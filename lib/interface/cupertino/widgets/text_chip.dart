@@ -22,7 +22,7 @@ class _NavState extends State<TextChip> {
       margin: widget.margin ?? const EdgeInsets.all(0),
       decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)), color: Color(0x33AAAAAA)),
       child: Align(
-          alignment: Alignment.centerLeft,
+          alignment: Alignment.center,
           child: Text(
             widget.text,
             textAlign: TextAlign.center,

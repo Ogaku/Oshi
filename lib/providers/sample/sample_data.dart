@@ -5,6 +5,7 @@ import 'package:ogaku/models/data/student.dart';
 import 'package:ogaku/models/data/teacher.dart';
 import 'package:ogaku/models/progress.dart';
 import 'package:ogaku/models/provider.dart';
+import 'package:ogaku/models/data/event.dart' as models;
 
 class FakeDataReader implements IProvider {
   @override
@@ -57,6 +58,16 @@ class FakeDataReader implements IProvider {
 
   @override
   Future<({Exception? message, bool success})> moveMessageToTrash({required Message parent, required bool byMe}) async {
+    return (success: true, message: null);
+  }
+
+  @override
+  Future<({Exception? message, bool success})> markEventAsDone({required models.Event parent}) async {
+    return (success: true, message: null);
+  }
+
+  @override
+  Future<({Exception? message, bool success})> markEventAsViewed({required models.Event parent}) async {
     return (success: true, message: null);
   }
 }
