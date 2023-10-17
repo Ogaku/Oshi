@@ -38,12 +38,19 @@ class SearchableSliverNavigationBar extends StatefulWidget {
       this.darkColor = Colors.black});
 
   @override
+  // ignore: no_logic_in_create_state
   State<SearchableSliverNavigationBar> createState() => _NavState();
 }
 
 class _NavState extends State<SearchableSliverNavigationBar> {
-  final scrollController = ScrollController(initialScrollOffset: 40);
+  late ScrollController scrollController;
   double previousScrollPosition = 0, isVisibleSearchBar = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController = ScrollController(initialScrollOffset: widget.child == null ? 40 : 0);
+  }
 
   @override
   Widget build(BuildContext context) {

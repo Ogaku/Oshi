@@ -72,7 +72,7 @@ class _NavState extends State<SliverNavigationBar> {
       stretch: true,
       border: Border(
         bottom: BorderSide(
-          color: _isCollapsed ? Color(0x4D000000) : Color(0x00000000),
+          color: _isCollapsed ? const Color(0x4D000000) : const Color(0x00000000),
           width: 0.0,
         ),
       ),
