@@ -39,6 +39,14 @@ class TimetableLesson {
     this.orgTeacher,
     this.orgHourFrom,
     this.orgHourTo,
+    this.newClassroom,
+    this.newDate,
+    this.newLessonNo,
+    this.newLesson,
+    this.newSubject,
+    this.newTeacher,
+    this.newHourFrom,
+    this.newHourTo,
     this.substitutionClassUrl,
     this.virtualClass,
     this.virtualClassName,
@@ -109,6 +117,30 @@ class TimetableLesson {
 
   @JsonKey(name: 'OrgHourTo')
   final String? orgHourTo;
+
+  @JsonKey(name: 'NewClassroom')
+  final Link? newClassroom;
+
+  @JsonKey(name: 'NewDate')
+  final DateTime? newDate;
+
+  @JsonKey(name: 'NewLessonNo')
+  final String? newLessonNo;
+
+  @JsonKey(name: 'NewLesson')
+  final Link? newLesson;
+
+  @JsonKey(name: 'NewSubject')
+  final Link? newSubject;
+
+  @JsonKey(name: 'NewTeacher')
+  final Link? newTeacher;
+
+  @JsonKey(name: 'NewHourFrom')
+  final String? newHourFrom;
+
+  @JsonKey(name: 'NewHourTo')
+  final String? newHourTo;
 
   @JsonKey(name: 'SubstitutionClassUrl')
   final String? substitutionClassUrl;

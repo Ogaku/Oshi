@@ -70,6 +70,24 @@ TimetableLesson _$TimetableLessonFromJson(Map<String, dynamic> json) =>
           : Link.fromJson(json['OrgTeacher'] as Map<String, dynamic>),
       orgHourFrom: json['OrgHourFrom'] as String?,
       orgHourTo: json['OrgHourTo'] as String?,
+      newClassroom: json['NewClassroom'] == null
+          ? null
+          : Link.fromJson(json['NewClassroom'] as Map<String, dynamic>),
+      newDate: json['NewDate'] == null
+          ? null
+          : DateTime.parse(json['NewDate'] as String),
+      newLessonNo: json['NewLessonNo'] as String?,
+      newLesson: json['NewLesson'] == null
+          ? null
+          : Link.fromJson(json['NewLesson'] as Map<String, dynamic>),
+      newSubject: json['NewSubject'] == null
+          ? null
+          : Link.fromJson(json['NewSubject'] as Map<String, dynamic>),
+      newTeacher: json['NewTeacher'] == null
+          ? null
+          : Link.fromJson(json['NewTeacher'] as Map<String, dynamic>),
+      newHourFrom: json['NewHourFrom'] as String?,
+      newHourTo: json['NewHourTo'] as String?,
       substitutionClassUrl: json['SubstitutionClassUrl'] as String?,
       virtualClass: json['VirtualClass'] == null
           ? null
@@ -101,6 +119,14 @@ Map<String, dynamic> _$TimetableLessonToJson(TimetableLesson instance) =>
       'OrgTeacher': instance.orgTeacher,
       'OrgHourFrom': instance.orgHourFrom,
       'OrgHourTo': instance.orgHourTo,
+      'NewClassroom': instance.newClassroom,
+      'NewDate': instance.newDate?.toIso8601String(),
+      'NewLessonNo': instance.newLessonNo,
+      'NewLesson': instance.newLesson,
+      'NewSubject': instance.newSubject,
+      'NewTeacher': instance.newTeacher,
+      'NewHourFrom': instance.newHourFrom,
+      'NewHourTo': instance.newHourTo,
       'SubstitutionClassUrl': instance.substitutionClassUrl,
     };
 

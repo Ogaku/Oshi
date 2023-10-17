@@ -260,25 +260,39 @@ class LibrusDataReader implements models.IProvider {
                           substitutionDetails: lesson.isSubstitutionClass
                               ? models.SubstitutionDetails(
                                   originalUrl: '',
-                                  originalLessonNo: int.tryParse(lesson.orgLessonNo ?? '') ?? 0,
-                                  originalDate: lesson.orgDate ?? DateTime.now(),
-                                  originalHourFrom: lesson.orgHourFrom?.asTime() ?? DateTime.now(),
-                                  originalHourTo: lesson.orgHourTo?.asTime() ?? DateTime.now(),
+                                  originalLessonNo:
+                                      int.tryParse(lesson.orgLessonNo ?? '') ?? int.tryParse(lesson.newLessonNo ?? '') ?? 0,
+                                  originalDate: lesson.orgDate ?? lesson.newDate ?? DateTime.now(),
+                                  originalHourFrom:
+                                      lesson.orgHourFrom?.asTime() ?? lesson.newHourFrom?.asTime() ?? DateTime.now(),
+                                  originalHourTo: lesson.orgHourTo?.asTime() ?? lesson.newHourTo?.asTime() ?? DateTime.now(),
                                   originalClassroom: lesson.orgClassroom?.id != null
                                       ? classroomsShim.classrooms!
                                           .firstWhere((y) => y.id == int.tryParse(lesson.orgClassroom?.id ?? ''))
                                           .asClassroom()
-                                      : null,
+                                      : lesson.newClassroom?.id != null
+                                          ? classroomsShim.classrooms!
+                                              .firstWhere((y) => y.id == int.tryParse(lesson.newClassroom?.id ?? ''))
+                                              .asClassroom()
+                                          : null,
                                   originalSubject: lesson.orgSubject?.id != null
                                       ? subjectsShim.subjects!
                                           .firstWhere((y) => y.id == int.tryParse(lesson.orgSubject?.id ?? ''))
                                           .asSubject()
-                                      : null,
+                                      : lesson.newSubject?.id != null
+                                          ? subjectsShim.subjects!
+                                              .firstWhere((y) => y.id == int.tryParse(lesson.newSubject?.id ?? ''))
+                                              .asSubject()
+                                          : null,
                                   originalTeacher: lesson.orgTeacher?.id != null
                                       ? teachersShim.users!
                                           .firstWhere((y) => y.id == int.tryParse(lesson.orgTeacher?.id ?? ''))
                                           .asTeacher()
-                                      : null,
+                                      : lesson.newTeacher?.id != null
+                                          ? teachersShim.users!
+                                              .firstWhere((y) => y.id == int.tryParse(lesson.newTeacher?.id ?? ''))
+                                              .asTeacher()
+                                          : null,
                                 )
                               : null, // Don't provide any details for 'normal' lessons
                         ))

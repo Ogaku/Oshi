@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_this
+// ignore_for_file: prefer_const_constructors, unnecessary_this, unnecessary_cast
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'package:darq/darq.dart';
@@ -8,7 +8,9 @@ import 'package:intl/intl.dart';
 import 'package:ogaku/interface/cupertino/pages/home.dart';
 import 'package:ogaku/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:ogaku/interface/cupertino/widgets/text_chip.dart';
+import 'package:ogaku/models/data/attendances.dart';
 import 'package:ogaku/models/data/event.dart';
+import 'package:ogaku/models/data/timetables.dart';
 import 'package:ogaku/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
@@ -125,6 +127,7 @@ class _TimetablePageState extends State<TimetablePage> {
             itemBuilder: (context, index) {
               DateTime selectedDate =
                   Share.session.data.student.mainClass.beginSchoolYear.asDate().add(Duration(days: index)).asDate();
+              var selectedDay = Share.session.data.timetables.timetable[selectedDate];
 
               // Events for the selected day/date
               var eventsToday = Share.session.data.student.mainClass.events
@@ -134,7 +137,7 @@ class _TimetablePageState extends State<TimetablePage> {
                       x.titleString.contains(RegExp(searchQuery, caseSensitive: false)) ||
                       x.subtitleString.contains(RegExp(searchQuery, caseSensitive: false)) ||
                       x.locationString.contains(RegExp(searchQuery, caseSensitive: false)))
-                  .asEventWidgets(searchQuery, 'No events matching the query', setState);
+                  .asEventWidgets(selectedDay, searchQuery, 'No events matching the query', setState);
 
               // Homeworks for the selected day/date
               var homeworksToday = Share.session.data.student.mainClass.events
@@ -145,7 +148,7 @@ class _TimetablePageState extends State<TimetablePage> {
                       x.subtitleString.contains(RegExp(searchQuery, caseSensitive: false)) ||
                       x.locationString.contains(RegExp(searchQuery, caseSensitive: false)))
                   .orderBy((x) => x.done ? 1 : 0)
-                  .asEventWidgets(searchQuery, 'No homeworks matching the query', setState);
+                  .asEventWidgets(selectedDay, searchQuery, 'No homeworks matching the query', setState);
 
               // Teacher absences for the selected day/date
               var teachersAbsentToday = Share.session.data.student.mainClass.events
@@ -157,10 +160,9 @@ class _TimetablePageState extends State<TimetablePage> {
                       x.titleString.contains(RegExp(searchQuery, caseSensitive: false)) ||
                       x.subtitleString.contains(RegExp(searchQuery, caseSensitive: false)) ||
                       x.locationString.contains(RegExp(searchQuery, caseSensitive: false)))
-                  .asEventWidgets(searchQuery, 'No teachers matching the query', setState);
+                  .asEventWidgets(selectedDay, searchQuery, 'No teachers matching the query', setState);
 
               // Lessons for the selected day, and those to be displayed
-              var selectedDay = Share.session.data.timetables.timetable[selectedDate];
               var lessonsToDisplay = selectedDay?.lessonsStripped
                       .select((x, index) => x?.firstWhereOrDefault((y) => !y.isCanceled, defaultValue: x.first))
                       .where((x) => x != null) // Filter out all null entries
@@ -218,47 +220,147 @@ class _TimetablePageState extends State<TimetablePage> {
                                                   darkColor: const Color.fromARGB(255, 28, 28, 30)),
                                               context)),
                                       padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
-                                      child: ConstrainedBox(
-                                          constraints: BoxConstraints(
-                                              maxHeight: animation.value < CupertinoContextMenu.animationOpensAt
-                                                  ? double.infinity
-                                                  : 80,
-                                              maxWidth: animation.value < CupertinoContextMenu.animationOpensAt
-                                                  ? double.infinity
-                                                  : 300),
-                                          child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    mainAxisSize: MainAxisSize.max,
-                                                    children: [
-                                                      Expanded(
-                                                          flex: 2,
-                                                          child: Text(
-                                                            x.subject?.name ?? 'Unknown',
-                                                            maxLines: 2,
-                                                            overflow: TextOverflow.ellipsis,
-                                                            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                                          )),
-                                                      Container(
-                                                          padding: EdgeInsets.only(left: 15),
-                                                          child: Text(
-                                                            x.classroom?.name ?? '',
-                                                            style: TextStyle(fontSize: 17),
-                                                          ))
-                                                    ]),
-                                                Container(
-                                                    margin: EdgeInsets.only(top: 4),
-                                                    child: Opacity(
-                                                        opacity: 0.5,
-                                                        child: Text(
-                                                          x.detailsTimeTeacherString,
-                                                          style: TextStyle(fontSize: 17),
-                                                        )))
-                                              ])));
+                                      child: Opacity(
+                                          opacity: (x.isCanceled ||
+                                                  (x.date == DateTime.now().asDate() &&
+                                                      (selectedDay?.dayEnd?.isAfter(DateTime.now()) ?? false) &&
+                                                      (x.hourTo?.isBefore(DateTime.now()) ?? false)))
+                                              ? 0.5
+                                              : 1.0,
+                                          child: ConstrainedBox(
+                                              constraints: BoxConstraints(
+                                                  maxHeight: animation.value < CupertinoContextMenu.animationOpensAt
+                                                      ? double.infinity
+                                                      : ((x.modifiedSchedule || x.isCanceled) ? 110 : 80),
+                                                  maxWidth: animation.value < CupertinoContextMenu.animationOpensAt
+                                                      ? double.infinity
+                                                      : 300),
+                                              child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        mainAxisSize: MainAxisSize.max,
+                                                        children:
+                                                            // Event tags
+                                                            Share.session.data.student.mainClass.events
+                                                                    .where((y) => y.date == selectedDate)
+                                                                    .where((y) => (y.lessonNo ?? -1) == x.lessonNo)
+                                                                    .select((y, index) => Container(
+                                                                        margin: EdgeInsets.only(top: 7, right: 6),
+                                                                        child: Container(
+                                                                          height: 10,
+                                                                          width: 10,
+                                                                          decoration: BoxDecoration(
+                                                                              shape: BoxShape.circle, color: y.asColor()),
+                                                                        )) as Widget)
+                                                                    .toList() +
+                                                                // The lesson block
+                                                                [
+                                                                  // Lesson name
+                                                                  Expanded(
+                                                                      flex: 2,
+                                                                      child: Text(
+                                                                        x.subject?.name ?? 'Unknown',
+                                                                        maxLines: 2,
+                                                                        overflow: TextOverflow.ellipsis,
+                                                                        style: TextStyle(
+                                                                            fontSize: 17,
+                                                                            fontWeight: FontWeight.w600,
+                                                                            fontStyle: (x.isCanceled || x.modifiedSchedule)
+                                                                                ? FontStyle.italic
+                                                                                : FontStyle.normal,
+                                                                            decoration: x.isCanceled
+                                                                                ? TextDecoration.lineThrough
+                                                                                : null),
+                                                                      )),
+                                                                  // Classroom name/symbol
+                                                                  Container(
+                                                                      padding: EdgeInsets.only(left: 15),
+                                                                      child: (animation.value <
+                                                                                  CupertinoContextMenu.animationOpensAt &&
+                                                                              (Share.session.data.student.attendances?.any(
+                                                                                      (y) =>
+                                                                                          y.date == x.date &&
+                                                                                          y.lessonNo == x.lessonNo) ??
+                                                                                  false))
+                                                                          ? (switch (Share.session.data.student.attendances!
+                                                                              .firstWhere((y) =>
+                                                                                  y.date == x.date &&
+                                                                                  y.lessonNo == x.lessonNo)
+                                                                              .type) {
+                                                                              AttendanceType.absent => Icon(
+                                                                                  CupertinoIcons.xmark,
+                                                                                  color: CupertinoColors.destructiveRed),
+                                                                              AttendanceType.late => Icon(
+                                                                                  CupertinoIcons.timer,
+                                                                                  color: CupertinoColors.systemYellow),
+                                                                              AttendanceType.excused => Icon(
+                                                                                  CupertinoIcons.doc_on_clipboard,
+                                                                                  color: CupertinoColors.systemCyan),
+                                                                              AttendanceType.duty => Icon(
+                                                                                  CupertinoIcons.rectangle_stack_person_crop,
+                                                                                  color: CupertinoColors.systemIndigo),
+                                                                              AttendanceType.present => Icon(
+                                                                                  CupertinoIcons.check_mark,
+                                                                                  color: CupertinoColors.activeGreen),
+                                                                              AttendanceType.other => Icon(
+                                                                                  CupertinoIcons.question,
+                                                                                  color: CupertinoColors.inactiveGray)
+                                                                            })
+                                                                          : Text(
+                                                                              x.classroom?.name ?? '',
+                                                                              style: TextStyle(
+                                                                                  fontSize: 17,
+                                                                                  fontStyle:
+                                                                                      (x.isCanceled || x.modifiedSchedule)
+                                                                                          ? FontStyle.italic
+                                                                                          : FontStyle.normal,
+                                                                                  decoration: x.isCanceled
+                                                                                      ? TextDecoration.lineThrough
+                                                                                      : null),
+                                                                            ))
+                                                                ]),
+                                                    // Time and teacher details
+                                                    Visibility(
+                                                        visible: !(x.date == DateTime.now().asDate() &&
+                                                            (selectedDay?.dayEnd?.isAfter(DateTime.now()) ?? false) &&
+                                                            ((x.hourTo?.isBefore(DateTime.now()) ?? false) || x.isCanceled)),
+                                                        child: Container(
+                                                            margin: EdgeInsets.only(top: 4),
+                                                            child: Opacity(
+                                                                opacity: 0.5,
+                                                                child: Text(
+                                                                  x.detailsTimeTeacherString,
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                  style: TextStyle(
+                                                                      fontSize: 17,
+                                                                      fontStyle: (x.isCanceled || x.modifiedSchedule)
+                                                                          ? FontStyle.italic
+                                                                          : FontStyle.normal,
+                                                                      decoration:
+                                                                          x.isCanceled ? TextDecoration.lineThrough : null),
+                                                                )))),
+                                                    // Substitution details - visible if context is opened
+                                                    Visibility(
+                                                        visible: animation.value >= CupertinoContextMenu.animationOpensAt &&
+                                                            (x.modifiedSchedule || x.isCanceled),
+                                                        child: Container(
+                                                            margin: EdgeInsets.only(top: 4),
+                                                            child: Opacity(
+                                                                opacity: 0.5,
+                                                                child: Text(
+                                                                  x.substitutionDetailsString,
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                  style: TextStyle(
+                                                                      fontSize: 17,
+                                                                      fontStyle: (x.isCanceled || x.modifiedSchedule)
+                                                                          ? FontStyle.italic
+                                                                          : FontStyle.normal),
+                                                                ))))
+                                                  ]))));
                                 })))
                         .toList(),
               );
@@ -335,144 +437,175 @@ class _TimetablePageState extends State<TimetablePage> {
 }
 
 extension EventWidgetExtension on Iterable<Event> {
-  List<Widget> asEventWidgets(String searchQuery, String placeholder, void Function(VoidCallback fn) setState) => isEmpty &&
-          searchQuery.isNotEmpty
-      ? [
-          CupertinoListTile(
-              title: Opacity(
-                  opacity: 0.5,
-                  child: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        placeholder,
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                      ))))
-        ]
-      : this
-          .select((x, index) => Visibility(
-              visible: isNotEmpty,
-              child: CupertinoListTile(
-                  padding: EdgeInsets.all(0),
-                  title: Builder(
-                      builder: (context) => CupertinoContextMenu.builder(
-                              actions: [
-                                CupertinoContextMenuAction(
-                                  onPressed: () {},
-                                  trailingIcon: CupertinoIcons.share,
-                                  child: const Text('Share'),
-                                ),
-                                x.category == EventCategory.homework
-                                    // Homework - mark as done
-                                    ? CupertinoContextMenuAction(
-                                        onPressed: () {
-                                          Share.session.provider.markEventAsDone(parent: x).then((s) {
-                                            if (s.success) setState(() => x.done = true);
-                                          });
-                                          // Navigator.pop(context);
-                                        },
-                                        trailingIcon: CupertinoIcons.check_mark,
-                                        child: const Text('Mark as done'),
-                                      )
-                                    // Event - add to calendar
-                                    : CupertinoContextMenuAction(
-                                        onPressed: () {},
-                                        trailingIcon: CupertinoIcons.calendar,
-                                        child: const Text('Add to calendar'),
-                                      ),
-                                CupertinoContextMenuAction(
-                                  onPressed: () {},
-                                  isDestructiveAction: true,
-                                  trailingIcon: CupertinoIcons.chat_bubble_2,
-                                  child: const Text('Inquiry'),
-                                ),
-                              ],
-                              builder: (BuildContext context, Animation<double> animation) {
-                                return Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                                        color: CupertinoDynamicColor.resolve(
-                                            CupertinoDynamicColor.withBrightness(
-                                                color: const Color.fromARGB(255, 255, 255, 255),
-                                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                                            context)),
-                                    padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
-                                    child: ConstrainedBox(
-                                        constraints: BoxConstraints(
-                                            maxHeight: animation.value < CupertinoContextMenu.animationOpensAt
-                                                ? double.infinity
-                                                : 100,
-                                            maxWidth: animation.value < CupertinoContextMenu.animationOpensAt
-                                                ? double.infinity
-                                                : 260),
-                                        child: Opacity(
-                                            opacity: (x.category == EventCategory.homework && x.done) ? 0.5 : 1.0,
-                                            child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Expanded(
-                                                      flex: 2,
-                                                      child: Column(
-                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          mainAxisSize: MainAxisSize.max,
-                                                          children: [
-                                                            Text(
-                                                              x.titleString,
-                                                              overflow: TextOverflow.ellipsis,
-                                                              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                                            ),
-                                                            Visibility(
-                                                                visible: x.subtitleString.isNotEmpty,
-                                                                child: Opacity(
-                                                                    opacity: 0.5,
-                                                                    child: Container(
-                                                                        margin: EdgeInsets.only(top: 4),
-                                                                        child: Text(
-                                                                          x.subtitleString.trim(),
-                                                                          overflow: TextOverflow.ellipsis,
-                                                                          maxLines: 2,
-                                                                          style: TextStyle(fontSize: 16),
-                                                                        )))),
-                                                            Visibility(
-                                                                visible: x.locationString.isNotEmpty,
-                                                                child: Opacity(
-                                                                    opacity: 0.5,
-                                                                    child: Container(
-                                                                        margin: EdgeInsets.only(top: 4),
-                                                                        child: Text(
-                                                                          x.locationString,
-                                                                          overflow: TextOverflow.ellipsis,
-                                                                          style: TextStyle(fontSize: 16),
-                                                                        )))),
-                                                          ])),
-                                                  Visibility(
-                                                      visible: x.category == EventCategory.homework && x.done,
-                                                      child: Container(
-                                                          margin: EdgeInsets.only(left: 4),
-                                                          child: Icon(CupertinoIcons.check_mark))),
-                                                  Visibility(
-                                                      visible:
-                                                          x.classroom?.name != null && x.category != EventCategory.teacher,
-                                                      child: Container(
-                                                          margin: EdgeInsets.only(top: 4),
-                                                          child: Text(
-                                                            x.classroom?.name ?? '^^',
-                                                            overflow: TextOverflow.ellipsis,
-                                                            style: TextStyle(fontSize: 16),
-                                                          ))),
-                                                  Visibility(
-                                                      visible: x.category == EventCategory.teacher,
-                                                      child: Container(
-                                                          margin: EdgeInsets.only(top: 2, left: 3),
-                                                          child: Text(
-                                                            "${DateFormat('H:mm').format(x.timeFrom)} - ${DateFormat('H:mm').format(x.timeTo ?? DateTime.now())}",
-                                                            overflow: TextOverflow.ellipsis,
-                                                            style: TextStyle(fontSize: 15),
-                                                          ))),
-                                                ]))));
-                              })))))
-          .toList();
+  List<Widget> asEventWidgets(
+          TimetableDay? day, String searchQuery, String placeholder, void Function(VoidCallback fn) setState) =>
+      isEmpty && searchQuery.isNotEmpty
+          ? [
+              CupertinoListTile(
+                  title: Opacity(
+                      opacity: 0.5,
+                      child: Container(
+                          alignment: Alignment.center,
+                          child: Text(
+                            placeholder,
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                          ))))
+            ]
+          : this
+              .select((x, index) => Visibility(
+                  visible: isNotEmpty,
+                  child: CupertinoListTile(
+                      padding: EdgeInsets.all(0),
+                      title: Builder(
+                          builder: (context) => CupertinoContextMenu.builder(
+                                  actions: [
+                                    CupertinoContextMenuAction(
+                                      onPressed: () {},
+                                      trailingIcon: CupertinoIcons.share,
+                                      child: const Text('Share'),
+                                    ),
+                                    x.category == EventCategory.homework
+                                        // Homework - mark as done
+                                        ? CupertinoContextMenuAction(
+                                            onPressed: () {
+                                              Share.session.provider.markEventAsDone(parent: x).then((s) {
+                                                if (s.success) setState(() => x.done = true);
+                                              });
+                                              // Navigator.pop(context);
+                                            },
+                                            trailingIcon: CupertinoIcons.check_mark,
+                                            child: const Text('Mark as done'),
+                                          )
+                                        // Event - add to calendar
+                                        : CupertinoContextMenuAction(
+                                            onPressed: () {},
+                                            trailingIcon: CupertinoIcons.calendar,
+                                            child: const Text('Add to calendar'),
+                                          ),
+                                    CupertinoContextMenuAction(
+                                      onPressed: () {},
+                                      isDestructiveAction: true,
+                                      trailingIcon: CupertinoIcons.chat_bubble_2,
+                                      child: const Text('Inquiry'),
+                                    ),
+                                  ],
+                                  builder: (BuildContext context, Animation<double> animation) {
+                                    return Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                                            color: CupertinoDynamicColor.resolve(
+                                                CupertinoDynamicColor.withBrightness(
+                                                    color: const Color.fromARGB(255, 255, 255, 255),
+                                                    darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                                                context)),
+                                        padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
+                                        child: ConstrainedBox(
+                                            constraints: BoxConstraints(
+                                                maxHeight: animation.value < CupertinoContextMenu.animationOpensAt
+                                                    ? double.infinity
+                                                    : 100,
+                                                maxWidth: animation.value < CupertinoContextMenu.animationOpensAt
+                                                    ? double.infinity
+                                                    : 260),
+                                            child: Opacity(
+                                                opacity: (x.category == EventCategory.homework && x.done) ? 0.5 : 1.0,
+                                                child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Expanded(
+                                                          flex: 2,
+                                                          child: Column(
+                                                              mainAxisAlignment: MainAxisAlignment.center,
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              mainAxisSize: MainAxisSize.max,
+                                                              children: [
+                                                                Stack(
+                                                                    alignment: AlignmentDirectional.centerStart,
+                                                                    children: [
+                                                                      Container(
+                                                                          margin: EdgeInsets.only(
+                                                                              left: (day?.lessons.any((y) =>
+                                                                                          y?.any((z) =>
+                                                                                              z.lessonNo ==
+                                                                                              (x.lessonNo ?? -1)) ??
+                                                                                          false) ??
+                                                                                      false)
+                                                                                  ? 15
+                                                                                  : 0),
+                                                                          child: Text(
+                                                                            x.titleString,
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                            style: TextStyle(
+                                                                                fontSize: 17, fontWeight: FontWeight.w600),
+                                                                          )),
+                                                                      Visibility(
+                                                                          visible: (day?.lessons.any((y) =>
+                                                                                  y?.any((z) =>
+                                                                                      z.lessonNo == (x.lessonNo ?? -1)) ??
+                                                                                  false) ??
+                                                                              false),
+                                                                          child: Container(
+                                                                              margin: EdgeInsets.only(top: 2),
+                                                                              child: Container(
+                                                                                height: 10,
+                                                                                width: 10,
+                                                                                decoration: BoxDecoration(
+                                                                                    shape: BoxShape.circle,
+                                                                                    color: x.asColor()),
+                                                                              ))),
+                                                                    ]),
+                                                                Visibility(
+                                                                    visible: x.subtitleString.isNotEmpty,
+                                                                    child: Opacity(
+                                                                        opacity: 0.5,
+                                                                        child: Container(
+                                                                            margin: EdgeInsets.only(top: 4),
+                                                                            child: Text(
+                                                                              x.subtitleString.trim(),
+                                                                              overflow: TextOverflow.ellipsis,
+                                                                              maxLines: 2,
+                                                                              style: TextStyle(fontSize: 16),
+                                                                            )))),
+                                                                Visibility(
+                                                                    visible: x.locationString.isNotEmpty,
+                                                                    child: Opacity(
+                                                                        opacity: 0.5,
+                                                                        child: Container(
+                                                                            margin: EdgeInsets.only(top: 4),
+                                                                            child: Text(
+                                                                              x.locationString,
+                                                                              overflow: TextOverflow.ellipsis,
+                                                                              style: TextStyle(fontSize: 16),
+                                                                            )))),
+                                                              ])),
+                                                      Visibility(
+                                                          visible: x.category == EventCategory.homework && x.done,
+                                                          child: Container(
+                                                              margin: EdgeInsets.only(left: 4),
+                                                              child: Icon(CupertinoIcons.check_mark))),
+                                                      Visibility(
+                                                          visible: x.classroom?.name != null &&
+                                                              x.category != EventCategory.teacher,
+                                                          child: Container(
+                                                              margin: EdgeInsets.only(top: 4),
+                                                              child: Text(
+                                                                x.classroom?.name ?? '^^',
+                                                                overflow: TextOverflow.ellipsis,
+                                                                style: TextStyle(fontSize: 16),
+                                                              ))),
+                                                      Visibility(
+                                                          visible: x.category == EventCategory.teacher,
+                                                          child: Container(
+                                                              margin: EdgeInsets.only(top: 2, left: 3),
+                                                              child: Text(
+                                                                "${DateFormat('H:mm').format(x.timeFrom)} - ${DateFormat('H:mm').format(x.timeTo ?? DateTime.now())}",
+                                                                overflow: TextOverflow.ellipsis,
+                                                                style: TextStyle(fontSize: 15),
+                                                              )))
+                                                    ]))));
+                                  })))))
+              .toList();
 }
 
 extension DateTimeExtension on DateTime {
@@ -481,4 +614,23 @@ extension DateTimeExtension on DateTime {
   DateTime withTime(DateTime? other) =>
       other == null ? this : DateTime(year, month, day, other.hour, other.minute, other.second);
   DateTime asHour(DateTime? other) => DateTime(2000).withTime(other);
+}
+
+extension EventColors on Event {
+  Color asColor() => switch (this.category) {
+        EventCategory.gathering => CupertinoColors.systemPurple, // Zebranie
+        EventCategory.lecture => CupertinoColors.systemBlue, // Lektura
+        EventCategory.test => CupertinoColors.systemOrange, // Test
+        EventCategory.classWork => CupertinoColors.systemRed, // Praca Klasowa
+        EventCategory.semCorrection => CupertinoColors.systemIndigo, // Poprawka
+        EventCategory.other => CupertinoColors.inactiveGray, // Inne
+        EventCategory.lessonWork => CupertinoColors.systemBrown, // Praca na Lekcji
+        EventCategory.shortTest => CupertinoColors.systemCyan, // Kartkowka
+        EventCategory.correction => CupertinoColors.systemIndigo, // Poprawa
+        EventCategory.onlineLesson => CupertinoColors.systemGreen, // Online
+        EventCategory.homework => CupertinoColors.systemYellow, // Praca domowa (horror)
+        EventCategory.teacher => CupertinoColors.inactiveGray, // Nieobecnosc nauczyciela
+        EventCategory.freeDay => CupertinoColors.inactiveGray, // Dzien wolny (opis)
+        EventCategory.conference => CupertinoColors.systemTeal // Wywiadowka
+      };
 }

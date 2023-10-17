@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class SliverNavigationBar extends StatefulWidget {
   final ScrollController scrollController;
@@ -13,6 +14,7 @@ class SliverNavigationBar extends StatefulWidget {
   final Color darkColor;
   final bool? transitionBetweenRoutes;
   final double threshold;
+  final bool alternativeVisibility;
 
   const SliverNavigationBar(
       {super.key,
@@ -25,6 +27,7 @@ class SliverNavigationBar extends StatefulWidget {
       this.middle,
       this.trailing,
       this.threshold = 52,
+      this.alternativeVisibility = false,
       this.color = Colors.white,
       this.darkColor = Colors.black});
 
@@ -38,6 +41,11 @@ class _NavState extends State<SliverNavigationBar> {
   @override
   void initState() {
     super.initState();
+    if (widget.middle != null && widget.alternativeVisibility) {
+      VisibilityDetectorController.instance.updateInterval = Duration.zero;
+      return;
+    }
+
     widget.scrollController.addListener(() {
       if (widget.scrollController.offset >= widget.threshold && !_isCollapsed) {
         setState(() {
@@ -68,7 +76,12 @@ class _NavState extends State<SliverNavigationBar> {
       trailing: widget.trailing,
       alwaysShowMiddle: widget.alwaysShowMiddle ?? false,
       previousPageTitle: widget.previousPageTitle,
-      middle: widget.middle,
+      middle: (widget.middle != null && widget.alternativeVisibility)
+          ? VisibilityDetector(
+              key: UniqueKey(),
+              onVisibilityChanged: (VisibilityInfo info) => setState(() => _isCollapsed = info.visibleFraction >= 1.0),
+              child: widget.middle!)
+          : widget.middle,
       stretch: true,
       border: Border(
         bottom: BorderSide(

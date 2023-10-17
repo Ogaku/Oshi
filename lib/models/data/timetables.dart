@@ -152,8 +152,12 @@ class TimetableLesson extends HiveObject {
       'Instead of ${substitutionDetails?.originalSubject?.name} with ${substitutionDetails?.originalTeacher?.name}';
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get detailsStringMovedLesson =>
+  String get detailsStringMovedLessonFrom =>
       'Moved from ${DateFormat.MMMMd().format(substitutionDetails?.originalDate ?? DateTime.now())}, lesson no. ${substitutionDetails?.originalLessonNo}';
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  String get detailsStringMovedLessonTo =>
+      'Moved to ${DateFormat.MMMMd().format(substitutionDetails?.originalDate ?? DateTime.now())}, lesson no. ${substitutionDetails?.originalLessonNo}';
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get detailsTimeTeacherString =>
@@ -163,8 +167,10 @@ class TimetableLesson extends HiveObject {
   String get substitutionDetailsString => isSubstitution
       ? detailsStringSubstitution
       : isMovedLesson
-          ? detailsStringMovedLesson
-          : '';
+          ? (isCanceled ? detailsStringMovedLessonTo : detailsStringMovedLessonTo)
+          : isCanceled
+              ? 'This lesson was cancelled'
+              : '';
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get classroomString => 'In ${classroom?.name}, ${lessonClass?.name}';

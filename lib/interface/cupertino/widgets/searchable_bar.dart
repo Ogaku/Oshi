@@ -55,6 +55,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
   @override
   Widget build(BuildContext context) {
     var navBarSliver = SliverNavigationBar(
+      alternativeVisibility: widget.child != null,
       transitionBetweenRoutes: widget.transitionBetweenRoutes,
       leading: widget.leading,
       previousPageTitle: widget.previousPageTitle,
