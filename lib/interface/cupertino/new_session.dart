@@ -33,7 +33,8 @@ class _NewSessionPageState extends State<NewSessionPage> {
               title: Builder(
                   builder: (context) => CupertinoButton(
                         padding: EdgeInsets.only(left: 20),
-                        child: Row(
+                        child: Stack(
+                          alignment: AlignmentDirectional.centerStart,
                           children: [
                             Container(
                                 width: 120,
@@ -43,16 +44,17 @@ class _NewSessionPageState extends State<NewSessionPage> {
                                     placeholder: kTransparentImage,
                                     image: Share.providers[x]!.instance.providerBannerUri?.toString() ??
                                         'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg')),
-                            Container(
-                              width: 1,
-                              height: 40,
-                              margin: EdgeInsets.only(left: 20, right: 20),
-                              decoration: const BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(10)), color: Color(0x33AAAAAA)),
-                            ),
-                            Expanded(
-                                child: Align(
-                                    alignment: Alignment.centerLeft,
+                            // Container(
+                            //   width: 1,
+                            //   height: 40,
+                            //   margin: EdgeInsets.only(left: 20, right: 20),
+                            //   decoration: const BoxDecoration(
+                            //       borderRadius: BorderRadius.all(Radius.circular(10)), color: Color(0x33AAAAAA)),
+                            // ),
+                            Align(
+                                alignment: Alignment.centerRight,
+                                child: Container(
+                                    margin: EdgeInsets.only(right: 20, left: 120),
                                     child: Flexible(
                                         child: Text(
                                       Share.providers[x]!.instance.providerName,

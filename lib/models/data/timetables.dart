@@ -167,7 +167,7 @@ class TimetableLesson extends HiveObject {
   String get substitutionDetailsString => isSubstitution
       ? detailsStringSubstitution
       : isMovedLesson
-          ? (isCanceled ? detailsStringMovedLessonTo : detailsStringMovedLessonTo)
+          ? (isCanceled ? detailsStringMovedLessonTo : detailsStringMovedLessonFrom)
           : isCanceled
               ? 'This lesson was cancelled'
               : '';

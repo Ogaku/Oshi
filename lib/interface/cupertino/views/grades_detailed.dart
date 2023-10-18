@@ -52,12 +52,12 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   title: CupertinoContextMenu.builder(
                       actions: [
                         CupertinoContextMenuAction(
-                          onPressed: () {},
+                          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                           trailingIcon: CupertinoIcons.share,
                           child: const Text('Share'),
                         ),
                         CupertinoContextMenuAction(
-                          onPressed: () {},
+                          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                           isDestructiveAction: true,
                           trailingIcon: CupertinoIcons.chat_bubble_2,
                           child: const Text('Inquiry'),
@@ -141,12 +141,12 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
               title: CupertinoContextMenu.builder(
                   actions: [
                     CupertinoContextMenuAction(
-                      onPressed: () {},
+                      onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                       trailingIcon: CupertinoIcons.share,
                       child: const Text('Share'),
                     ),
                     CupertinoContextMenuAction(
-                      onPressed: () {},
+                      onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                       isDestructiveAction: true,
                       trailingIcon: CupertinoIcons.chat_bubble_2,
                       child: const Text('Inquiry'),
@@ -193,12 +193,12 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
           title: CupertinoContextMenu.builder(
               actions: [
                 CupertinoContextMenuAction(
-                  onPressed: () {},
+                  onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                   trailingIcon: CupertinoIcons.share,
                   child: const Text('Share'),
                 ),
                 CupertinoContextMenuAction(
-                  onPressed: () {},
+                  onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                   isDestructiveAction: true,
                   trailingIcon: CupertinoIcons.chat_bubble_2,
                   child: const Text('Inquiry'),
@@ -249,12 +249,12 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
           title: CupertinoContextMenu.builder(
               actions: [
                 CupertinoContextMenuAction(
-                  onPressed: () {},
+                  onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                   trailingIcon: CupertinoIcons.share,
                   child: const Text('Share'),
                 ),
                 CupertinoContextMenuAction(
-                  onPressed: () {},
+                  onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                   isDestructiveAction: true,
                   trailingIcon: CupertinoIcons.chat_bubble_2,
                   child: const Text('Inquiry'),

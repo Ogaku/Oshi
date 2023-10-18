@@ -46,7 +46,7 @@ class _SessionsPageState extends State<SessionsPage> {
                                         Share.settings.sessions.sessions.keys.firstOrDefault(defaultValue: null);
                                   }
                                   // Dismiss the context menu
-                                  Navigator.pop(context);
+                                  Navigator.of(context, rootNavigator: true).pop();
                                 });
 
                                 // Save our session changes
@@ -63,7 +63,8 @@ class _SessionsPageState extends State<SessionsPage> {
                                 color: const Color.fromARGB(255, 255, 255, 255),
                                 darkColor: const Color.fromARGB(255, 28, 28, 30)),
                             padding: EdgeInsets.only(left: 20),
-                            child: Row(
+                            child: Stack(
+                              alignment: AlignmentDirectional.centerStart,
                               children: [
                                 Container(
                                     width: 120,
@@ -73,32 +74,30 @@ class _SessionsPageState extends State<SessionsPage> {
                                         placeholder: kTransparentImage,
                                         image: Share.settings.sessions.sessions[x]!.provider.providerBannerUri?.toString() ??
                                             'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg')),
-                                Container(
-                                  width: 1,
-                                  height: 40,
-                                  margin: EdgeInsets.only(left: 20, right: 20),
-                                  decoration: const BoxDecoration(
-                                      borderRadius: BorderRadius.all(Radius.circular(10)), color: Color(0x33AAAAAA)),
-                                ),
-                                Expanded(
-                                    flex: 0,
-                                    child: Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Container(
-                                            margin: EdgeInsets.only(right: 20),
-                                            child: Flexible(
-                                                flex: 0,
-                                                child: Text(
-                                                  Share.settings.sessions.sessions[x]!.sessionName,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    color: CupertinoDynamicColor.resolve(
-                                                        CupertinoDynamicColor.withBrightness(
-                                                            color: CupertinoColors.black, darkColor: CupertinoColors.white),
-                                                        context),
-                                                  ),
-                                                )))))
+                                // Container(
+                                //   width: 1,
+                                //   height: 40,
+                                //   margin: EdgeInsets.only(left: 20, right: 20),
+                                //   decoration: const BoxDecoration(
+                                //       borderRadius: BorderRadius.all(Radius.circular(10)), color: Color(0x33AAAAAA)),
+                                // ),
+                                Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Container(
+                                        margin: EdgeInsets.only(right: 20, left: 120),
+                                        child: Flexible(
+                                            flex: 0,
+                                            child: Text(
+                                              Share.settings.sessions.sessions[x]!.sessionName,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                color: CupertinoDynamicColor.resolve(
+                                                    CupertinoDynamicColor.withBrightness(
+                                                        color: CupertinoColors.black, darkColor: CupertinoColors.white),
+                                                    context),
+                                              ),
+                                            ))))
                               ],
                             ),
                             onPressed: () async {
@@ -181,7 +180,7 @@ class _SessionsPageState extends State<SessionsPage> {
                             child: Container(
                                 margin: EdgeInsets.only(right: 20, left: 20, bottom: 20),
                                 child: Text(
-                                  'These are your currently set up e-register accounts. Choose one of currently logged-in sessions, or go on and create a new one.',
+                                  'These are your e-register accounts. Choose one of the currently logged-in sessions, or create a new one.',
                                   style: TextStyle(fontSize: 14),
                                 ))),
                         Visibility(

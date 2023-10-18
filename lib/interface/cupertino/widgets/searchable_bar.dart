@@ -152,7 +152,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                     SliverFillRemaining(
                         hasScrollBody: false,
                         child: Container(
-                            padding: const EdgeInsets.only(bottom: 60),
+                            margin: const EdgeInsets.only(bottom: 60),
                             child: widget.child ??
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.start,

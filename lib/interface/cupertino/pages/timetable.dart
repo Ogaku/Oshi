@@ -153,7 +153,9 @@ class _TimetablePageState extends State<TimetablePage> {
               // Teacher absences for the selected day/date
               var teachersAbsentToday = Share.session.data.student.mainClass.events
                   .where((x) => x.category == EventCategory.teacher)
+                  .orderBy((x) => x.sender?.name ?? '')
                   .where((x) =>
+                      selectedDate.isBetween(x.timeFrom, x.timeTo ?? DateTime(2000)) ||
                       x.timeFrom.isAfter(selectedDate) && (x.timeTo?.isBefore(selectedDate.add(Duration(days: 1))) ?? false))
                   .distinct((x) => x.sender?.name ?? '')
                   .where((x) =>
@@ -194,17 +196,17 @@ class _TimetablePageState extends State<TimetablePage> {
                             title: CupertinoContextMenu.builder(
                                 actions: [
                                   CupertinoContextMenuAction(
-                                    onPressed: () {},
+                                    onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                                     trailingIcon: CupertinoIcons.share,
                                     child: const Text('Share'),
                                   ),
                                   CupertinoContextMenuAction(
-                                    onPressed: () {},
+                                    onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                                     trailingIcon: CupertinoIcons.calendar,
                                     child: const Text('Add to calendar'),
                                   ),
                                   CupertinoContextMenuAction(
-                                    onPressed: () {},
+                                    onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                                     isDestructiveAction: true,
                                     trailingIcon: CupertinoIcons.chat_bubble_2,
                                     child: const Text('Inquiry'),
@@ -367,7 +369,7 @@ class _TimetablePageState extends State<TimetablePage> {
 
               return SingleChildScrollView(
                   child: Container(
-                      padding: const EdgeInsets.only(bottom: 60),
+                      margin: const EdgeInsets.only(bottom: 60),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -460,7 +462,7 @@ extension EventWidgetExtension on Iterable<Event> {
                           builder: (context) => CupertinoContextMenu.builder(
                                   actions: [
                                     CupertinoContextMenuAction(
-                                      onPressed: () {},
+                                      onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                                       trailingIcon: CupertinoIcons.share,
                                       child: const Text('Share'),
                                     ),
@@ -471,19 +473,19 @@ extension EventWidgetExtension on Iterable<Event> {
                                               Share.session.provider.markEventAsDone(parent: x).then((s) {
                                                 if (s.success) setState(() => x.done = true);
                                               });
-                                              // Navigator.pop(context);
+                                              Navigator.of(context, rootNavigator: true).pop();
                                             },
                                             trailingIcon: CupertinoIcons.check_mark,
                                             child: const Text('Mark as done'),
                                           )
                                         // Event - add to calendar
                                         : CupertinoContextMenuAction(
-                                            onPressed: () {},
+                                            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                                             trailingIcon: CupertinoIcons.calendar,
                                             child: const Text('Add to calendar'),
                                           ),
                                     CupertinoContextMenuAction(
-                                      onPressed: () {},
+                                      onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                                       isDestructiveAction: true,
                                       trailingIcon: CupertinoIcons.chat_bubble_2,
                                       child: const Text('Inquiry'),
@@ -520,25 +522,12 @@ extension EventWidgetExtension on Iterable<Event> {
                                                               crossAxisAlignment: CrossAxisAlignment.start,
                                                               mainAxisSize: MainAxisSize.max,
                                                               children: [
-                                                                Stack(
-                                                                    alignment: AlignmentDirectional.centerStart,
+                                                                Row(
+                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                                    mainAxisSize: MainAxisSize.max,
                                                                     children: [
-                                                                      Container(
-                                                                          margin: EdgeInsets.only(
-                                                                              left: (day?.lessons.any((y) =>
-                                                                                          y?.any((z) =>
-                                                                                              z.lessonNo ==
-                                                                                              (x.lessonNo ?? -1)) ??
-                                                                                          false) ??
-                                                                                      false)
-                                                                                  ? 15
-                                                                                  : 0),
-                                                                          child: Text(
-                                                                            x.titleString,
-                                                                            overflow: TextOverflow.ellipsis,
-                                                                            style: TextStyle(
-                                                                                fontSize: 17, fontWeight: FontWeight.w600),
-                                                                          )),
+                                                                      // Event tag
                                                                       Visibility(
                                                                           visible: (day?.lessons.any((y) =>
                                                                                   y?.any((z) =>
@@ -546,7 +535,7 @@ extension EventWidgetExtension on Iterable<Event> {
                                                                                   false) ??
                                                                               false),
                                                                           child: Container(
-                                                                              margin: EdgeInsets.only(top: 2),
+                                                                              margin: EdgeInsets.only(top: 7, right: 6),
                                                                               child: Container(
                                                                                 height: 10,
                                                                                 width: 10,
@@ -554,7 +543,60 @@ extension EventWidgetExtension on Iterable<Event> {
                                                                                     shape: BoxShape.circle,
                                                                                     color: x.asColor()),
                                                                               ))),
+                                                                      // Event title
+                                                                      Expanded(
+                                                                          flex: 2,
+                                                                          child: Text(
+                                                                            x.titleString,
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                            style: TextStyle(
+                                                                                fontSize: 17, fontWeight: FontWeight.w600),
+                                                                          )),
+                                                                      // Symbol/homework/days
+                                                                      Visibility(
+                                                                          visible:
+                                                                              x.category == EventCategory.homework && x.done,
+                                                                          child: Container(
+                                                                              margin: EdgeInsets.only(left: 4),
+                                                                              child: Icon(CupertinoIcons.check_mark))),
+                                                                      Visibility(
+                                                                          visible: x.classroom?.name != null &&
+                                                                              x.category != EventCategory.teacher,
+                                                                          child: Container(
+                                                                              margin: EdgeInsets.only(top: 1, left: 3),
+                                                                              child: Text(
+                                                                                x.classroom?.name ?? '^^',
+                                                                                overflow: TextOverflow.ellipsis,
+                                                                                style: TextStyle(fontSize: 16),
+                                                                              ))),
+                                                                      Visibility(
+                                                                          visible: x.category == EventCategory.teacher,
+                                                                          child: Container(
+                                                                              margin: EdgeInsets.only(top: 1, left: 3),
+                                                                              child: (x.timeFrom.hour != 0 &&
+                                                                                      x.timeTo?.hour != 0)
+                                                                                  ? Text(
+                                                                                      "${DateFormat('H:mm').format(x.timeFrom)} - ${DateFormat('H:mm').format(x.timeTo ?? DateTime.now())}",
+                                                                                      overflow: TextOverflow.ellipsis,
+                                                                                      style: TextStyle(fontSize: 15),
+                                                                                    )
+                                                                                  : Text(
+                                                                                      "${DateFormat('d').format(x.timeFrom)} - ${DateFormat('d MMM').format(x.timeTo ?? DateTime.now())}",
+                                                                                      overflow: TextOverflow.ellipsis,
+                                                                                      style: TextStyle(fontSize: 15),
+                                                                                    )))
                                                                     ]),
+                                                                Visibility(
+                                                                    visible: x.locationString.isNotEmpty,
+                                                                    child: Opacity(
+                                                                        opacity: 0.5,
+                                                                        child: Container(
+                                                                            padding: EdgeInsets.only(top: 4),
+                                                                            child: Text(
+                                                                              x.locationString,
+                                                                              overflow: TextOverflow.ellipsis,
+                                                                              style: TextStyle(fontSize: 16),
+                                                                            )))),
                                                                 Visibility(
                                                                     visible: x.subtitleString.isNotEmpty,
                                                                     child: Opacity(
@@ -567,42 +609,7 @@ extension EventWidgetExtension on Iterable<Event> {
                                                                               maxLines: 2,
                                                                               style: TextStyle(fontSize: 16),
                                                                             )))),
-                                                                Visibility(
-                                                                    visible: x.locationString.isNotEmpty,
-                                                                    child: Opacity(
-                                                                        opacity: 0.5,
-                                                                        child: Container(
-                                                                            margin: EdgeInsets.only(top: 4),
-                                                                            child: Text(
-                                                                              x.locationString,
-                                                                              overflow: TextOverflow.ellipsis,
-                                                                              style: TextStyle(fontSize: 16),
-                                                                            )))),
-                                                              ])),
-                                                      Visibility(
-                                                          visible: x.category == EventCategory.homework && x.done,
-                                                          child: Container(
-                                                              margin: EdgeInsets.only(left: 4),
-                                                              child: Icon(CupertinoIcons.check_mark))),
-                                                      Visibility(
-                                                          visible: x.classroom?.name != null &&
-                                                              x.category != EventCategory.teacher,
-                                                          child: Container(
-                                                              margin: EdgeInsets.only(top: 4),
-                                                              child: Text(
-                                                                x.classroom?.name ?? '^^',
-                                                                overflow: TextOverflow.ellipsis,
-                                                                style: TextStyle(fontSize: 16),
-                                                              ))),
-                                                      Visibility(
-                                                          visible: x.category == EventCategory.teacher,
-                                                          child: Container(
-                                                              margin: EdgeInsets.only(top: 2, left: 3),
-                                                              child: Text(
-                                                                "${DateFormat('H:mm').format(x.timeFrom)} - ${DateFormat('H:mm').format(x.timeTo ?? DateTime.now())}",
-                                                                overflow: TextOverflow.ellipsis,
-                                                                style: TextStyle(fontSize: 15),
-                                                              )))
+                                                              ]))
                                                     ]))));
                                   })))))
               .toList();
@@ -614,6 +621,25 @@ extension DateTimeExtension on DateTime {
   DateTime withTime(DateTime? other) =>
       other == null ? this : DateTime(year, month, day, other.hour, other.minute, other.second);
   DateTime asHour(DateTime? other) => DateTime(2000).withTime(other);
+
+  bool isAfterOrEqualTo(DateTime dateTime) {
+    final isAtSameMomentAs = dateTime.isAtSameMomentAs(this);
+    return isAtSameMomentAs | isAfter(dateTime);
+  }
+
+  bool isBeforeOrEqualTo(DateTime dateTime) {
+    final isAtSameMomentAs = dateTime.isAtSameMomentAs(this);
+    return isAtSameMomentAs | isBefore(dateTime);
+  }
+
+  bool isBetween(
+    DateTime fromDateTime,
+    DateTime toDateTime,
+  ) {
+    final isAfter = isAfterOrEqualTo(fromDateTime);
+    final isBefore = isBeforeOrEqualTo(toDateTime);
+    return isAfter && isBefore;
+  }
 }
 
 extension EventColors on Event {
