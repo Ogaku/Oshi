@@ -44,12 +44,14 @@ class _LoginPageState extends State<LoginPage> {
         .toList();
 
     return CupertinoPageScaffold(
+      backgroundColor: CupertinoDynamicColor.withBrightness(
+          color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 28, 28, 30)),
       navigationBar: CupertinoNavigationBar(
           transitionBetweenRoutes: false,
           automaticallyImplyLeading: true,
           border: null,
           backgroundColor: CupertinoDynamicColor.withBrightness(
-              color: const Color.fromARGB(255, 255, 255, 255), darkColor: const Color.fromARGB(255, 28, 28, 30)),
+              color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 28, 28, 30)),
           trailing: CupertinoButton(
               padding: EdgeInsets.all(10),
               child: isWorking
@@ -107,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Container(
                       margin: EdgeInsets.only(right: 20, left: 20, bottom: 20),
                       child: Text(
-                        "Some login credentials may be locally stored by the e-register service provider, either as encoded text or a computed access token. This data is not, and will never be shared with neither the project team nor any third-parties.",
+                        "Some login credentials may be stored by the e-register service provider, either encoded or as tokens. This data is not shared and will never leave your device for purposes other than logging in.",
                         style: TextStyle(fontSize: 12),
                         textAlign: TextAlign.justify,
                       ))),

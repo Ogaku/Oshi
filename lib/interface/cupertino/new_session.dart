@@ -33,44 +33,37 @@ class _NewSessionPageState extends State<NewSessionPage> {
               title: Builder(
                   builder: (context) => CupertinoButton(
                         padding: EdgeInsets.only(left: 20),
-                        child: Stack(
-                          alignment: AlignmentDirectional.centerStart,
-                          children: [
-                            ConstrainedBox(
-                                constraints: BoxConstraints(maxWidth: 120, maxHeight: 80, minWidth: 120, minHeight: 80),
-                                child: Container(
-                                    margin: EdgeInsets.only(top: 20, bottom: 20),
-                                    child: FadeInImage.memoryNetwork(
-                                        height: 37,
-                                        placeholder: kTransparentImage,
-                                        image: Share.providers[x]!.instance.providerBannerUri?.toString() ??
-                                            'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg'))),
-                            Align(
-                                alignment: Alignment.centerLeft,
-                                child: Container(
-                                  width: 1,
-                                  height: 40,
-                                  margin: EdgeInsets.only(left: 135),
-                                  decoration: const BoxDecoration(
-                                      borderRadius: BorderRadius.all(Radius.circular(10)), color: Color(0x33AAAAAA)),
-                                )),
-                            Align(
-                                alignment: Alignment.centerLeft,
-                                child: Container(
-                                    margin: EdgeInsets.only(right: 20, left: 155),
-                                    child: Flexible(
-                                        child: Text(
-                                      Share.providers[x]!.instance.providerName,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: CupertinoDynamicColor.resolve(
-                                              CupertinoDynamicColor.withBrightness(
-                                                  color: CupertinoColors.black, darkColor: CupertinoColors.white),
-                                              context)),
-                                    ))))
-                          ],
-                        ),
+                        child: Row(children: [
+                          ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: 120, maxHeight: 80, minWidth: 120, minHeight: 80),
+                              child: Container(
+                                  margin: EdgeInsets.only(top: 20, bottom: 20),
+                                  child: FadeInImage.memoryNetwork(
+                                      height: 37,
+                                      placeholder: kTransparentImage,
+                                      image: Share.providers[x]!.instance.providerBannerUri?.toString() ??
+                                          'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg'))),
+                          Container(
+                            width: 1,
+                            height: 40,
+                            margin: EdgeInsets.only(left: 20, right: 20),
+                            decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(10)), color: Color(0x33AAAAAA)),
+                          ),
+                          Flexible(
+                              child: Container(
+                                  margin: EdgeInsets.only(right: 20),
+                                  child: Text(
+                                    Share.providers[x]!.instance.providerName,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: CupertinoDynamicColor.resolve(
+                                            CupertinoDynamicColor.withBrightness(
+                                                color: CupertinoColors.black, darkColor: CupertinoColors.white),
+                                            context)),
+                                  )))
+                        ]),
                         onPressed: () {
                           showCupertinoModalBottomSheet(
                               context: context,
@@ -115,7 +108,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
                         child: Container(
                             margin: EdgeInsets.only(right: 20, left: 20, bottom: 20),
                             child: Text(
-                              'Choose the e-register system, depending on which one your school uses. You will be able to set up more accounts later.',
+                              "Choose the e-register provider depending on which one your school uses. You'll be able to set up more student accounts and e-registers later as needed.",
                               style: TextStyle(fontSize: 14),
                             ))),
                     CupertinoListSection.insetGrouped(hasLeading: false, children: providersList),
@@ -127,7 +120,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
                                 child: Container(
                                     margin: EdgeInsets.only(right: 30, left: 30, bottom: 10),
                                     child: Text(
-                                      "All trademarks featured in this application remain the property of their rightful owners, and are used for informational purposes only.",
+                                      "All trademarks featured in this app remain the property of their rightful owners, and are used for informational purposes only.",
                                       style: TextStyle(fontSize: 12),
                                       textAlign: TextAlign.center,
                                     ))))),

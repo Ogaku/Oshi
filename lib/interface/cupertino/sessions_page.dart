@@ -63,43 +63,38 @@ class _SessionsPageState extends State<SessionsPage> {
                                 color: const Color.fromARGB(255, 255, 255, 255),
                                 darkColor: const Color.fromARGB(255, 28, 28, 30)),
                             padding: EdgeInsets.only(left: 20),
-                            child: Stack(
-                              alignment: AlignmentDirectional.centerStart,
-                              children: [
-                                Container(
-                                    width: 120,
-                                    margin: EdgeInsets.only(top: 20, bottom: 20),
-                                    child: FadeInImage.memoryNetwork(
-                                        height: 37,
-                                        placeholder: kTransparentImage,
-                                        image: Share.settings.sessions.sessions[x]!.provider.providerBannerUri?.toString() ??
-                                            'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg')),
-                                // Container(
-                                //   width: 1,
-                                //   height: 40,
-                                //   margin: EdgeInsets.only(left: 20, right: 20),
-                                //   decoration: const BoxDecoration(
-                                //       borderRadius: BorderRadius.all(Radius.circular(10)), color: Color(0x33AAAAAA)),
-                                // ),
-                                Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Container(
-                                        margin: EdgeInsets.only(right: 20, left: 120),
-                                        child: Flexible(
-                                            flex: 0,
-                                            child: Text(
-                                              Share.settings.sessions.sessions[x]!.sessionName,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                color: CupertinoDynamicColor.resolve(
-                                                    CupertinoDynamicColor.withBrightness(
-                                                        color: CupertinoColors.black, darkColor: CupertinoColors.white),
-                                                    context),
-                                              ),
-                                            ))))
-                              ],
-                            ),
+                            child: Row(children: [
+                              ConstrainedBox(
+                                  constraints: BoxConstraints(maxWidth: 120, maxHeight: 80, minWidth: 120, minHeight: 80),
+                                  child: Container(
+                                      margin: EdgeInsets.only(top: 20, bottom: 20),
+                                      child: FadeInImage.memoryNetwork(
+                                          height: 37,
+                                          placeholder: kTransparentImage,
+                                          image: Share.settings.sessions.sessions[x]!.provider.providerBannerUri
+                                                  ?.toString() ??
+                                              'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg'))),
+                              Container(
+                                width: 1,
+                                height: 40,
+                                margin: EdgeInsets.only(left: 20, right: 20),
+                                decoration: const BoxDecoration(
+                                    borderRadius: BorderRadius.all(Radius.circular(10)), color: Color(0x33AAAAAA)),
+                              ),
+                              Flexible(
+                                  child: Container(
+                                      margin: EdgeInsets.only(right: 20),
+                                      child: Text(
+                                        Share.settings.sessions.sessions[x]!.sessionName,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            color: CupertinoDynamicColor.resolve(
+                                                CupertinoDynamicColor.withBrightness(
+                                                    color: CupertinoColors.black, darkColor: CupertinoColors.white),
+                                                context)),
+                                      )))
+                            ]),
                             onPressed: () async {
                               if (isWorking) return; // Already handling something, give up
                               setState(() {
@@ -180,7 +175,7 @@ class _SessionsPageState extends State<SessionsPage> {
                             child: Container(
                                 margin: EdgeInsets.only(right: 20, left: 20, bottom: 20),
                                 child: Text(
-                                  'These are your e-register accounts. Choose one of the currently logged-in sessions, or create a new one.',
+                                  'These are your e-register accounts. Choose one of the currently logged-in sessions, or go create a new one.',
                                   style: TextStyle(fontSize: 14),
                                 ))),
                         Visibility(
@@ -218,7 +213,7 @@ class _SessionsPageState extends State<SessionsPage> {
                                     child: Container(
                                         margin: EdgeInsets.only(right: 30, left: 30, bottom: 10),
                                         child: Text(
-                                          "All trademarks featured in this application remain the property of their rightful owners, and are used for informational purposes only.",
+                                          "All trademarks featured in this app remain the property of their rightful owners, and are used for informational purposes only.",
                                           style: TextStyle(fontSize: 12),
                                           textAlign: TextAlign.center,
                                         ))))),

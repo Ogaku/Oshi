@@ -610,7 +610,7 @@ class LibrusDataReader implements models.IProvider {
 
   @override
   String get providerDescription =>
-      "Log in with your Librus\u00AE Synergia account your school has provided you with. A student's login will typically end with an 'u' letter.";
+      "Log in using the account your school has provided you with. A student's login will typically end with an 'u' letter.";
 
   @override
   Uri? get providerBannerUri => Uri.parse('https://api.librus.pl/OAuth/images/synergia-logo.png');

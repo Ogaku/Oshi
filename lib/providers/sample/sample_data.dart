@@ -39,7 +39,7 @@ class FakeDataReader implements IProvider {
 
   @override
   String get providerDescription =>
-      "This is a sample provider, it's here for debugging purposes only. You could say hello, I guess? Be prepared for no actual response, though.";
+      "This is a sample provider, it's still here for debugging purposes only. You could say hello, I guess? Please be prepared for no actual response, though.";
 
   @override
   String get providerName => 'Sample Provider';
