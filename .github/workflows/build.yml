@@ -1,0 +1,45 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v2
+      with:
+        distribution: 'zulu'
+        java-version: '11'
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        architecture: x64
+        
+    - run: flutter pub get
+    - run: flutter build apk --target-platform android-arm64
+    - run: flutter build ios --release --no-codesign
+    - run: cd ./build/ios/iphoneos && mkdir Payload && mv Runner.app Payload/Runner.app && zip -r Oshi.ipa Payload
+
+    - name: Upload the iOS Artifact
+      uses: actions/upload-artifact@v3.1.3
+      with:
+        name: iphoneos-release
+        path: build/ios/iphoneos/Oshi.ipa
+        if-no-files-found: error
+        
+    - name: Upload the Android Artifact
+      uses: actions/upload-artifact@v3.1.3
+      with:
+        name: android-arm64-release
+        path: build/app/outputs/flutter-apk/app-release.apk
+        if-no-files-found: error

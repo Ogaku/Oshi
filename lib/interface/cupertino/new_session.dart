@@ -36,25 +36,28 @@ class _NewSessionPageState extends State<NewSessionPage> {
                         child: Stack(
                           alignment: AlignmentDirectional.centerStart,
                           children: [
-                            Container(
-                                width: 120,
-                                margin: EdgeInsets.only(top: 20, bottom: 20),
-                                child: FadeInImage.memoryNetwork(
-                                    height: 37,
-                                    placeholder: kTransparentImage,
-                                    image: Share.providers[x]!.instance.providerBannerUri?.toString() ??
-                                        'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg')),
-                            // Container(
-                            //   width: 1,
-                            //   height: 40,
-                            //   margin: EdgeInsets.only(left: 20, right: 20),
-                            //   decoration: const BoxDecoration(
-                            //       borderRadius: BorderRadius.all(Radius.circular(10)), color: Color(0x33AAAAAA)),
-                            // ),
-                            Align(
-                                alignment: Alignment.centerRight,
+                            ConstrainedBox(
+                                constraints: BoxConstraints(maxWidth: 120, maxHeight: 80, minWidth: 120, minHeight: 80),
                                 child: Container(
-                                    margin: EdgeInsets.only(right: 20, left: 120),
+                                    margin: EdgeInsets.only(top: 20, bottom: 20),
+                                    child: FadeInImage.memoryNetwork(
+                                        height: 37,
+                                        placeholder: kTransparentImage,
+                                        image: Share.providers[x]!.instance.providerBannerUri?.toString() ??
+                                            'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg'))),
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Container(
+                                  width: 1,
+                                  height: 40,
+                                  margin: EdgeInsets.only(left: 135),
+                                  decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.all(Radius.circular(10)), color: Color(0x33AAAAAA)),
+                                )),
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Container(
+                                    margin: EdgeInsets.only(right: 20, left: 155),
                                     child: Flexible(
                                         child: Text(
                                       Share.providers[x]!.instance.providerName,
