@@ -3,11 +3,11 @@
 
 import 'package:flutter/cupertino.dart';
 
-import 'package:ogaku/interface/cupertino/pages/home.dart' show homePage;
-import 'package:ogaku/interface/cupertino/pages/grades.dart' show gradesPage;
-import 'package:ogaku/interface/cupertino/pages/timetable.dart' show timetablePage;
-import 'package:ogaku/interface/cupertino/pages/messages.dart' show messagesPage;
-import 'package:ogaku/interface/cupertino/pages/absences.dart' show absencesPage;
+import 'package:oshi/interface/cupertino/pages/home.dart' show homePage;
+import 'package:oshi/interface/cupertino/pages/grades.dart' show gradesPage;
+import 'package:oshi/interface/cupertino/pages/timetable.dart' show timetablePage;
+import 'package:oshi/interface/cupertino/pages/messages.dart' show messagesPage;
+import 'package:oshi/interface/cupertino/pages/absences.dart' show absencesPage;
 
 // Boiler: returned to the main application
 StatefulWidget get baseApp => BaseApp();

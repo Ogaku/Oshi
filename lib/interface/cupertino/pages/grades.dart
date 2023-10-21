@@ -3,9 +3,9 @@
 
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:ogaku/interface/cupertino/views/grades_detailed.dart';
-import 'package:ogaku/interface/cupertino/widgets/searchable_bar.dart';
-import 'package:ogaku/share/share.dart';
+import 'package:oshi/interface/cupertino/views/grades_detailed.dart';
+import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
+import 'package:oshi/share/share.dart';
 
 // Boiler: returned to the app tab builder
 StatefulWidget get gradesPage => GradesPage();

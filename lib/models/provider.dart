@@ -2,12 +2,12 @@
 
 import 'package:event/event.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:ogaku/models/data/teacher.dart' show Teacher;
-import 'package:ogaku/models/data/student.dart' show Student;
-import 'package:ogaku/models/data/timetables.dart' show Timetables;
-import 'package:ogaku/models/data/messages.dart' show Messages, Message;
-import 'package:ogaku/models/data/event.dart' as models show Event;
-import 'package:ogaku/models/progress.dart' show IProgress;
+import 'package:oshi/models/data/teacher.dart' show Teacher;
+import 'package:oshi/models/data/student.dart' show Student;
+import 'package:oshi/models/data/timetables.dart' show Timetables;
+import 'package:oshi/models/data/messages.dart' show Messages, Message;
+import 'package:oshi/models/data/event.dart' as models show Event;
+import 'package:oshi/models/progress.dart' show IProgress;
 
 import 'package:hive/hive.dart';
 part 'provider.g.dart';

@@ -1,15 +1,15 @@
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
-import 'package:ogaku/models/provider.dart';
+import 'package:oshi/models/provider.dart';
 
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import 'package:ogaku/models/data/teacher.dart' show Teacher;
-import 'package:ogaku/models/progress.dart' show IProgress;
+import 'package:oshi/models/data/teacher.dart' show Teacher;
+import 'package:oshi/models/progress.dart' show IProgress;
 
-import 'package:ogaku/providers/librus/librus_data.dart' show LibrusDataReader;
-import 'package:ogaku/providers/sample/sample_data.dart' show FakeDataReader;
+import 'package:oshi/providers/librus/librus_data.dart' show LibrusDataReader;
+import 'package:oshi/providers/sample/sample_data.dart' show FakeDataReader;
 
 part 'share.g.dart';
 

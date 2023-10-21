@@ -1,11 +1,11 @@
 import 'package:event/src/event.dart';
 import 'package:event/src/eventargs.dart';
-import 'package:ogaku/models/data/messages.dart';
-import 'package:ogaku/models/data/student.dart';
-import 'package:ogaku/models/data/teacher.dart';
-import 'package:ogaku/models/progress.dart';
-import 'package:ogaku/models/provider.dart';
-import 'package:ogaku/models/data/event.dart' as models;
+import 'package:oshi/models/data/messages.dart';
+import 'package:oshi/models/data/student.dart';
+import 'package:oshi/models/data/teacher.dart';
+import 'package:oshi/models/progress.dart';
+import 'package:oshi/models/provider.dart';
+import 'package:oshi/models/data/event.dart' as models;
 
 class FakeDataReader implements IProvider {
   @override

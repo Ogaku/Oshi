@@ -3,8 +3,8 @@
 
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:ogaku/interface/cupertino/widgets/searchable_bar.dart';
-import 'package:ogaku/share/share.dart';
+import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
+import 'package:oshi/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 // Boiler: returned to the app tab builder

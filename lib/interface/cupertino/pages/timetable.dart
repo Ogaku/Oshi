@@ -5,13 +5,13 @@ import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
-import 'package:ogaku/interface/cupertino/pages/home.dart';
-import 'package:ogaku/interface/cupertino/widgets/searchable_bar.dart';
-import 'package:ogaku/interface/cupertino/widgets/text_chip.dart';
-import 'package:ogaku/models/data/attendances.dart';
-import 'package:ogaku/models/data/event.dart';
-import 'package:ogaku/models/data/timetables.dart';
-import 'package:ogaku/share/share.dart';
+import 'package:oshi/interface/cupertino/pages/home.dart';
+import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
+import 'package:oshi/interface/cupertino/widgets/text_chip.dart';
+import 'package:oshi/models/data/attendances.dart';
+import 'package:oshi/models/data/event.dart';
+import 'package:oshi/models/data/timetables.dart';
+import 'package:oshi/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 // Boiler: returned to the app tab builder
@@ -251,7 +251,7 @@ class _TimetablePageState extends State<TimetablePage> {
                                                                     .where((y) => y.date == selectedDate)
                                                                     .where((y) => (y.lessonNo ?? -1) == x.lessonNo)
                                                                     .select((y, index) => Container(
-                                                                        margin: EdgeInsets.only(top: 7, right: 6),
+                                                                        margin: EdgeInsets.only(top: 5, right: 6),
                                                                         child: Container(
                                                                           height: 10,
                                                                           width: 10,
@@ -535,7 +535,7 @@ extension EventWidgetExtension on Iterable<Event> {
                                                                                   false) ??
                                                                               false),
                                                                           child: Container(
-                                                                              margin: EdgeInsets.only(top: 7, right: 6),
+                                                                              margin: EdgeInsets.only(top: 5, right: 6),
                                                                               child: Container(
                                                                                 height: 10,
                                                                                 width: 10,

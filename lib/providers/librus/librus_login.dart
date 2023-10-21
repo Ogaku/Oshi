@@ -4,7 +4,7 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
-import 'package:ogaku/providers/librus/login_data.dart';
+import 'package:oshi/providers/librus/login_data.dart';
 import 'package:format/format.dart';
 
 import 'constants.dart';

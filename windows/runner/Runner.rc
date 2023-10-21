@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.ogaku" "\0"
-            VALUE "FileDescription", "ogaku" "\0"
+            VALUE "FileDescription", "oshi" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "ogaku" "\0"
+            VALUE "InternalName", "oshi" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2023 com.ogaku. All rights reserved." "\0"
-            VALUE "OriginalFilename", "ogaku.exe" "\0"
-            VALUE "ProductName", "ogaku" "\0"
+            VALUE "OriginalFilename", "oshi.exe" "\0"
+            VALUE "ProductName", "oshi" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

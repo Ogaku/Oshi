@@ -4,7 +4,7 @@ import 'dart:io';
 import 'constants.dart';
 
 import 'package:dio/dio.dart';
-import 'package:ogaku/providers/librus/login_data.dart';
+import 'package:oshi/providers/librus/login_data.dart';
 
 class LibrusReader {
   final SynergiaData synergiaData;

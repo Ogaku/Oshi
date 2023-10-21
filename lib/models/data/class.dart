@@ -1,8 +1,8 @@
 // -- class.dart --
 import 'package:json_annotation/json_annotation.dart';
-import 'package:ogaku/models/data/event.dart';
-import 'package:ogaku/models/data/teacher.dart';
-import 'package:ogaku/models/data/unit.dart';
+import 'package:oshi/models/data/event.dart';
+import 'package:oshi/models/data/teacher.dart';
+import 'package:oshi/models/data/unit.dart';
 
 import 'package:hive/hive.dart';
 part 'class.g.dart';

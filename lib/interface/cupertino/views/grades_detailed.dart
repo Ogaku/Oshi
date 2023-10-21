@@ -3,8 +3,8 @@
 
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:ogaku/interface/cupertino/widgets/searchable_bar.dart';
-import 'package:ogaku/models/data/lesson.dart';
+import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
+import 'package:oshi/models/data/lesson.dart';
 
 class GradesDetailedPage extends StatefulWidget {
   const GradesDetailedPage({super.key, required this.lesson});

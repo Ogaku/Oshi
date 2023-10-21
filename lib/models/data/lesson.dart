@@ -1,9 +1,9 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
 import 'package:json_annotation/json_annotation.dart';
-import 'package:ogaku/models/data/class.dart';
-import 'package:ogaku/models/data/grade.dart';
-import 'package:ogaku/models/data/teacher.dart';
+import 'package:oshi/models/data/class.dart';
+import 'package:oshi/models/data/grade.dart';
+import 'package:oshi/models/data/teacher.dart';
 
 import 'package:hive/hive.dart';
 part 'lesson.g.dart';

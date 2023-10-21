@@ -3,8 +3,8 @@
 import 'package:darq/darq.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:ogaku/models/data/teacher.dart';
-import 'package:ogaku/share/config.dart';
+import 'package:oshi/models/data/teacher.dart';
+import 'package:oshi/share/config.dart';
 
 import 'package:hive/hive.dart';
 part 'grade.g.dart';

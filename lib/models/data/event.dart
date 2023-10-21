@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:ogaku/interface/cupertino/views/grades_detailed.dart';
-import 'package:ogaku/models/data/classroom.dart';
-import 'package:ogaku/models/data/teacher.dart';
+import 'package:oshi/interface/cupertino/views/grades_detailed.dart';
+import 'package:oshi/models/data/classroom.dart';
+import 'package:oshi/models/data/teacher.dart';
 
 import 'package:hive/hive.dart';
 part 'event.g.dart';

@@ -1,10 +1,10 @@
 import 'package:darq/darq.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:ogaku/models/data/class.dart';
-import 'package:ogaku/models/data/classroom.dart';
-import 'package:ogaku/models/data/lesson.dart';
-import 'package:ogaku/models/data/teacher.dart';
+import 'package:oshi/models/data/class.dart';
+import 'package:oshi/models/data/classroom.dart';
+import 'package:oshi/models/data/lesson.dart';
+import 'package:oshi/models/data/teacher.dart';
 
 import 'package:hive/hive.dart';
 part 'timetables.g.dart';

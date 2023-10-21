@@ -1,4 +1,4 @@
-package com.ogaku.ogaku
+package com.ogaku.oshi
 
 import io.flutter.embedding.android.FlutterActivity
 

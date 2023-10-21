@@ -3,11 +3,11 @@
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:ogaku/share/share.dart';
+import 'package:oshi/share/share.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-import 'package:ogaku/interface/cupertino/session_login.dart' show LoginPage;
-import 'package:ogaku/interface/cupertino/widgets/navigation_bar.dart' show SliverNavigationBar;
+import 'package:oshi/interface/cupertino/session_login.dart' show LoginPage;
+import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart' show SliverNavigationBar;
 import 'package:url_launcher/url_launcher_string.dart';
 
 // Boiler: returned to the main application

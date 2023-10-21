@@ -4,11 +4,11 @@
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import 'package:ogaku/interface/cupertino/widgets/searchable_bar.dart';
-import 'package:ogaku/models/data/event.dart';
-import 'package:ogaku/share/share.dart';
+import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
+import 'package:oshi/models/data/event.dart';
+import 'package:oshi/share/share.dart';
 
-import 'package:ogaku/interface/cupertino/widgets/text_chip.dart' show TextChip;
+import 'package:oshi/interface/cupertino/widgets/text_chip.dart' show TextChip;
 
 // Boiler: returned to the app tab builder
 StatefulWidget get homePage => HomePage();

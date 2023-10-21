@@ -1,7 +1,7 @@
 // -- unit.dart --
 import 'package:json_annotation/json_annotation.dart';
-import 'package:ogaku/models/data/announcement.dart';
-import 'package:ogaku/models/data/event.dart';
+import 'package:oshi/models/data/announcement.dart';
+import 'package:oshi/models/data/event.dart';
 
 import 'package:hive/hive.dart';
 part 'unit.g.dart';

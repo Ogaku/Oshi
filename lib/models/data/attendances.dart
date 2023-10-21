@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:ogaku/models/data/teacher.dart';
-import 'package:ogaku/models/data/timetables.dart';
+import 'package:oshi/models/data/teacher.dart';
+import 'package:oshi/models/data/timetables.dart';
 
 import 'package:hive/hive.dart';
 part 'attendances.g.dart';
