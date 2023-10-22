@@ -27,10 +27,11 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
             x.detailsDateString.contains(RegExp(searchQuery, caseSensitive: false)) ||
             x.commentsString.contains(RegExp(searchQuery, caseSensitive: false)) ||
             x.addedByString.contains(RegExp(searchQuery, caseSensitive: false)))
+        .orderByDescending((x) => x.addDate)
         .toList();
 
     var gradesWidget = CupertinoListSection.insetGrouped(
-      margin: EdgeInsets.only(left: 20, right: 20, bottom: 10),
+      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
       additionalDividerMargin: 5,
       children: gradesToDisplay.isEmpty
           // No messages to display
@@ -76,7 +77,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                             child: ConstrainedBox(
                                 constraints: BoxConstraints(
                                     maxHeight:
-                                        animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
+                                        animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 150,
                                     maxWidth:
                                         animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
                                 child: Row(
@@ -126,6 +127,19 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                                           textAlign: TextAlign.end,
                                                           style: TextStyle(fontSize: 16),
                                                         ))),
+                                                Visibility(
+                                                    visible: animation.value >= CupertinoContextMenu.animationOpensAt,
+                                                    child: Opacity(
+                                                        opacity: 0.5,
+                                                        child: Container(
+                                                            margin: EdgeInsets.only(top: 4),
+                                                            child: Text(
+                                                              x.addedDateString,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              maxLines: 1,
+                                                              textAlign: TextAlign.end,
+                                                              style: TextStyle(fontSize: 16),
+                                                            )))),
                                               ]))
                                     ])));
                       })))
@@ -307,7 +321,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
         Container(
             margin: EdgeInsets.only(top: 20),
             child: CupertinoListSection.insetGrouped(
-              margin: EdgeInsets.only(left: 20, right: 20, bottom: 10),
+              margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
               additionalDividerMargin: 5,
               children: gradesBottomWidgets,
             ))

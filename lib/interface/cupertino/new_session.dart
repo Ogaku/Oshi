@@ -111,7 +111,10 @@ class _NewSessionPageState extends State<NewSessionPage> {
                               "Choose the e-register provider depending on which one your school uses. You'll be able to set up more student accounts and e-registers later as needed.",
                               style: TextStyle(fontSize: 14),
                             ))),
-                    CupertinoListSection.insetGrouped(hasLeading: false, children: providersList),
+                    CupertinoListSection.insetGrouped(
+                        hasLeading: false,
+                        margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                        children: providersList),
                     Expanded(
                         child: Align(
                             alignment: Alignment.bottomCenter,

@@ -181,12 +181,13 @@ class _SessionsPageState extends State<SessionsPage> {
                         Visibility(
                             visible: sessionsList.isNotEmpty,
                             child: CupertinoListSection.insetGrouped(
+                                margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
                                 hasLeading: false,
                                 header: sessionsList.isEmpty ? Text('Sessions') : null,
                                 children: sessionsList)),
                         CupertinoListSection.insetGrouped(
                             hasLeading: false,
-                            margin: EdgeInsets.only(left: 20, right: 20, top: 5),
+                            margin: EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 5),
                             children: [
                               CupertinoListTile(
                                   padding: EdgeInsets.all(0),

@@ -27,10 +27,11 @@ class _GradesPageState extends State<GradesPage> {
         .where((x) =>
             x.name.contains(RegExp(searchQuery, caseSensitive: false)) ||
             x.teacher.name.contains(RegExp(searchQuery, caseSensitive: false)))
+        .orderBy((x) => x.name)
         .toList();
 
     var subjectsWidget = CupertinoListSection.insetGrouped(
-      margin: EdgeInsets.only(left: 20, right: 20, bottom: 10),
+      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
       additionalDividerMargin: 5,
       children: subjectsToDisplay.isEmpty
           // No messages to display

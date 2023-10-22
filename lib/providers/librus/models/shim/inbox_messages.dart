@@ -65,7 +65,7 @@ class Data {
     required this.messageId,
     required this.receiver,
     required this.senderId,
-    required this.senderFirstName,
+    this.senderFirstName = '',
     required this.senderLastName,
     required this.senderGroup,
     required this.myMessage,

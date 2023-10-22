@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
         .where((x) => x.category != EventCategory.homework && x.category != EventCategory.teacher)
         .where((x) => x.date?.isAfter(DateTime.now().asDate()) ?? false)
         .where((x) => x.date?.isBefore(DateTime.now().add(Duration(days: 7)).asDate()) ?? false)
-        .orderBy((x) => DateTime.now().difference(x.timeTo ?? x.timeFrom).inMinutes)
+        .orderBy((x) => x.date ?? x.timeTo ?? x.timeFrom)
         .toList();
 
     // Event list for the next week (7 days), exc homeworks and teacher absences
@@ -45,6 +45,7 @@ class _HomePageState extends State<HomePage> {
               grades: x.grades.where((y) => y.addDate.isAfter(DateTime.now().subtract(Duration(days: 7)).asDate())).toList()
             ))
         .where((x) => x.grades.isNotEmpty)
+        .orderByDescending((x) => x.grades.orderByDescending((y) => y.addDate).first.addDate)
         .toList();
 
     // Homework list for the next week (7 days)
@@ -53,12 +54,13 @@ class _HomePageState extends State<HomePage> {
         .where((x) => x.timeTo?.isAfter(DateTime.now().asDate()) ?? false)
         .where((x) => x.timeTo?.isBefore(DateTime.now().add(Duration(days: 7)).asDate()) ?? false)
         .orderByDescending((x) => x.done ? 0 : 1)
-        .thenByDescending((x) => DateTime.now().difference(x.timeTo ?? x.timeFrom).inMinutes)
+        .thenBy((x) => x.date ?? x.timeTo ?? x.timeFrom)
         .toList();
 
     // Homeworks - first if any(), otherwise last
     var homeworksLast = homeworksWeek.isEmpty || homeworksWeek.all((x) => x.done);
     var homeworksWidget = CupertinoListSection.insetGrouped(
+      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
       dividerMargin: 35,
       header: Text('Homeworks'),
       children: homeworksWeek.isEmpty
@@ -118,6 +120,7 @@ class _HomePageState extends State<HomePage> {
         trailing: Icon(CupertinoIcons.gear),
         children: [
           CupertinoListSection.insetGrouped(
+            margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
             hasLeading: false,
             header: Text('Summary'),
             children: [
@@ -166,6 +169,7 @@ class _HomePageState extends State<HomePage> {
           Visibility(visible: !homeworksLast, child: homeworksWidget),
           // Upcoming events - in the middle, or top
           CupertinoListSection.insetGrouped(
+            margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
             dividerMargin: 35,
             header: Text('Upcoming events'),
             children: eventsWeek.isEmpty
@@ -205,6 +209,7 @@ class _HomePageState extends State<HomePage> {
           ),
           // Recent grades - always below events
           CupertinoListSection.insetGrouped(
+            margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
             additionalDividerMargin: 5,
             header: Text('Recent grades'),
             children: gradesWeek.isEmpty

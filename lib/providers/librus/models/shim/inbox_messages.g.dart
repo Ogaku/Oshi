@@ -73,7 +73,7 @@ Data _$DataFromJson(Map<String, dynamic> json) => Data(
       messageId: json['messageId'] as String,
       receiver: json['receiver'] as String,
       senderId: json['senderId'] as String,
-      senderFirstName: json['senderFirstName'] as String,
+      senderFirstName: json['senderFirstName'] as String? ?? '',
       senderLastName: json['senderLastName'] as String,
       senderGroup: json['senderGroup'] as String,
       myMessage: json['myMessage'] as String,

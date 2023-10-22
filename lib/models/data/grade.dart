@@ -84,13 +84,16 @@ class Grade extends HiveObject {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get nameWithWeight => '$name, weight $weight';
-  
+
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get addedByString => 'Added by ${addedBy.name}';
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get detailsDateString =>
       (countsToAverage ? '${weight.toString()} • ' : '') + DateFormat('EEEE, d MMMM y').format(date);
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  String get addedDateString => "${addedBy.name} • ${DateFormat('d.M.y').format(date)}";
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get commentsString => comments.select((x, index) => x.replaceAll('\n', ' ').replaceAll('  ', ' ')).join(' • ');

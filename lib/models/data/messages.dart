@@ -59,7 +59,7 @@ class Message extends HiveObject {
   @HiveField(11)
   List<Teacher>? receivers;
 
-  bool get read => readDate == null || readDate!.isAfter(DateTime.now());
+  bool get read => receivers != null || (readDate != null && readDate!.isBefore(DateTime.now()));
 
   String get senderName =>
       sender?.name ??
@@ -70,6 +70,8 @@ class Message extends HiveObject {
   String get sendDateString => sendDate.difference(DateTime.now().getDateOnly()).inDays > 0
       ? DateFormat.Hm().format(sendDate)
       : DateFormat('d MMM').format(sendDate);
+
+  String get readDateString => "Read ${DateFormat('d MMM y, HH:mm').format(readDate ?? DateTime(2000))}";
 
   String get senderInitials => (sender?.name.isEmpty ?? true)
       ? ':)' // Placeholder, but it's up to you what to display there

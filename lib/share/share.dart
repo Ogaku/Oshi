@@ -169,7 +169,7 @@ class Session extends HiveObject {
   // Update session's data based on the provider, save to storage
   Future<void> updateData({bool info = false, bool messages = false}) async {
     if (provider.registerData == null) throw Exception('Provider cannot be null, cannot proceed!');
-    if (messages) data.messages = provider.registerData!.messages;
+    if (messages) data.messages = provider.registerData!.messages; // TODO Only update
     if (info) {
       data.student = provider.registerData!.student;
       sessionName = data.student.account.name;

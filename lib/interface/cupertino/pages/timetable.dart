@@ -174,7 +174,7 @@ class _TimetablePageState extends State<TimetablePage> {
 
               var lessonsWidget = CupertinoListSection.insetGrouped(
                 header: Text(DateFormat('EEEE, d MMMM y').format(selectedDate)),
-                margin: EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
                 additionalDividerMargin: 5,
                 children: lessonsToDisplay.isEmpty
                     // No messages to display
@@ -382,7 +382,7 @@ class _TimetablePageState extends State<TimetablePage> {
                               child: Container(
                                   margin: EdgeInsets.only(top: 20),
                                   child: CupertinoListSection.insetGrouped(
-                                    margin: EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
                                     additionalDividerMargin: 5,
                                     children: homeworksToday.isNotEmpty ? homeworksToday : [Text('')],
                                   ))),
@@ -392,7 +392,7 @@ class _TimetablePageState extends State<TimetablePage> {
                               child: Container(
                                   margin: EdgeInsets.only(top: 20),
                                   child: CupertinoListSection.insetGrouped(
-                                    margin: EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
                                     additionalDividerMargin: 5,
                                     children: eventsToday.isNotEmpty ? eventsToday : [Text('')],
                                   ))),
@@ -402,7 +402,7 @@ class _TimetablePageState extends State<TimetablePage> {
                               child: Container(
                                   margin: EdgeInsets.only(top: 20),
                                   child: CupertinoListSection.insetGrouped(
-                                    margin: EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
                                     additionalDividerMargin: 5,
                                     children: teachersAbsentToday.isNotEmpty ? teachersAbsentToday : [Text('')],
                                   ))),

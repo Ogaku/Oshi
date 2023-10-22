@@ -372,7 +372,10 @@ class LibrusDataReader implements models.IProvider {
         student.mainClass.events,
         TeacherFreeDays.fromJson(await data!.librusApi!.request('TeacherFreeDays'))
                 .teacherFreeDays
-                ?.select((x, index) => models.Event(
+                ?.where((x) =>
+                    !(teachersShim.users?.firstWhereOrDefault((y) => y.id == x.teacher?.id)?.lastName.contains('Wakat') ??
+                        true))
+                .select((x, index) => models.Event(
                     id: x.id,
                     timeFrom: x.dateFrom?.withTime(x.timeFrom?.asTime()) ?? DateTime.now(),
                     timeTo: x.dateTo?.withTime(x.timeTo?.asTime()) ?? DateTime.now(),
@@ -645,14 +648,23 @@ class LibrusDataReader implements models.IProvider {
         var message = InboxMessage.fromJson(await data!.librusApi!.messagesRequest('inbox/messages/${parent.id}'));
 
         result.sendDate = message.data?.sendDate ?? DateTime.now();
-        result.readDate = message.data?.readDate ?? DateTime.now();
+        result.readDate = message.data?.readDate;
 
         result.topic = message.data?.topic ?? 'No topic';
-        result.content = utf8.decode(base64.decode(message.data?.message ?? ''));
+        result.content = utf8
+            .decode(base64.decode(message.data?.message ?? ''))
+            .replaceAll('<Message><Content><![CDATA[', '')
+            .replaceAll(']]></Content><Actions><Actions/></Actions></Message>', '')
+            .trim();
+
+        result.content = result.content?.replaceAll(RegExp('<a href="(.*?)</a>'),
+            RegExp('(?<=systemu.">)(.*?)(?=</a>)').firstMatch(result.content ?? '')?.group(0) ?? '');
 
         result.sender = teachersShim.users!
-            .firstWhereOrDefault((user) => user.userId == int.tryParse(message.data?.senderId ?? ''), defaultValue: null)
-            ?.asTeacher();
+                .firstWhereOrDefault((user) => user.userId == int.tryParse(message.data?.senderId ?? ''), defaultValue: null)
+                ?.asTeacher() ??
+            models.Teacher(
+                firstName: message.data?.senderFirstName ?? 'Unknown', lastName: message.data?.senderLastName ?? 'sender');
 
         result.attachments = (await message.data?.attachments
                 ?.select((y, index) async => (
@@ -669,10 +681,17 @@ class LibrusDataReader implements models.IProvider {
         var message = OutboxMessage.fromJson(await data!.librusApi!.messagesRequest('outbox/messages/${parent.id}'));
 
         result.sendDate = message.data?.sendDate ?? DateTime.now();
-        result.readDate = message.data?.readDate ?? DateTime.now();
+        result.readDate = message.data?.readDate;
 
         result.topic = message.data?.topic ?? 'No topic';
-        result.content = utf8.decode(base64.decode(message.data?.message ?? ''));
+        result.content = utf8
+            .decode(base64.decode(message.data?.message ?? ''))
+            .replaceAll('<Message><Content><![CDATA[', '')
+            .replaceAll(']]></Content><Actions><Actions/></Actions></Message>', '')
+            .trim();
+
+        result.content = result.content?.replaceAll(RegExp('<a href="(.*?)</a>'),
+            RegExp('(?<=systemu.">)(.*?)(?=</a>)').firstMatch(result.content ?? '')?.group(0) ?? '');
 
         result.receivers = message.data?.receivers
             ?.select((y, index) =>
