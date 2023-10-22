@@ -163,7 +163,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                                       Container(
                                           padding: EdgeInsets.only(top: 10),
                                           child: SelectableLinkify(
-                                              options: LinkifyOptions(humanize: true),
+                                              options: LinkifyOptions(humanize: false),
                                               onOpen: (link) async {
                                                 try {
                                                   await launchUrlString(link.url);

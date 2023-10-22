@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:event/src/event.dart';
 import 'package:event/src/eventargs.dart';
 import 'package:intl/intl.dart';
@@ -657,8 +658,24 @@ class LibrusDataReader implements models.IProvider {
             .replaceAll(']]></Content><Actions><Actions/></Actions></Message>', '')
             .trim();
 
-        result.content = result.content?.replaceAll(RegExp('<a href="(.*?)</a>'),
-            RegExp('(?<=systemu.">)(.*?)(?=</a>)').firstMatch(result.content ?? '')?.group(0) ?? '');
+        await Future.forEach(RegExp('(?<=systemu.">)(.*?)(?=</a>)').allMatches(result.content ?? ''), (x) async {
+          var link = x.group(0) ?? '';
+
+          try {
+            if (link.isNotEmpty && link.startsWith('https://liblink.pl/'))
+              link = (await Dio(BaseOptions(
+                      followRedirects: false,
+                      validateStatus: (status) {
+                        return status != null && status < 500;
+                      })).post(link))
+                  .headers['location']!
+                  .first;
+          } catch (ex) {
+            // ignored
+          }
+
+          result.content = result.content?.replaceFirst(RegExp('<a href="(.*?)</a>'), link);
+        });
 
         result.sender = teachersShim.users!
                 .firstWhereOrDefault((user) => user.userId == int.tryParse(message.data?.senderId ?? ''), defaultValue: null)
@@ -690,8 +707,24 @@ class LibrusDataReader implements models.IProvider {
             .replaceAll(']]></Content><Actions><Actions/></Actions></Message>', '')
             .trim();
 
-        result.content = result.content?.replaceAll(RegExp('<a href="(.*?)</a>'),
-            RegExp('(?<=systemu.">)(.*?)(?=</a>)').firstMatch(result.content ?? '')?.group(0) ?? '');
+        await Future.forEach(RegExp('(?<=systemu.">)(.*?)(?=</a>)').allMatches(result.content ?? ''), (x) async {
+          var link = x.group(0) ?? '';
+
+          try {
+            if (link.isNotEmpty && link.startsWith('https://liblink.pl/'))
+              link = (await Dio(BaseOptions(
+                      followRedirects: false,
+                      validateStatus: (status) {
+                        return status != null && status < 500;
+                      })).post(link))
+                  .headers['location']!
+                  .first;
+          } catch (ex) {
+            // ignored
+          }
+
+          result.content = result.content?.replaceFirst(RegExp('<a href="(.*?)</a>'), link);
+        });
 
         result.receivers = message.data?.receivers
             ?.select((y, index) =>
