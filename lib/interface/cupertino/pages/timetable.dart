@@ -3,6 +3,7 @@
 
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
@@ -12,8 +13,6 @@ import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/data/timetables.dart';
 import 'package:oshi/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
-
-import 'package:oshi/interface/cupertino/views/events_timeline.dart' show EventsPage;
 
 // Boiler: returned to the app tab builder
 StatefulWidget get timetablePage => TimetablePage();
@@ -31,6 +30,7 @@ class _TimetablePageState extends State<TimetablePage> {
       initialPage: DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays);
 
   String searchQuery = '';
+  bool isWorking = false;
 
   int dayDifference =
       DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays;
@@ -71,34 +71,52 @@ class _TimetablePageState extends State<TimetablePage> {
             child: Container(
                 margin: EdgeInsets.only(top: 5, bottom: 5),
                 child: TextChip(width: 110, text: DateFormat('d.MM.y').format(selectedDate)))),
-        trailing: PullDownButton(
-          itemBuilder: (context) => [
-            PullDownMenuItem(
-              title: 'Today',
-              icon: CupertinoIcons.calendar_today,
-              onTap: () => pageController.animateToPage(
-                  DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays,
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeInOutExpo),
-            ),
-            PullDownMenuDivider.large(),
-            PullDownMenuTitle(title: Text('Schedule')),
-            PullDownMenuItem(
-              title: 'Agenda',
-              icon: CupertinoIcons.list_bullet_below_rectangle,
-              onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (context) => EventsPage())),
-            ),
-            PullDownMenuItem(
-              title: 'New event',
-              icon: CupertinoIcons.add,
-              onTap: () {},
-            ),
-          ],
-          buttonBuilder: (context, showMenu) => GestureDetector(
-            onTap: showMenu,
-            child: const Icon(CupertinoIcons.ellipsis_circle),
-          ),
-        ),
+        trailing: isWorking
+            ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
+            : PullDownButton(
+                itemBuilder: (context) => [
+                  PullDownMenuItem(
+                    title: 'Refresh',
+                    icon: CupertinoIcons.refresh,
+                    onTap: () => setState(() {
+                      if (isWorking) return;
+                      setState(() => isWorking = true);
+                      try {
+                        Share.session.refresh(weekStart: selectedDate).then((value) => setState(() => isWorking = false));
+                      } catch (ex) {
+                        // ignored
+                      }
+                    }),
+                  ),
+                  PullDownMenuDivider.large(),
+                  PullDownMenuTitle(title: Text('Schedule')),
+                  PullDownMenuItem(
+                    title: 'Today',
+                    icon: CupertinoIcons.calendar_today,
+                    onTap: () => pageController.animateToPage(
+                        DateTime.now()
+                            .asDate()
+                            .difference(Share.session.data.student.mainClass.beginSchoolYear.asDate())
+                            .inDays,
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeInOutExpo),
+                  ),
+                  PullDownMenuItem(
+                    title: 'Agenda',
+                    icon: CupertinoIcons.list_bullet_below_rectangle,
+                    onTap: () {},
+                  ),
+                  PullDownMenuItem(
+                    title: 'New event',
+                    icon: CupertinoIcons.add,
+                    onTap: () {},
+                  ),
+                ],
+                buttonBuilder: (context, showMenu) => GestureDetector(
+                  onTap: showMenu,
+                  child: const Icon(CupertinoIcons.ellipsis_circle),
+                ),
+              ),
         searchController: searchController,
         onChanged: (s) => setState(() => searchQuery = s),
         largeTitle: Text('Schedule'),

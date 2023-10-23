@@ -3,9 +3,11 @@
 
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'package:oshi/interface/cupertino/views/message_detailed.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/messages.dart';
+import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
@@ -23,12 +25,16 @@ class _MessagesPageState extends State<MessagesPage> {
   final searchController = TextEditingController();
 
   String searchQuery = '';
-  bool showInbox = true;
+  MessageFolders folder = MessageFolders.inbox;
   bool isWorking = false;
 
   @override
   Widget build(BuildContext context) {
-    var messagesToDisplay = (showInbox ? Share.session.data.messages.received : Share.session.data.messages.sent)
+    var messagesToDisplay = (switch (folder) {
+      MessageFolders.inbox => Share.session.data.messages.received,
+      MessageFolders.outbox => Share.session.data.messages.sent,
+      _ => []
+    })
         .where((x) =>
             x.topic.contains(RegExp(searchQuery, caseSensitive: false)) ||
             x.sendDateString.contains(RegExp(searchQuery, caseSensitive: false)) ||
@@ -36,6 +42,23 @@ class _MessagesPageState extends State<MessagesPage> {
             (x.content?.contains(RegExp(searchQuery, caseSensitive: false)) ?? false) ||
             x.senderName.contains(RegExp(searchQuery, caseSensitive: false)))
         .toList();
+
+    if (folder == MessageFolders.announcements) {
+      messagesToDisplay = Share.session.data.student.mainClass.unit.announcements
+              ?.where((x) =>
+                  x.subject.contains(RegExp(searchQuery, caseSensitive: false)) ||
+                  x.content.contains(RegExp(searchQuery, caseSensitive: false)) ||
+                  (x.contact?.name.contains(RegExp(searchQuery, caseSensitive: false)) ?? false))
+              .orderByDescending((x) => x.startDate)
+              .select((x, index) => Message(
+                  topic: x.subject,
+                  content: x.content,
+                  sender: x.contact ?? Teacher(firstName: Share.session.data.student.mainClass.unit.name),
+                  sendDate: x.startDate,
+                  readDate: x.endDate))
+              .toList() ??
+          [];
+    }
 
     var messagesWidget = CupertinoListSection.insetGrouped(
       margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
@@ -49,7 +72,9 @@ class _MessagesPageState extends State<MessagesPage> {
                       child: Container(
                           alignment: Alignment.center,
                           child: Text(
-                            'No messages matching the query',
+                            folder == MessageFolders.announcements
+                                ? 'No announcements matching the query'
+                                : 'No messages matching the query',
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                           ))))
             ]
@@ -75,23 +100,35 @@ class _MessagesPageState extends State<MessagesPage> {
                         return GestureDetector(
                             onTap: () {
                               if (isWorking) return;
-                              setState(() => isWorking = true);
-
-                              Share.session.provider.fetchMessageContent(parent: x, byMe: !showInbox).then((result) {
-                                setState(() => isWorking = false);
-
-                                if (result.message == null && result.result != null) x.updateMessageData(result.result!);
-                                if (x.content?.isEmpty ?? true) return;
-                                if (showInbox) x.readDate = DateTime.now();
-
+                              if (folder == MessageFolders.announcements) {
                                 Navigator.push(
                                     context,
                                     CupertinoPageRoute(
                                         builder: (context) => MessageDetailsPage(
                                               message: x,
-                                              isByMe: !showInbox,
+                                              isByMe: false,
                                             )));
-                              });
+                              } else {
+                                setState(() => isWorking = true);
+
+                                Share.session.provider
+                                    .fetchMessageContent(parent: x, byMe: folder == MessageFolders.outbox)
+                                    .then((result) {
+                                  setState(() => isWorking = false);
+
+                                  if (result.message == null && result.result != null) x.updateMessageData(result.result!);
+                                  if (x.content?.isEmpty ?? true) return;
+                                  if (folder == MessageFolders.inbox) x.readDate = DateTime.now();
+
+                                  Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                          builder: (context) => MessageDetailsPage(
+                                                message: x,
+                                                isByMe: folder == MessageFolders.outbox,
+                                              )));
+                                });
+                              }
                             },
                             child: Container(
                                 decoration: BoxDecoration(
@@ -118,7 +155,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 Visibility(
-                                                    visible: !x.read,
+                                                    visible: !x.read && folder == MessageFolders.inbox,
                                                     child: Container(
                                                         margin: EdgeInsets.only(top: 5, right: 6),
                                                         child: Container(
@@ -147,7 +184,11 @@ class _MessagesPageState extends State<MessagesPage> {
                                                     child: Opacity(
                                                         opacity: 0.5,
                                                         child: Text(
-                                                          x.sendDateString,
+                                                          folder == MessageFolders.announcements
+                                                              ? (x.sendDate.month == x.readDate.month
+                                                                  ? '${DateFormat('MMM d').format(x.sendDate)} - ${DateFormat('d').format(x.readDate)}'
+                                                                  : '${DateFormat('MMM d').format(x.sendDate)} - ${DateFormat('MMM d').format(x.readDate)}')
+                                                              : x.sendDateString,
                                                           overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                                                         )))
@@ -176,6 +217,7 @@ class _MessagesPageState extends State<MessagesPage> {
     );
 
     return SearchableSliverNavigationBar(
+      setState: setState,
       largeTitle: Text('Messages'),
       searchController: searchController,
       onChanged: (s) => setState(() => searchQuery = s),
@@ -192,13 +234,18 @@ class _MessagesPageState extends State<MessagesPage> {
                 PullDownMenuTitle(title: Text('Folders')),
                 PullDownMenuItem(
                   title: 'Received',
-                  icon: showInbox ? CupertinoIcons.tray_fill : CupertinoIcons.tray,
-                  onTap: () => setState(() => showInbox = true),
+                  icon: folder == MessageFolders.inbox ? CupertinoIcons.tray_fill : CupertinoIcons.tray,
+                  onTap: () => setState(() => folder = MessageFolders.inbox),
                 ),
                 PullDownMenuItem(
                   title: 'Sent',
-                  icon: showInbox ? CupertinoIcons.paperplane : CupertinoIcons.paperplane_fill,
-                  onTap: () => setState(() => showInbox = false),
+                  icon: folder == MessageFolders.outbox ? CupertinoIcons.paperplane_fill : CupertinoIcons.paperplane,
+                  onTap: () => setState(() => folder = MessageFolders.outbox),
+                ),
+                PullDownMenuItem(
+                  title: 'Announcements',
+                  icon: folder == MessageFolders.announcements ? CupertinoIcons.bell_fill : CupertinoIcons.bell,
+                  onTap: () => setState(() => folder = MessageFolders.announcements),
                 )
               ],
               buttonBuilder: (context, showMenu) => GestureDetector(
@@ -226,3 +273,5 @@ extension MessageUpdateExtension on Message {
     receivers = other.receivers;
   }
 }
+
+enum MessageFolders { inbox, outbox, announcements }

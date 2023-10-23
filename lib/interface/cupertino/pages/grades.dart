@@ -81,6 +81,7 @@ class _GradesPageState extends State<GradesPage> {
     );
 
     return SearchableSliverNavigationBar(
+      setState: setState,
       largeTitle: Text('Grades'),
       searchController: searchController,
       onChanged: (s) => setState(() => searchQuery = s),

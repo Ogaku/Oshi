@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart';
+import 'package:oshi/share/share.dart';
 
 class SearchableSliverNavigationBar extends StatefulWidget {
   final Widget? largeTitle;
@@ -20,6 +21,7 @@ class SearchableSliverNavigationBar extends StatefulWidget {
   final Map<String, String>? segments;
   final Function(String)? onChanged;
   final Function(String)? onSubmitted;
+  final void Function(VoidCallback fn)? setState;
 
   const SearchableSliverNavigationBar(
       {super.key,
@@ -36,18 +38,20 @@ class SearchableSliverNavigationBar extends StatefulWidget {
       this.trailing,
       this.child,
       this.segments,
+      this.setState,
       this.color = Colors.white,
       this.darkColor = Colors.black});
 
   @override
-  // ignore: no_logic_in_create_state
   State<SearchableSliverNavigationBar> createState() => _NavState();
 }
 
 class _NavState extends State<SearchableSliverNavigationBar> {
   late ScrollController scrollController;
   late String? groupSelection;
+
   double previousScrollPosition = 0, isVisibleSearchBar = 0;
+  bool isRefreshing = false;
 
   @override
   void initState() {
@@ -126,7 +130,14 @@ class _NavState extends State<SearchableSliverNavigationBar> {
       ),
       scrollController: scrollController,
       alwaysShowMiddle: false,
-      trailing: widget.trailing,
+      trailing: (previousScrollPosition >= -20 && !isRefreshing) || widget.setState == null
+          ? widget.trailing
+          : Container(
+              margin: const EdgeInsets.only(right: 5, top: 5),
+              child: _buildIndicatorForRefreshState(
+                  (previousScrollPosition < -120 || isRefreshing) ? RefreshIndicatorMode.refresh : RefreshIndicatorMode.drag,
+                  12,
+                  ((previousScrollPosition + 20) / previousScrollPosition).clamp(0.0, 1.0))),
     );
 
     return CupertinoPageScaffold(
@@ -136,6 +147,13 @@ class _NavState extends State<SearchableSliverNavigationBar> {
           onNotification: (ScrollNotification scrollInfo) {
             if (widget.child != null) return true;
             if (scrollInfo is ScrollUpdateNotification) {
+              if (scrollInfo.metrics.pixels < -120 && !isRefreshing && widget.setState != null) {
+                setState(() => isRefreshing = true);
+                Share.session.refreshAll().then((arg) {
+                  setState(() => isRefreshing = false);
+                  widget.setState!(() {});
+                });
+              }
               if (scrollInfo.metrics.pixels > previousScrollPosition) {
                 if (isVisibleSearchBar > 0 && scrollInfo.metrics.pixels > 0) {
                   setState(() {
@@ -190,5 +208,29 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                   ],
                 ),
         ));
+  }
+}
+
+Widget _buildIndicatorForRefreshState(RefreshIndicatorMode refreshState, double radius, double percentageComplete) {
+  switch (refreshState) {
+    case RefreshIndicatorMode.drag:
+      // While we're dragging, we draw individual ticks of the spinner while simultaneously
+      // easing the opacity in. The opacity curve values here were derived using
+      // Xcode through inspecting a native app running on iOS 13.5.
+      const Curve opacityCurve = Interval(0.0, 0.35, curve: Curves.easeInOut);
+      return Opacity(
+        opacity: opacityCurve.transform(percentageComplete),
+        child: CupertinoActivityIndicator.partiallyRevealed(radius: radius, progress: percentageComplete),
+      );
+    case RefreshIndicatorMode.armed:
+    case RefreshIndicatorMode.refresh:
+      // Once we're armed or performing the refresh, we just show the normal spinner.
+      return CupertinoActivityIndicator(radius: radius);
+    case RefreshIndicatorMode.done:
+      // When the user lets go, the standard transition is to shrink the spinner.
+      return CupertinoActivityIndicator(radius: radius * percentageComplete);
+    case RefreshIndicatorMode.inactive:
+      // Anything else doesn't show anything.
+      return const SizedBox.shrink();
   }
 }

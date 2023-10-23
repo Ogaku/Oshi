@@ -313,6 +313,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
     }
 
     return SearchableSliverNavigationBar(
+      setState: setState,
       largeTitle: Text(widget.lesson.name),
       searchController: searchController,
       onChanged: (s) => setState(() => searchQuery = s),

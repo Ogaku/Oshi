@@ -115,6 +115,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: CupertinoDynamicColor.withBrightness(
           color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 0, 0, 0)),
       child: SearchableSliverNavigationBar(
+        setState: setState,
         searchController: searchController,
         largeTitle: Text('Home'),
         trailing: Icon(CupertinoIcons.gear),

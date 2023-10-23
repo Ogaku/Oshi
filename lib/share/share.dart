@@ -141,6 +141,21 @@ class Session extends HiveObject {
   // Login and refresh methods for runtime - implement as async
   // For null 'weekStart' - get (only) the current week's data
   // For reporting 'progress' - mark 'Progress' as null for indeterminate status
+  Future<({bool success, Exception? message})> refreshAll(
+      {DateTime? weekStart, IProgress<({double? progress, String? message})>? progress}) async {
+    try {
+      var result = await provider.refresh(weekStart: weekStart, progress: progress);
+      await provider.refreshMessages(progress: progress);
+      if (result.success) await updateData(info: true);
+      return result;
+    } catch (ex) {
+      return (success: false, message: Exception(ex));
+    }
+  }
+
+  // Login and refresh methods for runtime - implement as async
+  // For null 'weekStart' - get (only) the current week's data
+  // For reporting 'progress' - mark 'Progress' as null for indeterminate status
   Future<({bool success, Exception? message})> refresh(
       {DateTime? weekStart, IProgress<({double? progress, String? message})>? progress}) async {
     var result = await provider.refresh(weekStart: weekStart, progress: progress);

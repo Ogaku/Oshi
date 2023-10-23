@@ -160,6 +160,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
         .toList();
 
     return SearchableSliverNavigationBar(
+        setState: setState,
         segments: {'date': 'By date', 'lesson': 'By lesson', 'type': 'By type'},
         largeTitle: Text('Attendance'),
         searchController: searchController,

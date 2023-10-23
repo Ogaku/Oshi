@@ -63,6 +63,7 @@ class _EventsPageState extends State<EventsPage> {
         .toList();
 
     return SearchableSliverNavigationBar(
+        setState: setState,
         trailing: PullDownButton(
           itemBuilder: (context) => [
             PullDownMenuTitle(title: Text('Filters')),
