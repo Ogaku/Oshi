@@ -36,6 +36,7 @@ class _LoginPageState extends State<LoginPage> {
         .select((x, index) => CupertinoFormRow(
             prefix: SizedBox(width: 90, child: Text(x.value.name)),
             child: CupertinoTextFormFieldRow(
+              enabled: !isWorking,
               placeholder: 'Required',
               obscureText: x.value.obscure,
               controller: credentialControllers![x.key],

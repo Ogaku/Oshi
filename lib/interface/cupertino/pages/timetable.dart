@@ -369,7 +369,7 @@ class _TimetablePageState extends State<TimetablePage> {
 
               return SingleChildScrollView(
                   child: Container(
-                      margin: const EdgeInsets.only(bottom: 60),
+                      margin: EdgeInsets.zero,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,

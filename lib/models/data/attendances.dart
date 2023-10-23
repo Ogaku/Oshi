@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/models/data/timetables.dart';
@@ -42,6 +43,9 @@ class Attendance extends HiveObject {
 
   @HiveField(6)
   Teacher teacher;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  String get addedDateString => "${teacher.name} • ${DateFormat('d.M.y').format(date)}";
 
   factory Attendance.fromJson(Map<String, dynamic> json) => _$AttendanceFromJson(json);
 

@@ -24,7 +24,7 @@ class _BaseAppState extends State<BaseApp> {
   Widget build(BuildContext context) {
     return CupertinoApp(
       home: CupertinoTabScaffold(
-        tabBar: CupertinoTabBar(items: [
+        tabBar: CupertinoTabBar(backgroundColor: CupertinoTheme.of(context).barBackgroundColor.withAlpha(0xFF), items: [
           BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(CupertinoIcons.rosette), label: 'Grades'),
           BottomNavigationBarItem(icon: Icon(CupertinoIcons.calendar), label: 'Schedule'),

@@ -95,7 +95,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                                       }
                                     },
                                     child: Container(
-                                        padding: EdgeInsets.only(left: 12, top: 8, right: 10, bottom: 10),
+                                        padding: EdgeInsets.only(left: 12, top: 10, right: 10, bottom: 10),
                                         child: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -108,7 +108,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                                                         x.name,
                                                         overflow: TextOverflow.ellipsis,
                                                         maxLines: 3,
-                                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                                                       ))),
                                             ]))))
                                 .toList(),
@@ -118,7 +118,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                           additionalDividerMargin: 5,
                           children: [
                             Container(
-                                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                                 child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,7 +172,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                                                 }
                                               },
                                               text: widget.message.content ?? 'No content to display',
-                                              style: TextStyle(fontSize: 15)))
+                                              style: TextStyle(fontSize: 16)))
                                     ]))
                           ]),
                     ],
