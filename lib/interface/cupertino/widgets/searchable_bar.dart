@@ -12,6 +12,7 @@ class SearchableSliverNavigationBar extends StatefulWidget {
   final String? previousPageTitle;
   final Widget? middle;
   final Widget? trailing;
+  final Color? backgroundColor;
   final Color color;
   final Color darkColor;
   final bool? transitionBetweenRoutes;
@@ -40,7 +41,8 @@ class SearchableSliverNavigationBar extends StatefulWidget {
       this.segments,
       this.setState,
       this.color = Colors.white,
-      this.darkColor = Colors.black});
+      this.darkColor = Colors.black,
+      this.backgroundColor});
 
   @override
   State<SearchableSliverNavigationBar> createState() => _NavState();
@@ -63,6 +65,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
   @override
   Widget build(BuildContext context) {
     var navBarSliver = SliverNavigationBar(
+      backgroundColor: widget.backgroundColor,
       alternativeVisibility: widget.child != null,
       transitionBetweenRoutes: widget.transitionBetweenRoutes,
       leading: widget.leading,
@@ -141,8 +144,9 @@ class _NavState extends State<SearchableSliverNavigationBar> {
     );
 
     return CupertinoPageScaffold(
-        backgroundColor: const CupertinoDynamicColor.withBrightness(
-            color: Color.fromARGB(255, 242, 242, 247), darkColor: Color.fromARGB(255, 0, 0, 0)),
+        backgroundColor: widget.backgroundColor ??
+            const CupertinoDynamicColor.withBrightness(
+                color: Color.fromARGB(255, 242, 242, 247), darkColor: Color.fromARGB(255, 0, 0, 0)),
         child: NotificationListener<ScrollNotification>(
           onNotification: (ScrollNotification scrollInfo) {
             if (widget.child != null) return true;

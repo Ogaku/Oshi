@@ -1,9 +1,14 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'dart:io';
+
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/interface/cupertino/views/message_compose.dart';
 import 'package:oshi/interface/cupertino/views/message_detailed.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/messages.dart';
@@ -33,7 +38,7 @@ class _MessagesPageState extends State<MessagesPage> {
     var messagesToDisplay = (switch (folder) {
       MessageFolders.inbox => Share.session.data.messages.received,
       MessageFolders.outbox => Share.session.data.messages.sent,
-      _ => []
+      _ => <Message>[]
     })
         .where((x) =>
             x.topic.contains(RegExp(searchQuery, caseSensitive: false)) ||
@@ -90,10 +95,30 @@ class _MessagesPageState extends State<MessagesPage> {
                           child: const Text('Share'),
                         ),
                         CupertinoContextMenuAction(
-                          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                           isDestructiveAction: true,
                           trailingIcon: CupertinoIcons.trash,
                           child: const Text('Delete'),
+                          onPressed: () {
+                            if (isWorking) return;
+                            try {
+                              setState(() => isWorking = true);
+                              Share.session.provider
+                                  .moveMessageToTrash(parent: x, byMe: folder == MessageFolders.outbox)
+                                  .then((value) => setState(() => isWorking = false));
+                            } on Exception catch (e) {
+                              setState(() => isWorking = false);
+                              if (Platform.isAndroid || Platform.isIOS) {
+                                Fluttertoast.showToast(
+                                  msg: '$e',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                );
+                              }
+                            }
+                            // Close the current page
+                            Navigator.of(context, rootNavigator: true).pop();
+                          },
                         ),
                       ],
                       builder: (BuildContext context, Animation<double> animation) {
@@ -185,9 +210,9 @@ class _MessagesPageState extends State<MessagesPage> {
                                                         opacity: 0.5,
                                                         child: Text(
                                                           folder == MessageFolders.announcements
-                                                              ? (x.sendDate.month == x.readDate.month
-                                                                  ? '${DateFormat('MMM d').format(x.sendDate)} - ${DateFormat('d').format(x.readDate)}'
-                                                                  : '${DateFormat('MMM d').format(x.sendDate)} - ${DateFormat('MMM d').format(x.readDate)}')
+                                                              ? (x.sendDate.month == x.readDate?.month
+                                                                  ? '${DateFormat('MMM d').format(x.sendDate)} - ${DateFormat('d').format(x.readDate ?? DateTime.now())}'
+                                                                  : '${DateFormat('MMM d').format(x.sendDate)} - ${DateFormat('MMM d').format(x.readDate ?? DateTime.now())}')
                                                               : x.sendDateString,
                                                           overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
@@ -228,7 +253,13 @@ class _MessagesPageState extends State<MessagesPage> {
                 PullDownMenuItem(
                   title: 'New',
                   icon: CupertinoIcons.add,
-                  onTap: () {},
+                  onTap: () {
+                    showCupertinoModalBottomSheet(
+                        context: context,
+                        builder: (context) => MessageComposePage(
+                            signature:
+                                '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                  },
                 ),
                 PullDownMenuDivider.large(),
                 PullDownMenuTitle(title: Text('Folders')),

@@ -54,7 +54,8 @@ class _LoginPageState extends State<LoginPage> {
           backgroundColor: CupertinoDynamicColor.withBrightness(
               color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 28, 28, 30)),
           trailing: CupertinoButton(
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.all(0),
+              alignment: Alignment.centerRight,
               child: isWorking
                   ? CupertinoActivityIndicator()
                   : Text('Next',

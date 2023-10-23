@@ -8,6 +8,9 @@ import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/share/share.dart';
 
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/interface/cupertino/views/message_compose.dart';
+
 // Boiler: returned to the app tab builder
 StatefulWidget get absencesPage => AbsencesPage();
 
@@ -86,11 +89,20 @@ class _AbsencesPageState extends State<AbsencesPage> {
                                   child: const Text('Share'),
                                 ),
                                 CupertinoContextMenuAction(
-                                  onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-                                  isDestructiveAction: true,
-                                  trailingIcon: CupertinoIcons.chat_bubble_2,
-                                  child: const Text('Inquiry'),
-                                ),
+                                    isDestructiveAction: true,
+                                    trailingIcon: CupertinoIcons.chat_bubble_2,
+                                    child: const Text('Inquiry'),
+                                    onPressed: () {
+                                      Navigator.of(context, rootNavigator: true).pop();
+                                      showCupertinoModalBottomSheet(
+                                          context: context,
+                                          builder: (context) => MessageComposePage(
+                                              receivers: [x.teacher],
+                                              subject:
+                                                  'Pytanie do obecności z dnia ${DateFormat("y.M.d").format(x.date)}, L${x.lessonNo}',
+                                              signature:
+                                                  '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                                    }),
                               ],
                               builder: (BuildContext context, Animation<double> animation) {
                                 return Container(

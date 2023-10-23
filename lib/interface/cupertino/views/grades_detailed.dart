@@ -3,8 +3,12 @@
 
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/interface/cupertino/views/message_compose.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/lesson.dart';
+import 'package:oshi/share/share.dart';
 
 class GradesDetailedPage extends StatefulWidget {
   const GradesDetailedPage({super.key, required this.lesson});
@@ -58,10 +62,19 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                           child: const Text('Share'),
                         ),
                         CupertinoContextMenuAction(
-                          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                           isDestructiveAction: true,
                           trailingIcon: CupertinoIcons.chat_bubble_2,
                           child: const Text('Inquiry'),
+                          onPressed: () {
+                            Navigator.of(context, rootNavigator: true).pop();
+                            showCupertinoModalBottomSheet(
+                                context: context,
+                                builder: (context) => MessageComposePage(
+                                    receivers: [x.addedBy],
+                                    subject: 'Pytanie do oceny ${x.value} z dnia ${DateFormat("y.M.d").format(x.addDate)}',
+                                    signature:
+                                        '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                          },
                         ),
                       ],
                       builder: (BuildContext context, Animation<double> animation) {
@@ -160,10 +173,19 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                       child: const Text('Share'),
                     ),
                     CupertinoContextMenuAction(
-                      onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                       isDestructiveAction: true,
                       trailingIcon: CupertinoIcons.chat_bubble_2,
                       child: const Text('Inquiry'),
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).pop();
+                        showCupertinoModalBottomSheet(
+                            context: context,
+                            builder: (context) => MessageComposePage(
+                                receivers: [widget.lesson.teacher],
+                                subject: 'Pytanie do średniej ocen z ${widget.lesson.name}',
+                                signature:
+                                    '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                      },
                     ),
                   ],
                   builder: (BuildContext context, Animation<double> animation) {
@@ -212,10 +234,19 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   child: const Text('Share'),
                 ),
                 CupertinoContextMenuAction(
-                  onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                   isDestructiveAction: true,
                   trailingIcon: CupertinoIcons.chat_bubble_2,
                   child: const Text('Inquiry'),
+                  onPressed: () {
+                    Navigator.of(context, rootNavigator: true).pop();
+                    showCupertinoModalBottomSheet(
+                        context: context,
+                        builder: (context) => MessageComposePage(
+                            receivers: [widget.lesson.teacher],
+                            subject: 'Pytanie do oceny proponowanej z ${widget.lesson.name}',
+                            signature:
+                                '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                  },
                 ),
               ],
               builder: (BuildContext context, Animation<double> animation) {
@@ -268,10 +299,19 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   child: const Text('Share'),
                 ),
                 CupertinoContextMenuAction(
-                  onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                   isDestructiveAction: true,
                   trailingIcon: CupertinoIcons.chat_bubble_2,
                   child: const Text('Inquiry'),
+                  onPressed: () {
+                    Navigator.of(context, rootNavigator: true).pop();
+                    showCupertinoModalBottomSheet(
+                        context: context,
+                        builder: (context) => MessageComposePage(
+                            receivers: [widget.lesson.teacher],
+                            subject: 'Pytanie do oceny końcowej z ${widget.lesson.name}',
+                            signature:
+                                '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                  },
                 ),
               ],
               builder: (BuildContext context, Animation<double> animation) {

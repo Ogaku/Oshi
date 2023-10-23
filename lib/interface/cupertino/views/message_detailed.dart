@@ -4,8 +4,12 @@
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:intl/intl.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/interface/cupertino/views/message_compose.dart';
 import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart';
 import 'package:oshi/models/data/messages.dart';
+import 'package:oshi/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -52,9 +56,16 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                 ),
                 PullDownMenuDivider.large(),
                 PullDownMenuItem(
-                  title: 'Reply',
+                  title: widget.isByMe ? 'Forward' : 'Reply',
                   icon: CupertinoIcons.reply,
-                  onTap: () {},
+                  onTap: () => showCupertinoModalBottomSheet(
+                      context: context,
+                      builder: (context) => MessageComposePage(
+                          receivers: widget.isByMe ? [] : (widget.message.sender != null ? [widget.message.sender!] : []),
+                          subject: widget.isByMe ? 'Fwd: ${widget.message.topic}' : 'Re: ${widget.message.topic}',
+                          signature: widget.isByMe
+                              ? '-------\nOn ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(widget.message.sendDate)} ${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name} wrote:\n"${widget.message.topic}\n\n${widget.message.content}"'
+                              : '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}\n\n-------\nOn ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(widget.message.sendDate)} ${widget.message.sender?.name} wrote:\n"${widget.message.topic}\n\n${widget.message.content}"')),
                 ),
                 PullDownMenuItem(
                   title: 'Delete',

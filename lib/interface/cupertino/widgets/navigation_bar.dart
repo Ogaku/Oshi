@@ -15,6 +15,7 @@ class SliverNavigationBar extends StatefulWidget {
   final bool? transitionBetweenRoutes;
   final double threshold;
   final bool alternativeVisibility;
+  final Color? backgroundColor;
 
   const SliverNavigationBar(
       {super.key,
@@ -29,7 +30,8 @@ class SliverNavigationBar extends StatefulWidget {
       this.threshold = 52,
       this.alternativeVisibility = false,
       this.color = Colors.white,
-      this.darkColor = Colors.black});
+      this.darkColor = Colors.black,
+      this.backgroundColor});
 
   @override
   State<SliverNavigationBar> createState() => _NavState();
@@ -64,12 +66,13 @@ class _NavState extends State<SliverNavigationBar> {
     final isDark = CupertinoTheme.maybeBrightnessOf(context) == Brightness.dark;
 
     return CupertinoSliverNavigationBar(
-      backgroundColor: _isCollapsed
-          ? isDark
-              ? const Color.fromRGBO(45, 45, 45, 0.5)
-              : Colors.white.withOpacity(0.5)
-          : const CupertinoDynamicColor.withBrightness(
-              color: Color.fromARGB(255, 242, 242, 247), darkColor: Color.fromARGB(255, 0, 0, 0)),
+      backgroundColor: widget.backgroundColor ??
+          (_isCollapsed
+              ? isDark
+                  ? const Color.fromRGBO(45, 45, 45, 0.5)
+                  : Colors.white.withOpacity(0.5)
+              : const CupertinoDynamicColor.withBrightness(
+                  color: Color.fromARGB(255, 242, 242, 247), darkColor: Color.fromARGB(255, 0, 0, 0))),
       transitionBetweenRoutes: widget.transitionBetweenRoutes ?? true,
       largeTitle: widget.largeTitle,
       leading: widget.leading,

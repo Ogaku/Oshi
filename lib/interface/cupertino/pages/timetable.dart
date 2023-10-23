@@ -5,7 +5,9 @@ import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
+import 'package:oshi/interface/cupertino/views/message_compose.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/interface/cupertino/widgets/text_chip.dart';
 import 'package:oshi/models/data/attendances.dart';
@@ -13,6 +15,7 @@ import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/data/timetables.dart';
 import 'package:oshi/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
+import 'package:oshi/interface/cupertino/views/events_timeline.dart' show EventsPage;
 
 // Boiler: returned to the app tab builder
 StatefulWidget get timetablePage => TimetablePage();
@@ -104,7 +107,7 @@ class _TimetablePageState extends State<TimetablePage> {
                   PullDownMenuItem(
                     title: 'Agenda',
                     icon: CupertinoIcons.list_bullet_below_rectangle,
-                    onTap: () {},
+                    onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (context) => EventsPage())),
                   ),
                   PullDownMenuItem(
                     title: 'New event',
@@ -206,10 +209,20 @@ class _TimetablePageState extends State<TimetablePage> {
                                     child: const Text('Add to calendar'),
                                   ),
                                   CupertinoContextMenuAction(
-                                    onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                                     isDestructiveAction: true,
                                     trailingIcon: CupertinoIcons.chat_bubble_2,
                                     child: const Text('Inquiry'),
+                                    onPressed: () {
+                                      Navigator.of(context, rootNavigator: true).pop();
+                                      showCupertinoModalBottomSheet(
+                                          context: context,
+                                          builder: (context) => MessageComposePage(
+                                              receivers: x.teacher != null ? [x.teacher!] : [],
+                                              subject:
+                                                  'Pytanie do lekcji w dniu ${DateFormat("y.M.d").format(x.date)}, L${x.lessonNo}',
+                                              signature:
+                                                  '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                                    },
                                   ),
                                 ],
                                 builder: (BuildContext context, Animation<double> animation) {
@@ -485,10 +498,20 @@ extension EventWidgetExtension on Iterable<Event> {
                                             child: const Text('Add to calendar'),
                                           ),
                                     CupertinoContextMenuAction(
-                                      onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                                       isDestructiveAction: true,
                                       trailingIcon: CupertinoIcons.chat_bubble_2,
                                       child: const Text('Inquiry'),
+                                      onPressed: () {
+                                        Navigator.of(context, rootNavigator: true).pop();
+                                        showCupertinoModalBottomSheet(
+                                            context: context,
+                                            builder: (context) => MessageComposePage(
+                                                receivers: x.sender != null ? [x.sender!] : [],
+                                                subject:
+                                                    'Pytanie do wydarzenia w dniu ${DateFormat("y.M.d").format(x.date ?? x.timeFrom)}',
+                                                signature:
+                                                    '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                                      },
                                     ),
                                   ],
                                   builder: (BuildContext context, Animation<double> animation) {

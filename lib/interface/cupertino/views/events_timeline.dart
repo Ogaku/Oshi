@@ -4,7 +4,9 @@
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
+import 'package:oshi/interface/cupertino/views/message_compose.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/event.dart';
 import 'package:oshi/share/share.dart';
@@ -136,10 +138,20 @@ extension EventWidgetExtension on Iterable<Event> {
                                             child: const Text('Add to calendar'),
                                           ),
                                     CupertinoContextMenuAction(
-                                      onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                                       isDestructiveAction: true,
                                       trailingIcon: CupertinoIcons.chat_bubble_2,
                                       child: const Text('Inquiry'),
+                                      onPressed: () {
+                                        Navigator.of(context, rootNavigator: true).pop();
+                                        showCupertinoModalBottomSheet(
+                                            context: context,
+                                            builder: (context) => MessageComposePage(
+                                                receivers: x.sender != null ? [x.sender!] : [],
+                                                subject:
+                                                    'Pytanie do wydarzenia w dniu ${DateFormat("y.M.d").format(x.date ?? x.timeFrom)}',
+                                                signature:
+                                                    '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                                      },
                                     ),
                                   ],
                                   builder: (BuildContext context, Animation<double> animation) {

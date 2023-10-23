@@ -6,8 +6,22 @@ class TextChip extends StatefulWidget {
   final EdgeInsets? insets;
   final EdgeInsets? margin;
   final void Function()? tapped;
+  final double? radius;
+  final double? fontSize;
+  final FontWeight? fontWeight;
+  final bool noMargin;
 
-  const TextChip({super.key, required this.text, this.tapped, this.insets, this.margin, this.width});
+  const TextChip(
+      {super.key,
+      required this.text,
+      this.tapped,
+      this.insets,
+      this.margin,
+      this.width,
+      this.radius,
+      this.fontSize,
+      this.fontWeight,
+      this.noMargin = false});
 
   @override
   State<TextChip> createState() => _NavState();
@@ -20,13 +34,17 @@ class _NavState extends State<TextChip> {
       width: widget.width,
       padding: widget.insets ?? const EdgeInsets.only(left: 10, top: 4, right: 10, bottom: 5),
       margin: widget.margin ?? const EdgeInsets.all(0),
-      decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)), color: Color(0x33AAAAAA)),
-      child: Align(
-          alignment: Alignment.center,
+      decoration:
+          BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(widget.radius ?? 5)), color: const Color(0x33AAAAAA)),
+      child: Container(
+          padding: EdgeInsets.only(top: widget.noMargin ? 0 : 1, bottom: widget.noMargin ? 1 : 0),
           child: Text(
             widget.text,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: CupertinoColors.systemBlue, fontSize: 17, fontWeight: FontWeight.w400),
+            style: TextStyle(
+                color: CupertinoColors.systemBlue,
+                fontSize: widget.fontSize ?? 17,
+                fontWeight: widget.fontWeight ?? FontWeight.w400),
           )),
     );
   }
