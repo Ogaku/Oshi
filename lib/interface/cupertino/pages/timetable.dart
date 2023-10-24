@@ -39,7 +39,31 @@ class _TimetablePageState extends State<TimetablePage> {
       DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays;
 
   DateTime get selectedDate =>
-      Share.session.data.student.mainClass.beginSchoolYear.asDate().add(Duration(days: dayDifference)).asDate();
+      Share.session.data.student.mainClass.beginSchoolYear.asDate(utc: true).add(Duration(days: dayDifference)).asDate();
+
+  @override
+  void initState() {
+    Share.timetableNavigateDay.subscribe((args) {
+      if (args?.value == null) return;
+      if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+
+      setState(() => dayDifference =
+          args!.value.asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays);
+
+      pageController.animateToPage(dayDifference,
+          duration: Duration(
+              milliseconds: 250 *
+                  ((args!.value.asDate().difference(Share.session.data.student.mainClass.beginSchoolYear
+                              .asDate()
+                              .add(Duration(days: dayDifference))
+                              .asDate()))
+                          .inDays)
+                      .abs()
+                      .clamp(1, 30)),
+          curve: Curves.fastEaseInToSlowEaseOut);
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +153,7 @@ class _TimetablePageState extends State<TimetablePage> {
             pageSnapping: true,
             itemBuilder: (context, index) {
               DateTime selectedDate =
-                  Share.session.data.student.mainClass.beginSchoolYear.asDate().add(Duration(days: index)).asDate();
+                  Share.session.data.student.mainClass.beginSchoolYear.asDate(utc: true).add(Duration(days: index)).asDate();
               var selectedDay = Share.session.data.timetables.timetable[selectedDate];
 
               // Events for the selected day/date

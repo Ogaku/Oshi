@@ -2,6 +2,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'package:darq/darq.dart';
+import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
@@ -41,7 +42,7 @@ class _HomePageState extends State<HomePage> {
     var gradesWeek = Share.session.data.student.subjects
         .where((x) => x.grades.isNotEmpty)
         .select((x, index) => (
-              lesson: x.name,
+              lesson: x,
               grades: x.grades.where((y) => y.addDate.isAfter(DateTime.now().subtract(Duration(days: 7)).asDate())).toList()
             ))
         .where((x) => x.grades.isNotEmpty)
@@ -79,6 +80,11 @@ class _HomePageState extends State<HomePage> {
           // Bindable homework layout
           : homeworksWeek
               .select((x, index) => CupertinoListTile(
+                  onTap: () {
+                    Share.tabsNavigatePage.broadcast(Value(2));
+                    Future.delayed(Duration(milliseconds: 250))
+                        .then((arg) => Share.timetableNavigateDay.broadcast(Value(x.timeTo ?? x.timeFrom)));
+                  },
                   padding: EdgeInsets.only(left: 7),
                   title: Opacity(
                       opacity: x.done ? 0.5 : 1.0,
@@ -189,6 +195,11 @@ class _HomePageState extends State<HomePage> {
                 // Bindable event layout
                 : eventsWeek
                     .select((x, index) => CupertinoListTile(
+                        onTap: () {
+                          Share.tabsNavigatePage.broadcast(Value(2));
+                          Future.delayed(Duration(milliseconds: 250))
+                              .then((arg) => Share.timetableNavigateDay.broadcast(Value(x.date ?? x.timeFrom)));
+                        },
                         padding: EdgeInsets.only(left: 7),
                         title: Container(
                             margin: EdgeInsets.only(right: 10),
@@ -229,6 +240,11 @@ class _HomePageState extends State<HomePage> {
                 // Bindable grades layout
                 : gradesWeek
                     .select((x, index) => CupertinoListTile(
+                        onTap: () {
+                          Share.tabsNavigatePage.broadcast(Value(1));
+                          Future.delayed(Duration(milliseconds: 250))
+                              .then((arg) => Share.gradesNavigate.broadcast(Value(x.lesson)));
+                        },
                         padding: EdgeInsets.only(left: 18, right: 8, top: 8, bottom: 10),
                         title: Container(
                             margin: EdgeInsets.only(right: 10),
@@ -240,7 +256,7 @@ class _HomePageState extends State<HomePage> {
                                     child: Align(
                                         alignment: Alignment.centerLeft,
                                         child: Text(
-                                          x.lesson,
+                                          x.lesson.name,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                         ))),
@@ -265,5 +281,5 @@ class _HomePageState extends State<HomePage> {
 }
 
 extension DateTimeExtension on DateTime {
-  DateTime asDate() => DateTime(year, month, day);
+  DateTime asDate({bool utc = false}) => utc ? DateTime.utc(year, month, day) : DateTime(year, month, day);
 }

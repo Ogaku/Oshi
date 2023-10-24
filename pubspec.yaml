@@ -30,6 +30,7 @@ dependencies:
   dynamic_color: ^1.6.7
   visibility_detector: ^0.4.0+2
   flutter_linkify: ^6.0.0
+  flutter_shake_animated: ^0.0.5
 
 dev_dependencies:
   flutter_test:

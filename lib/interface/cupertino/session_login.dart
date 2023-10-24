@@ -6,6 +6,8 @@ import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_shake_animated/flutter_shake_animated.dart';
 import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:oshi/models/provider.dart';
 import 'package:oshi/share/share.dart';
@@ -26,6 +28,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   Map<String, TextEditingController>? credentialControllers;
   bool isWorking = false; // Logging in right now?
+  bool shakeFields = false; // Shake login fields
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +42,7 @@ class _LoginPageState extends State<LoginPage> {
               enabled: !isWorking,
               placeholder: 'Required',
               obscureText: x.value.obscure,
+              autofillHints: [x.value.obscure ? AutofillHints.password : AutofillHints.username],
               controller: credentialControllers![x.key],
               onChanged: (s) => setState(() {}),
             )))
@@ -66,6 +70,7 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () async {
                 if (isWorking) return; // Already handling something, give up
                 if (credentialControllers!.values.every((x) => x.text.isNotEmpty)) {
+                  TextInput.finishAutofillContext(); // Hide autofill if present
                   setState(() {
                     // Mark as working, the 1st refresh is gonna take a while
                     isWorking = true;
@@ -76,7 +81,11 @@ class _LoginPageState extends State<LoginPage> {
                     setState(() {
                       // Reset the animation in case the login method hasn't finished
                       isWorking = false;
+                      shakeFields = true;
                     });
+
+                    // Reset the shake
+                    Future.delayed(Duration(milliseconds: 300)).then((value) => setState(() => shakeFields = false));
                   }
                 }
               })),
@@ -96,7 +105,11 @@ class _LoginPageState extends State<LoginPage> {
             Container(
                 margin: EdgeInsets.only(top: 50),
                 child: credentialEntries.isNotEmpty
-                    ? CupertinoFormSection.insetGrouped(children: credentialEntries)
+                    ? ShakeWidget(
+                        shakeConstant: ShakeHorizontalConstant2(),
+                        autoPlay: shakeFields,
+                        enableWebMouseHover: false,
+                        child: AutofillGroup(child: CupertinoFormSection.insetGrouped(children: credentialEntries)))
                     : Opacity(opacity: 0.5, child: Text('No additional data required'))),
             Opacity(
                 opacity: 0.7,

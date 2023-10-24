@@ -1,5 +1,6 @@
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
+import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/models/provider.dart';
 
 import 'package:hive/hive.dart';
@@ -24,6 +25,15 @@ class Share {
   // Raised by the app to notify that the uses's just logged in
   // To subscribe: event.subscribe((args) => {})
   static Event<Value<StatefulWidget Function()>> changeBase = Event<Value<StatefulWidget Function()>>();
+
+  // Navigate the grades page to the specified subject
+  static Event<Value<Lesson>> gradesNavigate = Event<Value<Lesson>>();
+
+  // Navigate the timetable page to the specified day
+  static Event<Value<DateTime>> timetableNavigateDay = Event<Value<DateTime>>();
+
+  // Navigate the bottom tab bar to the specified page
+  static Event<Value<int>> tabsNavigatePage = Event<Value<int>>();
 
   // Currently supported provider types, maps sample instances to factories
   static Map<String, ({IProvider instance, IProvider Function() factory})> providers = {

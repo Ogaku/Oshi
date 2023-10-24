@@ -83,29 +83,29 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 0, right: 15, top: 3),
                   child: widget.segments != null
-                      ? CupertinoSlidingSegmentedControl(
-                          groupValue: groupSelection,
-                          children: widget.segments!.map((key, value) => MapEntry(
-                              key,
-                              Container(
-                                  width: double.maxFinite,
-                                  child: Text(value,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: lerpDouble(13, 15, ((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0)),
-                                          color: CupertinoDynamicColor.resolve(
-                                              CupertinoDynamicColor.withBrightness(
-                                                  color: CupertinoColors.black.withAlpha(
-                                                      (((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0) * 153).round()),
-                                                  darkColor: CupertinoColors.white.withAlpha(
-                                                      (((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0) * 153).round())),
-                                              context)))))),
-                          onValueChanged: (value) {
-                            if (value == null) return;
-                            setState(() => groupSelection = value);
-                            if (widget.onChanged != null) widget.onChanged!(value);
-                          },
-                        )
+                      ? Opacity(
+                          opacity: ((isVisibleSearchBar - 30) / 5).clamp(0.0, 1.0),
+                          child: CupertinoSlidingSegmentedControl(
+                            groupValue: groupSelection,
+                            children: widget.segments!.map((key, value) => MapEntry(
+                                key,
+                                Text(value,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: lerpDouble(13, 15, ((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0)),
+                                        color: CupertinoDynamicColor.resolve(
+                                            CupertinoDynamicColor.withBrightness(
+                                                color: CupertinoColors.black.withAlpha(
+                                                    (((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0) * 153).round()),
+                                                darkColor: CupertinoColors.white.withAlpha(
+                                                    (((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0) * 153).round())),
+                                            context))))),
+                            onValueChanged: (value) {
+                              if (value == null) return;
+                              setState(() => groupSelection = value);
+                              if (widget.onChanged != null) widget.onChanged!(value);
+                            },
+                          ))
                       : CupertinoSearchTextField(
                           onChanged: widget.onChanged,
                           placeholderStyle: TextStyle(
