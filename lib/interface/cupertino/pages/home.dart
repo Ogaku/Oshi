@@ -6,6 +6,9 @@ import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/interface/cupertino/pages/timetable.dart';
+import 'package:oshi/interface/cupertino/sessions_page.dart';
+import 'package:oshi/interface/cupertino/views/grades_detailed.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/event.dart';
@@ -13,6 +16,7 @@ import 'package:oshi/models/data/grade.dart';
 import 'package:oshi/share/share.dart';
 
 import 'package:oshi/interface/cupertino/widgets/text_chip.dart' show TextChip;
+import 'package:pull_down_button/pull_down_button.dart';
 
 // Boiler: returned to the app tab builder
 StatefulWidget get homePage => HomePage();
@@ -33,6 +37,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var currentDay = Share.session.data.timetables.timetable[DateTime.now().asDate()];
+    var nextDay = Share.session.data.timetables.timetable[DateTime.now().asDate().add(Duration(days: 1))];
+
+    var currentLesson = currentDay?.lessons
+        .firstWhereOrDefault((x) =>
+            x?.any((y) => DateTime.now().isAfterOrSame(y.hourFrom) && DateTime.now().isBeforeOrSame(y.hourTo)) ?? false)
+        ?.firstOrDefault();
+    var nextLesson = currentDay?.lessons
+        .firstWhereOrDefault((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.hourFrom)) ?? false)
+        ?.firstOrDefault();
+
     // Event list for the next week (7 days), exc homeworks and teacher absences
     var eventsWeek = Share.session.data.student.mainClass.events
         .where((x) => x.category != EventCategory.homework && x.category != EventCategory.teacher)
@@ -217,54 +232,234 @@ class _HomePageState extends State<HomePage> {
         segments: {'home': 'Home', 'timeline': 'Timeline'},
         searchController: searchController,
         largeTitle: Text('Home'),
-        trailing: Icon(CupertinoIcons.gear),
+        trailing: PullDownButton(
+          itemBuilder: (context) => [
+            PullDownMenuItem(
+              title: 'Settings',
+              icon: CupertinoIcons.gear,
+              onTap: () {},
+            ),
+            PullDownMenuDivider.large(),
+            PullDownMenuTitle(title: Text('Accounts')),
+            PullDownMenuItem(
+              title: 'Sessions',
+              icon: CupertinoIcons.rectangle_stack_person_crop,
+              onTap: () => Share.changeBase.broadcast(Value(() => sessionsPage)),
+            )
+          ],
+          buttonBuilder: (context, showMenu) => GestureDetector(
+            onTap: showMenu,
+            child: const Icon(CupertinoIcons.ellipsis_circle),
+          ),
+        ),
         children: [
           CupertinoListSection.insetGrouped(
-            margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-            hasLeading: false,
-            header: Text('Summary'),
-            children: [
-              CupertinoListTile(
-                  title: Container(
-                      margin: EdgeInsets.only(top: 10, bottom: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'TODO Conditional lesson text',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Visibility(
-                              visible: Share.session.data.student.mainClass.unit.luckyNumber != null,
-                              child: Opacity(
-                                  opacity: 0.5,
-                                  child: Container(
-                                      margin: EdgeInsets.only(top: 5), child: Text("You're the lucky one today!"))))
-                        ],
-                      ))),
-              CupertinoListTile(
-                  title: Text(
-                'TODO Conditional lesson text',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              )),
-              CupertinoListTile(
-                  title: Container(
-                      margin: EdgeInsets.only(top: 10, bottom: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('TODO Conditional lesson text'),
-                          Visibility(
-                              visible: Share.session.data.student.mainClass.unit.luckyNumber == null,
-                              child: Opacity(
-                                  opacity: 0.5,
-                                  child: Container(
-                                      margin: EdgeInsets.only(top: 5), child: Text('TODO Conditional lesson text'))))
-                        ],
-                      ))),
-              CupertinoListTile(title: Text('TODO Conditional lesson text')),
-            ],
-          ),
+              margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+              additionalDividerMargin: 5,
+              hasLeading: false,
+              header: Text('Summary'),
+              children: [
+                CupertinoListTile(
+                    onTap: () {
+                      Share.tabsNavigatePage.broadcast(Value(2));
+                      Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay.broadcast(Value(
+                          DateTime.now().asDate().add(Duration(
+                              days: DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)
+                                  ? 1
+                                  : 0)))));
+                    },
+                    title: Container(
+                        margin: EdgeInsets.only(top: 10, bottom: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                              Expanded(
+                                  child: Text(
+                                glanceTitle,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 19,
+                                ),
+                              )),
+                              Visibility(
+                                  visible: Share.session.data.student.mainClass.unit.luckyNumber != null,
+                                  child: Stack(alignment: Alignment.center, children: [
+                                    Text(
+                                        (DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
+                                                    Share.session.data.student.account.number ==
+                                                        Share.session.data.student.mainClass.unit.luckyNumber &&
+                                                    Share.session.data.student.mainClass.unit.luckyNumberTomorrow) ||
+                                                (DateTime.now().isBeforeOrSame(currentDay?.dayStart) &&
+                                                    Share.session.data.student.account.number ==
+                                                        Share.session.data.student.mainClass.unit.luckyNumber &&
+                                                    !Share.session.data.student.mainClass.unit.luckyNumberTomorrow)
+                                            ? '🌟'
+                                            : '⭐',
+                                        style: TextStyle(fontSize: 28)),
+                                    Container(
+                                        margin: EdgeInsets.only(top: 1),
+                                        child: Text(
+                                            Share.session.data.student.mainClass.unit.luckyNumber?.toString() ?? '69',
+                                            style: TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w600,
+                                                color: CupertinoColors.black.withAlpha(220)))),
+                                  ]))
+                            ]),
+                            Container(
+                                margin: EdgeInsets.only(top: 5),
+                                child: Row(children: [
+                                  Flexible(
+                                      child: Container(
+                                          margin: EdgeInsets.only(right: 3),
+                                          child: Text(
+                                            glanceSubtitle.flexible,
+                                            style: TextStyle(fontWeight: FontWeight.w400),
+                                          ))),
+                                  Text(
+                                    glanceSubtitle.standard,
+                                    style: TextStyle(fontWeight: FontWeight.w400),
+                                  )
+                                ])),
+                          ],
+                        )))
+              ]
+                  .appendIf(
+                      CupertinoListTile(
+                          onTap: () {
+                            Share.tabsNavigatePage.broadcast(Value(2));
+                            Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay.broadcast(
+                                Value(DateTime.now().asDate().add(Duration(
+                                    days: DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)
+                                        ? 1
+                                        : 0)))));
+                          },
+                          title: Container(
+                              margin: EdgeInsets.only(top: 10, bottom: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Visibility(
+                                      visible: currentLesson != null,
+                                      child: Row(children: [
+                                        Text(
+                                          'Now:',
+                                          style: TextStyle(fontWeight: FontWeight.w500),
+                                        ),
+                                        Flexible(
+                                            child: Container(
+                                                margin: EdgeInsets.only(right: 3, left: 3),
+                                                child: Text(
+                                                  currentLesson?.subject?.name ?? 'Your mom',
+                                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                                ))),
+                                        Text(
+                                          'in ${currentLesson?.classroom?.name ?? "the otherworld"}',
+                                          style: TextStyle(fontWeight: FontWeight.w400),
+                                        )
+                                      ])),
+                                  Visibility(
+                                      visible: nextLesson != null,
+                                      child: Opacity(
+                                          opacity: 0.5,
+                                          child: Container(
+                                              margin: EdgeInsets.only(top: 5),
+                                              child: Row(children: [
+                                                Text(
+                                                  'Next:',
+                                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                                ),
+                                                Flexible(
+                                                    child: Container(
+                                                        margin: EdgeInsets.only(right: 3, left: 3),
+                                                        child: Text(
+                                                          nextLesson?.subject?.name ?? 'Your mom',
+                                                          style: TextStyle(fontWeight: FontWeight.w500),
+                                                        ))),
+                                                Text(
+                                                  'in ${nextLesson?.classroom?.name ?? "the otherworld"}',
+                                                  style: TextStyle(fontWeight: FontWeight.w400),
+                                                )
+                                              ]))))
+                                ],
+                              ))),
+                      nextLesson != null || currentLesson != null)
+                  .appendIf(
+                      CupertinoListTile(
+                          onTap: () {
+                            Share.tabsNavigatePage.broadcast(Value(2));
+                            Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay.broadcast(
+                                Value(DateTime.now().asDate().add(Duration(
+                                    days: DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)
+                                        ? 1
+                                        : 0)))));
+                          },
+                          title: Container(
+                              margin: EdgeInsets.only(top: 10, bottom: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(children: [
+                                    Text(
+                                      'First:',
+                                      style: TextStyle(fontWeight: FontWeight.w500),
+                                    ),
+                                    Flexible(
+                                        child: Container(
+                                            margin: EdgeInsets.only(right: 3, left: 3),
+                                            child: Text(
+                                              nextDay?.lessonsStripped
+                                                      .firstWhereOrDefault((x) => x?.any((y) => !y.isCanceled) ?? false)
+                                                      ?.firstWhereOrDefault((x) => !x.isCanceled)
+                                                      ?.subject
+                                                      ?.name ??
+                                                  'Your mom',
+                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                            ))),
+                                    Text(
+                                      'in ${nextDay?.lessonsStripped.firstWhereOrDefault((x) => x?.any((y) => !y.isCanceled) ?? false)?.firstWhereOrDefault((x) => !x.isCanceled)?.classroom?.name ?? "the otherworld"}',
+                                      style: TextStyle(fontWeight: FontWeight.w400),
+                                    )
+                                  ])
+                                ],
+                              ))),
+                      DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false))
+                  .appendIf(
+                      CupertinoListTile(
+                          onTap: () {
+                            Share.tabsNavigatePage.broadcast(Value(2));
+                            Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay.broadcast(
+                                Value(DateTime.now().asDate().add(Duration(
+                                    days: DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)
+                                        ? 1
+                                        : 0)))));
+                          },
+                          title: Row(children: [
+                            Expanded(
+                                child: Container(
+                                    margin: EdgeInsets.only(right: 3),
+                                    child: Text(
+                                      DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)
+                                          ? 'Tomorrow: ${nextDay?.lessonsStripped.length} lessons'
+                                          : 'Later: ${currentDay?.lessonsStripped.where((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.hourFrom)) ?? false).length} lessons',
+                                      style: TextStyle(fontWeight: FontWeight.w400),
+                                    ))),
+                            Text(
+                              DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)
+                                  ? 'until ${DateFormat("H:mm").format(nextDay?.dayEnd ?? DateTime.now())}'
+                                  : 'until ${DateFormat("H:mm").format(currentDay?.dayEnd ?? DateTime.now())}',
+                              style:
+                                  TextStyle(fontWeight: FontWeight.w400, fontSize: 15, color: CupertinoColors.inactiveGray),
+                            ),
+                            Container(
+                                margin: EdgeInsets.only(left: 2),
+                                child: Transform.scale(
+                                    scale: 0.7,
+                                    child: Icon(CupertinoIcons.chevron_forward, color: CupertinoColors.inactiveGray)))
+                          ])),
+                      (DateTime.now().isBeforeOrSame(currentDay?.dayEnd) && (currentDay?.hasLessons ?? false)) ||
+                          (DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)))),
           // Homeworks - first if any(), otherwise last
           Visibility(visible: !homeworksLast, child: homeworksWidget),
           // Upcoming events - in the middle, or top
@@ -348,7 +543,7 @@ class _HomePageState extends State<HomePage> {
                                                       margin: EdgeInsets.only(top: 6, bottom: 6, right: 10)),
                                                   Flexible(
                                                       child: Text(
-                                                    x.title ?? x.content,
+                                                    (x.title ?? x.content).capitalize(),
                                                     overflow: TextOverflow.ellipsis,
                                                     style: TextStyle(
                                                         fontWeight: FontWeight.w600,
@@ -508,6 +703,145 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  // Glance widget's subtitle
+  ({String flexible, String standard}) get glanceSubtitle {
+    var currentDay = Share.session.data.timetables.timetable[DateTime.now().asDate()];
+    var nextDay = Share.session.data.timetables.timetable[DateTime.now().asDate().add(Duration(days: 1))];
+
+    var currentLesson = currentDay?.lessons
+        .firstWhereOrDefault((x) =>
+            x?.any((y) => DateTime.now().isAfterOrSame(y.hourFrom) && DateTime.now().isBeforeOrSame(y.hourTo)) ?? false)
+        ?.firstOrDefault();
+    var nextLesson = currentDay?.lessons
+        .firstWhereOrDefault((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.hourFrom)) ?? false)
+        ?.firstOrDefault();
+
+    // Current lesson's end time
+    if (currentLesson != null) {
+      return (
+        flexible: currentLesson.subject?.name ?? 'The current lesson',
+        standard: 'ends in ${DateTime.now().difference(currentLesson.hourTo ?? DateTime.now()).inMinutes}'
+      );
+    }
+
+    // Next lesson's start time
+    if (nextLesson != null) {
+      return (
+        flexible: nextLesson.subject?.name ?? 'The next lesson',
+        standard: DateTime.now().difference(nextLesson.hourFrom ?? DateTime.now()).inMinutes < 20
+            ? 'starts in ${DateTime.now().difference(nextLesson.hourFrom ?? DateTime.now()).inMinutes}'
+            : 'starts at ${DateFormat("HH:mm").format(nextLesson.hourFrom ?? DateTime.now())}'
+      );
+    }
+
+    // Lessons have just ended - 7
+    if ((currentDay?.hasLessons ?? false) &&
+        DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
+        DateTime.now().difference(currentDay?.dayEnd ?? DateTime.now()).inHours < 2) {
+      return (flexible: "You've survived all ${currentDay!.lessonsStripped.length} lessons!", standard: '');
+    }
+
+    // No lessons today - T5
+    if (!(currentDay?.hasLessons ?? false)) {
+      return (flexible: "It's a free real estate!", standard: '');
+    }
+
+    // But lessons tomorrow - T6
+    if ((nextDay?.hasLessons ?? false) && nextDay?.dayEnd != null) {
+      return (
+        flexible:
+            '${nextDay!.lessonsStripped.length} lessons, ${DateFormat("H:mm").format(nextDay.dayStart!)} to ${DateFormat("H:mm").format(nextDay.dayEnd!)}',
+        standard: ''
+      );
+    }
+
+    // Other options, possibly?
+    return (flexible: '', standard: '');
+  }
+
+  // Glance widget's main title
+  String get glanceTitle {
+    var currentDay = Share.session.data.timetables.timetable[DateTime.now().asDate()];
+    var nextDay = Share.session.data.timetables.timetable[DateTime.now().asDate().add(Duration(days: 1))];
+
+    var currentLesson = currentDay?.lessons
+        .firstWhereOrDefault((x) =>
+            x?.any((y) => DateTime.now().isAfterOrSame(y.hourFrom) && DateTime.now().isBeforeOrSame(y.hourTo)) ?? false)
+        ?.firstOrDefault();
+    var nextLesson = currentDay?.lessons
+        .firstWhereOrDefault((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.hourFrom)) ?? false)
+        ?.firstOrDefault();
+
+    // Absent - current lesson - TOP
+    if (currentLesson != null &&
+        (Share.session.data.student.attendances
+                ?.any((x) => x.date == DateTime.now().asDate() && x.lessonNo == currentLesson.lessonNo) ??
+            false)) {
+      return "${Share.session.data.student.account.firstName}, you're absent!";
+    }
+
+    // Lessons have just ended - 7.1
+    if ((currentDay?.hasLessons ?? false) &&
+        DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
+        DateTime.now().difference(currentDay?.dayEnd ?? DateTime.now()).inHours < 2) {
+      return 'Way to go!';
+    }
+
+    // Lessons have ended - 7.2
+    if ((currentDay?.hasLessons ?? false) &&
+        DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
+        DateTime.now().difference(currentDay?.dayEnd ?? DateTime.now()).inHours >= 2) {
+      return 'Prepare for tomorrow...';
+    }
+
+    // Lessons tomorrow - 6
+    if (DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)) {
+      return "Tomorrow's the day!";
+    }
+
+    // No lessons today - 5
+    if (!(currentDay?.hasLessons ?? false)) {
+      return 'No lessons today!';
+    }
+
+    // Good morning - 3
+    if (currentDay?.dayStart != null &&
+        DateTime.now().isBeforeOrSame(currentDay!.dayStart) &&
+        DateTime.now().difference(currentDay.dayStart!) > Duration(hours: 1)) {
+      return "Don't forget the obentō!";
+    }
+
+    // The last lesson - 2
+    if (currentLesson != null && (currentDay?.lessonsStripped.lastOrDefault()?.any((x) => x == currentLesson) ?? false)) {
+      return "You're on the finish line!";
+    }
+
+    // Ambient - during the day - 1
+    if (currentDay?.dayStart != null &&
+            DateTime.now().isBeforeOrSame(currentDay!.dayStart) &&
+            DateTime.now().difference(currentDay.dayStart!) <= Duration(hours: 1) ||
+        (currentLesson != null && nextLesson != null)) {
+      return "Keep yourself safe...";
+    }
+
+    // Lucy number - today - 0
+    if (DateTime.now().isBeforeOrSame(currentDay?.dayStart) &&
+        Share.session.data.student.account.number == Share.session.data.student.mainClass.unit.luckyNumber &&
+        !Share.session.data.student.mainClass.unit.luckyNumberTomorrow) {
+      return "You're the lucky one!";
+    }
+
+    // Lucy number - tomorrow - 0
+    if (DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
+        Share.session.data.student.account.number == Share.session.data.student.mainClass.unit.luckyNumber &&
+        Share.session.data.student.mainClass.unit.luckyNumberTomorrow) {
+      return "You'll be lucky tomorrow!";
+    }
+
+    // Other options, possibly?
+    return '';
+  }
 }
 
 extension DateTimeExtension on DateTime {
@@ -532,5 +866,12 @@ extension ListExtension on List<TextSpan> {
       yield this[i];
       if (length != i + 1) yield element;
     }
+  }
+}
+
+extension ListAppendExtension on Iterable<Widget> {
+  List<Widget> appendIf(Widget element, bool condition) {
+    if (!condition) return toList();
+    return append(element).toList();
   }
 }

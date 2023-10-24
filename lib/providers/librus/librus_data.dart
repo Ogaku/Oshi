@@ -209,7 +209,7 @@ class LibrusDataReader implements models.IProvider {
 
       student.mainClass.unit.luckyNumber = // Check whether the date for the lucky number result is "today"
           (forToday || forTomorrow)
-              ? int.tryParse(luckyNumberData["LuckyNumber"]?["LuckyNumber"])
+              ? (luckyNumberData["LuckyNumber"]?["LuckyNumber"])
               : null; // Parsing the lucky number date has failed
 
       if (!forToday && forTomorrow) student.mainClass.unit.luckyNumberTomorrow = true;
