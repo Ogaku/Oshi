@@ -280,7 +280,7 @@ class _HomePageState extends State<HomePage> {
                                 glanceTitle,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 19,
+                                  fontSize: 21,
                                 ),
                               )),
                               Visibility(
@@ -297,7 +297,7 @@ class _HomePageState extends State<HomePage> {
                                                     !Share.session.data.student.mainClass.unit.luckyNumberTomorrow)
                                             ? '🌟'
                                             : '⭐',
-                                        style: TextStyle(fontSize: 28)),
+                                        style: TextStyle(fontSize: 32)),
                                     Container(
                                         margin: EdgeInsets.only(top: 1),
                                         child:
@@ -692,7 +692,6 @@ class _HomePageState extends State<HomePage> {
                                                                         text: y.value,
                                                                         style: TextStyle(
                                                                             fontSize: 25,
-                                                                            fontWeight: FontWeight.w600,
                                                                             color: y.asColor())))
                                                                     .toList()
                                                                     .intersperse(TextSpan(

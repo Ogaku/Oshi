@@ -101,7 +101,13 @@ class _MessagesPageState extends State<MessagesPage> {
                           onPressed: () {
                             if (isWorking) return;
                             try {
-                              setState(() => isWorking = true);
+                              setState(() {
+                                (folder == MessageFolders.outbox
+                                        ? Share.session.data.messages.sent
+                                        : Share.session.data.messages.received)
+                                    .remove(x);
+                                isWorking = true;
+                              });
                               Share.session.provider
                                   .moveMessageToTrash(parent: x, byMe: folder == MessageFolders.outbox)
                                   .then((value) => setState(() => isWorking = false));

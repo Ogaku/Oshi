@@ -1,9 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'dart:io';
+
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
@@ -71,7 +74,27 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                   title: 'Delete',
                   icon: CupertinoIcons.trash,
                   isDestructive: true,
-                  onTap: () {},
+                  onTap: () {
+                    // Close the current page
+                    Navigator.of(context).pop();
+
+                    try {
+                      setState(() {
+                        (widget.isByMe ? Share.session.data.messages.sent : Share.session.data.messages.received)
+                            .remove(widget.message);
+                      });
+                      Share.session.provider.moveMessageToTrash(parent: widget.message, byMe: widget.isByMe);
+                    } on Exception catch (e) {
+                      if (Platform.isAndroid || Platform.isIOS) {
+                        Fluttertoast.showToast(
+                          msg: '$e',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.CENTER,
+                          timeInSecForIosWeb: 1,
+                        );
+                      }
+                    }
+                  },
                 ),
               ],
               buttonBuilder: (context, showMenu) => GestureDetector(
