@@ -35,22 +35,23 @@ class _SessionsPageState extends State<SessionsPage> {
           (x, index) => CupertinoListTile(
               padding: EdgeInsets.all(0),
               title: Builder(
-                  builder: (context) => CupertinoContextMenu(
+                  builder: (context) => CupertinoContextMenu.builder(
                           actions: [
                             CupertinoContextMenuAction(
                               onPressed: () async {
-                                setState(() {
-                                  Share.settings.sessions.sessions.remove(x);
-                                  if (Share.settings.sessions.lastSessionId == x) {
-                                    Share.settings.sessions.lastSessionId =
-                                        Share.settings.sessions.sessions.keys.firstOrDefault(defaultValue: null);
-                                  }
-                                  // Dismiss the context menu
-                                  Navigator.of(context, rootNavigator: true).pop();
-                                });
+                                // Dismiss the context menu
+                                Navigator.of(context, rootNavigator: true).pop();
+
+                                // Remove the session
+                                Share.settings.sessions.sessions.remove(x);
+                                if (Share.settings.sessions.lastSessionId == x) {
+                                  Share.settings.sessions.lastSessionId =
+                                      Share.settings.sessions.sessions.keys.firstOrDefault(defaultValue: null);
+                                }
 
                                 // Save our session changes
                                 await Share.settings.save();
+                                setState(() {}); // Reload
                               },
                               isDestructiveAction: true,
                               trailingIcon: CupertinoIcons.delete,
@@ -58,82 +59,112 @@ class _SessionsPageState extends State<SessionsPage> {
                             ),
                           ],
                           // I know there's onTap too, but we need an opaque background
-                          child: CupertinoButton(
-                            color: CupertinoDynamicColor.withBrightness(
-                                color: const Color.fromARGB(255, 255, 255, 255),
-                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                            padding: EdgeInsets.only(left: 20),
-                            child: Row(children: [
-                              ConstrainedBox(
-                                  constraints: BoxConstraints(maxWidth: 120, maxHeight: 80, minWidth: 120, minHeight: 80),
-                                  child: Container(
-                                      margin: EdgeInsets.only(top: 20, bottom: 20),
-                                      child: FadeInImage.memoryNetwork(
-                                          height: 37,
-                                          placeholder: kTransparentImage,
-                                          image: Share.settings.sessions.sessions[x]!.provider.providerBannerUri
-                                                  ?.toString() ??
-                                              'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg'))),
-                              Container(
-                                width: 1,
-                                height: 40,
-                                margin: EdgeInsets.only(left: 20, right: 20),
-                                decoration: const BoxDecoration(
-                                    borderRadius: BorderRadius.all(Radius.circular(10)), color: Color(0x33AAAAAA)),
-                              ),
-                              Flexible(
-                                  child: Container(
-                                      margin: EdgeInsets.only(right: 20),
-                                      child: Text(
-                                        Share.settings.sessions.sessions[x]!.sessionName,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            color: CupertinoDynamicColor.resolve(
-                                                CupertinoDynamicColor.withBrightness(
-                                                    color: CupertinoColors.black, darkColor: CupertinoColors.white),
-                                                context)),
-                                      )))
-                            ]),
-                            onPressed: () async {
-                              if (isWorking) return; // Already handling something, give up
-                              setState(() {
-                                // Mark as working, the 1st refresh is gonna take a while
-                                isWorking = true;
-                              });
+                          builder: (BuildContext context, Animation<double> animation) => Visibility(
+                              visible: Share.settings.sessions.sessions[x] != null,
+                              child: CupertinoButton(
+                                color: CupertinoDynamicColor.withBrightness(
+                                    color: const Color.fromARGB(255, 255, 255, 255),
+                                    darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                                padding: EdgeInsets.only(left: 20),
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                                        color: CupertinoDynamicColor.resolve(
+                                            CupertinoDynamicColor.withBrightness(
+                                                color: const Color.fromARGB(255, 255, 255, 255),
+                                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                                            context)),
+                                    padding: EdgeInsets.only(right: 10, left: 6),
+                                    child: ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                            maxHeight: animation.value < CupertinoContextMenu.animationOpensAt
+                                                ? double.infinity
+                                                : 100,
+                                            maxWidth: animation.value < CupertinoContextMenu.animationOpensAt
+                                                ? double.infinity
+                                                : 300),
+                                        child: Row(children: [
+                                          ConstrainedBox(
+                                              constraints:
+                                                  BoxConstraints(maxWidth: 120, maxHeight: 80, minWidth: 120, minHeight: 80),
+                                              child: Container(
+                                                  margin: EdgeInsets.only(top: 20, bottom: 20),
+                                                  child: Visibility(
+                                                      visible:
+                                                          Share.settings.sessions.sessions[x]?.provider.providerBannerUri !=
+                                                              null,
+                                                      child: FadeInImage.memoryNetwork(
+                                                          height: 37,
+                                                          placeholder: kTransparentImage,
+                                                          image: Share
+                                                                  .settings.sessions.sessions[x]?.provider.providerBannerUri
+                                                                  ?.toString() ??
+                                                              'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg')))),
+                                          Visibility(
+                                              visible:
+                                                  Share.settings.sessions.sessions[x]?.provider.providerBannerUri != null,
+                                              child: Container(
+                                                width: 1,
+                                                height: 40,
+                                                margin: EdgeInsets.only(left: 20, right: 20),
+                                                decoration: const BoxDecoration(
+                                                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                                                    color: Color(0x33AAAAAA)),
+                                              )),
+                                          Flexible(
+                                              child: Container(
+                                                  margin: EdgeInsets.only(right: 20),
+                                                  child: Text(
+                                                    Share.settings.sessions.sessions[x]?.sessionName ?? '',
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.w600,
+                                                        color: CupertinoDynamicColor.resolve(
+                                                            CupertinoDynamicColor.withBrightness(
+                                                                color: CupertinoColors.black,
+                                                                darkColor: CupertinoColors.white),
+                                                            context)),
+                                                  )))
+                                        ]))),
+                                onPressed: () async {
+                                  if (isWorking) return; // Already handling something, give up
+                                  setState(() {
+                                    // Mark as working, the 1st refresh is gonna take a while
+                                    isWorking = true;
+                                  });
 
-                              // showCupertinoModalBottomSheet(context: context, builder: (context) => LoginPage(provider: x));
-                              Share.settings.sessions.lastSessionId = x; // Update
-                              Share.session = Share.settings.sessions.lastSession!;
-                              var result = await Share.session.login(); // Log in now
+                                  // showCupertinoModalBottomSheet(context: context, builder: (context) => LoginPage(provider: x));
+                                  Share.settings.sessions.lastSessionId = x; // Update
+                                  Share.session = Share.settings.sessions.lastSession!;
+                                  var result = await Share.session.login(); // Log in now
 
-                              if (!result.success) {
-                                if (Platform.isAndroid || Platform.isIOS) {
-                                  Fluttertoast.showToast(
-                                    msg: '${result.message}',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.CENTER,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                }
-                                setState(() {
-                                  // Reset the animation in case the login method hasn't finished
+                                  if (!result.success) {
+                                    if (Platform.isAndroid || Platform.isIOS) {
+                                      Fluttertoast.showToast(
+                                        msg: '${result.message}',
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.CENTER,
+                                        timeInSecForIosWeb: 1,
+                                      );
+                                    }
+                                    setState(() {
+                                      // Reset the animation in case the login method hasn't finished
+                                      isWorking = false;
+                                    });
+                                    return; // Give up, not this time
+                                  }
+
+                                  await Share.settings.save(); // Save our settings now
+                                  await Share.session.refresh(); // Refresh everything
+                                  await Share.session.refreshMessages(); // And messages
+
+                                  // Change the main page to the base application
+                                  Share.changeBase.broadcast(Value(() => baseApp));
+
+                                  // Reset the animation in case we go back somehow
                                   isWorking = false;
-                                });
-                                return; // Give up, not this time
-                              }
-
-                              await Share.settings.save(); // Save our settings now
-                              await Share.session.refresh(); // Refresh everything
-                              await Share.session.refreshMessages(); // And messages
-
-                              // Change the main page to the base application
-                              Share.changeBase.broadcast(Value(() => baseApp));
-
-                              // Reset the animation in case we go back somehow
-                              isWorking = false;
-                            },
-                          )))),
+                                },
+                              ))))),
         )
         .toList();
 

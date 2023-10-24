@@ -268,6 +268,7 @@ class _HomePageState extends State<HomePage> {
                                   ? 1
                                   : 0)))));
                     },
+                    padding: EdgeInsets.only(left: 20, right: 10),
                     title: Container(
                         margin: EdgeInsets.only(top: 10, bottom: 10),
                         child: Column(
@@ -299,12 +300,23 @@ class _HomePageState extends State<HomePage> {
                                         style: TextStyle(fontSize: 28)),
                                     Container(
                                         margin: EdgeInsets.only(top: 1),
-                                        child: Text(
-                                            Share.session.data.student.mainClass.unit.luckyNumber?.toString() ?? '69',
-                                            style: TextStyle(
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w600,
-                                                color: CupertinoColors.black.withAlpha(220)))),
+                                        child:
+                                            Text(Share.session.data.student.mainClass.unit.luckyNumber?.toString() ?? '69',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: CupertinoDynamicColor.resolve(
+                                                      CupertinoDynamicColor.withBrightness(
+                                                          color: CupertinoColors.black, darkColor: CupertinoColors.white),
+                                                      context),
+                                                  shadows: [
+                                                    Shadow(
+                                                      color: CupertinoColors.black,
+                                                      blurRadius: 3.0,
+                                                      offset: Offset(0.0, 0.0),
+                                                    ),
+                                                  ],
+                                                ))),
                                   ]))
                             ]),
                             Container(
@@ -435,6 +447,7 @@ class _HomePageState extends State<HomePage> {
                                         ? 1
                                         : 0)))));
                           },
+                          padding: EdgeInsets.only(left: 20, right: 5),
                           title: Row(children: [
                             Expanded(
                                 child: Container(

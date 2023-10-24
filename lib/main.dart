@@ -25,6 +25,7 @@ import 'package:oshi/models/provider.dart' show ProviderDataAdapter;
 
 import 'package:oshi/interface/material/sessions_page.dart' as materialapp show sessionsPage;
 import 'package:oshi/interface/cupertino/sessions_page.dart' as cupertinoapp show sessionsPage;
+import 'package:oshi/interface/cupertino/base_app.dart' as cupertinoapp show baseApp;
 
 Future<void> main() async {
   if (Platform.isAndroid) WidgetsFlutterBinding.ensureInitialized();
@@ -71,9 +72,12 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  StatefulWidget Function() child = Config.useCupertino ? () => cupertinoapp.sessionsPage : () => materialapp.sessionsPage;
   bool subscribed = false;
 
+  StatefulWidget Function() child = Config.useCupertino
+      ? () => (Share.settings.sessions.lastSession != null ? cupertinoapp.baseApp : cupertinoapp.sessionsPage)
+      : () => materialapp.sessionsPage;
+      
   @override
   Widget build(BuildContext context) {
     if (!subscribed) {
