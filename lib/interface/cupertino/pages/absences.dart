@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'dart:math';
+
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
@@ -41,6 +43,10 @@ class _AbsencesPageState extends State<AbsencesPage> {
     var attendancesToDisplayByLesson = Share.session.data.student.attendances
             ?.orderByDescending((x) => x.date)
             .groupBy((x) => x.lesson.subject?.name ?? 'Unknown subject')
+            .select((x, index) => Grouping(
+                x.elements,
+                "${x.key} – ${(100 * x.elements.where((y) => y.type == AttendanceType.present).count() / x.elements.count()).round()}%",
+                Random().nextInt(100)))
             .orderBy((x) => x.key)
             .toList() ??
         [];
