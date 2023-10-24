@@ -5,6 +5,7 @@ import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/lesson.dart';
@@ -71,7 +72,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                 context: context,
                                 builder: (context) => MessageComposePage(
                                     receivers: [x.addedBy],
-                                    subject: 'Pytanie do oceny ${x.value} z dnia ${DateFormat("y.M.d").format(x.addDate)}',
+                                    subject: 'Pytanie o ocenę ${x.value} z dnia ${DateFormat("y.M.d").format(x.addDate)}',
                                     signature:
                                         '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                           },
@@ -101,7 +102,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                           padding: EdgeInsets.only(bottom: 5),
                                           child: Text(
                                             x.value,
-                                            style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
+                                            style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600, color: x.asColor()),
                                           )),
                                       Expanded(
                                           flex: 2,
@@ -182,7 +183,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                             context: context,
                             builder: (context) => MessageComposePage(
                                 receivers: [widget.lesson.teacher],
-                                subject: 'Pytanie do średniej ocen z ${widget.lesson.name}',
+                                subject: 'Pytanie o średniej ocen z przedmiotu ${widget.lesson.name}',
                                 signature:
                                     '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                       },
@@ -243,7 +244,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                         context: context,
                         builder: (context) => MessageComposePage(
                             receivers: [widget.lesson.teacher],
-                            subject: 'Pytanie do oceny proponowanej z ${widget.lesson.name}',
+                            subject: 'Pytanie o ocenę proponowaną z przedmiotu ${widget.lesson.name}',
                             signature:
                                 '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                   },
@@ -308,7 +309,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                         context: context,
                         builder: (context) => MessageComposePage(
                             receivers: [widget.lesson.teacher],
-                            subject: 'Pytanie do oceny końcowej z ${widget.lesson.name}',
+                            subject: 'Pytanie o ocenę końcową z przedmiotu ${widget.lesson.name}',
                             signature:
                                 '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                   },

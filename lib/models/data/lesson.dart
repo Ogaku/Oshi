@@ -28,31 +28,31 @@ class Lesson extends HiveObject {
 
   @HiveField(1)
   int id;
-  
+
   @HiveField(2)
   String url;
-  
+
   @HiveField(3)
   String name;
-  
+
   @HiveField(4)
   int no;
-  
+
   @HiveField(5)
   String short;
-  
+
   @HiveField(6)
   bool isExtracurricular;
-  
+
   @HiveField(7)
   bool isBlockLesson;
 
   @HiveField(8)
   Class hostClass;
-  
+
   @HiveField(9)
   Teacher teacher;
-  
+
   @HiveField(10)
   List<Grade> grades;
 
@@ -66,7 +66,7 @@ class Lesson extends HiveObject {
   bool get hasGradesCurrentSemester => gradesCurrentSemester.isNotEmpty;
 
   String get nameExtra => name + (isExtracurricular ? '*' : '');
-  double get gradesAverage => grades.where((x) => x.countsToAverage).toList().weightedAverage();
+  double get gradesAverage => grades.where((x) => x.countsToAverage && x.asValue >= 0).toList().weightedAverage();
 
   factory Lesson.fromJson(Map<String, dynamic> json) => _$LessonFromJson(json);
 

@@ -73,6 +73,16 @@ class Event extends HiveObject {
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get locationString => (lessonNo != null ? 'Lesson no. $lessonNo • ' : '') + (sender?.name ?? '');
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  String get locationTypeString =>
+      (lessonNo != null ? 'Lesson no. $lessonNo • ' : '') +
+      categoryName +
+      (classroom != null ? ' • ${classroom!.name}' : '') +
+      (sender != null ? ' • Added by ${sender!.name}' : '');
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  String get addedByString => (sender != null ? 'Added by ${sender!.name}' : '');
+
   factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
 
   Map<String, dynamic> toJson() => _$EventToJson(this);

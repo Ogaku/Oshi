@@ -148,7 +148,7 @@ extension EventWidgetExtension on Iterable<Event> {
                                             builder: (context) => MessageComposePage(
                                                 receivers: x.sender != null ? [x.sender!] : [],
                                                 subject:
-                                                    'Pytanie do wydarzenia w dniu ${DateFormat("y.M.d").format(x.date ?? x.timeFrom)}',
+                                                    'Pytanie o wydarzenie w dniu ${DateFormat("y.M.d").format(x.date ?? x.timeFrom)}',
                                                 signature:
                                                     '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                                       },

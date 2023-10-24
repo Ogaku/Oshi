@@ -99,7 +99,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
                                           builder: (context) => MessageComposePage(
                                               receivers: [x.teacher],
                                               subject:
-                                                  'Pytanie do obecności z dnia ${DateFormat("y.M.d").format(x.date)}, L${x.lessonNo}',
+                                                  'Pytanie o obecność z dnia ${DateFormat("y.M.d").format(x.date)}, L${x.lessonNo}',
                                               signature:
                                                   '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                                     }),
