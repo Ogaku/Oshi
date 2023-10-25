@@ -57,9 +57,9 @@ Future<void> main() async {
     ..registerAdapter(SessionsDataAdapter())
     ..registerAdapter(SessionAdapter());
 
-  // TODO you'll know what to do with this... when time comes.
-  await Share.settings.load();
+  await Share.settings.load(); // TODO you'll know what to do with this... when time comes.
   Share.session = Share.settings.sessions.lastSession ?? Session(providerGuid: 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER');
+  if (Share.settings.sessions.lastSession != null) Share.session.tryLogin(); // Auto-login on restart if valid
 
   runApp(const MainApp());
 }
@@ -72,22 +72,19 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  bool subscribed = false;
-
   StatefulWidget Function() child = Config.useCupertino
       ? () => (Share.settings.sessions.lastSession != null ? cupertinoapp.baseApp : cupertinoapp.sessionsPage)
       : () => materialapp.sessionsPage;
-      
+
   @override
   Widget build(BuildContext context) {
-    if (!subscribed) {
-      Share.changeBase.subscribe((args) {
-        setState(() {
-          if (args != null) child = args.value;
-        });
+    // Re-subscribe to all events
+    Share.changeBase.unsubscribeAll();
+    Share.changeBase.subscribe((args) {
+      setState(() {
+        if (args != null) child = args.value;
       });
-      subscribed = true;
-    }
+    });
 
     return child();
   }

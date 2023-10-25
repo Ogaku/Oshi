@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'dart:async';
+
 import 'package:darq/darq.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,12 +13,14 @@ import 'package:oshi/interface/cupertino/sessions_page.dart';
 import 'package:oshi/interface/cupertino/views/grades_detailed.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
+import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/data/grade.dart';
 import 'package:oshi/share/share.dart';
 
 import 'package:oshi/interface/cupertino/widgets/text_chip.dart' show TextChip;
 import 'package:pull_down_button/pull_down_button.dart';
+import 'package:visibility_aware_state/visibility_aware_state.dart';
 
 // Boiler: returned to the app tab builder
 StatefulWidget get homePage => HomePage();
@@ -28,8 +32,9 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends VisibilityAwareState<HomePage> {
   final searchController = TextEditingController();
+  Timer? _everySecond;
 
   bool get isLucky =>
       Share.session.data.student.mainClass.unit.luckyNumber != null &&
@@ -37,15 +42,19 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var currentDay = Share.session.data.timetables.timetable[DateTime.now().asDate()];
-    var nextDay = Share.session.data.timetables.timetable[DateTime.now().asDate().add(Duration(days: 1))];
+    _everySecond ??= Timer.periodic(Duration(seconds: 1), (Timer t) {
+      if (isVisible()) setState(() {}); // Auto-refresh each second
+    });
+
+    var currentDay = Share.session.data.timetables[DateTime.now().asDate()];
+    var nextDay = Share.session.data.timetables[DateTime.now().asDate().add(Duration(days: 1))];
 
     var currentLesson = currentDay?.lessons
         .firstWhereOrDefault((x) =>
-            x?.any((y) => DateTime.now().isAfterOrSame(y.hourFrom) && DateTime.now().isBeforeOrSame(y.hourTo)) ?? false)
+            x?.any((y) => DateTime.now().isAfterOrSame(y.timeFrom) && DateTime.now().isBeforeOrSame(y.timeTo)) ?? false)
         ?.firstOrDefault();
     var nextLesson = currentDay?.lessons
-        .firstWhereOrDefault((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.hourFrom)) ?? false)
+        .firstWhereOrDefault((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.timeFrom)) ?? false)
         ?.firstOrDefault();
 
     // Event list for the next week (7 days), exc homeworks and teacher absences
@@ -151,7 +160,7 @@ class _HomePageState extends State<HomePage> {
                                           margin: EdgeInsets.only(right: 10),
                                           alignment: Alignment.centerLeft,
                                           child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 Row(
@@ -160,20 +169,21 @@ class _HomePageState extends State<HomePage> {
                                                         text: DateFormat('d/M').format(x.timeTo ?? x.timeFrom),
                                                         margin: EdgeInsets.only(top: 6, bottom: 6, right: 10)),
                                                     Expanded(
-                                                        child: Align(
-                                                            alignment: Alignment.centerLeft,
-                                                            child: Flexible(
+                                                        child: Flexible(
+                                                            child: Align(
+                                                                alignment: Alignment.centerLeft,
                                                                 child: Text(
-                                                              x.title ?? x.content,
-                                                              overflow: TextOverflow.ellipsis,
-                                                              style: TextStyle(
-                                                                  fontWeight: FontWeight.w600,
-                                                                  color: CupertinoDynamicColor.resolve(
-                                                                      CupertinoDynamicColor.withBrightness(
-                                                                          color: CupertinoColors.black,
-                                                                          darkColor: CupertinoColors.white),
-                                                                      context)),
-                                                            )))),
+                                                                  maxLines: 1,
+                                                                  x.title ?? x.content,
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                  style: TextStyle(
+                                                                      fontWeight: FontWeight.w600,
+                                                                      color: CupertinoDynamicColor.resolve(
+                                                                          CupertinoDynamicColor.withBrightness(
+                                                                              color: CupertinoColors.black,
+                                                                              darkColor: CupertinoColors.white),
+                                                                          context)),
+                                                                )))),
                                                     Align(
                                                         alignment: Alignment.centerRight,
                                                         child: Visibility(
@@ -186,40 +196,40 @@ class _HomePageState extends State<HomePage> {
                                                 ),
                                                 Visibility(
                                                     visible: animation.value >= CupertinoContextMenu.animationOpensAt,
-                                                    child: Container(
-                                                        margin: EdgeInsets.only(left: 5, right: 5, bottom: 7, top: 3),
-                                                        child: Flexible(
+                                                    child: Flexible(
+                                                        child: Container(
+                                                            margin: EdgeInsets.only(left: 5, right: 5),
                                                             child: Text(
-                                                          'Notes: ${x.content}',
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow.ellipsis,
-                                                          style: TextStyle(
-                                                              fontSize: 15,
-                                                              fontWeight: FontWeight.w500,
-                                                              color: CupertinoDynamicColor.resolve(
-                                                                  CupertinoDynamicColor.withBrightness(
-                                                                      color: CupertinoColors.black,
-                                                                      darkColor: CupertinoColors.white),
-                                                                  context)),
-                                                        )))),
+                                                              'Notes: ${x.content}',
+                                                              maxLines: 2,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              style: TextStyle(
+                                                                  fontSize: 15,
+                                                                  fontWeight: FontWeight.w500,
+                                                                  color: CupertinoDynamicColor.resolve(
+                                                                      CupertinoDynamicColor.withBrightness(
+                                                                          color: CupertinoColors.black,
+                                                                          darkColor: CupertinoColors.white),
+                                                                      context)),
+                                                            )))),
                                                 Visibility(
                                                     visible: animation.value >= CupertinoContextMenu.animationOpensAt,
-                                                    child: Container(
-                                                        margin: EdgeInsets.only(left: 5, right: 5, bottom: 7),
-                                                        child: Flexible(
+                                                    child: Flexible(
+                                                        child: Container(
+                                                            margin: EdgeInsets.only(left: 5, right: 5, bottom: 7),
                                                             child: Text(
-                                                          x.addedByString,
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow.ellipsis,
-                                                          style: TextStyle(
-                                                              fontSize: 15,
-                                                              fontWeight: FontWeight.w500,
-                                                              color: CupertinoDynamicColor.resolve(
-                                                                  CupertinoDynamicColor.withBrightness(
-                                                                      color: CupertinoColors.black,
-                                                                      darkColor: CupertinoColors.white),
-                                                                  context)),
-                                                        ))))
+                                                              x.addedByString,
+                                                              maxLines: 2,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              style: TextStyle(
+                                                                  fontSize: 15,
+                                                                  fontWeight: FontWeight.w500,
+                                                                  color: CupertinoDynamicColor.resolve(
+                                                                      CupertinoDynamicColor.withBrightness(
+                                                                          color: CupertinoColors.black,
+                                                                          darkColor: CupertinoColors.white),
+                                                                      context)),
+                                                            ))))
                                               ])))))))))
               .toList(),
     );
@@ -379,7 +389,23 @@ class _HomePageState extends State<HomePage> {
                                               margin: EdgeInsets.only(top: 5),
                                               child: Row(children: [
                                                 Text(
-                                                  'Next:',
+                                                  // If the "next" lesson is the first one
+                                                  (nextLesson != null &&
+                                                          (currentDay?.lessonsStrippedCancelled
+                                                                  .firstWhereOrDefault(
+                                                                      (l) => l?.any((x) => !x.isCanceled) ?? false)
+                                                                  ?.any((x) => x == nextLesson) ??
+                                                              false))
+                                                      ? 'First:'
+                                                      : // If the "next" lesson is the last one
+                                                      (nextLesson != null &&
+                                                              (currentDay?.lessonsStrippedCancelled
+                                                                      .lastWhereOrDefault(
+                                                                          (l) => l?.any((x) => !x.isCanceled) ?? false)
+                                                                      ?.any((x) => x == nextLesson) ??
+                                                                  false))
+                                                          ? 'Last:'
+                                                          : 'Next up:',
                                                   style: TextStyle(fontWeight: FontWeight.w500),
                                                 ),
                                                 Flexible(
@@ -396,6 +422,7 @@ class _HomePageState extends State<HomePage> {
                                               ]))))
                                 ],
                               ))),
+                      // Show during lessons and breaks (between lessons)
                       nextLesson != null || currentLesson != null)
                   .appendIf(
                       CupertinoListTile(
@@ -421,7 +448,7 @@ class _HomePageState extends State<HomePage> {
                                         child: Container(
                                             margin: EdgeInsets.only(right: 3, left: 3),
                                             child: Text(
-                                              nextDay?.lessonsStripped
+                                              nextDay?.lessonsStrippedCancelled
                                                       .firstWhereOrDefault((x) => x?.any((y) => !y.isCanceled) ?? false)
                                                       ?.firstWhereOrDefault((x) => !x.isCanceled)
                                                       ?.subject
@@ -430,13 +457,15 @@ class _HomePageState extends State<HomePage> {
                                               style: TextStyle(fontWeight: FontWeight.w500),
                                             ))),
                                     Text(
-                                      'in ${nextDay?.lessonsStripped.firstWhereOrDefault((x) => x?.any((y) => !y.isCanceled) ?? false)?.firstWhereOrDefault((x) => !x.isCanceled)?.classroom?.name ?? "the otherworld"}',
+                                      'in ${nextDay?.lessonsStrippedCancelled.firstWhereOrDefault((x) => x?.any((y) => !y.isCanceled) ?? false)?.firstWhereOrDefault((x) => !x.isCanceled)?.classroom?.name ?? "the otherworld"}',
                                       style: TextStyle(fontWeight: FontWeight.w400),
                                     )
                                   ])
                                 ],
                               ))),
-                      DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false))
+                      // Show >1h after the school day has ended, and if there are lessons tomorrow
+                      (DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)) &&
+                          DateTime.now().difference(currentDay?.dayEnd ?? DateTime.now()).inHours > 1)
                   .appendIf(
                       CupertinoListTile(
                           onTap: () {
@@ -454,8 +483,8 @@ class _HomePageState extends State<HomePage> {
                                     margin: EdgeInsets.only(right: 3),
                                     child: Text(
                                       DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)
-                                          ? 'Tomorrow: ${nextDay?.lessonsStripped.length} lessons'
-                                          : 'Later: ${currentDay?.lessonsStripped.where((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.hourFrom)) ?? false).length} lessons',
+                                          ? 'Tomorrow: ${nextDay?.lessonsNumber} lessons'
+                                          : 'Later: ${(currentDay?.lessonsStrippedCancelled.where((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.timeFrom)) ?? false).count((x) => (x?.isNotEmpty ?? false) && (x?.all((y) => !y.isCanceled) ?? false)) ?? 1) - 1} lessons',
                                       style: TextStyle(fontWeight: FontWeight.w400),
                                     ))),
                             Text(
@@ -471,8 +500,14 @@ class _HomePageState extends State<HomePage> {
                                     scale: 0.7,
                                     child: Icon(CupertinoIcons.chevron_forward, color: CupertinoColors.inactiveGray)))
                           ])),
-                      (DateTime.now().isBeforeOrSame(currentDay?.dayEnd) && (currentDay?.hasLessons ?? false)) ||
-                          (DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)))),
+                      // Show if there's still any lessons left, and the current lesson is not the last lesson
+                      (((DateTime.now().isBeforeOrSame(currentDay?.dayEnd) && (currentDay?.hasLessons ?? false)) &&
+                              (currentLesson != null &&
+                                  (currentDay?.lessonsStrippedCancelled.lastOrDefault()?.any((x) => x == currentLesson) ??
+                                      false))) ||
+                          // Or >1h after the school day has ended, and there are lessons tomorrow
+                          ((DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)) &&
+                              DateTime.now().difference(currentDay?.dayEnd ?? DateTime.now()).inHours > 1)))),
           // Homeworks - first if any(), otherwise last
           Visibility(visible: !homeworksLast, child: homeworksWidget),
           // Upcoming events - in the middle, or top
@@ -556,6 +591,7 @@ class _HomePageState extends State<HomePage> {
                                                       margin: EdgeInsets.only(top: 6, bottom: 6, right: 10)),
                                                   Flexible(
                                                       child: Text(
+                                                    maxLines: 1,
                                                     (x.title ?? x.content).capitalize(),
                                                     overflow: TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -570,22 +606,22 @@ class _HomePageState extends State<HomePage> {
                                               ),
                                               Visibility(
                                                   visible: animation.value >= CupertinoContextMenu.animationOpensAt,
-                                                  child: Container(
-                                                      margin: EdgeInsets.only(left: 5, right: 5, bottom: 7),
-                                                      child: Flexible(
+                                                  child: Flexible(
+                                                      child: Container(
+                                                          margin: EdgeInsets.only(left: 5, right: 5, bottom: 7),
                                                           child: Text(
-                                                        x.locationTypeString,
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: TextStyle(
-                                                            fontSize: 15,
-                                                            fontWeight: FontWeight.w500,
-                                                            color: CupertinoDynamicColor.resolve(
-                                                                CupertinoDynamicColor.withBrightness(
-                                                                    color: CupertinoColors.black,
-                                                                    darkColor: CupertinoColors.white),
-                                                                context)),
-                                                      ))))
+                                                            x.locationTypeString,
+                                                            maxLines: 2,
+                                                            overflow: TextOverflow.ellipsis,
+                                                            style: TextStyle(
+                                                                fontSize: 15,
+                                                                fontWeight: FontWeight.w500,
+                                                                color: CupertinoDynamicColor.resolve(
+                                                                    CupertinoDynamicColor.withBrightness(
+                                                                        color: CupertinoColors.black,
+                                                                        darkColor: CupertinoColors.white),
+                                                                    context)),
+                                                          ))))
                                             ])))))))
                     .toList(),
           ),
@@ -690,9 +726,7 @@ class _HomePageState extends State<HomePage> {
                                                                 children: x.grades
                                                                     .select((y, index) => TextSpan(
                                                                         text: y.value,
-                                                                        style: TextStyle(
-                                                                            fontSize: 25,
-                                                                            color: y.asColor())))
+                                                                        style: TextStyle(fontSize: 25, color: y.asColor())))
                                                                     .toList()
                                                                     .intersperse(TextSpan(
                                                                         text: ', ',
@@ -718,22 +752,22 @@ class _HomePageState extends State<HomePage> {
 
   // Glance widget's subtitle
   ({String flexible, String standard}) get glanceSubtitle {
-    var currentDay = Share.session.data.timetables.timetable[DateTime.now().asDate()];
-    var nextDay = Share.session.data.timetables.timetable[DateTime.now().asDate().add(Duration(days: 1))];
+    var currentDay = Share.session.data.timetables[DateTime.now().asDate()];
+    var nextDay = Share.session.data.timetables[DateTime.now().asDate().add(Duration(days: 1))];
 
     var currentLesson = currentDay?.lessons
         .firstWhereOrDefault((x) =>
-            x?.any((y) => DateTime.now().isAfterOrSame(y.hourFrom) && DateTime.now().isBeforeOrSame(y.hourTo)) ?? false)
+            x?.any((y) => DateTime.now().isAfterOrSame(y.timeFrom) && DateTime.now().isBeforeOrSame(y.timeTo)) ?? false)
         ?.firstOrDefault();
     var nextLesson = currentDay?.lessons
-        .firstWhereOrDefault((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.hourFrom)) ?? false)
+        .firstWhereOrDefault((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.timeFrom)) ?? false)
         ?.firstOrDefault();
 
     // Current lesson's end time
     if (currentLesson != null) {
       return (
         flexible: currentLesson.subject?.name ?? 'The current lesson',
-        standard: 'ends in ${DateTime.now().difference(currentLesson.hourTo ?? DateTime.now()).inMinutes}'
+        standard: 'ends in ${DateTime.now().difference(currentLesson.timeTo ?? DateTime.now()).inMinutes}'
       );
     }
 
@@ -741,9 +775,9 @@ class _HomePageState extends State<HomePage> {
     if (nextLesson != null) {
       return (
         flexible: nextLesson.subject?.name ?? 'The next lesson',
-        standard: DateTime.now().difference(nextLesson.hourFrom ?? DateTime.now()).inMinutes < 20
-            ? 'starts in ${DateTime.now().difference(nextLesson.hourFrom ?? DateTime.now()).inMinutes}'
-            : 'starts at ${DateFormat("HH:mm").format(nextLesson.hourFrom ?? DateTime.now())}'
+        standard: DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inMinutes.abs() < 20
+            ? 'starts in ${DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inMinutes.abs() < 1 ? "${DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inSeconds.abs()}s" : "${DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inMinutes.abs()}min"}'
+            : 'starts at ${DateFormat("HH:mm").format(nextLesson.timeFrom ?? DateTime.now())}'
       );
     }
 
@@ -751,7 +785,7 @@ class _HomePageState extends State<HomePage> {
     if ((currentDay?.hasLessons ?? false) &&
         DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
         DateTime.now().difference(currentDay?.dayEnd ?? DateTime.now()).inHours < 2) {
-      return (flexible: "You've survived all ${currentDay!.lessonsStripped.length} lessons!", standard: '');
+      return (flexible: "You've survived all ${currentDay!.lessonsNumber} lessons!", standard: '');
     }
 
     // No lessons today - T5
@@ -763,7 +797,7 @@ class _HomePageState extends State<HomePage> {
     if ((nextDay?.hasLessons ?? false) && nextDay?.dayEnd != null) {
       return (
         flexible:
-            '${nextDay!.lessonsStripped.length} lessons, ${DateFormat("H:mm").format(nextDay.dayStart!)} to ${DateFormat("H:mm").format(nextDay.dayEnd!)}',
+            '${nextDay!.lessonsNumber} lessons, ${DateFormat("H:mm").format(nextDay.dayStart!)} to ${DateFormat("H:mm").format(nextDay.dayEnd!)}',
         standard: ''
       );
     }
@@ -774,21 +808,20 @@ class _HomePageState extends State<HomePage> {
 
   // Glance widget's main title
   String get glanceTitle {
-    var currentDay = Share.session.data.timetables.timetable[DateTime.now().asDate()];
-    var nextDay = Share.session.data.timetables.timetable[DateTime.now().asDate().add(Duration(days: 1))];
+    var currentDay = Share.session.data.timetables[DateTime.now().asDate()];
+    var nextDay = Share.session.data.timetables[DateTime.now().asDate().add(Duration(days: 1))];
 
     var currentLesson = currentDay?.lessons
         .firstWhereOrDefault((x) =>
-            x?.any((y) => DateTime.now().isAfterOrSame(y.hourFrom) && DateTime.now().isBeforeOrSame(y.hourTo)) ?? false)
-        ?.firstOrDefault();
-    var nextLesson = currentDay?.lessons
-        .firstWhereOrDefault((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.hourFrom)) ?? false)
+            x?.any((y) => DateTime.now().isAfterOrSame(y.timeFrom) && DateTime.now().isBeforeOrSame(y.timeTo)) ?? false)
         ?.firstOrDefault();
 
     // Absent - current lesson - TOP
     if (currentLesson != null &&
-        (Share.session.data.student.attendances
-                ?.any((x) => x.date == DateTime.now().asDate() && x.lessonNo == currentLesson.lessonNo) ??
+        (Share.session.data.student.attendances?.any((x) =>
+                x.date == DateTime.now().asDate() &&
+                x.lessonNo == currentLesson.lessonNo &&
+                x.type == AttendanceType.absent) ??
             false)) {
       return "${Share.session.data.student.account.firstName}, you're absent!";
     }
@@ -825,16 +858,9 @@ class _HomePageState extends State<HomePage> {
     }
 
     // The last lesson - 2
-    if (currentLesson != null && (currentDay?.lessonsStripped.lastOrDefault()?.any((x) => x == currentLesson) ?? false)) {
+    if (currentLesson != null &&
+        (currentDay?.lessonsStrippedCancelled.lastOrDefault()?.any((x) => x == currentLesson) ?? false)) {
       return "You're on the finish line!";
-    }
-
-    // Ambient - during the day - 1
-    if (currentDay?.dayStart != null &&
-            DateTime.now().isBeforeOrSame(currentDay!.dayStart) &&
-            DateTime.now().difference(currentDay.dayStart!) <= Duration(hours: 1) ||
-        (currentLesson != null && nextLesson != null)) {
-      return "Keep yourself safe...";
     }
 
     // Lucy number - today - 0
@@ -852,7 +878,8 @@ class _HomePageState extends State<HomePage> {
     }
 
     // Other options, possibly?
-    return '';
+    // Ambient - during the day - BTM
+    return "Keep yourself safe...";
   }
 }
 

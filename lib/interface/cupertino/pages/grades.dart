@@ -22,7 +22,9 @@ class _GradesPageState extends State<GradesPage> {
   String searchQuery = '';
 
   @override
-  void initState() {
+  Widget build(BuildContext context) {
+    // Re-subscribe to all events
+    Share.gradesNavigate.unsubscribeAll();
     Share.gradesNavigate.subscribe((args) {
       if (args?.value == null) return;
       if (Navigator.of(context).canPop()) Navigator.of(context).pop();
@@ -33,11 +35,7 @@ class _GradesPageState extends State<GradesPage> {
                     lesson: args!.value,
                   )));
     });
-    super.initState();
-  }
 
-  @override
-  Widget build(BuildContext context) {
     var subjectsToDisplay = Share.session.data.student.subjects
         .where((x) =>
             x.name.contains(RegExp(searchQuery, caseSensitive: false)) ||

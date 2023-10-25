@@ -155,8 +155,7 @@ class _SessionsPageState extends State<SessionsPage> {
                                   }
 
                                   await Share.settings.save(); // Save our settings now
-                                  await Share.session.refresh(); // Refresh everything
-                                  await Share.session.refreshMessages(); // And messages
+                                  await Share.session.refreshAll(); // Refresh everything
 
                                   // Change the main page to the base application
                                   Share.changeBase.broadcast(Value(() => baseApp));

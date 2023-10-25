@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/models/provider.dart';
 
@@ -148,6 +151,16 @@ class Session extends HiveObject {
     return await provider.login(credentials: credentials ?? sessionCredentials);
   }
 
+  // Login and reset methods for early setup - implement as async
+  Future<({bool success, Exception? message})> tryLogin({Map<String, String>? credentials}) async {
+    try {
+      if (credentials?.isNotEmpty ?? false) sessionCredentials = credentials ?? {};
+      return await provider.login(credentials: credentials ?? sessionCredentials);
+    } catch (ex) {
+      return (success: false, message: Exception(ex));
+    }
+  }
+
   // Login and refresh methods for runtime - implement as async
   // For null 'weekStart' - get (only) the current week's data
   // For reporting 'progress' - mark 'Progress' as null for indeterminate status
@@ -159,6 +172,14 @@ class Session extends HiveObject {
       if (result.success) await updateData(info: true);
       return result;
     } catch (ex) {
+      if (Platform.isAndroid || Platform.isIOS) {
+        Fluttertoast.showToast(
+          msg: '$ex',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+        );
+      }
       return (success: false, message: Exception(ex));
     }
   }

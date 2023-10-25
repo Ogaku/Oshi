@@ -216,9 +216,11 @@ class _MessagesPageState extends State<MessagesPage> {
                                                         opacity: 0.5,
                                                         child: Text(
                                                           folder == MessageFolders.announcements
-                                                              ? (x.sendDate.month == x.readDate?.month
+                                                              ? (x.sendDate.month == x.readDate?.month &&
+                                                                      x.sendDate.year == x.readDate?.year &&
+                                                                      x.sendDate.day != x.readDate?.day
                                                                   ? '${DateFormat('MMM d').format(x.sendDate)} - ${DateFormat('d').format(x.readDate ?? DateTime.now())}'
-                                                                  : '${DateFormat('MMM d').format(x.sendDate)} - ${DateFormat('MMM d').format(x.readDate ?? DateTime.now())}')
+                                                                  : '${DateFormat('MMM d').format(x.sendDate)} - ${DateFormat(x.sendDate.year == x.readDate?.year ? 'MMM d' : 'MMM d y').format(x.readDate ?? DateTime.now())}')
                                                               : x.sendDateString,
                                                           overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),

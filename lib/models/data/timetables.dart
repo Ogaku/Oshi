@@ -1,6 +1,7 @@
 import 'package:darq/darq.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:oshi/interface/cupertino/pages/timetable.dart';
 import 'package:oshi/models/data/class.dart';
 import 'package:oshi/models/data/classroom.dart';
 import 'package:oshi/models/data/lesson.dart';
@@ -19,6 +20,8 @@ class Timetables extends HiveObject {
     Map<DateTime, TimetableDay>? timetable,
   }) : timetable = timetable ?? {};
 
+  TimetableDay? operator [](DateTime day) => timetable[day]?.withDay(day);
+
   factory Timetables.fromJson(Map<String, dynamic> json) => _$TimetablesFromJson(json);
 
   Map<String, dynamic> toJson() => _$TimetablesToJson(this);
@@ -36,17 +39,17 @@ class TimetableDay extends HiveObject {
 
   // The start time of the first non-cancelled lesson
   @JsonKey(includeToJson: false, includeFromJson: false)
-  DateTime? get dayStart => lessons
+  DateTime? get dayStart => (calendarDay ?? DateTime.now()).withTime(lessons
       .firstWhereOrDefault((x) => x?.any((y) => !y.isCanceled) ?? false, defaultValue: null)
       ?.firstWhereOrDefault((x) => !x.isCanceled)
-      ?.hourFrom;
+      ?.timeFrom);
 
   // The end time of the last non-cancelled lesson
   @JsonKey(includeToJson: false, includeFromJson: false)
-  DateTime? get dayEnd => lessons
+  DateTime? get dayEnd => (calendarDay ?? DateTime.now()).withTime(lessons
       .lastWhereOrDefault((x) => x?.any((y) => !y.isCanceled) ?? false, defaultValue: null)
       ?.lastWhereOrDefault((x) => !x.isCanceled)
-      ?.hourTo;
+      ?.timeTo);
 
   // Today's lessons, stripped out of empty|null list blocks
   @JsonKey(includeToJson: false, includeFromJson: false)
@@ -57,6 +60,21 @@ class TimetableDay extends HiveObject {
       .reverse()
       .toList();
 
+  // Today's lessons, stripped out of empty|null|canc list blocks
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  List<List<TimetableLesson>?> get lessonsStrippedCancelled => lessons
+      .skipWhile((value) => (value?.isEmpty ?? true))
+      .reverse()
+      .skipWhile((value) => (value?.isEmpty ?? true))
+      .reverse()
+      .skipWhile((value) => (value?.all((x) => x.isCanceled) ?? false))
+      .toList();
+
+  // Today's lessons, stripped out of empty|null|canc list blocks
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  int get lessonsNumber =>
+      lessonsStrippedCancelled.count((x) => (x?.isNotEmpty ?? false) && (x?.all((y) => !y.isCanceled) ?? false));
+
   // Does this day have any non-cancelled lessons?
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get hasValidLessons => lessons.any((x) => x?.any((y) => !y.isCanceled) ?? false);
@@ -64,6 +82,15 @@ class TimetableDay extends HiveObject {
   // Does this day have any lesson objects?
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get hasLessons => lessons.any((x) => x?.isNotEmpty ?? false);
+
+  // Placeholder for withDay
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  DateTime? calendarDay;
+
+  TimetableDay withDay(DateTime day) {
+    calendarDay = day;
+    return this;
+  }
 
   factory TimetableDay.fromJson(Map<String, dynamic> json) => _$TimetableDayFromJson(json);
 
@@ -129,6 +156,12 @@ class TimetableLesson extends HiveObject {
   DateTime? hourTo;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
+  DateTime? get timeFrom => date.withTime(hourFrom);
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  DateTime? get timeTo => date.withTime(hourTo);
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
   DateTime? get lessonEndDate => date.add(Duration(hours: hourTo?.hour ?? 0, minutes: hourTo?.minute ?? 0));
 
   @JsonKey(includeToJson: false, includeFromJson: false)
@@ -142,10 +175,10 @@ class TimetableLesson extends HiveObject {
           substitutionDetails?.originalDate != date);
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get startTime => DateFormat.jm().format(hourFrom ?? DateTime.now());
+  String get startTime => DateFormat.jm().format(timeFrom ?? DateTime.now());
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get endTime => DateFormat.jm().format(hourTo ?? DateTime.now());
+  String get endTime => DateFormat.jm().format(timeTo ?? DateTime.now());
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get detailsStringSubstitution =>

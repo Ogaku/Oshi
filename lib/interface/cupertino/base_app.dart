@@ -24,16 +24,14 @@ class _BaseAppState extends State<BaseApp> {
   CupertinoTabController tabController = CupertinoTabController();
 
   @override
-  void initState() {
+  Widget build(BuildContext context) {
+    // Re-subscribe to all events
+    Share.tabsNavigatePage.unsubscribeAll();
     Share.tabsNavigatePage.subscribe((args) {
       if (args?.value == null) return;
       setState(() => tabController.index = args!.value.clamp(0, 4));
     });
-    super.initState();
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return CupertinoApp(
       home: CupertinoTabScaffold(
         controller: tabController,

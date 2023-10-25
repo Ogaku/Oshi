@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_this, unnecessary_cast
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'dart:async';
+
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -16,6 +18,7 @@ import 'package:oshi/models/data/timetables.dart';
 import 'package:oshi/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:oshi/interface/cupertino/views/events_timeline.dart' show EventsPage;
+import 'package:visibility_aware_state/visibility_aware_state.dart';
 
 // Boiler: returned to the app tab builder
 StatefulWidget get timetablePage => TimetablePage();
@@ -27,11 +30,12 @@ class TimetablePage extends StatefulWidget {
   State<TimetablePage> createState() => _TimetablePageState();
 }
 
-class _TimetablePageState extends State<TimetablePage> {
+class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
   final searchController = TextEditingController();
   final pageController = PageController(
       initialPage: DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays);
 
+  Timer? _everySecond;
   String searchQuery = '';
   bool isWorking = false;
 
@@ -42,7 +46,13 @@ class _TimetablePageState extends State<TimetablePage> {
       Share.session.data.student.mainClass.beginSchoolYear.asDate(utc: true).add(Duration(days: dayDifference)).asDate();
 
   @override
-  void initState() {
+  Widget build(BuildContext context) {
+    _everySecond ??= Timer.periodic(Duration(seconds: 1), (Timer t) {
+      if (isVisible()) setState(() {}); // Auto-refresh each second
+    });
+
+    // Re-subscribe to all events
+    Share.timetableNavigateDay.unsubscribeAll();
     Share.timetableNavigateDay.subscribe((args) {
       if (args?.value == null) return;
       if (Navigator.of(context).canPop()) Navigator.of(context).pop();
@@ -62,11 +72,7 @@ class _TimetablePageState extends State<TimetablePage> {
                       .clamp(1, 30)),
           curve: Curves.fastEaseInToSlowEaseOut);
     });
-    super.initState();
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return SearchableSliverNavigationBar(
         leading: GestureDetector(
             onTap: () => _showDialog(
@@ -109,9 +115,9 @@ class _TimetablePageState extends State<TimetablePage> {
                       if (isWorking) return;
                       setState(() => isWorking = true);
                       try {
-                        Share.session.refresh(weekStart: selectedDate).then((value) => setState(() => isWorking = false));
+                        Share.session.refreshAll(weekStart: selectedDate).then((value) => setState(() => isWorking = false));
                       } catch (ex) {
-                        // ignored
+                        setState(() => isWorking = false);
                       }
                     }),
                   ),
