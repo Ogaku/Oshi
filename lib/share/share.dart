@@ -167,10 +167,11 @@ class Session extends HiveObject {
   Future<({bool success, Exception? message})> refreshAll(
       {DateTime? weekStart, IProgress<({double? progress, String? message})>? progress}) async {
     try {
-      var result = await provider.refresh(weekStart: weekStart, progress: progress);
-      await provider.refreshMessages(progress: progress);
-      if (result.success) await updateData(info: true);
-      return result;
+      var result1 = await provider.refresh(weekStart: weekStart, progress: progress);
+      var result2 = await provider.refreshMessages(progress: progress);
+      await updateData(info: result1.success, messages: result2.success);
+      return (success: result1.success && result2.success, 
+              message: result1.message ?? result2.message);
     } catch (ex) {
       if (Platform.isAndroid || Platform.isIOS) {
         Fluttertoast.showToast(
