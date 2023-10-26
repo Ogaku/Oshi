@@ -207,6 +207,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
                     child: Text(
                       _progressMessage ?? '',
                       maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: CupertinoColors.inactiveGray, fontSize: 13),
                     )))),
         searchController: searchController,

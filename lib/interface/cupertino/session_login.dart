@@ -65,6 +65,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: Text(
                         _progressMessage ?? '',
                         maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(color: CupertinoColors.inactiveGray, fontSize: 13),
                       )))
               : null,

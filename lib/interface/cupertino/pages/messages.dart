@@ -265,6 +265,7 @@ class _MessagesPageState extends State<MessagesPage> {
                   child: Text(
                     _progressMessage ?? '',
                     maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(color: CupertinoColors.inactiveGray, fontSize: 13),
                   )))),
       searchController: searchController,
