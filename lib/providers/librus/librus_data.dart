@@ -60,14 +60,18 @@ class LibrusDataReader implements models.IProvider {
   SynergiaData? data;
 
   @override
-  Future<({Exception? message, bool success})> login({Map<String, String>? credentials}) async {
+  Future<({Exception? message, bool success})> login(
+      {Map<String, String>? credentials, IProgress<({double? progress, String? message})>? progress}) async {
     data = SynergiaData(); // Reset
+
+    progress?.report((progress: 0.1, message: "Caching all your credentials..."));
 
     // Grab our credentials from the map
     var username = credentials?['login'];
     var password = credentials?['pass'];
 
     // Instantiate a portal login
+    progress?.report((progress: 0.2, message: "Looking at your pathetic password..."));
     data?.synergiaLogin = LibrusLogin(synergiaData: data, login: username, pass: password);
 
     // Check whether there is data to log in with
@@ -75,8 +79,10 @@ class LibrusDataReader implements models.IProvider {
       return (success: false, message: Exception('No data to log in with!'));
 
     try {
+      progress?.report((progress: 0.3, message: "Contracting the setup's wizard..."));
+
       // Validate the credentials and extract the API token
-      await data!.synergiaLogin!.setupToken();
+      await data!.synergiaLogin!.setupToken(progress: progress);
 
       // Create a new instance of the portal API scraper
       data?.librusApi = LibrusReader(data!);
@@ -139,7 +145,7 @@ class LibrusDataReader implements models.IProvider {
 
 //#endregion
 
-    progress?.report((progress: 0.2, message: 'Doxxing your school principal...'));
+    progress?.report((progress: 0.2, message: 'Spiriting your school principal away...'));
 
 //#region Student
 
@@ -303,7 +309,7 @@ class LibrusDataReader implements models.IProvider {
 
 //#endregion
 
-    progress?.report((progress: 0.4, message: 'Searching for any interesting events...'));
+    progress?.report((progress: 0.4, message: 'Looking for any interesting events right there...'));
 
 //#region Notices and Agenda
 
@@ -389,7 +395,7 @@ class LibrusDataReader implements models.IProvider {
 
 //#endregion
 
-    progress?.report((progress: 0.5, message: "Filling the 'homework' folder..."));
+    progress?.report((progress: 0.5, message: "Filling up the hidden 'homework' folder..."));
 
 //#region Homeworks
 
@@ -417,7 +423,7 @@ class LibrusDataReader implements models.IProvider {
 
 //#endregion
 
-    progress?.report((progress: 0.6, message: 'Looking for any school-less days...'));
+    progress?.report((progress: 0.6, message: 'Looking for any nice, free, and school-less days...'));
 
 //#region Free Days
 
@@ -468,7 +474,7 @@ class LibrusDataReader implements models.IProvider {
 
 //#endregion
 
-    progress?.report((progress: 0.7, message: 'Counting all your pathetic 1s...'));
+    progress?.report((progress: 0.7, message: 'Counting all your pathetic grades...'));
 
 //#region Free Days
 
@@ -502,7 +508,7 @@ class LibrusDataReader implements models.IProvider {
 
 //#endregion
 
-    progress?.report((progress: 0.8, message: 'Preparing the data...'));
+    progress?.report((progress: 0.8, message: 'Sautéeing the data sauce, adding MSG...'));
     dataChunk.student = student; // Push the data to the outer scope, add or update
     dataChunk.timetables = timetable; // Push the data to the outer scope, add only
 
@@ -512,7 +518,7 @@ class LibrusDataReader implements models.IProvider {
   @override
   Future<({Exception? message, bool success})> refreshMessages(
       {IProgress<({String? message, double? progress})>? progress}) async {
-    progress?.report((progress: 0.1, message: 'Caching all the cache...'));
+    progress?.report((progress: 0.1, message: 'Caching all the cache we possibly have...'));
 
 //#region Basics
 
@@ -534,7 +540,7 @@ class LibrusDataReader implements models.IProvider {
 
 //#endregion
 
-    progress?.report((progress: 0.9, message: "Seeing who'd like to talk to you..."));
+    progress?.report((progress: 0.9, message: "Seeing who'd like to never receive a reply message..."));
 
 //#region Messages
 

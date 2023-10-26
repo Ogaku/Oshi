@@ -12,7 +12,8 @@ class FakeDataReader implements IProvider {
   Event<Value<String>> propertyChanged = Event<Value<String>>();
 
   @override
-  Future<({Exception? message, bool success})> login({Map<String, String>? credentials}) async {
+  Future<({Exception? message, bool success})> login(
+      {Map<String, String>? credentials, IProgress<({double? progress, String? message})>? progress}) async {
     return (success: true, message: null);
   }
 

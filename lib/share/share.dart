@@ -146,9 +146,10 @@ class Session extends HiveObject {
   IProvider provider;
 
   // Login and reset methods for early setup - implement as async
-  Future<({bool success, Exception? message})> login({Map<String, String>? credentials}) async {
+  Future<({bool success, Exception? message})> login(
+      {Map<String, String>? credentials, IProgress<({double? progress, String? message})>? progress}) async {
     if (credentials?.isNotEmpty ?? false) sessionCredentials = credentials ?? {};
-    return await provider.login(credentials: credentials ?? sessionCredentials);
+    return await provider.login(credentials: credentials ?? sessionCredentials, progress: progress);
   }
 
   // Login and reset methods for early setup - implement as async

@@ -27,6 +27,8 @@ class _AbsencesPageState extends State<AbsencesPage> {
   final searchController = TextEditingController();
 
   String selectedSegment = 'date';
+  String? _progressMessage;
+
   bool showInbox = true;
   bool isWorking = false;
 
@@ -45,7 +47,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
             .groupBy((x) => x.lesson.subject?.name ?? 'Unknown subject')
             .select((x, index) => Grouping(
                 x.elements,
-                "${x.key} – ${(100 * x.elements.where((y) => y.type == AttendanceType.present).count() / x.elements.count()).round()}%",
+                "${x.key}\n${(100 * x.elements.where((y) => y.type == AttendanceType.present).count() / x.elements.count()).round()}%",
                 Random().nextInt(100)))
             .orderBy((x) => x.key)
             .toList() ??
@@ -68,7 +70,20 @@ class _AbsencesPageState extends State<AbsencesPage> {
     })
         .select((element, index) => CupertinoListSection.insetGrouped(
               margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-              header: Text(element.key),
+              header: element.key.contains('\n')
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Flexible(child: Text(element.key.split('\n').first, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                        Container(
+                            margin: EdgeInsets.only(left: 3),
+                            child: Text(element.key.split('\n').last,
+                                style: TextStyle(
+                                    color: CupertinoColors.inactiveGray, fontWeight: FontWeight.w400, fontSize: 16)))
+                      ],
+                    )
+                  : Text(element.key),
               additionalDividerMargin: 5,
               children: element.isEmpty
                   // No messages to display
@@ -181,6 +196,19 @@ class _AbsencesPageState extends State<AbsencesPage> {
         setState: setState,
         segments: {'date': 'By date', 'lesson': 'By lesson', 'type': 'By type'},
         largeTitle: Text('Attendance'),
+        middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('Attendance')),
+        onProgress: (progress) => setState(() => _progressMessage = progress?.message),
+        leading: Visibility(
+            visible: _progressMessage?.isNotEmpty ?? false,
+            child: Container(
+                margin: EdgeInsets.only(top: 7),
+                child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: 150),
+                    child: Text(
+                      _progressMessage ?? '',
+                      maxLines: 2,
+                      style: TextStyle(color: CupertinoColors.inactiveGray, fontSize: 13),
+                    )))),
         searchController: searchController,
         onChanged: (s) => setState(() => selectedSegment = s),
         trailing: isWorking

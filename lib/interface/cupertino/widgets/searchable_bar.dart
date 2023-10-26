@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart';
+import 'package:oshi/models/progress.dart';
 import 'package:oshi/share/share.dart';
 
 class SearchableSliverNavigationBar extends StatefulWidget {
@@ -23,6 +24,7 @@ class SearchableSliverNavigationBar extends StatefulWidget {
   final Function(String)? onChanged;
   final Function(String)? onSubmitted;
   final void Function(VoidCallback fn)? setState;
+  final Function(({double? progress, String? message})? progress)? onProgress;
 
   const SearchableSliverNavigationBar(
       {super.key,
@@ -42,7 +44,8 @@ class SearchableSliverNavigationBar extends StatefulWidget {
       this.setState,
       this.color = Colors.white,
       this.darkColor = Colors.black,
-      this.backgroundColor});
+      this.backgroundColor,
+      this.onProgress});
 
   @override
   State<SearchableSliverNavigationBar> createState() => _NavState();
@@ -153,9 +156,16 @@ class _NavState extends State<SearchableSliverNavigationBar> {
             if (scrollInfo is ScrollUpdateNotification) {
               if (scrollInfo.metrics.pixels < -120 && !isRefreshing && widget.setState != null) {
                 setState(() => isRefreshing = true);
-                Share.session.refreshAll().then((arg) {
+                var progress = Progress<({double? progress, String? message})>();
+                progress.progressChanged.subscribe((args) {
+                  if (widget.onProgress != null) widget.onProgress!(args?.value);
+                });
+                Share.session.refreshAll(progress: progress).then((arg) {
                   setState(() => isRefreshing = false);
-                  widget.setState!(() {});
+                  if (widget.setState != null) widget.setState!(() {});
+
+                  progress.progressChanged.unsubscribeAll();
+                  if (widget.onProgress != null) widget.onProgress!(null);
                 });
               }
               if (scrollInfo.metrics.pixels > previousScrollPosition) {

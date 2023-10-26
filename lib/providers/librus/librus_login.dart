@@ -4,6 +4,7 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
+import 'package:oshi/models/progress.dart';
 import 'package:oshi/providers/librus/login_data.dart';
 import 'package:format/format.dart';
 
@@ -19,12 +20,13 @@ class LibrusLogin {
         synergiaLogin = login ?? '',
         synergiaPass = pass ?? '';
 
-  Future setupToken() async {
+  Future setupToken({IProgress<({double? progress, String? message})>? progress}) async {
     // Reset the session, regenerate cookies
     synergiaData.session = Dio();
     synergiaData.cookieJar = CookieJar();
 
     synergiaData.session.interceptors.add(CookieManager(synergiaData.cookieJar));
+    progress?.report((progress: 0.3, message: "API'ing the Librus OAuth API..."));
 
 //#region OAuth Setup
     try {
@@ -37,6 +39,8 @@ class LibrusLogin {
       if (kDebugMode) print(e);
     }
 
+    progress?.report((progress: 0.4, message: "Bruteforcing your damn password..."));
+
     try {
       // Post the login data for OAuth authorization
       await synergiaData.session.post(librusOAuthUri,
@@ -47,14 +51,17 @@ class LibrusLogin {
     }
 
     // Acquire all required authorization headers here
+    progress?.report((progress: 0.5, message: "Grating the global access..."));
     await synergiaData.session.get(librusOAuthGrantUri, queryParameters: {'client_id': 46});
 //#endregion
 
 //#region Gateway
     // Activate the API access - get the user ID
+    progress?.report((progress: 0.6, message: "Salvaging the access tokens..."));
     var tokenResponse = await synergiaData.session.get(gatewayTokenInfoUri);
 
     // Activate the API access - authenticate using the ID
+    progress?.report((progress: 0.7, message: "Tokenizing all the tokens..."));
     var authResponse = await synergiaData.session.get(format(gatewayTokenGrantUri, tokenResponse.data['UserIdentifier']));
 
     // Validate the user still has access to the API
@@ -63,9 +70,11 @@ class LibrusLogin {
 
 //#region Messages
     // Make the first request - used to gain general authorization
+    progress?.report((progress: 0.8, message: "Messaging the messages module..."));
     await synergiaData.session.get(messagesActivationUri);
 
     // Copy all cookies from the authorization session
+    progress?.report((progress: 0.9, message: "Sharing the cookies with others..."));
     synergiaData.cookieJar.saveFromResponse(
         Uri.parse(messagesCookieUrl), await synergiaData.cookieJar.loadForRequest(Uri.parse(synergiaCookieUrl)));
 //#endregion

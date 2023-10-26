@@ -30,6 +30,8 @@ class _MessagesPageState extends State<MessagesPage> {
   final searchController = TextEditingController();
 
   String searchQuery = '';
+  String? _progressMessage;
+
   MessageFolders folder = MessageFolders.inbox;
   bool isWorking = false;
 
@@ -252,6 +254,19 @@ class _MessagesPageState extends State<MessagesPage> {
     return SearchableSliverNavigationBar(
       setState: setState,
       largeTitle: Text('Messages'),
+      middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('Messages')),
+      onProgress: (progress) => setState(() => _progressMessage = progress?.message),
+      leading: Visibility(
+          visible: _progressMessage?.isNotEmpty ?? false,
+          child: Container(
+              margin: EdgeInsets.only(top: 7),
+              child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 150),
+                  child: Text(
+                    _progressMessage ?? '',
+                    maxLines: 2,
+                    style: TextStyle(color: CupertinoColors.inactiveGray, fontSize: 13),
+                  )))),
       searchController: searchController,
       onChanged: (s) => setState(() => searchQuery = s),
       trailing: isWorking

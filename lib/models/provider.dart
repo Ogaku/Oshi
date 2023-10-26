@@ -32,7 +32,8 @@ abstract class IProvider {
 
   // Login and reset methods for early setup - implement as async
   // Credentials are passed from credentialsConfig - make sure it's set up
-  Future<({bool success, Exception? message})> login({Map<String, String>? credentials});
+  Future<({bool success, Exception? message})> login(
+      {Map<String, String>? credentials, IProgress<({double? progress, String? message})>? progress});
 
   // Login and refresh methods for runtime - implement as async
   // For null 'weekStart' - get (only) the current week's data

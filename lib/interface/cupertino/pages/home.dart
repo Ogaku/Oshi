@@ -35,6 +35,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends VisibilityAwareState<HomePage> {
   final searchController = TextEditingController();
   Timer? _everySecond;
+  String? _progressMessage;
 
   bool get isLucky =>
       Share.session.data.student.mainClass.unit.luckyNumber != null &&
@@ -49,11 +50,11 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     var currentDay = Share.session.data.timetables[DateTime.now().asDate()];
     var nextDay = Share.session.data.timetables[DateTime.now().asDate().add(Duration(days: 1))];
 
-    var currentLesson = currentDay?.lessons
+    var currentLesson = currentDay?.lessonsStrippedCancelled
         .firstWhereOrDefault((x) =>
             x?.any((y) => DateTime.now().isAfterOrSame(y.timeFrom) && DateTime.now().isBeforeOrSame(y.timeTo)) ?? false)
         ?.firstOrDefault();
-    var nextLesson = currentDay?.lessons
+    var nextLesson = currentDay?.lessonsStrippedCancelled
         .firstWhereOrDefault((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.timeFrom)) ?? false)
         ?.firstOrDefault();
 
@@ -238,10 +239,24 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       backgroundColor: CupertinoDynamicColor.withBrightness(
           color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 0, 0, 0)),
       child: SearchableSliverNavigationBar(
+        onProgress: (progress) => setState(() => _progressMessage = progress?.message),
         setState: setState,
         segments: {'home': 'Home', 'timeline': 'Timeline'},
         searchController: searchController,
         largeTitle: Text('Home'),
+        middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('Home')),
+        leading: Visibility(
+            visible: _progressMessage?.isNotEmpty ?? false,
+            child: Container(
+                margin: EdgeInsets.only(top: 7),
+                child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: 150),
+                    child: Text(
+                      _progressMessage ?? '',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: CupertinoColors.inactiveGray, fontSize: 13, fontWeight: FontWeight.w300),
+                    )))),
         trailing: PullDownButton(
           itemBuilder: (context) => [
             PullDownMenuItem(
@@ -500,10 +515,10 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                     scale: 0.7,
                                     child: Icon(CupertinoIcons.chevron_forward, color: CupertinoColors.inactiveGray)))
                           ])),
-                      // Show if there's still any lessons left, and the current lesson is not the last lesson
+                      // Show if there's still any lessons left, and the next lesson is not the last lesson
                       (((DateTime.now().isBeforeOrSame(currentDay?.dayEnd) && (currentDay?.hasLessons ?? false)) &&
-                              (currentLesson != null &&
-                                  (currentDay?.lessonsStrippedCancelled.lastOrDefault()?.any((x) => x == currentLesson) ??
+                              (nextLesson != null &&
+                                  (currentDay?.lessonsStrippedCancelled.lastOrDefault()?.all((x) => x != nextLesson) ??
                                       false))) ||
                           // Or >1h after the school day has ended, and there are lessons tomorrow
                           ((DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)) &&
@@ -755,11 +770,11 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     var currentDay = Share.session.data.timetables[DateTime.now().asDate()];
     var nextDay = Share.session.data.timetables[DateTime.now().asDate().add(Duration(days: 1))];
 
-    var currentLesson = currentDay?.lessons
+    var currentLesson = currentDay?.lessonsStrippedCancelled
         .firstWhereOrDefault((x) =>
             x?.any((y) => DateTime.now().isAfterOrSame(y.timeFrom) && DateTime.now().isBeforeOrSame(y.timeTo)) ?? false)
         ?.firstOrDefault();
-    var nextLesson = currentDay?.lessons
+    var nextLesson = currentDay?.lessonsStrippedCancelled
         .firstWhereOrDefault((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.timeFrom)) ?? false)
         ?.firstOrDefault();
 
@@ -767,7 +782,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     if (currentLesson != null) {
       return (
         flexible: currentLesson.subject?.name ?? 'The current lesson',
-        standard: 'ends in ${DateTime.now().difference(currentLesson.timeTo ?? DateTime.now()).inMinutes}'
+        standard: 'ends in ${DateTime.now().difference(currentLesson.timeTo ?? DateTime.now()).inMinutes.abs()}'
       );
     }
 
@@ -776,7 +791,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       return (
         flexible: nextLesson.subject?.name ?? 'The next lesson',
         standard: DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inMinutes.abs() < 20
-            ? 'starts in ${DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inMinutes.abs() < 1 ? "${DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inSeconds.abs()}s" : "${DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inMinutes.abs()}min"}'
+            ? 'starts in ${DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inMinutes.abs() < 1 ? "${DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inSeconds.abs()}s" : "${DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inMinutes.abs()} min"}'
             : 'starts at ${DateFormat("HH:mm").format(nextLesson.timeFrom ?? DateTime.now())}'
       );
     }
@@ -811,7 +826,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     var currentDay = Share.session.data.timetables[DateTime.now().asDate()];
     var nextDay = Share.session.data.timetables[DateTime.now().asDate().add(Duration(days: 1))];
 
-    var currentLesson = currentDay?.lessons
+    var currentLesson = currentDay?.lessonsStrippedCancelled
         .firstWhereOrDefault((x) =>
             x?.any((y) => DateTime.now().isAfterOrSame(y.timeFrom) && DateTime.now().isBeforeOrSame(y.timeTo)) ?? false)
         ?.firstOrDefault();

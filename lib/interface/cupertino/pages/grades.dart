@@ -20,6 +20,7 @@ class GradesPage extends StatefulWidget {
 class _GradesPageState extends State<GradesPage> {
   final searchController = TextEditingController();
   String searchQuery = '';
+  String? _progressMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +97,19 @@ class _GradesPageState extends State<GradesPage> {
     return SearchableSliverNavigationBar(
       setState: setState,
       largeTitle: Text('Grades'),
+      middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('Grades')),
+      onProgress: (progress) => setState(() => _progressMessage = progress?.message),
+      leading: Visibility(
+          visible: _progressMessage?.isNotEmpty ?? false,
+          child: Container(
+              margin: EdgeInsets.only(top: 7),
+              child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 150),
+                  child: Text(
+                    _progressMessage ?? '',
+                    maxLines: 2,
+                    style: TextStyle(color: CupertinoColors.inactiveGray, fontSize: 13),
+                  )))),
       searchController: searchController,
       onChanged: (s) => setState(() => searchQuery = s),
       children: [subjectsWidget],

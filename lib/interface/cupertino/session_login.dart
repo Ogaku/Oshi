@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_shake_animated/flutter_shake_animated.dart';
 import 'package:oshi/interface/cupertino/base_app.dart';
+import 'package:oshi/models/progress.dart';
 import 'package:oshi/models/provider.dart';
 import 'package:oshi/share/share.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -27,6 +28,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   Map<String, TextEditingController>? credentialControllers;
+  String? _progressMessage;
+
   bool isWorking = false; // Logging in right now?
   bool shakeFields = false; // Shake login fields
 
@@ -54,6 +57,17 @@ class _LoginPageState extends State<LoginPage> {
       navigationBar: CupertinoNavigationBar(
           transitionBetweenRoutes: false,
           automaticallyImplyLeading: true,
+          leading: (_progressMessage?.isNotEmpty ?? false)
+              ? Container(
+                  margin: EdgeInsets.only(top: 7),
+                  child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 150),
+                      child: Text(
+                        _progressMessage ?? '',
+                        maxLines: 2,
+                        style: TextStyle(color: CupertinoColors.inactiveGray, fontSize: 13),
+                      )))
+              : null,
           border: null,
           backgroundColor: CupertinoDynamicColor.withBrightness(
               color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 28, 28, 30)),
@@ -75,13 +89,21 @@ class _LoginPageState extends State<LoginPage> {
                     // Mark as working, the 1st refresh is gonna take a while
                     isWorking = true;
                   });
+
+                  var progress = Progress<({double? progress, String? message})>();
+                  progress.progressChanged.subscribe((args) => setState(() => _progressMessage = args?.value.message));
+
                   if (!await tryLogin(
+                      progress: progress,
                       guid: widget.providerGuid,
                       credentials: credentialControllers!.entries.toMap((x) => MapEntry(x.key, x.value.text)))) {
                     setState(() {
                       // Reset the animation in case the login method hasn't finished
                       isWorking = false;
                       shakeFields = true;
+
+                      progress.progressChanged.unsubscribeAll();
+                      _progressMessage = null; // Reset the message
                     });
 
                     // Reset the shake
@@ -133,11 +155,15 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<bool> tryLogin({required Map<String, String> credentials, required String guid}) async {
+  Future<bool> tryLogin(
+      {required Map<String, String> credentials,
+      required String guid,
+      IProgress<({double? progress, String? message})>? progress}) async {
     try {
       // Create a new session: ID/name/provider are automatic
+      progress?.report((progress: 0.1, message: 'Sessioning the user session right now...'));
       var session = Session(providerGuid: guid);
-      var result = await session.login(credentials: credentials);
+      var result = await session.login(credentials: credentials, progress: progress);
 
       if (!result.success && result.message != null) {
         throw result.message!; // Didn't work, uh
@@ -147,8 +173,9 @@ class _LoginPageState extends State<LoginPage> {
         Share.settings.sessions.lastSessionId = id; // Update
         Share.session = session; // Set as the currently active one
 
+        progress?.report((progress: 0.2, message: "Cannot believe you've made it this far..."));
         await Share.settings.save(); // Save our settings now
-        await Share.session.refreshAll(); // Refresh everything
+        await Share.session.refreshAll(progress: progress); // Refresh everything
 
         // Change the main page to the base application
         Share.changeBase.broadcast(Value(() => baseApp));
