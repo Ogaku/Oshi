@@ -60,8 +60,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     // Event list for the next week (7 days), exc homeworks and teacher absences
     var eventsWeek = Share.session.data.student.mainClass.events
         .where((x) => x.category != EventCategory.homework && x.category != EventCategory.teacher)
-        .where((x) => x.date?.isAfter(DateTime.now().asDate()) ?? false)
-        .where((x) => x.date?.isBefore(DateTime.now().add(Duration(days: 7)).asDate()) ?? false)
+        .where((x) => x.date?.isAfterOrSame(DateTime.now().asDate()) ?? false)
+        .where((x) => x.date?.isBeforeOrSame(DateTime.now().add(Duration(days: 7)).asDate()) ?? false)
         .orderBy((x) => x.date ?? x.timeTo ?? x.timeFrom)
         .toList();
 
@@ -79,8 +79,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     // Homework list for the next week (7 days)
     var homeworksWeek = Share.session.data.student.mainClass.events
         .where((x) => x.category == EventCategory.homework)
-        .where((x) => x.timeTo?.isAfter(DateTime.now().asDate()) ?? false)
-        .where((x) => x.timeTo?.isBefore(DateTime.now().add(Duration(days: 7)).asDate()) ?? false)
+        .where((x) => x.timeTo?.isAfterOrSame(DateTime.now().asDate()) ?? false)
+        .where((x) => x.timeTo?.isBeforeOrSame(DateTime.now().add(Duration(days: 7)).asDate()) ?? false)
         .orderByDescending((x) => x.done ? 0 : 1)
         .thenBy((x) => x.date ?? x.timeTo ?? x.timeFrom)
         .toList();
