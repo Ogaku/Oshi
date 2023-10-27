@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 
 import 'package:oshi/interface/cupertino/pages/home.dart' show homePage;
@@ -52,6 +54,26 @@ class _BaseAppState extends State<BaseApp> {
             _ => homePage,
           },
         ),
+      ),
+    );
+  }
+
+  void _showAlertDialog(BuildContext context) {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: const Text('Please update 🤓'),
+        content:
+            Text('The download page of the newer app version for ${Platform.isAndroid ? "Android" : "iOS"} will be opened.'),
+        actions: <CupertinoDialogAction>[
+          CupertinoDialogAction(
+            onPressed: () {
+              
+              Navigator.pop(context);
+            },
+            child: const Text('OK'),
+          ),
+        ],
       ),
     );
   }

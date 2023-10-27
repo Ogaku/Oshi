@@ -46,10 +46,17 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
       Share.session.data.student.mainClass.beginSchoolYear.asDate(utc: true).add(Duration(days: dayDifference)).asDate();
 
   @override
+  void dispose() {
+    _everySecond?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    _everySecond ??= Timer.periodic(Duration(seconds: 1), (Timer t) {
-      if (isVisible()) setState(() {}); // Auto-refresh each second
-    });
+    if (!(_everySecond?.isActive ?? false)) {
+      // Auto-refresh this view each second - it's static so it shouuuuld be safe...
+      _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) => setState(() {}));
+    }
 
     // Re-subscribe to all events
     Share.timetableNavigateDay.unsubscribeAll();

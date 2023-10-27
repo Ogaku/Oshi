@@ -1,9 +1,7 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/share/config.dart' show Config;

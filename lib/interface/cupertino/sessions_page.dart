@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:event/event.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:oshi/interface/cupertino/new_session.dart';
+import 'package:oshi/models/progress.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -27,6 +28,7 @@ class SessionsPage extends StatefulWidget {
 class _SessionsPageState extends State<SessionsPage> {
   final scrollController = ScrollController();
   bool isWorking = false; // Logging in right now?
+  String? _progressMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -133,10 +135,14 @@ class _SessionsPageState extends State<SessionsPage> {
                                     isWorking = true;
                                   });
 
+                                  var progress = Progress<({double? progress, String? message})>();
+                                  progress.progressChanged
+                                      .subscribe((args) => setState(() => _progressMessage = args?.value.message));
+
                                   // showCupertinoModalBottomSheet(context: context, builder: (context) => LoginPage(provider: x));
                                   Share.settings.sessions.lastSessionId = x; // Update
                                   Share.session = Share.settings.sessions.lastSession!;
-                                  var result = await Share.session.login(); // Log in now
+                                  var result = await Share.session.login(progress: progress); // Log in now
 
                                   if (!result.success) {
                                     if (Platform.isAndroid || Platform.isIOS) {
@@ -150,18 +156,23 @@ class _SessionsPageState extends State<SessionsPage> {
                                     setState(() {
                                       // Reset the animation in case the login method hasn't finished
                                       isWorking = false;
+
+                                      progress.progressChanged.unsubscribeAll();
+                                      _progressMessage = null; // Reset the message
                                     });
                                     return; // Give up, not this time
                                   }
 
                                   await Share.settings.save(); // Save our settings now
-                                  await Share.session.refreshAll(); // Refresh everything
+                                  await Share.session.refreshAll(progress: progress); // Refresh everything
+
+                                  // Reset the animation in case we go back somehow
+                                  setState(() => isWorking = false);
+                                  progress.progressChanged.unsubscribeAll();
+                                  _progressMessage = null; // Reset the message
 
                                   // Change the main page to the base application
                                   Share.changeBase.broadcast(Value(() => baseApp));
-
-                                  // Reset the animation in case we go back somehow
-                                  isWorking = false;
                                 },
                               ))))),
         )
@@ -178,6 +189,20 @@ class _SessionsPageState extends State<SessionsPage> {
                 largeTitle: FittedBox(
                     fit: BoxFit.fitWidth,
                     child: Container(margin: EdgeInsets.only(right: 20), child: Text('E-register accounts'))),
+                middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('E-register accounts')),
+                leading: Visibility(
+                    visible: _progressMessage?.isNotEmpty ?? false,
+                    child: Container(
+                        margin: EdgeInsets.only(top: 7),
+                        child: ConstrainedBox(
+                            constraints: BoxConstraints(maxWidth: 150),
+                            child: Text(
+                              _progressMessage ?? '',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style:
+                                  TextStyle(color: CupertinoColors.inactiveGray, fontSize: 13, fontWeight: FontWeight.w300),
+                            )))),
                 trailing: isWorking
                     ? CupertinoActivityIndicator()
                     : GestureDetector(
@@ -251,7 +276,7 @@ class _SessionsPageState extends State<SessionsPage> {
                         Opacity(
                             opacity: 0.25,
                             child: Text(
-                              "AZ_VERSION_CONFIG_BUILD",
+                              Share.buildNumber,
                               style: TextStyle(fontSize: 12),
                             )),
                       ]),

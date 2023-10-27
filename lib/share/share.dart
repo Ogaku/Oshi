@@ -24,6 +24,7 @@ class Share {
 
   // Shared settings data for managing sessions
   static Settings settings = Settings();
+  static String buildNumber = '0.0.0.0';
 
   // Raised by the app to notify that the uses's just logged in
   // To subscribe: event.subscribe((args) => {})
@@ -171,8 +172,7 @@ class Session extends HiveObject {
       var result1 = await provider.refresh(weekStart: weekStart, progress: progress);
       var result2 = await provider.refreshMessages(progress: progress);
       await updateData(info: result1.success, messages: result2.success);
-      return (success: result1.success && result2.success, 
-              message: result1.message ?? result2.message);
+      return (success: result1.success && result2.success, message: result1.message ?? result2.message);
     } catch (ex) {
       if (Platform.isAndroid || Platform.isIOS) {
         Fluttertoast.showToast(

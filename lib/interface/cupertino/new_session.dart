@@ -130,7 +130,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
                     Opacity(
                         opacity: 0.25,
                         child: Text(
-                          "AZ_VERSION_CONFIG_BUILD",
+                          Share.buildNumber,
                           style: TextStyle(fontSize: 12),
                         )),
                   ]),

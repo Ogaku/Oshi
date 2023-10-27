@@ -42,10 +42,17 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       Share.session.data.student.account.number == Share.session.data.student.mainClass.unit.luckyNumber;
 
   @override
+  void dispose() {
+    _everySecond?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    _everySecond ??= Timer.periodic(Duration(seconds: 1), (Timer t) {
-      if (isVisible()) setState(() {}); // Auto-refresh each second
-    });
+    if (!(_everySecond?.isActive ?? false)) {
+      // Auto-refresh this view each second - it's static so it shouuuuld be safe...
+      _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) => setState(() {}));
+    }
 
     var currentDay = Share.session.data.timetables[DateTime.now().asDate()];
     var nextDay = Share.session.data.timetables[DateTime.now().asDate().add(Duration(days: 1))];
@@ -295,7 +302,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                     },
                     padding: EdgeInsets.only(left: 20, right: 10),
                     title: Container(
-                        margin: EdgeInsets.only(top: 10, bottom: 10),
+                        margin: EdgeInsets.only(top: 3, bottom: 15),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -345,7 +352,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                   ]))
                             ]),
                             Container(
-                                margin: EdgeInsets.only(top: 5),
+                                margin: EdgeInsets.only(top: 2),
                                 child: Row(children: [
                                   Flexible(
                                       child: Container(
@@ -643,7 +650,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
           // Recent grades - always below events
           CupertinoListSection.insetGrouped(
             margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-            additionalDividerMargin: 5,
+            additionalDividerMargin: 0,
             header: Text('Recent grades'),
             children: gradesWeek.isEmpty
                 // No grades to display
@@ -782,7 +789,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     if (currentLesson != null) {
       return (
         flexible: currentLesson.subject?.name ?? 'The current lesson',
-        standard: 'ends in ${DateTime.now().difference(currentLesson.timeTo ?? DateTime.now()).inMinutes.abs()}'
+        standard: 'ends in ${DateTime.now().difference(currentLesson.timeTo ?? DateTime.now()).inMinutes.abs()} min'
       );
     }
 
@@ -815,6 +822,12 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
             '${nextDay!.lessonsNumber} lessons, ${DateFormat("H:mm").format(nextDay.dayStart!)} to ${DateFormat("H:mm").format(nextDay.dayEnd!)}',
         standard: ''
       );
+    }
+
+    // No lessons today or tomorrow - LW
+    // We're not checking <today> here, is's already been checked upper
+    if (!(nextDay?.hasLessons ?? false)) {
+      return (flexible: "God, you're pathetic...", standard: '');
     }
 
     // Other options, possibly?
@@ -850,6 +863,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
 
     // Lessons have ended - 7.2
     if ((currentDay?.hasLessons ?? false) &&
+        (nextDay?.hasLessons ?? false) &&
         DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
         DateTime.now().difference(currentDay?.dayEnd ?? DateTime.now()).inHours >= 2) {
       return 'Prepare for tomorrow...';
@@ -890,6 +904,12 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
         Share.session.data.student.account.number == Share.session.data.student.mainClass.unit.luckyNumber &&
         Share.session.data.student.mainClass.unit.luckyNumberTomorrow) {
       return "You'll be lucky tomorrow!";
+    }
+
+    // No lessons today or tomorrow - LW
+    // We're not checking <today> here, is's already been checked upper
+    if (!(nextDay?.hasLessons ?? false)) {
+      return "Alone on a school-less day?";
     }
 
     // Other options, possibly?

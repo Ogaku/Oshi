@@ -63,11 +63,10 @@ class TimetableDay extends HiveObject {
   // Today's lessons, stripped out of empty|null|canc list blocks
   @JsonKey(includeToJson: false, includeFromJson: false)
   List<List<TimetableLesson>?> get lessonsStrippedCancelled => lessons
-      .skipWhile((value) => (value?.isEmpty ?? true))
+      .skipWhile((value) => (value?.isEmpty ?? true) || (value?.all((x) => x.isCanceled) ?? false))
       .reverse()
-      .skipWhile((value) => (value?.isEmpty ?? true))
+      .skipWhile((value) => (value?.isEmpty ?? true) || (value?.all((x) => x.isCanceled) ?? false))
       .reverse()
-      .skipWhile((value) => (value?.all((x) => x.isCanceled) ?? false))
       .toList();
 
   // Today's lessons, stripped out of empty|null|canc list blocks
