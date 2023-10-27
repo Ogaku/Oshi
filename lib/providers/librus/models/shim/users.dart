@@ -20,7 +20,7 @@ class Users {
 class User {
   User({
     required this.id,
-    required this.firstName,
+    this.firstName = '',
     required this.lastName,
     required this.isEmployee,
     required this.groupId,

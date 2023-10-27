@@ -28,7 +28,7 @@ jobs:
           architecture: x64
 
       - name: Update versioning
-        run: sed -i '' "s/0.0.0.0/1.0.$(date '+%Y%m%d').${{github.run_number}}/g" ./lib/share/share.dart
+        run: sed -i '' "s/9.9.9.9/1.0.$(date '+%Y%m%d').${{github.run_number}}/g" ./lib/share/share.dart
 
       - name: Set up dependencies
         run: flutter pub get

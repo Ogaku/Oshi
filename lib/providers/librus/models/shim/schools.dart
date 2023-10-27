@@ -93,10 +93,10 @@ class School {
 @JsonSerializable()
 class LessonsRange {
   LessonsRange({
-    required this.from,
-    required this.to,
-    required this.rawFrom,
-    required this.rawTo,
+    this.from = '08:45',
+    this.to = '08:00',
+    this.rawFrom = 946713600,
+    this.rawTo = 946716300,
   });
 
   @JsonKey(name: 'From')

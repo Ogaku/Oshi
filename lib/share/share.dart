@@ -24,7 +24,7 @@ class Share {
 
   // Shared settings data for managing sessions
   static Settings settings = Settings();
-  static String buildNumber = '0.0.0.0';
+  static String buildNumber = '9.9.9.9';
   static bool hasCheckedForUpdates = false;
 
   // Raised by the app to notify that the uses's just logged in

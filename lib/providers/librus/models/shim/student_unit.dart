@@ -109,7 +109,7 @@ class GradesSettings {
     required this.allowOverrangePointGrades,
     required this.allowClassTutorEditGrades,
     required this.canAddAnyGrades,
-    required this.grade0Map,
+    this.grade0Map = '',
   });
 
   @JsonKey(name: 'StandardGradesEnabled')
@@ -178,10 +178,10 @@ class LessonSettings {
 @JsonSerializable()
 class LessonsRange {
   LessonsRange({
-    required this.from,
-    required this.to,
-    required this.rawFrom,
-    required this.rawTo,
+    this.from = '08:45',
+    this.to = '08:00',
+    this.rawFrom = 946713600,
+    this.rawTo = 946716300,
   });
 
   @JsonKey(name: 'From')

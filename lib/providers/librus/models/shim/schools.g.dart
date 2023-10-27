@@ -57,10 +57,10 @@ Map<String, dynamic> _$SchoolToJson(School instance) => <String, dynamic>{
     };
 
 LessonsRange _$LessonsRangeFromJson(Map<String, dynamic> json) => LessonsRange(
-      from: json['From'] as String,
-      to: json['To'] as String,
-      rawFrom: json['RawFrom'] as int,
-      rawTo: json['RawTo'] as int,
+      from: json['From'] as String? ?? '08:45',
+      to: json['To'] as String? ?? '08:00',
+      rawFrom: json['RawFrom'] as int? ?? 946713600,
+      rawTo: json['RawTo'] as int? ?? 946716300,
     );
 
 Map<String, dynamic> _$LessonsRangeToJson(LessonsRange instance) =>

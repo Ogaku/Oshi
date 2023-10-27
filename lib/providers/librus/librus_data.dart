@@ -133,14 +133,15 @@ class LibrusDataReader implements models.IProvider {
         id: x.id,
         lessonNo: x.lessonNo,
         type: x.type!.id.asAttendance(),
-        teacher: teachersShim.users?.firstWhere((element) => element.id == (x.addedBy?.id ?? -1)).asTeacher(),
+        teacher: teachersShim.users?.firstWhereOrDefault((element) => element.id == (x.addedBy?.id ?? -1))?.asTeacher(),
         lesson: models.TimetableLesson(
             lessonNo: x.lessonNo,
             subject: subjectsShim.subjects!
-                .firstWhere((subject) =>
-                    subject.id == lessonsShim.lessons!.firstWhere((lesson) => lesson.id == x.lesson!.id).subject!.id)
-                .asSubject(),
-            teacher: teachersShim.users?.firstWhere((element) => element.id == (x.addedBy?.id ?? -1)).asTeacher(),
+                .firstWhereOrDefault((subject) =>
+                    subject.id ==
+                    lessonsShim.lessons!.firstWhereOrDefault((lesson) => lesson.id == x.lesson!.id)?.subject!.id)
+                ?.asSubject(),
+            teacher: teachersShim.users?.firstWhereOrDefault((element) => element.id == (x.addedBy?.id ?? -1))?.asTeacher(),
             date: x.date ?? DateTime.now())));
 
 //#endregion
@@ -189,17 +190,17 @@ class LibrusDataReader implements models.IProvider {
                     defaultValue: x.first) ??
                 x.first)
             .select((x, index) {
-          var lessonData = subjectsShim.subjects!.firstWhere((y) => y.id == x.subject!.id);
+          var lessonData = subjectsShim.subjects!.firstWhereOrDefault((y) => y.id == x.subject!.id);
           return models.Lesson(
             id: x.subject!.id,
             url: x.subject!.url,
-            name: lessonData.name,
-            no: lessonData.no,
-            short: lessonData.short,
-            isExtracurricular: lessonData.isExtracurricular,
-            isBlockLesson: lessonData.isBlockLesson,
+            name: lessonData?.name ?? 'Unknown',
+            no: lessonData?.no ?? 0,
+            short: lessonData?.short ?? 'Unknwn',
+            isExtracurricular: lessonData?.isExtracurricular ?? false,
+            isBlockLesson: lessonData?.isBlockLesson ?? false,
             hostClass: mainStudentClass,
-            teacher: teachersShim.users!.firstWhere((y) => y.id == x.teacher!.id).asTeacher(),
+            teacher: teachersShim.users!.firstWhereOrDefault((y) => y.id == x.teacher!.id)?.asTeacher(),
             grades: null,
           );
         }).toList());
@@ -251,18 +252,18 @@ class LibrusDataReader implements models.IProvider {
                           lessonClass: student.mainClass.id == lesson.timetableLessonClass?.id
                               ? student.mainClass // Either the regular or virtual one
                               : classesShim.virtualClasses
-                                  ?.firstWhere((y) => y.id == lesson.virtualClass?.id)
-                                  .asClass(student.mainClass),
+                                  ?.firstWhereOrDefault((y) => y.id == lesson.virtualClass?.id)
+                                  ?.asClass(student.mainClass),
                           classroom: classroomsShim.classrooms
-                              ?.firstWhere((y) => y.id == int.tryParse(lesson.classroom?.id ?? ''))
-                              .asClassroom(),
+                              ?.firstWhereOrDefault((y) => y.id == int.tryParse(lesson.classroom?.id ?? ''))
+                              ?.asClassroom(),
 
                           subject: subjectsShim.subjects
-                              ?.firstWhere((y) => y.id == int.tryParse(lesson.subject?.id ?? ''))
-                              .asSubject(),
+                              ?.firstWhereOrDefault((y) => y.id == int.tryParse(lesson.subject?.id ?? ''))
+                              ?.asSubject(),
                           teacher: teachersShim.users
-                              ?.firstWhere((y) => y.id == int.tryParse(lesson.teacher?.id ?? ''))
-                              .asTeacher(),
+                              ?.firstWhereOrDefault((y) => y.id == int.tryParse(lesson.teacher?.id ?? ''))
+                              ?.asTeacher(),
 
                           substitutionDetails: lesson.isSubstitutionClass
                               ? models.SubstitutionDetails(
@@ -275,30 +276,31 @@ class LibrusDataReader implements models.IProvider {
                                   originalHourTo: lesson.orgHourTo?.asTime() ?? lesson.newHourTo?.asTime() ?? DateTime.now(),
                                   originalClassroom: lesson.orgClassroom?.id != null
                                       ? classroomsShim.classrooms!
-                                          .firstWhere((y) => y.id == int.tryParse(lesson.orgClassroom?.id ?? ''))
-                                          .asClassroom()
+                                          .firstWhereOrDefault((y) => y.id == int.tryParse(lesson.orgClassroom?.id ?? ''))
+                                          ?.asClassroom()
                                       : lesson.newClassroom?.id != null
                                           ? classroomsShim.classrooms!
-                                              .firstWhere((y) => y.id == int.tryParse(lesson.newClassroom?.id ?? ''))
-                                              .asClassroom()
+                                              .firstWhereOrDefault(
+                                                  (y) => y.id == int.tryParse(lesson.newClassroom?.id ?? ''))
+                                              ?.asClassroom()
                                           : null,
                                   originalSubject: lesson.orgSubject?.id != null
                                       ? subjectsShim.subjects!
-                                          .firstWhere((y) => y.id == int.tryParse(lesson.orgSubject?.id ?? ''))
-                                          .asSubject()
+                                          .firstWhereOrDefault((y) => y.id == int.tryParse(lesson.orgSubject?.id ?? ''))
+                                          ?.asSubject()
                                       : lesson.newSubject?.id != null
                                           ? subjectsShim.subjects!
-                                              .firstWhere((y) => y.id == int.tryParse(lesson.newSubject?.id ?? ''))
-                                              .asSubject()
+                                              .firstWhereOrDefault((y) => y.id == int.tryParse(lesson.newSubject?.id ?? ''))
+                                              ?.asSubject()
                                           : null,
                                   originalTeacher: lesson.orgTeacher?.id != null
                                       ? teachersShim.users!
-                                          .firstWhere((y) => y.id == int.tryParse(lesson.orgTeacher?.id ?? ''))
-                                          .asTeacher()
+                                          .firstWhereOrDefault((y) => y.id == int.tryParse(lesson.orgTeacher?.id ?? ''))
+                                          ?.asTeacher()
                                       : lesson.newTeacher?.id != null
                                           ? teachersShim.users!
-                                              .firstWhere((y) => y.id == int.tryParse(lesson.newTeacher?.id ?? ''))
-                                              .asTeacher()
+                                              .firstWhereOrDefault((y) => y.id == int.tryParse(lesson.newTeacher?.id ?? ''))
+                                              ?.asTeacher()
                                           : null,
                                 )
                               : null, // Don't provide any details for 'normal' lessons
@@ -389,7 +391,7 @@ class LibrusDataReader implements models.IProvider {
                     category: models.EventCategory.teacher,
                     content: '',
                     categoryName: 'Nieobecność nauczyciela',
-                    sender: teachersShim.users!.firstWhere((y) => y.id == x.teacher?.id).asTeacher()))
+                    sender: teachersShim.users!.firstWhereOrDefault((y) => y.id == x.teacher?.id)?.asTeacher()))
                 .toList() ??
             []);
 
@@ -417,7 +419,7 @@ class LibrusDataReader implements models.IProvider {
                             .firstWhereOrDefault((y) => y.id == x.category?.id, defaultValue: null)
                             ?.categoryName ??
                         'Homework',
-                    sender: teachersShim.users!.firstWhere((y) => y.id == x.teacher?.id).asTeacher()))
+                    sender: teachersShim.users!.firstWhereOrDefault((y) => y.id == x.teacher?.id)?.asTeacher()))
                 .toList() ??
             []);
 
@@ -465,10 +467,11 @@ class LibrusDataReader implements models.IProvider {
                 timeFrom: x.dateFrom ?? DateTime.now(),
                 timeTo: x.dateTo,
                 category: models.EventCategory.freeDay,
-                content:
-                    freeDayCategoriesShim.types?.firstWhere((element) => element.id == x.type?.id).name ?? 'Lekcja odwołana',
+                content: freeDayCategoriesShim.types?.firstWhereOrDefault((element) => element.id == x.type?.id)?.name ??
+                    'Lekcja odwołana',
                 categoryName:
-                    freeDayCategoriesShim.types?.firstWhere((element) => element.id == x.type?.id).name ?? 'Dzień wolny'));
+                    freeDayCategoriesShim.types?.firstWhereOrDefault((element) => element.id == x.type?.id)?.name ??
+                        'Dzień wolny'));
       });
     });
 
@@ -480,7 +483,7 @@ class LibrusDataReader implements models.IProvider {
 
     // Push all grades to their respective subjects within our student object
     Grades.fromJson(await data!.librusApi!.request('Grades')).grades?.forEach((x) {
-      var category = gradeCategoriesShim.categories?.firstWhere((y) => y.id == x.category?.id);
+      var category = gradeCategoriesShim.categories?.firstWhereOrDefault((y) => y.id == x.category?.id);
       var subject = student.subjects.firstWhereOrDefault((y) => y.id == x.subject?.id, defaultValue: null);
       subject?.grades.add(models.Grade(
           id: x.id,
@@ -497,7 +500,7 @@ class LibrusDataReader implements models.IProvider {
           countsToAverage: category?.countToTheAverage ?? false,
           date: x.date ?? DateTime.now(),
           addDate: x.addDate ?? DateTime.now(),
-          addedBy: teachersShim.users!.firstWhere((y) => y.id == x.addedBy?.id).asTeacher(),
+          addedBy: teachersShim.users!.firstWhereOrDefault((y) => y.id == x.addedBy?.id)?.asTeacher(),
           semester: x.semester,
           isConstituent: x.isConstituent,
           isSemester: x.isSemester,
@@ -532,7 +535,8 @@ class LibrusDataReader implements models.IProvider {
       teachersShim.users
           ?.where((user) => messagesUsers.receivers?.any((receiver) => receiver.userIdInt == user.id) ?? false)
           .forEach((user) {
-        user.userId = messagesUsers.receivers!.firstWhere((receiver) => receiver.userIdInt == user.id).accountIdInt;
+        user.userId =
+            messagesUsers.receivers!.firstWhereOrDefault((receiver) => receiver.userIdInt == user.id)?.accountIdInt;
       });
     } catch (ex) {
       // ignored
@@ -644,7 +648,8 @@ class LibrusDataReader implements models.IProvider {
         teachersShim.users
             ?.where((user) => messagesUsers.receivers?.any((receiver) => receiver.userIdInt == user.id) ?? false)
             .forEach((user) {
-          user.userId = messagesUsers.receivers!.firstWhere((receiver) => receiver.userIdInt == user.id).accountIdInt;
+          user.userId =
+              messagesUsers.receivers!.firstWhereOrDefault((receiver) => receiver.userIdInt == user.id)?.accountIdInt;
         });
       } catch (ex) {
         // ignored
@@ -734,7 +739,8 @@ class LibrusDataReader implements models.IProvider {
 
         result.receivers = message.data?.receivers
             ?.select((y, index) =>
-                teachersShim.users!.firstWhere((user) => user.userId == int.tryParse(y.receiverId)).asTeacher())
+                teachersShim.users!.firstWhereOrDefault((user) => user.userId == int.tryParse(y.receiverId))?.asTeacher() ??
+                models.Teacher())
             .toList();
       }
 

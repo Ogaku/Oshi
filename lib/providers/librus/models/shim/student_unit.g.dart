@@ -89,7 +89,7 @@ GradesSettings _$GradesSettingsFromJson(Map<String, dynamic> json) =>
       allowOverrangePointGrades: json['AllowOverrangePointGrades'] as bool,
       allowClassTutorEditGrades: json['AllowClassTutorEditGrades'] as bool,
       canAddAnyGrades: json['CanAddAnyGrades'] as bool,
-      grade0Map: json['Grade0Map'] as String,
+      grade0Map: json['Grade0Map'] as String? ?? '',
     );
 
 Map<String, dynamic> _$GradesSettingsToJson(GradesSettings instance) =>
@@ -125,10 +125,10 @@ Map<String, dynamic> _$LessonSettingsToJson(LessonSettings instance) =>
     };
 
 LessonsRange _$LessonsRangeFromJson(Map<String, dynamic> json) => LessonsRange(
-      from: json['From'] as String,
-      to: json['To'] as String,
-      rawFrom: json['RawFrom'] as int,
-      rawTo: json['RawTo'] as int,
+      from: json['From'] as String? ?? '08:45',
+      to: json['To'] as String? ?? '08:00',
+      rawFrom: json['RawFrom'] as int? ?? 946713600,
+      rawTo: json['RawTo'] as int? ?? 946716300,
     );
 
 Map<String, dynamic> _$LessonsRangeToJson(LessonsRange instance) =>
