@@ -3,6 +3,8 @@
 
 import 'dart:io';
 
+import 'package:darq/darq.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:oshi/interface/cupertino/pages/home.dart' show homePage;
@@ -11,6 +13,8 @@ import 'package:oshi/interface/cupertino/pages/timetable.dart' show timetablePag
 import 'package:oshi/interface/cupertino/pages/messages.dart' show messagesPage;
 import 'package:oshi/interface/cupertino/pages/absences.dart' show absencesPage;
 import 'package:oshi/share/share.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'package:version/version.dart';
 
 // Boiler: returned to the main application
 StatefulWidget get baseApp => BaseApp();
@@ -34,8 +38,30 @@ class _BaseAppState extends State<BaseApp> {
       setState(() => tabController.index = args!.value.clamp(0, 4));
     });
 
-    return CupertinoApp(
-      home: CupertinoTabScaffold(
+    return CupertinoApp(home: Builder(builder: (context) {
+      if (!Share.hasCheckedForUpdates) {
+        try {
+          (Dio().get('https://api.github.com/repos/Ogaku/Oshi/releases/latest')).then((value) {
+            try {
+              if (Version.parse(value.data['tag_name']) <= Version.parse(Share.buildNumber)) return;
+              var download = (value.data['assets'] as List<dynamic>?)
+                  ?.firstWhereOrDefault((x) =>
+                      x['name']?.toString().contains(Platform.isAndroid ? '.apk' : '.ipa') ?? false)?['browser_download_url']
+                  ?.toString();
+
+              if (download?.isNotEmpty ?? false) _showAlertDialog(context, download ?? 'https://youtu.be/dQw4w9WgXcQ');
+            } catch (ex) {
+              // ignored
+            }
+          });
+        } catch (ex) {
+          // ignored
+        }
+
+        Share.hasCheckedForUpdates = true;
+      }
+
+      return CupertinoTabScaffold(
         controller: tabController,
         tabBar: CupertinoTabBar(backgroundColor: CupertinoTheme.of(context).barBackgroundColor.withAlpha(0xFF), items: [
           BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: 'Home'),
@@ -54,11 +80,11 @@ class _BaseAppState extends State<BaseApp> {
             _ => homePage,
           },
         ),
-      ),
-    );
+      );
+    }));
   }
 
-  void _showAlertDialog(BuildContext context) {
+  void _showAlertDialog(BuildContext context, String url) {
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
@@ -67,9 +93,13 @@ class _BaseAppState extends State<BaseApp> {
             Text('The download page of the newer app version for ${Platform.isAndroid ? "Android" : "iOS"} will be opened.'),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
-            onPressed: () {
-              
+            onPressed: () async {
               Navigator.pop(context);
+              try {
+                await launchUrlString(url);
+              } catch (ex) {
+                // ignored
+              }
             },
             child: const Text('OK'),
           ),

@@ -28,7 +28,7 @@ jobs:
           architecture: x64
 
       - name: Update versioning
-        run: sed -i '' "s/0.0.0.0/1.0.$(date '+%Y.%m.%d').${{github.run_number}}/g" ./lib/share/share.dart
+        run: sed -i '' "s/0.0.0.0/1.0.$(date '+%Y%m%d').${{github.run_number}}/g" ./lib/share/share.dart
 
       - name: Set up dependencies
         run: flutter pub get
@@ -42,7 +42,9 @@ jobs:
           cd ./build/ios/iphoneos && mkdir Payload && mv Runner.app Payload/Runner.app && zip -r Oshi.ipa Payload
 
       - name: Set up environment
-        run: echo "::set-env name=NOW::1.0.$(date '+%Y.%m.%d').${{github.run_number}}"
+        run: echo "::set-env name=NOW::1.0.$(date '+%Y%m%d').${{github.run_number}}"
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: "true"
 
       - name: Upload build artifacts
         uses: ncipollo/release-action@v1
