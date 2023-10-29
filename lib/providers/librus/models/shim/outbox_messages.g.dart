@@ -98,8 +98,8 @@ Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
 
 Receiver _$ReceiverFromJson(Map<String, dynamic> json) => Receiver(
       receiverId: json['receiverId'] as String,
-      firstName: json['firstName'] as String,
-      lastName: json['lastName'] as String,
+      firstName: json['firstName'] as String? ?? 'Unknown',
+      lastName: json['lastName'] as String? ?? 'Receiver',
       className: json['className'],
       pupilFirstName: json['pupilFirstName'],
       pupilLastName: json['pupilLastName'],

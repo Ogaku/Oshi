@@ -54,8 +54,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) => setState(() {}));
     }
 
-    var currentDay = Share.session.data.timetables[DateTime.now().asDate()];
-    var nextDay = Share.session.data.timetables[DateTime.now().asDate().add(Duration(days: 1))];
+    var currentDay = Share.session.data.timetables[DateTime.now().asDate(utc: true).asDate()];
+    var nextDay = Share.session.data.timetables[DateTime.now().asDate(utc: true).add(Duration(days: 1)).asDate()];
 
     var currentLesson = currentDay?.lessonsStrippedCancelled
         .firstWhereOrDefault((x) =>
@@ -295,8 +295,9 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                     onTap: () {
                       Share.tabsNavigatePage.broadcast(Value(2));
                       Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay.broadcast(Value(
-                          DateTime.now().asDate().add(Duration(
-                              days: DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)
+                          DateTime.now().asDate(utc: true).add(Duration(
+                              days: (DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)) ||
+                                      (!(currentDay?.hasLessons ?? false) && (nextDay?.hasLessons ?? false))
                                   ? 1
                                   : 0)))));
                     },
@@ -308,12 +309,13 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                           children: [
                             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                               Expanded(
-                                  child: Text(
-                                glanceTitle,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 21,
-                                ),
+                                  child: Container(
+                                margin: EdgeInsets.only(top: 8),
+                                child: Text(glanceTitle,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 21,
+                                    )),
                               )),
                               Visibility(
                                   visible: Share.session.data.student.mainClass.unit.luckyNumber != null,
@@ -374,8 +376,10 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                           onTap: () {
                             Share.tabsNavigatePage.broadcast(Value(2));
                             Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay.broadcast(
-                                Value(DateTime.now().asDate().add(Duration(
-                                    days: DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)
+                                Value(DateTime.now().asDate(utc: true).add(Duration(
+                                    days: (DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
+                                                (nextDay?.hasLessons ?? false)) ||
+                                            (!(currentDay?.hasLessons ?? false) && (nextDay?.hasLessons ?? false))
                                         ? 1
                                         : 0)))));
                           },
@@ -451,8 +455,10 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                           onTap: () {
                             Share.tabsNavigatePage.broadcast(Value(2));
                             Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay.broadcast(
-                                Value(DateTime.now().asDate().add(Duration(
-                                    days: DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)
+                                Value(DateTime.now().asDate(utc: true).add(Duration(
+                                    days: (DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
+                                                (nextDay?.hasLessons ?? false)) ||
+                                            (!(currentDay?.hasLessons ?? false) && (nextDay?.hasLessons ?? false))
                                         ? 1
                                         : 0)))));
                           },
@@ -493,8 +499,10 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                           onTap: () {
                             Share.tabsNavigatePage.broadcast(Value(2));
                             Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay.broadcast(
-                                Value(DateTime.now().asDate().add(Duration(
-                                    days: DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)
+                                Value(DateTime.now().asDate(utc: true).add(Duration(
+                                    days: (DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
+                                                (nextDay?.hasLessons ?? false)) ||
+                                            (!(currentDay?.hasLessons ?? false) && (nextDay?.hasLessons ?? false))
                                         ? 1
                                         : 0)))));
                           },
@@ -774,8 +782,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
 
   // Glance widget's subtitle
   ({String flexible, String standard}) get glanceSubtitle {
-    var currentDay = Share.session.data.timetables[DateTime.now().asDate()];
-    var nextDay = Share.session.data.timetables[DateTime.now().asDate().add(Duration(days: 1))];
+    var currentDay = Share.session.data.timetables[DateTime.now().asDate(utc: true).asDate()];
+    var nextDay = Share.session.data.timetables[DateTime.now().asDate(utc: true).add(Duration(days: 1)).asDate()];
 
     var currentLesson = currentDay?.lessonsStrippedCancelled
         .firstWhereOrDefault((x) =>
@@ -810,12 +818,12 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       return (flexible: "You've survived all ${currentDay!.lessonsNumber} lessons!", standard: '');
     }
 
-    // No lessons today - T5
-    if (!(currentDay?.hasLessons ?? false)) {
+    // No lessons today or tomorrow - T5
+    if (!(currentDay?.hasLessons ?? false) && !(nextDay?.hasLessons ?? false)) {
       return (flexible: "It's a free real estate!", standard: '');
     }
 
-    // But lessons tomorrow - T6
+    // Or lessons tomorrow - T6
     if ((nextDay?.hasLessons ?? false) && nextDay?.dayEnd != null) {
       return (
         flexible:
@@ -836,8 +844,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
 
   // Glance widget's main title
   String get glanceTitle {
-    var currentDay = Share.session.data.timetables[DateTime.now().asDate()];
-    var nextDay = Share.session.data.timetables[DateTime.now().asDate().add(Duration(days: 1))];
+    var currentDay = Share.session.data.timetables[DateTime.now().asDate(utc: true).asDate()];
+    var nextDay = Share.session.data.timetables[DateTime.now().asDate(utc: true).add(Duration(days: 1)).asDate()];
 
     var currentLesson = currentDay?.lessonsStrippedCancelled
         .firstWhereOrDefault((x) =>
@@ -870,8 +878,9 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     }
 
     // Lessons tomorrow - 6
-    if (DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)) {
-      return "Tomorrow's the day!";
+    if ((DateTime.now().isAfterOrSame(currentDay?.dayEnd) || !(currentDay?.hasLessons ?? false)) &&
+        (nextDay?.hasLessons ?? false)) {
+      return "Back at it again, tomorrow...";
     }
 
     // No lessons today - 5
@@ -909,7 +918,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     // No lessons today or tomorrow - LW
     // We're not checking <today> here, is's already been checked upper
     if (!(nextDay?.hasLessons ?? false)) {
-      return "Alone on a school-less day?";
+      return "Alone on a friday night?";
     }
 
     // Other options, possibly?

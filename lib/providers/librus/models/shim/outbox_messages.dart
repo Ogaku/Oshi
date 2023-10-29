@@ -102,8 +102,8 @@ class Data {
 class Receiver {
   Receiver({
     required this.receiverId,
-    required this.firstName,
-    required this.lastName,
+    this.firstName = 'Unknown',
+    this.lastName = 'Receiver',
     required this.className,
     required this.pupilFirstName,
     required this.pupilLastName,

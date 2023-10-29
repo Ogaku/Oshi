@@ -49,7 +49,7 @@ class User {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   String get nameInv {
-    if (firstName.isEmpty && lastName.isEmpty) return 'UNKNOWN';
+    if (firstName.isEmpty && lastName.isEmpty) return 'Unknown';
     if (firstName.isEmpty) return lastName;
     return lastName.isEmpty ? firstName : '$lastName $firstName';
   }

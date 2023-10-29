@@ -31,13 +31,13 @@ class Teacher extends HiveObject {
   ({DateTime from, DateTime to})? absent;
 
   String get name {
-    if (firstName.isEmpty && lastName.isEmpty) return 'UNKNOWN';
+    if (firstName.isEmpty && lastName.isEmpty) return 'Unknown';
     if (firstName.isEmpty) return lastName;
     return lastName.isEmpty ? firstName : '$firstName $lastName';
   }
 
   String get nameInv {
-    if (firstName.isEmpty && lastName.isEmpty) return 'UNKNOWN';
+    if (firstName.isEmpty && lastName.isEmpty) return 'Unknown';
     if (firstName.isEmpty) return lastName;
     return lastName.isEmpty ? firstName : '$lastName $firstName';
   }

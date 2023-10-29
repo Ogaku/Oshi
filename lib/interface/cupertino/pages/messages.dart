@@ -80,8 +80,8 @@ class _MessagesPageState extends State<MessagesPage> {
                           alignment: Alignment.center,
                           child: Text(
                             folder == MessageFolders.announcements
-                                ? 'No announcements matching the query'
-                                : 'No messages matching the query',
+                                ? (searchQuery.isEmpty ? 'No announcements, yet...' : 'No announcements matching the query')
+                                : (searchQuery.isEmpty ? 'No messages, yet...' : 'No messages matching the query'),
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                           ))))
             ]
@@ -133,34 +133,46 @@ class _MessagesPageState extends State<MessagesPage> {
                         return GestureDetector(
                             onTap: () {
                               if (isWorking) return;
-                              if (folder == MessageFolders.announcements) {
-                                Navigator.push(
-                                    context,
-                                    CupertinoPageRoute(
-                                        builder: (context) => MessageDetailsPage(
-                                              message: x,
-                                              isByMe: false,
-                                            )));
-                              } else {
-                                setState(() => isWorking = true);
-
-                                Share.session.provider
-                                    .fetchMessageContent(parent: x, byMe: folder == MessageFolders.outbox)
-                                    .then((result) {
-                                  setState(() => isWorking = false);
-
-                                  if (result.message == null && result.result != null) x.updateMessageData(result.result!);
-                                  if (x.content?.isEmpty ?? true) return;
-                                  if (folder == MessageFolders.inbox) x.readDate = DateTime.now();
-
+                              try {
+                                if (folder == MessageFolders.announcements) {
                                   Navigator.push(
                                       context,
                                       CupertinoPageRoute(
                                           builder: (context) => MessageDetailsPage(
                                                 message: x,
-                                                isByMe: folder == MessageFolders.outbox,
+                                                isByMe: false,
                                               )));
-                                });
+                                } else {
+                                  setState(() => isWorking = true);
+
+                                  Share.session.provider
+                                      .fetchMessageContent(parent: x, byMe: folder == MessageFolders.outbox)
+                                      .then((result) {
+                                    setState(() => isWorking = false);
+
+                                    if (result.message == null && result.result != null) x.updateMessageData(result.result!);
+                                    if (x.content?.isEmpty ?? true) return;
+                                    if (folder == MessageFolders.inbox) x.readDate = DateTime.now();
+
+                                    Navigator.push(
+                                        context,
+                                        CupertinoPageRoute(
+                                            builder: (context) => MessageDetailsPage(
+                                                  message: x,
+                                                  isByMe: folder == MessageFolders.outbox,
+                                                )));
+                                  });
+                                }
+                              } on Exception catch (e) {
+                                setState(() => isWorking = false);
+                                if (Platform.isAndroid || Platform.isIOS) {
+                                  Fluttertoast.showToast(
+                                    msg: '$e',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.CENTER,
+                                    timeInSecForIosWeb: 1,
+                                  );
+                                }
                               }
                             },
                             child: Container(
