@@ -1,10 +1,13 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:event/src/event.dart';
 import 'package:event/src/eventargs.dart';
+import 'package:logging/logging.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/models/progress.dart';
@@ -559,7 +562,7 @@ class LibrusDataReader implements models.IProvider {
                 id: int.tryParse(x.messageId) ?? -1,
                 url: '',
                 topic: x.topic,
-                preview: utf8.decode(base64.decode(x.content)),
+                preview: x.content.tryBase64Decoded(),
                 hasAttachments: x.isAnyFileAttached,
                 sendDate: x.sendDate ?? DateTime.now(),
                 readDate: x.readDate,
@@ -578,7 +581,7 @@ class LibrusDataReader implements models.IProvider {
                 url: '',
                 topic: x.topic,
                 sendDate: x.sendDate ?? DateTime.now(),
-                preview: utf8.decode(base64.decode(x.content)),
+                preview: x.content.tryBase64Decoded(),
                 hasAttachments: false,
                 receivers: [models.Teacher(firstName: x.receiverName)]))
             .toList() ??
@@ -663,8 +666,8 @@ class LibrusDataReader implements models.IProvider {
         result.readDate = message.data?.readDate;
 
         result.topic = message.data?.topic ?? 'No topic';
-        result.content = utf8
-            .decode(base64.decode(message.data?.message ?? ''))
+        result.content = (message.data?.message ?? '')
+            .tryBase64Decoded()
             .replaceAll('<Message><Content><![CDATA[', '')
             .replaceAll(']]></Content><Actions><Actions/></Actions></Message>', '')
             .trim();
@@ -712,8 +715,8 @@ class LibrusDataReader implements models.IProvider {
         result.readDate = message.data?.readDate;
 
         result.topic = message.data?.topic ?? 'No topic';
-        result.content = utf8
-            .decode(base64.decode(message.data?.message ?? ''))
+        result.content = (message.data?.message ?? '')
+            .tryBase64Decoded()
             .replaceAll('<Message><Content><![CDATA[', '')
             .replaceAll(']]></Content><Actions><Actions/></Actions></Message>', '')
             .trim();
@@ -777,6 +780,29 @@ class LibrusDataReader implements models.IProvider {
       return (success: true, message: null);
     } on Exception catch (ex) {
       return (success: false, message: ex);
+    }
+  }
+}
+
+extension DecodingExtension on String {
+  String tryBase64Decoded() {
+    try {
+      return utf8.decode(base64.decode(this));
+    } catch (ex, stack) {
+      if (Platform.isAndroid || Platform.isIOS) {
+        Fluttertoast.showToast(
+          msg: '$ex',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+        );
+      }
+      if (Platform.isAndroid) {
+        Logger('Temporary: tryBase64Decoded')
+          ..severe(ex) // The exception
+          ..severe(stack); // The stack
+      }
+      return '';
     }
   }
 }
