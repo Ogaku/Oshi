@@ -4,5 +4,14 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"dart.lineLength": 125
+	},
+	"extensions": {
+		"recommendations": [
+			"dart-code.dart-code",
+			"dart-code.flutter",
+			"nash.awesome-flutter-snippets"
+		]
+	}
 }

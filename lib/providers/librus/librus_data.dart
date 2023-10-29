@@ -7,7 +7,6 @@ import 'package:dio/dio.dart';
 import 'package:event/src/event.dart';
 import 'package:event/src/eventargs.dart';
 import 'package:logging/logging.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/models/progress.dart';
@@ -789,14 +788,6 @@ extension DecodingExtension on String {
     try {
       return utf8.decode(base64.decode(this));
     } catch (ex, stack) {
-      if (Platform.isAndroid || Platform.isIOS) {
-        Fluttertoast.showToast(
-          msg: '$ex',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-        );
-      }
       if (Platform.isAndroid) {
         Logger('Temporary: tryBase64Decoded')
           ..severe(ex) // The exception
