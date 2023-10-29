@@ -33,6 +33,7 @@ dependencies:
   flutter_shake_animated: ^0.0.5
   visibility_aware_state: ^1.0.5
   version: ^3.0.2
+  logging_to_logcat: ^1.0.0
 
 dev_dependencies:
   flutter_test:

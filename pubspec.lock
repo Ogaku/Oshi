@@ -440,6 +440,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  logging_to_logcat:
+    dependency: "direct main"
+    description:
+      name: logging_to_logcat
+      sha256: "224709cd562670c655f156ef5e4a55ccc0b8f6d854ef01cd46844870e52f1c46"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   matcher:
     dependency: transitive
     description:

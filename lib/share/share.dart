@@ -7,6 +7,7 @@ import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/models/provider.dart';
 
 import 'package:hive/hive.dart';
+import 'package:logging/logging.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'package:oshi/models/data/teacher.dart' show Teacher;
@@ -174,7 +175,7 @@ class Session extends HiveObject {
       var result2 = await provider.refreshMessages(progress: progress);
       await updateData(info: result1.success, messages: result2.success);
       return (success: result1.success && result2.success, message: result1.message ?? result2.message);
-    } catch (ex) {
+    } catch (ex, stack) {
       if (Platform.isAndroid || Platform.isIOS) {
         Fluttertoast.showToast(
           msg: '$ex',
@@ -182,6 +183,11 @@ class Session extends HiveObject {
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
         );
+      }
+      if (Platform.isAndroid) {
+        Logger('Temporary: refreshAll')
+          ..severe(ex) // The exception
+          ..severe(stack); // The stack
       }
       return (success: false, message: Exception(ex));
     }

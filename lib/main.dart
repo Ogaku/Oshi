@@ -25,8 +25,14 @@ import 'package:oshi/interface/material/sessions_page.dart' as materialapp show 
 import 'package:oshi/interface/cupertino/sessions_page.dart' as cupertinoapp show sessionsPage;
 import 'package:oshi/interface/cupertino/base_app.dart' as cupertinoapp show baseApp;
 
+import 'package:logging_to_logcat/logging_to_logcat.dart';
+import 'package:logging/logging.dart';
+
 Future<void> main() async {
-  if (Platform.isAndroid) WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isAndroid) {
+    WidgetsFlutterBinding.ensureInitialized();
+    Logger.root.activateLogcat();
+  }
 
   await Hive.initFlutter();
 
