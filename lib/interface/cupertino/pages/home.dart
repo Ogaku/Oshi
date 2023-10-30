@@ -176,22 +176,21 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                     TextChip(
                                                         text: DateFormat('d/M').format(x.timeTo ?? x.timeFrom),
                                                         margin: EdgeInsets.only(top: 6, bottom: 6, right: 10)),
-                                                    Expanded(
-                                                        child: Flexible(
-                                                            child: Align(
-                                                                alignment: Alignment.centerLeft,
-                                                                child: Text(
-                                                                  maxLines: 1,
-                                                                  x.title ?? x.content,
-                                                                  overflow: TextOverflow.ellipsis,
-                                                                  style: TextStyle(
-                                                                      fontWeight: FontWeight.w600,
-                                                                      color: CupertinoDynamicColor.resolve(
-                                                                          CupertinoDynamicColor.withBrightness(
-                                                                              color: CupertinoColors.black,
-                                                                              darkColor: CupertinoColors.white),
-                                                                          context)),
-                                                                )))),
+                                                    Flexible(
+                                                        child: Align(
+                                                            alignment: Alignment.centerLeft,
+                                                            child: Text(
+                                                              maxLines: 1,
+                                                              x.title ?? x.content,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              style: TextStyle(
+                                                                  fontWeight: FontWeight.w600,
+                                                                  color: CupertinoDynamicColor.resolve(
+                                                                      CupertinoDynamicColor.withBrightness(
+                                                                          color: CupertinoColors.black,
+                                                                          darkColor: CupertinoColors.white),
+                                                                      context)),
+                                                            ))),
                                                     Align(
                                                         alignment: Alignment.centerRight,
                                                         child: Visibility(
@@ -248,7 +247,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       child: SearchableSliverNavigationBar(
         onProgress: (progress) => setState(() => _progressMessage = progress?.message),
         setState: setState,
-        segments: {'home': 'Home', 'timeline': 'Timeline'},
+        // segments: {'home': 'Home', 'timeline': 'Timeline'},
         searchController: searchController,
         largeTitle: Text('Home'),
         middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('Home')),
@@ -281,7 +280,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
           ],
           buttonBuilder: (context, showMenu) => GestureDetector(
             onTap: showMenu,
-            child: const Icon(CupertinoIcons.ellipsis_circle),
+            child: _eventfulMenuButton,
           ),
         ),
         children: [
@@ -862,6 +861,17 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       return "${Share.session.data.student.account.firstName}, you're absent!";
     }
 
+    // Halloween theme
+    if (DateTime.now().month == DateTime.october && DateTime.now().day == 31) {
+      return 'だって Happy Halloween!';
+    }
+
+    // Christmas theme
+    if (DateTime.now().month == DateTime.december &&
+        (DateTime.now().day == 24 || DateTime.now().day == 25 || DateTime.now().day == 26)) {
+      return 'Merry Christmas!';
+    }
+
     // Lessons have just ended - 7.1
     if ((currentDay?.hasLessons ?? false) &&
         DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
@@ -924,6 +934,24 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     // Other options, possibly?
     // Ambient - during the day - BTM
     return "Keep yourself safe...";
+  }
+
+  Widget get _eventfulMenuButton {
+    // Halloween theme
+    if (DateTime.now().month == DateTime.october && DateTime.now().day == 31) {
+      return const Text('🎃');
+    }
+    // St. Peter day theme
+    if (DateTime.now().month == DateTime.july && DateTime.now().day == 12) {
+      return const Text('🍀');
+    }
+    // Christmas theme
+    if (DateTime.now().month == DateTime.december &&
+        (DateTime.now().day == 24 || DateTime.now().day == 25 || DateTime.now().day == 26)) {
+      return const Text('🎄');
+    }
+    // Default theme
+    return const Icon(CupertinoIcons.ellipsis_circle);
   }
 }
 

@@ -54,7 +54,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
       leading: CupertinoButton(
           padding: EdgeInsets.all(0),
           child: Text('Cancel',
-              style: TextStyle(color: !isWorking ? CupertinoColors.systemBlue : CupertinoColors.inactiveGray)),
+              style: TextStyle(color: !isWorking ? CupertinoTheme.of(context).primaryColor : CupertinoColors.inactiveGray)),
           onPressed: () async => Navigator.pop(context)),
       transitionBetweenRoutes: false,
       trailing: CupertinoButton(
@@ -64,7 +64,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
               ? CupertinoActivityIndicator()
               : Icon(CupertinoIcons.paperplane_fill,
                   color: (receivers.isNotEmpty && subjectController.text.isNotEmpty && messageController.text.isNotEmpty)
-                      ? CupertinoColors.systemBlue
+                      ? CupertinoTheme.of(context).primaryColor
                       : CupertinoColors.inactiveGray),
           onPressed: () {
             if (isWorking) return;

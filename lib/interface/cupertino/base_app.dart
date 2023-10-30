@@ -38,50 +38,53 @@ class _BaseAppState extends State<BaseApp> {
       setState(() => tabController.index = args!.value.clamp(0, 4));
     });
 
-    return CupertinoApp(home: Builder(builder: (context) {
-      if (!Share.hasCheckedForUpdates) {
-        try {
-          (Dio().get('https://api.github.com/repos/Ogaku/Oshi/releases/latest')).then((value) {
+    return CupertinoApp(
+        theme: _eventfulColorTheme,
+        home: Builder(builder: (context) {
+          if (!Share.hasCheckedForUpdates) {
             try {
-              if (Version.parse(value.data['tag_name']) <= Version.parse(Share.buildNumber)) return;
-              var download = (value.data['assets'] as List<dynamic>?)
-                  ?.firstWhereOrDefault((x) =>
-                      x['name']?.toString().contains(Platform.isAndroid ? '.apk' : '.ipa') ?? false)?['browser_download_url']
-                  ?.toString();
+              (Dio().get('https://api.github.com/repos/Ogaku/Oshi/releases/latest')).then((value) {
+                try {
+                  if (Version.parse(value.data['tag_name']) <= Version.parse(Share.buildNumber)) return;
+                  var download = (value.data['assets'] as List<dynamic>?)
+                      ?.firstWhereOrDefault((x) =>
+                          x['name']?.toString().contains(Platform.isAndroid ? '.apk' : '.ipa') ??
+                          false)?['browser_download_url']
+                      ?.toString();
 
-              if (download?.isNotEmpty ?? false) _showAlertDialog(context, download ?? 'https://youtu.be/dQw4w9WgXcQ');
+                  if (download?.isNotEmpty ?? false) _showAlertDialog(context, download ?? 'https://youtu.be/dQw4w9WgXcQ');
+                } catch (ex) {
+                  // ignored
+                }
+              });
             } catch (ex) {
               // ignored
             }
-          });
-        } catch (ex) {
-          // ignored
-        }
 
-        Share.hasCheckedForUpdates = true;
-      }
+            Share.hasCheckedForUpdates = true;
+          }
 
-      return CupertinoTabScaffold(
-        controller: tabController,
-        tabBar: CupertinoTabBar(backgroundColor: CupertinoTheme.of(context).barBackgroundColor.withAlpha(0xFF), items: [
-          BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(CupertinoIcons.rosette), label: 'Grades'),
-          BottomNavigationBarItem(icon: Icon(CupertinoIcons.calendar), label: 'Schedule'),
-          BottomNavigationBarItem(icon: Icon(CupertinoIcons.envelope_fill), label: 'Messages'),
-          BottomNavigationBarItem(icon: Icon(CupertinoIcons.person_crop_circle_badge_minus), label: 'Absences'),
-        ]),
-        tabBuilder: (context, index) => CupertinoTabView(
-          builder: (context) => switch (index) {
-            0 => homePage,
-            1 => gradesPage,
-            2 => timetablePage,
-            3 => messagesPage,
-            4 => absencesPage,
-            _ => homePage,
-          },
-        ),
-      );
-    }));
+          return CupertinoTabScaffold(
+            controller: tabController,
+            tabBar: CupertinoTabBar(backgroundColor: CupertinoTheme.of(context).barBackgroundColor.withAlpha(0xFF), items: [
+              BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: 'Home'),
+              BottomNavigationBarItem(icon: Icon(CupertinoIcons.rosette), label: 'Grades'),
+              BottomNavigationBarItem(icon: Icon(CupertinoIcons.calendar), label: 'Schedule'),
+              BottomNavigationBarItem(icon: Icon(CupertinoIcons.envelope_fill), label: 'Messages'),
+              BottomNavigationBarItem(icon: Icon(CupertinoIcons.person_crop_circle_badge_minus), label: 'Absences'),
+            ]),
+            tabBuilder: (context, index) => CupertinoTabView(
+              builder: (context) => switch (index) {
+                0 => homePage,
+                1 => gradesPage,
+                2 => timetablePage,
+                3 => messagesPage,
+                4 => absencesPage,
+                _ => homePage,
+              },
+            ),
+          );
+        }));
   }
 
   void _showAlertDialog(BuildContext context, String url) {
@@ -106,5 +109,23 @@ class _BaseAppState extends State<BaseApp> {
         ],
       ),
     );
+  }
+
+  CupertinoThemeData get _eventfulColorTheme {
+    // Halloween colors
+    if (DateTime.now().month == DateTime.october && DateTime.now().day == 31) {
+      return CupertinoThemeData(primaryColor: CupertinoColors.systemOrange);
+    }
+    // St. Peter day colors
+    if (DateTime.now().month == DateTime.july && DateTime.now().day == 12) {
+      return CupertinoThemeData(primaryColor: CupertinoColors.systemGreen);
+    }
+    // Christmas colors
+    if (DateTime.now().month == DateTime.december &&
+        (DateTime.now().day == 24 || DateTime.now().day == 25 || DateTime.now().day == 26)) {
+      return CupertinoThemeData(primaryColor: CupertinoColors.systemRed);
+    }
+    // Default colors - should be changeable through settings TODO
+    return CupertinoThemeData(primaryColor: CupertinoColors.systemRed);
   }
 }

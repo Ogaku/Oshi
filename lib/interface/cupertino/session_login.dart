@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                   : Text('Next',
                       style: TextStyle(
                           color: (credentialControllers!.values.every((x) => x.text.isNotEmpty))
-                              ? CupertinoColors.systemBlue
+                              ? CupertinoTheme.of(context).primaryColor
                               : CupertinoColors.inactiveGray)),
               onPressed: () async {
                 if (isWorking) return; // Already handling something, give up

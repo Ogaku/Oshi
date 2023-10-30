@@ -42,7 +42,7 @@ class _NavState extends State<TextChip> {
             widget.text,
             textAlign: TextAlign.center,
             style: TextStyle(
-                color: CupertinoColors.systemBlue,
+                color: CupertinoTheme.of(context).primaryColor,
                 fontSize: widget.fontSize ?? 17,
                 fontWeight: widget.fontWeight ?? FontWeight.w400),
           )),

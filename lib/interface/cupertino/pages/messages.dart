@@ -207,7 +207,8 @@ class _MessagesPageState extends State<MessagesPage> {
                                                           height: 10,
                                                           width: 10,
                                                           decoration: BoxDecoration(
-                                                              shape: BoxShape.circle, color: CupertinoColors.activeBlue),
+                                                              shape: BoxShape.circle,
+                                                              color: CupertinoTheme.of(context).primaryColor),
                                                         ))),
                                                 Expanded(
                                                     child: Container(

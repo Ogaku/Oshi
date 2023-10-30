@@ -16,6 +16,7 @@ class SearchableSliverNavigationBar extends StatefulWidget {
   final Color? backgroundColor;
   final Color color;
   final Color darkColor;
+  final double? anchor;
   final bool? transitionBetweenRoutes;
   final TextEditingController searchController;
   final List<Widget>? children;
@@ -45,7 +46,8 @@ class SearchableSliverNavigationBar extends StatefulWidget {
       this.color = Colors.white,
       this.darkColor = Colors.black,
       this.backgroundColor,
-      this.onProgress});
+      this.onProgress,
+      this.anchor});
 
   @override
   State<SearchableSliverNavigationBar> createState() => _NavState();
@@ -61,7 +63,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
   @override
   void initState() {
     super.initState();
-    scrollController = ScrollController(initialScrollOffset: widget.child == null ? 40 : 0);
+    scrollController = ScrollController(initialScrollOffset: widget.child == null ? 55 : 0);
     groupSelection = widget.segments?.keys.first;
   }
 
@@ -82,12 +84,12 @@ class _NavState extends State<SearchableSliverNavigationBar> {
               visible: widget.child == null,
               child: Container(
                 margin: const EdgeInsets.only(top: 5),
-                height: lerpDouble(0, 42, isVisibleSearchBar.clamp(0.0, 40.0) / 40.0),
+                height: lerpDouble(0, 55, isVisibleSearchBar.clamp(0.0, 55.0) / 55.0),
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 0, right: 15, top: 3),
+                  padding: const EdgeInsets.only(left: 0, right: 15, top: 3, bottom: 15),
                   child: widget.segments != null
                       ? Opacity(
-                          opacity: ((isVisibleSearchBar - 30) / 5).clamp(0.0, 1.0),
+                          opacity: ((isVisibleSearchBar - 45) / 5).clamp(0.0, 1.0),
                           child: CupertinoSlidingSegmentedControl(
                             groupValue: groupSelection,
                             children: widget.segments!.map((key, value) => MapEntry(
@@ -99,9 +101,9 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                                         color: CupertinoDynamicColor.resolve(
                                             CupertinoDynamicColor.withBrightness(
                                                 color: CupertinoColors.black.withAlpha(
-                                                    (((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0) * 153).round()),
+                                                    (((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0) * 153).round()),
                                                 darkColor: CupertinoColors.white.withAlpha(
-                                                    (((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0) * 153).round())),
+                                                    (((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0) * 153).round())),
                                             context))))),
                             onValueChanged: (value) {
                               if (value == null) return;
@@ -112,17 +114,16 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                       : CupertinoSearchTextField(
                           onChanged: widget.onChanged,
                           placeholderStyle: TextStyle(
-                              fontSize: lerpDouble(13, 17, ((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0)),
+                              fontSize: lerpDouble(13, 17, ((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0)),
                               color: CupertinoDynamicColor.withBrightness(
                                   color: const Color.fromARGB(153, 60, 60, 67)
-                                      .withAlpha((((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0) * 153).round()),
+                                      .withAlpha((((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0) * 153).round()),
                                   darkColor: const Color.fromARGB(153, 235, 235, 245)
-                                      .withAlpha((((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0) * 153).round()))),
-                          prefixIcon: AnimatedOpacity(
-                            duration: const Duration(milliseconds: 1),
-                            opacity: ((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0),
+                                      .withAlpha((((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0) * 153).round()))),
+                          prefixIcon: Opacity(
+                            opacity: ((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0),
                             child: Transform.scale(
-                                scale: lerpDouble(0.7, 1.1, ((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0)),
+                                scale: lerpDouble(0.7, 1.1, ((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0)),
                                 child: Container(
                                     margin: const EdgeInsets.only(top: 2, left: 2),
                                     child: const Icon(CupertinoIcons.search))),
@@ -171,13 +172,13 @@ class _NavState extends State<SearchableSliverNavigationBar> {
               if (scrollInfo.metrics.pixels > previousScrollPosition) {
                 if (isVisibleSearchBar > 0 && scrollInfo.metrics.pixels > 0) {
                   setState(() {
-                    isVisibleSearchBar = (40 - scrollInfo.metrics.pixels) >= 0 ? (40 - scrollInfo.metrics.pixels) : 0;
+                    isVisibleSearchBar = (55 - scrollInfo.metrics.pixels) >= 0 ? (55 - scrollInfo.metrics.pixels) : 0;
                   });
                 }
               } else if (scrollInfo.metrics.pixels <= previousScrollPosition) {
-                if (isVisibleSearchBar < 40 && scrollInfo.metrics.pixels >= 0 && scrollInfo.metrics.pixels <= 40) {
+                if (isVisibleSearchBar < 55 && scrollInfo.metrics.pixels >= 0 && scrollInfo.metrics.pixels <= 55) {
                   setState(() {
-                    isVisibleSearchBar = (40 - scrollInfo.metrics.pixels) <= 40 ? (40 - scrollInfo.metrics.pixels) : 40;
+                    isVisibleSearchBar = (55 - scrollInfo.metrics.pixels) <= 55 ? (55 - scrollInfo.metrics.pixels) : 55;
                   });
                 }
               }
@@ -186,11 +187,11 @@ class _NavState extends State<SearchableSliverNavigationBar> {
               });
             } else if (scrollInfo is ScrollEndNotification) {
               Future.delayed(Duration.zero, () {
-                if (isVisibleSearchBar < 30 && isVisibleSearchBar > 0) {
+                if (isVisibleSearchBar < 25 && isVisibleSearchBar > 10) {
                   setState(() {
-                    scrollController.animateTo(40, duration: const Duration(milliseconds: 200), curve: Curves.ease);
+                    scrollController.animateTo(55, duration: const Duration(milliseconds: 200), curve: Curves.ease);
                   });
-                } else if (isVisibleSearchBar >= 30 && isVisibleSearchBar <= 40) {
+                } else if (isVisibleSearchBar >= 25 && isVisibleSearchBar <= 55) {
                   setState(() {
                     scrollController.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.ease);
                   });
@@ -207,7 +208,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
               : CustomScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   controller: scrollController,
-                  anchor: 0.055,
+                  anchor: widget.anchor ?? 0.07,
                   slivers: <Widget>[
                     navBarSliver,
                     SliverFillRemaining(
