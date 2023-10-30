@@ -8,8 +8,10 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
+import 'package:oshi/models/data/grade.dart';
 import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/share/share.dart';
+import 'package:uuid/v4.dart';
 
 class GradesDetailedPage extends StatefulWidget {
   const GradesDetailedPage({super.key, required this.lesson});
@@ -52,181 +54,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                           ))))
             ]
           // Bindable messages layout
-          : gradesToDisplay
-              .select((x, index) => CupertinoListTile(
-                  padding: EdgeInsets.all(0),
-                  title: CupertinoContextMenu.builder(
-                      actions: [
-                        CupertinoContextMenuAction(
-                          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-                          trailingIcon: CupertinoIcons.share,
-                          child: const Text('Share'),
-                        ),
-                        CupertinoContextMenuAction(
-                          isDestructiveAction: true,
-                          trailingIcon: CupertinoIcons.chat_bubble_2,
-                          child: const Text('Inquiry'),
-                          onPressed: () {
-                            Navigator.of(context, rootNavigator: true).pop();
-                            showCupertinoModalBottomSheet(
-                                context: context,
-                                builder: (context) => MessageComposePage(
-                                    receivers: [x.addedBy],
-                                    subject: 'Pytanie o ocenę ${x.value} z dnia ${DateFormat("y.M.d").format(x.addDate)}',
-                                    signature:
-                                        '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-                          },
-                        ),
-                      ],
-                      builder: (BuildContext context, Animation<double> animation) {
-                        return GestureDetector(
-                            onTap: () => showCupertinoModalBottomSheet(
-                                expand: false,
-                                context: context,
-                                builder: (context) => ConstrainedBox(
-                                    constraints: BoxConstraints(maxHeight: x.commentsString.isNotEmpty ? 270 : 225),
-                                    child: Container(
-                                        // padding: EdgeInsets.only(top: 15, left: 15, right: 15),
-                                        color: CupertinoDynamicColor.resolve(
-                                            CupertinoDynamicColor.withBrightness(
-                                                color: const Color.fromARGB(255, 242, 242, 247),
-                                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                                            context),
-                                        child: CupertinoListSection.insetGrouped(
-                                            margin: EdgeInsets.only(),
-                                            decoration: BoxDecoration(),
-                                            additionalDividerMargin: 0,
-                                            children: [
-                                              CupertinoListTile(
-                                                title: Text('Grade'),
-                                                trailing:
-                                                    Opacity(opacity: 0.5, child: Text('${x.value}, weight ${x.weight}')),
-                                              ),
-                                              CupertinoListTile(
-                                                title: Text('Added by'),
-                                                trailing: Opacity(opacity: 0.5, child: Text(x.addedBy.name)),
-                                              ),
-                                              CupertinoListTile(
-                                                title: Text('Add date'),
-                                                trailing: Opacity(
-                                                    opacity: 0.5, child: Text(DateFormat('EEE, d MMM y').format(x.addDate))),
-                                              ),
-                                            ]
-                                                .appendIf(
-                                                    CupertinoListTile(
-                                                      title: Text('Description'),
-                                                      trailing: ConstrainedBox(
-                                                          constraints: BoxConstraints(maxWidth: 180),
-                                                          child: Flexible(
-                                                              child: Opacity(
-                                                                  opacity: 0.5,
-                                                                  child: Text(
-                                                                    x.name.capitalize(),
-                                                                    overflow: TextOverflow.ellipsis,
-                                                                  )))),
-                                                    ),
-                                                    x.name.isNotEmpty)
-                                                .appendIf(
-                                                    CupertinoListTile(
-                                                      title: Text('Comments'),
-                                                      trailing: ConstrainedBox(
-                                                          constraints: BoxConstraints(maxWidth: 180),
-                                                          child: Flexible(
-                                                              child: Opacity(
-                                                                  opacity: 0.5,
-                                                                  child: Text(
-                                                                    x.commentsString,
-                                                                    overflow: TextOverflow.ellipsis,
-                                                                  )))),
-                                                    ),
-                                                    x.commentsString.isNotEmpty)
-                                                .appendIf(
-                                                    CupertinoListTile(
-                                                      title: Text('Counts to the average'),
-                                                      trailing:
-                                                          Opacity(opacity: 0.5, child: Text(x.countsToAverage.toString())),
-                                                    ),
-                                                    true))))),
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                                    color: CupertinoDynamicColor.resolve(
-                                        CupertinoDynamicColor.withBrightness(
-                                            color: const Color.fromARGB(255, 255, 255, 255),
-                                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                                        context)),
-                                padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
-                                child: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                        maxHeight:
-                                            animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 150,
-                                        maxWidth:
-                                            animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
-                                    child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                              padding: EdgeInsets.only(bottom: 5),
-                                              child: Text(
-                                                x.value,
-                                                style:
-                                                    TextStyle(fontSize: 32, fontWeight: FontWeight.w600, color: x.asColor()),
-                                              )),
-                                          Expanded(
-                                              flex: 2,
-                                              child: Column(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                                  mainAxisSize: MainAxisSize.max,
-                                                  children: [
-                                                    Opacity(
-                                                        opacity: x.name.isNotEmpty ? 1.0 : 0.5,
-                                                        child: Text(
-                                                          x.name.isNotEmpty ? x.name.capitalize() : 'No description',
-                                                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                                        )),
-                                                    Visibility(
-                                                        visible: x.commentsString.isNotEmpty,
-                                                        child: Opacity(
-                                                            opacity: 0.5,
-                                                            child: Container(
-                                                                margin: EdgeInsets.only(left: 35, top: 4),
-                                                                child: Text(
-                                                                  x.commentsString,
-                                                                  overflow: TextOverflow.ellipsis,
-                                                                  maxLines: 2,
-                                                                  textAlign: TextAlign.end,
-                                                                  style: TextStyle(fontSize: 16),
-                                                                )))),
-                                                    Opacity(
-                                                        opacity: 0.5,
-                                                        child: Container(
-                                                            margin: EdgeInsets.only(top: 4),
-                                                            child: Text(
-                                                              x.detailsDateString,
-                                                              overflow: TextOverflow.ellipsis,
-                                                              maxLines: 1,
-                                                              textAlign: TextAlign.end,
-                                                              style: TextStyle(fontSize: 16),
-                                                            ))),
-                                                    Visibility(
-                                                        visible: animation.value >= CupertinoContextMenu.animationOpensAt,
-                                                        child: Opacity(
-                                                            opacity: 0.5,
-                                                            child: Container(
-                                                                margin: EdgeInsets.only(top: 4),
-                                                                child: Text(
-                                                                  x.addedDateString,
-                                                                  overflow: TextOverflow.ellipsis,
-                                                                  maxLines: 1,
-                                                                  textAlign: TextAlign.end,
-                                                                  style: TextStyle(fontSize: 16),
-                                                                )))),
-                                                  ]))
-                                        ]))));
-                      })))
-              .toList(),
+          : gradesToDisplay.select((x, index) {
+              return CupertinoListTile(padding: EdgeInsets.all(0), title: x.asGrade(context));
+            }).toList(),
     );
 
     var gradesBottomWidgets = <Widget>[
@@ -447,5 +277,191 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
 extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${substring(1)}";
+  }
+}
+
+extension GradeBodyExtension on Grade {
+  double get cardHeight {
+    var height = 315.0;
+
+    if (commentsString.isNotEmpty) height += 70;
+    if (name.isNotEmpty) height += 45;
+
+    return height;
+  }
+
+  Widget asGrade(BuildContext context) => CupertinoContextMenu.builder(actions: [
+        CupertinoContextMenuAction(
+          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+          trailingIcon: CupertinoIcons.share,
+          child: const Text('Share'),
+        ),
+        CupertinoContextMenuAction(
+          isDestructiveAction: true,
+          trailingIcon: CupertinoIcons.chat_bubble_2,
+          child: const Text('Inquiry'),
+          onPressed: () {
+            Navigator.of(context, rootNavigator: true).pop();
+            showCupertinoModalBottomSheet(
+                context: context,
+                builder: (context) => MessageComposePage(
+                    receivers: [addedBy],
+                    subject: 'Pytanie o ocenę $value z dnia ${DateFormat("y.M.d").format(addDate)}',
+                    signature: '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+          },
+        ),
+      ], builder: (BuildContext context, Animation<double> animation) => gradeBody(context, animation));
+
+  Widget gradeBody(BuildContext context, [Animation<double>? animation]) {
+    var tag = UuidV4().generate();
+    var body = GestureDetector(
+        onTap: animation == null || animation.value >= CupertinoContextMenu.animationOpensAt
+            ? null
+            : () => showCupertinoModalBottomSheet(
+                expand: false,
+                context: context,
+                builder: (context) => ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: cardHeight),
+                    child: Container(
+                        color: CupertinoDynamicColor.resolve(
+                            CupertinoDynamicColor.withBrightness(
+                                color: const Color.fromARGB(255, 242, 242, 247),
+                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                            context),
+                        child: Column(children: [
+                          Container(
+                              margin: EdgeInsets.only(top: 20, left: 15, right: 15),
+                              child: Hero(tag: tag, child: gradeBody(context))),
+                          CupertinoListSection.insetGrouped(
+                              margin: EdgeInsets.only(top: 20, left: 15, right: 15),
+                              additionalDividerMargin: 5,
+                              children: [
+                                CupertinoListTile(
+                                  title: Text('Grade'),
+                                  trailing: Opacity(opacity: 0.5, child: Text('$value, weight $weight')),
+                                ),
+                                CupertinoListTile(
+                                  title: Text('Added by'),
+                                  trailing: Opacity(opacity: 0.5, child: Text(addedBy.name)),
+                                ),
+                                CupertinoListTile(
+                                  title: Text('Add date'),
+                                  trailing: Opacity(opacity: 0.5, child: Text(DateFormat('EEE, d MMM y').format(addDate))),
+                                ),
+                              ]
+                                  .appendIf(
+                                      CupertinoListTile(
+                                        title: Text('Description'),
+                                        trailing: ConstrainedBox(
+                                            constraints: BoxConstraints(maxWidth: 180),
+                                            child: Flexible(
+                                                child: Opacity(
+                                                    opacity: 0.5,
+                                                    child: Text(
+                                                      name.capitalize(),
+                                                      overflow: TextOverflow.ellipsis,
+                                                    )))),
+                                      ),
+                                      name.isNotEmpty)
+                                  .appendIf(
+                                      CupertinoListTile(
+                                        title: Text('Comments'),
+                                        trailing: ConstrainedBox(
+                                            constraints: BoxConstraints(maxWidth: 180),
+                                            child: Flexible(
+                                                child: Opacity(
+                                                    opacity: 0.5,
+                                                    child: Text(
+                                                      commentsString,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    )))),
+                                      ),
+                                      commentsString.isNotEmpty)
+                                  .appendIf(
+                                      CupertinoListTile(
+                                        title: Text('Counts to the average'),
+                                        trailing: Opacity(opacity: 0.5, child: Text(countsToAverage.toString())),
+                                      ),
+                                      true))
+                        ])))),
+        child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                color: animation == null
+                    ? CupertinoDynamicColor.resolve(CupertinoColors.tertiarySystemGroupedBackground, context)
+                    : CupertinoDynamicColor.resolve(
+                        CupertinoDynamicColor.withBrightness(
+                            color: const Color.fromARGB(255, 255, 255, 255),
+                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                        context)),
+            padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
+            child: ConstrainedBox(
+                constraints: BoxConstraints(
+                    maxHeight: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 150,
+                    maxWidth: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                          padding: EdgeInsets.only(bottom: 5),
+                          child: Text(
+                            value,
+                            style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600, color: asColor()),
+                          )),
+                      Expanded(
+                          flex: 2,
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Opacity(
+                                    opacity: name.isNotEmpty ? 1.0 : 0.5,
+                                    child: Text(
+                                      name.isNotEmpty ? name.capitalize() : 'No description',
+                                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                    )),
+                                Visibility(
+                                    visible: commentsString.isNotEmpty,
+                                    child: Opacity(
+                                        opacity: 0.5,
+                                        child: Container(
+                                            margin: EdgeInsets.only(left: 35, top: 4),
+                                            child: Text(
+                                              commentsString,
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 2,
+                                              textAlign: TextAlign.end,
+                                              style: TextStyle(fontSize: 16),
+                                            )))),
+                                Opacity(
+                                    opacity: 0.5,
+                                    child: Container(
+                                        margin: EdgeInsets.only(top: 4),
+                                        child: Text(
+                                          detailsDateString,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          textAlign: TextAlign.end,
+                                          style: TextStyle(fontSize: 16),
+                                        ))),
+                                Visibility(
+                                    visible: (animation?.value ?? 0) >= CupertinoContextMenu.animationOpensAt,
+                                    child: Opacity(
+                                        opacity: 0.5,
+                                        child: Container(
+                                            margin: EdgeInsets.only(top: 4),
+                                            child: Text(
+                                              addedDateString,
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                              textAlign: TextAlign.end,
+                                              style: TextStyle(fontSize: 16),
+                                            )))),
+                              ]))
+                    ]))));
+
+    return animation == null ? body : Hero(tag: tag, child: body);
   }
 }

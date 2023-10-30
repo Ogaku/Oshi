@@ -18,6 +18,7 @@ import 'package:oshi/models/data/timetables.dart';
 import 'package:oshi/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:oshi/interface/cupertino/views/events_timeline.dart' show EventsPage;
+import 'package:uuid/v4.dart';
 import 'package:visibility_aware_state/visibility_aware_state.dart';
 
 // Boiler: returned to the app tab builder
@@ -488,7 +489,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
   }
 }
 
-extension EventWidgetExtension on Iterable<Event> {
+extension EventWidgetsExtension on Iterable<Event> {
   List<Widget> asEventWidgets(
           TimetableDay? day, String searchQuery, String placeholder, void Function(VoidCallback fn) setState) =>
       isEmpty && searchQuery.isNotEmpty
@@ -503,275 +504,272 @@ extension EventWidgetExtension on Iterable<Event> {
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                           ))))
             ]
-          : this
-              .select((x, index) => Visibility(
-                  visible: isNotEmpty,
-                  child: CupertinoListTile(
-                      padding: EdgeInsets.all(0),
-                      title: Builder(
-                          builder: (context) => CupertinoContextMenu.builder(
-                                  actions: [
-                                    CupertinoContextMenuAction(
-                                      onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-                                      trailingIcon: CupertinoIcons.share,
-                                      child: const Text('Share'),
-                                    ),
-                                    x.category == EventCategory.homework
-                                        // Homework - mark as done
-                                        ? CupertinoContextMenuAction(
-                                            onPressed: () {
-                                              Share.session.provider.markEventAsDone(parent: x).then((s) {
-                                                if (s.success) setState(() => x.done = true);
-                                              });
-                                              Navigator.of(context, rootNavigator: true).pop();
-                                            },
-                                            trailingIcon: CupertinoIcons.check_mark,
-                                            child: const Text('Mark as done'),
-                                          )
-                                        // Event - add to calendar
-                                        : CupertinoContextMenuAction(
-                                            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-                                            trailingIcon: CupertinoIcons.calendar,
-                                            child: const Text('Add to calendar'),
-                                          ),
-                                    CupertinoContextMenuAction(
-                                      isDestructiveAction: true,
-                                      trailingIcon: CupertinoIcons.chat_bubble_2,
-                                      child: const Text('Inquiry'),
-                                      onPressed: () {
-                                        Navigator.of(context, rootNavigator: true).pop();
-                                        showCupertinoModalBottomSheet(
-                                            context: context,
-                                            builder: (context) => MessageComposePage(
-                                                receivers: x.sender != null ? [x.sender!] : [],
-                                                subject:
-                                                    'Pytanie o wydarzenie w dniu ${DateFormat("y.M.d").format(x.date ?? x.timeFrom)}',
-                                                signature:
-                                                    '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-                                      },
-                                    ),
-                                  ],
-                                  builder: (BuildContext context, Animation<double> animation) {
-                                    return GestureDetector(
-                                        onTap: () => showCupertinoModalBottomSheet(
-                                            expand: false,
-                                            context: context,
-                                            builder: (context) => ConstrainedBox(
-                                                constraints: BoxConstraints(maxHeight: x.cardHeight),
-                                                child: Container(
-                                                    // padding: EdgeInsets.only(top: 15, left: 15, right: 15),
-                                                    color: CupertinoDynamicColor.resolve(
-                                                        CupertinoDynamicColor.withBrightness(
-                                                            color: const Color.fromARGB(255, 242, 242, 247),
-                                                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                                                        context),
-                                                    child: CupertinoListSection.insetGrouped(
-                                                        margin: EdgeInsets.only(),
-                                                        decoration: BoxDecoration(),
-                                                        additionalDividerMargin: 0,
-                                                        children: [
-                                                          CupertinoListTile(
-                                                            title: Text('Title'),
-                                                            trailing: ConstrainedBox(
-                                                                constraints: BoxConstraints(maxWidth: 210),
-                                                                child: Flexible(
-                                                                    child: Opacity(
-                                                                        opacity: 0.5,
-                                                                        child: Text(
-                                                                          x.titleString,
-                                                                          overflow: TextOverflow.ellipsis,
-                                                                        )))),
-                                                          ),
-                                                        ]
-                                                            .appendIf(
-                                                                CupertinoListTile(
-                                                                  title: Text('Subtitle'),
-                                                                  trailing: ConstrainedBox(
-                                                                      constraints: BoxConstraints(maxWidth: 210),
-                                                                      child: Flexible(
-                                                                          child: Opacity(
-                                                                              opacity: 0.5,
-                                                                              child: Text(
-                                                                                x.subtitleString,
-                                                                                overflow: TextOverflow.ellipsis,
-                                                                              )))),
-                                                                ),
-                                                                x.subtitleString.isNotEmpty)
-                                                            .appendIf(
-                                                                CupertinoListTile(
-                                                                  title: Text('Added by'),
-                                                                  trailing: Opacity(
-                                                                      opacity: 0.5, child: Text(x.sender?.name ?? '')),
-                                                                ),
-                                                                x.sender?.name.isNotEmpty ?? false)
-                                                            .appendIf(
-                                                                CupertinoListTile(
-                                                                  title: Text('Date'),
-                                                                  trailing: Opacity(
-                                                                      opacity: 0.5,
-                                                                      child: Text(DateFormat('EEE, d MMM y')
-                                                                          .format(x.date ?? x.timeFrom))),
-                                                                ),
-                                                                x.date != null)
-                                                            .appendIf(
-                                                                CupertinoListTile(
-                                                                  title: Text('Classroom'),
-                                                                  trailing: Opacity(
-                                                                      opacity: 0.5, child: Text(x.classroom?.name ?? '')),
-                                                                ),
-                                                                x.classroom?.name.isNotEmpty ?? false)
-                                                            .appendIf(
-                                                                CupertinoListTile(
-                                                                  title: Text('Start time'),
-                                                                  trailing: Opacity(
-                                                                      opacity: 0.5,
-                                                                      child: Text(DateFormat('HH:mm').format(x.timeFrom))),
-                                                                ),
-                                                                x.timeFrom.hour != 0)
-                                                            .appendIf(
-                                                                CupertinoListTile(
-                                                                  title: Text('End time'),
-                                                                  trailing: Opacity(
-                                                                      opacity: 0.5,
-                                                                      child: Text(DateFormat('HH:mm')
-                                                                          .format(x.timeTo ?? x.timeFrom))),
-                                                                ),
-                                                                x.timeTo != null && x.timeTo?.hour != 0))))),
-                                        child: Container(
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.all(Radius.circular(10)),
-                                                color: CupertinoDynamicColor.resolve(
-                                                    CupertinoDynamicColor.withBrightness(
-                                                        color: const Color.fromARGB(255, 255, 255, 255),
-                                                        darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                                                    context)),
-                                            padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
-                                            child: ConstrainedBox(
-                                                constraints: BoxConstraints(
-                                                    maxHeight: animation.value < CupertinoContextMenu.animationOpensAt
-                                                        ? double.infinity
-                                                        : 100,
-                                                    maxWidth: animation.value < CupertinoContextMenu.animationOpensAt
-                                                        ? double.infinity
-                                                        : 260),
-                                                child: Opacity(
-                                                    opacity: (x.category == EventCategory.homework && x.done) ? 0.5 : 1.0,
-                                                    child: Row(
-                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Expanded(
-                                                              flex: 2,
-                                                              child: Column(
-                                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                                  mainAxisSize: MainAxisSize.max,
-                                                                  children: [
-                                                                    Row(
-                                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                        mainAxisSize: MainAxisSize.max,
-                                                                        children: [
-                                                                          // Event tag
-                                                                          Visibility(
-                                                                              visible: (day?.lessons.any((y) =>
-                                                                                      y?.any((z) =>
-                                                                                          z.lessonNo ==
-                                                                                          (x.lessonNo ?? -1)) ??
-                                                                                      false) ??
-                                                                                  false),
-                                                                              child: Container(
-                                                                                  margin: EdgeInsets.only(top: 5, right: 6),
-                                                                                  child: Container(
-                                                                                    height: 10,
-                                                                                    width: 10,
-                                                                                    decoration: BoxDecoration(
-                                                                                        shape: BoxShape.circle,
-                                                                                        color: x.asColor()),
-                                                                                  ))),
-                                                                          // Event title
-                                                                          Expanded(
-                                                                              flex: 2,
-                                                                              child: Text(
-                                                                                x.titleString,
-                                                                                overflow: TextOverflow.ellipsis,
-                                                                                style: TextStyle(
-                                                                                    fontSize: 17,
-                                                                                    fontWeight: FontWeight.w600),
-                                                                              )),
-                                                                          // Symbol/homework/days
-                                                                          Visibility(
-                                                                              visible:
-                                                                                  x.category == EventCategory.homework &&
-                                                                                      x.done,
-                                                                              child: Container(
-                                                                                  margin: EdgeInsets.only(left: 4),
-                                                                                  child: Icon(CupertinoIcons.check_mark))),
-                                                                          Visibility(
-                                                                              visible: x.classroom?.name != null &&
-                                                                                  x.category != EventCategory.teacher,
-                                                                              child: Container(
-                                                                                  margin: EdgeInsets.only(top: 1, left: 3),
-                                                                                  child: Text(
-                                                                                    x.classroom?.name ?? '^^',
-                                                                                    overflow: TextOverflow.ellipsis,
-                                                                                    style: TextStyle(fontSize: 16),
-                                                                                  ))),
-                                                                          Visibility(
-                                                                              visible: x.category == EventCategory.teacher,
-                                                                              child: Container(
-                                                                                  margin: EdgeInsets.only(top: 1, left: 3),
-                                                                                  child: (x.timeFrom.hour != 0 &&
-                                                                                              x.timeTo?.hour != 0) &&
-                                                                                          (x.timeFrom.asDate() ==
-                                                                                              x.timeTo?.asDate())
-                                                                                      ? Text(
-                                                                                          "${DateFormat('H:mm').format(x.timeFrom)} - ${DateFormat('H:mm').format(x.timeTo ?? DateTime.now())}",
-                                                                                          overflow: TextOverflow.ellipsis,
-                                                                                          style: TextStyle(fontSize: 15),
-                                                                                        )
-                                                                                      : Text(
-                                                                                          (x.timeFrom.month ==
-                                                                                                      x.timeTo?.month &&
-                                                                                                  x.timeFrom.day ==
-                                                                                                      x.timeTo?.day)
-                                                                                              ? DateFormat('d MMM').format(
-                                                                                                  x.timeTo ?? DateTime.now())
-                                                                                              : (x.timeFrom.month ==
-                                                                                                      x.timeTo?.month)
-                                                                                                  ? "${DateFormat('d').format(x.timeFrom)} - ${DateFormat('d MMM').format(x.timeTo ?? DateTime.now())}"
-                                                                                                  : "${DateFormat('d MMM').format(x.timeFrom)} - ${DateFormat('d MMM').format(x.timeTo ?? DateTime.now())}",
-                                                                                          overflow: TextOverflow.ellipsis,
-                                                                                          style: TextStyle(fontSize: 15),
-                                                                                        )))
-                                                                        ]),
-                                                                    Visibility(
-                                                                        visible: x.locationString.isNotEmpty,
-                                                                        child: Opacity(
-                                                                            opacity: 0.5,
-                                                                            child: Container(
-                                                                                padding: EdgeInsets.only(top: 4),
-                                                                                child: Text(
-                                                                                  x.locationString,
-                                                                                  overflow: TextOverflow.ellipsis,
-                                                                                  style: TextStyle(fontSize: 16),
-                                                                                )))),
-                                                                    Visibility(
-                                                                        visible: x.subtitleString.isNotEmpty,
-                                                                        child: Opacity(
-                                                                            opacity: 0.5,
-                                                                            child: Container(
-                                                                                margin: EdgeInsets.only(top: 4),
-                                                                                child: Text(
-                                                                                  x.subtitleString.trim(),
-                                                                                  overflow: TextOverflow.ellipsis,
-                                                                                  maxLines: 2,
-                                                                                  style: TextStyle(fontSize: 16),
-                                                                                )))),
-                                                                  ]))
-                                                        ])))));
-                                  })))))
-              .toList();
+          : this.select((x, index) => x.asEventWidget(isNotEmpty, day, setState)).toList();
+}
+
+extension EventWidgetExtension on Event {
+  Widget asEventWidget(bool isNotEmpty, TimetableDay? day, void Function(VoidCallback fn) setState,
+      [bool skipHandlers = false]) {
+    return Visibility(
+        visible: isNotEmpty,
+        child: CupertinoListTile(
+            padding: EdgeInsets.all(0),
+            title: Builder(builder: (context) {
+              Widget eventBody(BuildContext context, [Animation<double>? animation]) {
+                var tag = UuidV4().generate();
+                var body = GestureDetector(
+                    onTap: skipHandlers || animation == null || animation.value >= CupertinoContextMenu.animationOpensAt
+                        ? null
+                        : () => showCupertinoModalBottomSheet(
+                            expand: false,
+                            context: context,
+                            builder: (context) => ConstrainedBox(
+                                constraints: BoxConstraints(maxHeight: cardHeight),
+                                child: Container(
+                                    color: CupertinoDynamicColor.resolve(
+                                        CupertinoDynamicColor.withBrightness(
+                                            color: const Color.fromARGB(255, 242, 242, 247),
+                                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                                        context),
+                                    child: Column(children: [
+                                      Container(
+                                          margin: EdgeInsets.only(top: 20, left: 15, right: 15),
+                                          child: Hero(tag: tag, child: asEventWidget(isNotEmpty, day, setState, true))),
+                                      CupertinoListSection.insetGrouped(
+                                          margin: EdgeInsets.only(top: 20, left: 15, right: 15),
+                                          additionalDividerMargin: 5,
+                                          children: [
+                                            CupertinoListTile(
+                                              title: Text('Title'),
+                                              trailing: ConstrainedBox(
+                                                  constraints: BoxConstraints(maxWidth: 210),
+                                                  child: Flexible(
+                                                      child: Opacity(
+                                                          opacity: 0.5,
+                                                          child: Text(
+                                                            titleString,
+                                                            overflow: TextOverflow.ellipsis,
+                                                          )))),
+                                            ),
+                                          ]
+                                              .appendIf(
+                                                  CupertinoListTile(
+                                                    title: Text('Subtitle'),
+                                                    trailing: ConstrainedBox(
+                                                        constraints: BoxConstraints(maxWidth: 210),
+                                                        child: Flexible(
+                                                            child: Opacity(
+                                                                opacity: 0.5,
+                                                                child: Text(
+                                                                  subtitleString,
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                )))),
+                                                  ),
+                                                  subtitleString.isNotEmpty)
+                                              .appendIf(
+                                                  CupertinoListTile(
+                                                    title: Text('Added by'),
+                                                    trailing: Opacity(opacity: 0.5, child: Text(sender?.name ?? '')),
+                                                  ),
+                                                  sender?.name.isNotEmpty ?? false)
+                                              .appendIf(
+                                                  CupertinoListTile(
+                                                    title: Text('Date'),
+                                                    trailing: Opacity(
+                                                        opacity: 0.5,
+                                                        child: Text(DateFormat('EEE, d MMM y').format(date ?? timeFrom))),
+                                                  ),
+                                                  date != null)
+                                              .appendIf(
+                                                  CupertinoListTile(
+                                                    title: Text('Classroom'),
+                                                    trailing: Opacity(opacity: 0.5, child: Text(classroom?.name ?? '')),
+                                                  ),
+                                                  classroom?.name.isNotEmpty ?? false)
+                                              .appendIf(
+                                                  CupertinoListTile(
+                                                    title: Text('Start time'),
+                                                    trailing: Opacity(
+                                                        opacity: 0.5, child: Text(DateFormat('HH:mm').format(timeFrom))),
+                                                  ),
+                                                  timeFrom.hour != 0)
+                                              .appendIf(
+                                                  CupertinoListTile(
+                                                    title: Text('End time'),
+                                                    trailing: Opacity(
+                                                        opacity: 0.5,
+                                                        child: Text(DateFormat('HH:mm').format(timeTo ?? timeFrom))),
+                                                  ),
+                                                  timeTo != null && timeTo?.hour != 0))
+                                    ])))),
+                    child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            color: skipHandlers || animation == null
+                                ? CupertinoDynamicColor.resolve(CupertinoColors.tertiarySystemGroupedBackground, context)
+                                : CupertinoDynamicColor.resolve(
+                                    CupertinoDynamicColor.withBrightness(
+                                        color: const Color.fromARGB(255, 255, 255, 255),
+                                        darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                                    context)),
+                        padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
+                        child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                                maxHeight:
+                                    (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
+                                maxWidth:
+                                    (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 260),
+                            child: Opacity(
+                                opacity: (category == EventCategory.homework && done) ? 0.5 : 1.0,
+                                child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                          flex: 2,
+                                          child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: [
+                                                Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    mainAxisSize: MainAxisSize.max,
+                                                    children: [
+                                                      // Event tag
+                                                      Visibility(
+                                                          visible: (day?.lessons.any((y) =>
+                                                                  y?.any((z) => z.lessonNo == (lessonNo ?? -1)) ?? false) ??
+                                                              false),
+                                                          child: Container(
+                                                              margin: EdgeInsets.only(top: 5, right: 6),
+                                                              child: Container(
+                                                                height: 10,
+                                                                width: 10,
+                                                                decoration:
+                                                                    BoxDecoration(shape: BoxShape.circle, color: asColor()),
+                                                              ))),
+                                                      // Event title
+                                                      Expanded(
+                                                          flex: 2,
+                                                          child: Text(
+                                                            titleString,
+                                                            overflow: TextOverflow.ellipsis,
+                                                            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                                          )),
+                                                      // Symbol/homework/days
+                                                      Visibility(
+                                                          visible: category == EventCategory.homework && done,
+                                                          child: Container(
+                                                              margin: EdgeInsets.only(left: 4),
+                                                              child: Icon(CupertinoIcons.check_mark))),
+                                                      Visibility(
+                                                          visible:
+                                                              classroom?.name != null && category != EventCategory.teacher,
+                                                          child: Container(
+                                                              margin: EdgeInsets.only(top: 1, left: 3),
+                                                              child: Text(
+                                                                classroom?.name ?? '^^',
+                                                                overflow: TextOverflow.ellipsis,
+                                                                style: TextStyle(fontSize: 16),
+                                                              ))),
+                                                      Visibility(
+                                                          visible: category == EventCategory.teacher,
+                                                          child: Container(
+                                                              margin: EdgeInsets.only(top: 1, left: 3),
+                                                              child: (timeFrom.hour != 0 && timeTo?.hour != 0) &&
+                                                                      (timeFrom.asDate() == timeTo?.asDate())
+                                                                  ? Text(
+                                                                      "${DateFormat('H:mm').format(timeFrom)} - ${DateFormat('H:mm').format(timeTo ?? DateTime.now())}",
+                                                                      overflow: TextOverflow.ellipsis,
+                                                                      style: TextStyle(fontSize: 15),
+                                                                    )
+                                                                  : Text(
+                                                                      (timeFrom.month == timeTo?.month &&
+                                                                              timeFrom.day == timeTo?.day)
+                                                                          ? DateFormat('d MMM')
+                                                                              .format(timeTo ?? DateTime.now())
+                                                                          : (timeFrom.month == timeTo?.month)
+                                                                              ? "${DateFormat('d').format(timeFrom)} - ${DateFormat('d MMM').format(timeTo ?? DateTime.now())}"
+                                                                              : "${DateFormat('d MMM').format(timeFrom)} - ${DateFormat('d MMM').format(timeTo ?? DateTime.now())}",
+                                                                      overflow: TextOverflow.ellipsis,
+                                                                      style: TextStyle(fontSize: 15),
+                                                                    )))
+                                                    ]),
+                                                Visibility(
+                                                    visible: locationString.isNotEmpty,
+                                                    child: Opacity(
+                                                        opacity: 0.5,
+                                                        child: Container(
+                                                            padding: EdgeInsets.only(top: 4),
+                                                            child: Text(
+                                                              locationString,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              style: TextStyle(fontSize: 16),
+                                                            )))),
+                                                Visibility(
+                                                    visible: subtitleString.isNotEmpty,
+                                                    child: Opacity(
+                                                        opacity: 0.5,
+                                                        child: Container(
+                                                            margin: EdgeInsets.only(top: 4),
+                                                            child: Text(
+                                                              subtitleString.trim(),
+                                                              overflow: TextOverflow.ellipsis,
+                                                              maxLines: 2,
+                                                              style: TextStyle(fontSize: 16),
+                                                            )))),
+                                              ]))
+                                    ])))));
+
+                return skipHandlers || animation == null ? body : Hero(tag: tag, child: body);
+              }
+
+              return skipHandlers
+                  ? eventBody(context)
+                  : CupertinoContextMenu.builder(actions: [
+                      CupertinoContextMenuAction(
+                        onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+                        trailingIcon: CupertinoIcons.share,
+                        child: const Text('Share'),
+                      ),
+                      category == EventCategory.homework
+                          // Homework - mark as done
+                          ? CupertinoContextMenuAction(
+                              onPressed: () {
+                                Share.session.provider.markEventAsDone(parent: this).then((s) {
+                                  if (s.success) setState(() => done = true);
+                                });
+                                Navigator.of(context, rootNavigator: true).pop();
+                              },
+                              trailingIcon: CupertinoIcons.check_mark,
+                              child: const Text('Mark as done'),
+                            )
+                          // Event - add to calendar
+                          : CupertinoContextMenuAction(
+                              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+                              trailingIcon: CupertinoIcons.calendar,
+                              child: const Text('Add to calendar'),
+                            ),
+                      CupertinoContextMenuAction(
+                        isDestructiveAction: true,
+                        trailingIcon: CupertinoIcons.chat_bubble_2,
+                        child: const Text('Inquiry'),
+                        onPressed: () {
+                          Navigator.of(context, rootNavigator: true).pop();
+                          showCupertinoModalBottomSheet(
+                              context: context,
+                              builder: (context) => MessageComposePage(
+                                  receivers: sender != null ? [sender!] : [],
+                                  subject: 'Pytanie o wydarzenie w dniu ${DateFormat("y.M.d").format(date ?? timeFrom)}',
+                                  signature:
+                                      '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                        },
+                      ),
+                    ], builder: (BuildContext context, Animation<double> animation) => eventBody(context, animation));
+            })));
+  }
 }
 
 extension DateTimeExtension on DateTime {
@@ -820,7 +818,7 @@ extension EventColors on Event {
       };
 
   double get cardHeight {
-    var height = 45.0;
+    var height = 180.0;
 
     if (subtitleString.isNotEmpty) height += 45;
     if (sender?.name.isNotEmpty ?? false) height += 45;
