@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/models/provider.dart';
@@ -177,8 +178,9 @@ class Session extends HiveObject {
       return (success: result1.success && result2.success, message: result1.message ?? result2.message);
     } catch (ex, stack) {
       if (Platform.isAndroid || Platform.isIOS) {
+        await Clipboard.setData(ClipboardData(text: stack.toString()));
         Fluttertoast.showToast(
-          msg: '$ex',
+          msg: 'Exception: "$ex", the stack trace has been copied to clipboard!',
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
