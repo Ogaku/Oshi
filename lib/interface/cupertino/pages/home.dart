@@ -831,14 +831,13 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       );
     }
 
-    // No lessons today or tomorrow - LW
-    // We're not checking <today> here, is's already been checked upper
-    if (!(nextDay?.hasLessons ?? false)) {
+    // Easter eggs?
+    if (DateTime.now().weekday == DateTime.friday && DateTime.now().hour > 18) {
       return (flexible: "God, you're pathetic...", standard: '');
     }
 
     // Other options, possibly?
-    return (flexible: '', standard: '');
+    return (flexible: 'C\'mon, do something...', standard: '');
   }
 
   // Glance widget's main title
@@ -925,9 +924,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       return "You'll be lucky tomorrow!";
     }
 
-    // No lessons today or tomorrow - LW
-    // We're not checking <today> here, is's already been checked upper
-    if (!(nextDay?.hasLessons ?? false)) {
+    // Easter eggs?
+    if (DateTime.now().weekday == DateTime.friday && DateTime.now().hour > 18) {
       return "Alone on a friday night?";
     }
 

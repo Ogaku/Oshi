@@ -423,7 +423,7 @@ extension GradeBodyExtension on Grade {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
                 color: animation == null
-                    ? CupertinoDynamicColor.resolve(CupertinoColors.tertiarySystemGroupedBackground, context)
+                    ? CupertinoDynamicColor.resolve(CupertinoColors.tertiarySystemBackground, context)
                     : CupertinoDynamicColor.resolve(
                         CupertinoDynamicColor.withBrightness(
                             color: const Color.fromARGB(255, 255, 255, 255),
