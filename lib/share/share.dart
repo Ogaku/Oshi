@@ -1,14 +1,10 @@
-import 'dart:io';
-
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/models/provider.dart';
 
 import 'package:hive/hive.dart';
-import 'package:logging/logging.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'package:oshi/models/data/teacher.dart' show Teacher;
@@ -32,6 +28,8 @@ class Share {
   // Raised by the app to notify that the uses's just logged in
   // To subscribe: event.subscribe((args) => {})
   static Event<Value<StatefulWidget Function()>> changeBase = Event<Value<StatefulWidget Function()>>();
+  static Event<Value<({String title, String message, Map<String, Future<void> Function()> actions})>> showErrorModal =
+      Event<Value<({String title, String message, Map<String, Future<void> Function()> actions})>>();
 
   // Navigate the grades page to the specified subject
   static Event<Value<Lesson>> gradesNavigate = Event<Value<Lesson>>();
@@ -157,11 +155,25 @@ class Session extends HiveObject {
   }
 
   // Login and reset methods for early setup - implement as async
-  Future<({bool success, Exception? message})> tryLogin({Map<String, String>? credentials}) async {
+  Future<({bool success, Exception? message})> tryLogin(
+      {Map<String, String>? credentials,
+      IProgress<({double? progress, String? message})>? progress,
+      bool showErrors = false}) async {
     try {
       if (credentials?.isNotEmpty ?? false) sessionCredentials = credentials ?? {};
-      return await provider.login(credentials: credentials ?? sessionCredentials);
-    } catch (ex) {
+      return await provider.login(credentials: credentials ?? sessionCredentials, progress: progress);
+    } catch (ex, stack) {
+      if (showErrors) {
+        Share.showErrorModal.broadcast(Value((
+          title: 'Error logging in!',
+          message:
+              'An exception "$ex" occurred and the provider couldn\'t log you in to the e-register.\n\nPlease check your credentials and try again later.',
+          actions: {
+            'Copy Exception': () async => await Clipboard.setData(ClipboardData(text: ex.toString())),
+            'Copy Stack Trace': () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
+          }
+        )));
+      }
       return (success: false, message: Exception(ex));
     }
   }
@@ -177,20 +189,15 @@ class Session extends HiveObject {
       await updateData(info: result1.success, messages: result2.success);
       return (success: result1.success && result2.success, message: result1.message ?? result2.message);
     } catch (ex, stack) {
-      if (Platform.isAndroid || Platform.isIOS) {
-        await Clipboard.setData(ClipboardData(text: stack.toString()));
-        Fluttertoast.showToast(
-          msg: 'Exception: "$ex", the stack trace has been copied to clipboard!',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-        );
-      }
-      if (Platform.isAndroid) {
-        Logger('Temporary: refreshAll')
-          ..severe(ex) // The exception
-          ..severe(stack); // The stack
-      }
+      Share.showErrorModal.broadcast(Value((
+        title: 'Error refreshing data!',
+        message:
+            'A fatal exception "$ex" occurred and the provider couldn\'t update the e-register data.\n\nPlease try again later.\nConsider reporting this error.',
+        actions: {
+          'Copy Exception': () async => await Clipboard.setData(ClipboardData(text: ex.toString())),
+          'Copy Stack Trace': () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
+        }
+      )));
       return (success: false, message: Exception(ex));
     }
   }

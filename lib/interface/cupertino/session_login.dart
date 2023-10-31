@@ -1,7 +1,4 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
-import 'dart:io';
-
 import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
 import 'package:event/event.dart';
@@ -12,7 +9,6 @@ import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/models/provider.dart';
 import 'package:oshi/share/share.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:uuid/uuid.dart';
 
@@ -164,10 +160,10 @@ class _LoginPageState extends State<LoginPage> {
       // Create a new session: ID/name/provider are automatic
       progress?.report((progress: 0.1, message: 'Sessioning the user session right now...'));
       var session = Session(providerGuid: guid);
-      var result = await session.login(credentials: credentials, progress: progress);
+      var result = await session.tryLogin(credentials: credentials, progress: progress, showErrors: true);
 
       if (!result.success && result.message != null) {
-        throw result.message!; // Didn't work, uh
+        return false; // Didn't work, uh
       } else {
         var id = Uuid().v4(); // Genereate a new session identifier
         Share.settings.sessions.sessions.update(id, (s) => session, ifAbsent: () => session);
@@ -176,30 +172,33 @@ class _LoginPageState extends State<LoginPage> {
 
         progress?.report((progress: 0.2, message: "Cannot believe you've made it this far..."));
         await Share.settings.save(); // Save our settings now
-        await Share.session.refreshAll(progress: progress); // Refresh everything
+        var result = await Share.session.refreshAll(progress: progress); // Refresh everything
+        if (!result.success && result.message != null) return false; // Didn't work, uh
 
         // Change the main page to the base application
         Share.changeBase.broadcast(Value(() => baseApp));
         return true; // Mark the operation as succeeded
       }
-    } on DioException catch (e) {
-      if (Platform.isAndroid || Platform.isIOS) {
-        Fluttertoast.showToast(
-          msg: e.message ?? '$e',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-        );
-      }
-    } on Exception catch (e) {
-      if (Platform.isAndroid || Platform.isIOS) {
-        Fluttertoast.showToast(
-          msg: '$e',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-        );
-      }
+    } on DioException catch (ex, stack) {
+      Share.showErrorModal.broadcast(Value((
+        title: 'Error logging in!',
+        message:
+            'An error "${ex.message ?? ex}" occurred and the provider couldn\'t log you in to the e-register.\n\nPlease check your credentials and try again later.',
+        actions: {
+          'Copy Exception': () async => await Clipboard.setData(ClipboardData(text: ex.toString())),
+          'Copy Stack Trace': () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
+        }
+      )));
+    } on Exception catch (ex, stack) {
+      Share.showErrorModal.broadcast(Value((
+        title: 'Error logging in!',
+        message:
+            'An exception "$ex" occurred and the provider couldn\'t log you in to the e-register.\n\nPlease check your credentials and try again later.',
+        actions: {
+          'Copy Exception': () async => await Clipboard.setData(ClipboardData(text: ex.toString())),
+          'Copy Stack Trace': () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
+        }
+      )));
     }
     return false;
   }

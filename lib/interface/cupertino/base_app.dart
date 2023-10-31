@@ -31,7 +31,7 @@ class _BaseAppState extends State<BaseApp> {
 
   @override
   Widget build(BuildContext context) {
-    // Re-subscribe to all events
+    // Re-subscribe to all events - navigation
     Share.tabsNavigatePage.unsubscribeAll();
     Share.tabsNavigatePage.subscribe((args) {
       if (args?.value == null) return;
@@ -41,6 +41,35 @@ class _BaseAppState extends State<BaseApp> {
     return CupertinoApp(
         theme: _eventfulColorTheme,
         home: Builder(builder: (context) {
+          // Re-subscribe to all events - modals
+          Share.showErrorModal.unsubscribeAll();
+          Share.showErrorModal.subscribe((args) async {
+            if (args?.value == null) return;
+            await showCupertinoModalPopup(
+                context: context,
+                useRootNavigator: true,
+                builder: (s) => CupertinoActionSheet(
+                    title: Text(args!.value.title),
+                    message: Text(args.value.message),
+                    actions: args.value.actions.isEmpty
+                        ? null
+                        : args.value.actions.entries
+                            .select(
+                              (x, index) => CupertinoActionSheetAction(
+                                child: Text(x.key),
+                                onPressed: () {
+                                  try {
+                                    x.value();
+                                  } catch (ex) {
+                                    // ignored
+                                  }
+                                  Navigator.of(context, rootNavigator: true).pop();
+                                },
+                              ),
+                            )
+                            .toList()));
+          });
+
           if (!Share.hasCheckedForUpdates) {
             try {
               (Dio().get('https://api.github.com/repos/Ogaku/Oshi/releases/latest')).then((value) {

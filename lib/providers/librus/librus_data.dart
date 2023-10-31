@@ -80,18 +80,12 @@ class LibrusDataReader implements models.IProvider {
     if ((username?.isEmpty ?? true) || (password?.isEmpty ?? true))
       return (success: false, message: Exception('No data to log in with!'));
 
-    try {
-      progress?.report((progress: 0.3, message: "Contracting the setup's wizard..."));
+    // Validate the credentials and extract the API token
+    progress?.report((progress: 0.3, message: "Contracting the setup wizard..."));
+    await data!.synergiaLogin!.setupToken(progress: progress);
 
-      // Validate the credentials and extract the API token
-      await data!.synergiaLogin!.setupToken(progress: progress);
-
-      // Create a new instance of the portal API scraper
-      data?.librusApi = LibrusReader(data!);
-    } on Exception catch (e) {
-      // Emotional damage!
-      return (success: false, message: e);
-    }
+    // Create a new instance of the portal API scraper
+    data?.librusApi = LibrusReader(data!);
 
     // Still here? That's good news!
     return (success: true, message: null);
