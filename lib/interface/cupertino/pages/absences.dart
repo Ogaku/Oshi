@@ -6,12 +6,14 @@ import 'dart:math';
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
+import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/share/share.dart';
 
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
+import 'package:uuid/v4.dart';
 
 // Boiler: returned to the app tab builder
 StatefulWidget get absencesPage => AbsencesPage();
@@ -100,94 +102,8 @@ class _AbsencesPageState extends State<AbsencesPage> {
                     ]
                   // Bindable messages layout
                   : element
-                      .select((x, index) => CupertinoListTile(
-                          padding: EdgeInsets.all(0),
-                          title: CupertinoContextMenu.builder(
-                              actions: [
-                                CupertinoContextMenuAction(
-                                  onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-                                  trailingIcon: CupertinoIcons.share,
-                                  child: const Text('Share'),
-                                ),
-                                CupertinoContextMenuAction(
-                                    isDestructiveAction: true,
-                                    trailingIcon: CupertinoIcons.chat_bubble_2,
-                                    child: const Text('Inquiry'),
-                                    onPressed: () {
-                                      Navigator.of(context, rootNavigator: true).pop();
-                                      showCupertinoModalBottomSheet(
-                                          context: context,
-                                          builder: (context) => MessageComposePage(
-                                              receivers: [x.teacher],
-                                              subject:
-                                                  'Pytanie o obecność z dnia ${DateFormat("y.M.d").format(x.date)}, L${x.lessonNo}',
-                                              signature:
-                                                  '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-                                    }),
-                              ],
-                              builder: (BuildContext context, Animation<double> animation) {
-                                return Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                                        color: CupertinoDynamicColor.resolve(
-                                            CupertinoDynamicColor.withBrightness(
-                                                color: const Color.fromARGB(255, 255, 255, 255),
-                                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                                            context)),
-                                    padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
-                                    child: ConstrainedBox(
-                                        constraints: BoxConstraints(
-                                            maxHeight: animation.value < CupertinoContextMenu.animationOpensAt
-                                                ? double.infinity
-                                                : 150,
-                                            maxWidth: animation.value < CupertinoContextMenu.animationOpensAt
-                                                ? double.infinity
-                                                : 250),
-                                        child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                  padding: EdgeInsets.only(bottom: 5),
-                                                  child: Text(
-                                                    x.type.asString(),
-                                                    style: TextStyle(
-                                                        fontSize: 32, fontWeight: FontWeight.w600, color: x.type.asColor()),
-                                                  )),
-                                              Expanded(
-                                                  flex: 2,
-                                                  child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                                      mainAxisSize: MainAxisSize.max,
-                                                      children: [
-                                                        Visibility(
-                                                            visible: (x.lesson.subject?.name.isNotEmpty ?? false),
-                                                            child: Opacity(
-                                                                opacity: 0.5,
-                                                                child: Container(
-                                                                    margin: EdgeInsets.only(left: 35, top: 4),
-                                                                    child: Text(
-                                                                      x.lesson.subject?.name ?? 'Unknown lesson',
-                                                                      overflow: TextOverflow.ellipsis,
-                                                                      maxLines: 2,
-                                                                      textAlign: TextAlign.end,
-                                                                      style: TextStyle(fontSize: 16),
-                                                                    )))),
-                                                        Opacity(
-                                                            opacity: 0.5,
-                                                            child: Container(
-                                                                margin: EdgeInsets.only(top: 4),
-                                                                child: Text(
-                                                                  x.addedDateString,
-                                                                  overflow: TextOverflow.ellipsis,
-                                                                  maxLines: 1,
-                                                                  textAlign: TextAlign.end,
-                                                                  style: TextStyle(fontSize: 16),
-                                                                )))
-                                                      ]))
-                                            ])));
-                              })))
+                      .select(
+                          (x, index) => CupertinoListTile(padding: EdgeInsets.all(0), title: x.asAttendanceWidget(context)))
                       .toList(),
             ))
         .toList();
@@ -234,7 +150,7 @@ extension AttendanceTypeExtension on AttendanceType {
         AttendanceType.late => 'Late',
         AttendanceType.excused => 'Excused',
         AttendanceType.duty => 'Duty',
-        AttendanceType.present => 'Present',
+        AttendanceType.present => 'Presence',
         AttendanceType.other => 'Other',
       };
 
@@ -246,4 +162,179 @@ extension AttendanceTypeExtension on AttendanceType {
         AttendanceType.present => CupertinoColors.systemGreen,
         AttendanceType.other => CupertinoColors.inactiveGray,
       };
+}
+
+extension LessonWidgetExtension on Attendance {
+  Widget asAttendanceWidget(BuildContext context) => CupertinoContextMenu.builder(actions: [
+        CupertinoContextMenuAction(
+          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+          trailingIcon: CupertinoIcons.share,
+          child: const Text('Share'),
+        ),
+        CupertinoContextMenuAction(
+            isDestructiveAction: true,
+            trailingIcon: CupertinoIcons.chat_bubble_2,
+            child: const Text('Inquiry'),
+            onPressed: () {
+              Navigator.of(context, rootNavigator: true).pop();
+              showCupertinoModalBottomSheet(
+                  context: context,
+                  builder: (context) => MessageComposePage(
+                      receivers: [teacher],
+                      subject: 'Pytanie o obecność z dnia ${DateFormat("y.M.d").format(date)}, L$lessonNo',
+                      signature:
+                          '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+            }),
+      ], builder: (BuildContext context, Animation<double> animation) => attendanceBody(context, animation));
+
+  Widget attendanceBody(BuildContext context, [Animation<double>? animation]) {
+    var tag = UuidV4().generate();
+    var body = GestureDetector(
+        onTap: animation == null || animation.value >= CupertinoContextMenu.animationOpensAt
+            ? null
+            : () => showCupertinoModalBottomSheet(
+                expand: false,
+                context: context,
+                builder: (context) => Container(
+                    color: CupertinoDynamicColor.resolve(
+                        CupertinoDynamicColor.withBrightness(
+                            color: const Color.fromARGB(255, 242, 242, 247),
+                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                        context),
+                    child: Table(children: <TableRow>[
+                      TableRow(children: [
+                        Container(
+                            margin: EdgeInsets.only(top: 20, left: 15, right: 15),
+                            child: Hero(tag: tag, child: attendanceBody(context)))
+                      ]),
+                      TableRow(children: [
+                        CupertinoListSection.insetGrouped(
+                            margin: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
+                            additionalDividerMargin: 5,
+                            children: [
+                              CupertinoListTile(
+                                  title: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(margin: EdgeInsets.only(right: 3), child: Text('Type')),
+                                  Flexible(
+                                      child: Opacity(
+                                          opacity: 0.5,
+                                          child: Text(type.asStringLong(), maxLines: 2, textAlign: TextAlign.end)))
+                                ],
+                              )),
+                              CupertinoListTile(
+                                  title: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(margin: EdgeInsets.only(right: 3), child: Text('Added by')),
+                                  Flexible(
+                                      child: Opacity(
+                                          opacity: 0.5,
+                                          child: Text(teacher.name, maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                ],
+                              )),
+                              CupertinoListTile(
+                                  title: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(margin: EdgeInsets.only(right: 3), child: Text('Date')),
+                                  Flexible(
+                                      child: Opacity(
+                                          opacity: 0.5,
+                                          child: Text(DateFormat('EEE, d MMM y').format(date),
+                                              maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                ],
+                              )),
+                              CupertinoListTile(
+                                  title: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(margin: EdgeInsets.only(right: 3), child: Text('Added')),
+                                  Flexible(
+                                      child: Opacity(
+                                          opacity: 0.5,
+                                          child: Text(DateFormat('hh:mm a, d MMM y').format(addDate),
+                                              maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                ],
+                              )),
+                            ].appendIf(
+                                CupertinoListTile(
+                                    title: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('Lesson'),
+                                    Flexible(
+                                        child: Container(
+                                            margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
+                                            child: Opacity(
+                                                opacity: 0.5,
+                                                child: Text(lesson.subject?.name ?? '',
+                                                    maxLines: 3, textAlign: TextAlign.end))))
+                                  ],
+                                )),
+                                lesson.subject?.name.isNotEmpty ?? false))
+                      ])
+                    ]))),
+        child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                color: animation == null
+                    ? CupertinoDynamicColor.resolve(CupertinoColors.tertiarySystemGroupedBackground, context)
+                    : CupertinoDynamicColor.resolve(
+                        CupertinoDynamicColor.withBrightness(
+                            color: const Color.fromARGB(255, 255, 255, 255),
+                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                        context)),
+            padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
+            child: ConstrainedBox(
+                constraints: BoxConstraints(
+                    maxHeight: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 150,
+                    maxWidth: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                          padding: EdgeInsets.only(bottom: 5),
+                          child: Text(
+                            type.asString(),
+                            style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600, color: type.asColor()),
+                          )),
+                      Expanded(
+                          flex: 2,
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Visibility(
+                                    visible: (lesson.subject?.name.isNotEmpty ?? false),
+                                    child: Opacity(
+                                        opacity: 0.5,
+                                        child: Container(
+                                            margin: EdgeInsets.only(left: 35, top: 4),
+                                            child: Text(
+                                              lesson.subject?.name ?? 'Unknown lesson',
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 2,
+                                              textAlign: TextAlign.end,
+                                              style: TextStyle(fontSize: 16),
+                                            )))),
+                                Opacity(
+                                    opacity: 0.5,
+                                    child: Container(
+                                        margin: EdgeInsets.only(top: 4),
+                                        child: Text(
+                                          addedDateString,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          textAlign: TextAlign.end,
+                                          style: TextStyle(fontSize: 16),
+                                        )))
+                              ]))
+                    ]))));
+
+    return animation == null ? body : Hero(tag: tag, child: body);
+  }
 }

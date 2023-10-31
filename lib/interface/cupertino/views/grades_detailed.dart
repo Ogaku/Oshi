@@ -281,15 +281,6 @@ extension StringExtension on String {
 }
 
 extension GradeBodyExtension on Grade {
-  double get cardHeight {
-    var height = 315.0;
-
-    if (commentsString.isNotEmpty) height += 70;
-    if (name.isNotEmpty) height += 45;
-
-    return height;
-  }
-
   Widget asGrade(BuildContext context) => CupertinoContextMenu.builder(actions: [
         CupertinoContextMenuAction(
           onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
@@ -320,70 +311,114 @@ extension GradeBodyExtension on Grade {
             : () => showCupertinoModalBottomSheet(
                 expand: false,
                 context: context,
-                builder: (context) => ConstrainedBox(
-                    constraints: BoxConstraints(maxHeight: cardHeight),
-                    child: Container(
-                        color: CupertinoDynamicColor.resolve(
-                            CupertinoDynamicColor.withBrightness(
-                                color: const Color.fromARGB(255, 242, 242, 247),
-                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                            context),
-                        child: Column(children: [
-                          Container(
-                              margin: EdgeInsets.only(top: 20, left: 15, right: 15),
-                              child: Hero(tag: tag, child: gradeBody(context))),
-                          CupertinoListSection.insetGrouped(
-                              margin: EdgeInsets.only(top: 20, left: 15, right: 15),
-                              additionalDividerMargin: 5,
-                              children: [
-                                CupertinoListTile(
-                                  title: Text('Grade'),
-                                  trailing: Opacity(opacity: 0.5, child: Text('$value, weight $weight')),
-                                ),
-                                CupertinoListTile(
-                                  title: Text('Added by'),
-                                  trailing: Opacity(opacity: 0.5, child: Text(addedBy.name)),
-                                ),
-                                CupertinoListTile(
-                                  title: Text('Add date'),
-                                  trailing: Opacity(opacity: 0.5, child: Text(DateFormat('EEE, d MMM y').format(addDate))),
-                                ),
-                              ]
-                                  .appendIf(
-                                      CupertinoListTile(
-                                        title: Text('Description'),
-                                        trailing: ConstrainedBox(
-                                            constraints: BoxConstraints(maxWidth: 180),
-                                            child: Flexible(
+                builder: (context) => Container(
+                    color: CupertinoDynamicColor.resolve(
+                        CupertinoDynamicColor.withBrightness(
+                            color: const Color.fromARGB(255, 242, 242, 247),
+                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                        context),
+                    child: Table(children: [
+                      TableRow(children: [
+                        Container(
+                            margin: EdgeInsets.only(top: 20, left: 15, right: 15),
+                            child: Hero(tag: tag, child: gradeBody(context)))
+                      ]),
+                      TableRow(children: [
+                        CupertinoListSection.insetGrouped(
+                            margin: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
+                            additionalDividerMargin: 5,
+                            children: [
+                              CupertinoListTile(
+                                  title: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(margin: EdgeInsets.only(right: 3), child: Text('Grade')),
+                                  Flexible(
+                                      child: Opacity(
+                                          opacity: 0.5,
+                                          child: Text('$value, weight $weight', maxLines: 2, textAlign: TextAlign.end)))
+                                ],
+                              )),
+                              CupertinoListTile(
+                                  title: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(margin: EdgeInsets.only(right: 3), child: Text('Added by')),
+                                  Flexible(
+                                      child: Opacity(
+                                          opacity: 0.5,
+                                          child: Text(addedBy.name, maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                ],
+                              )),
+                              CupertinoListTile(
+                                  title: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(margin: EdgeInsets.only(right: 3), child: Text('Date')),
+                                  Flexible(
+                                      child: Opacity(
+                                          opacity: 0.5,
+                                          child: Text(DateFormat('EEE, d MMM y').format(addDate),
+                                              maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                ],
+                              )),
+                              CupertinoListTile(
+                                  title: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(margin: EdgeInsets.only(right: 3), child: Text('Added')),
+                                  Flexible(
+                                      child: Opacity(
+                                          opacity: 0.5,
+                                          child: Text(DateFormat('hh:mm a, d MMM y').format(addDate),
+                                              maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                ],
+                              )),
+                            ]
+                                .appendIf(
+                                    CupertinoListTile(
+                                        title: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Description'),
+                                        Flexible(
+                                            child: Container(
+                                                margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
                                                 child: Opacity(
                                                     opacity: 0.5,
-                                                    child: Text(
-                                                      name.capitalize(),
-                                                      overflow: TextOverflow.ellipsis,
-                                                    )))),
-                                      ),
-                                      name.isNotEmpty)
-                                  .appendIf(
-                                      CupertinoListTile(
-                                        title: Text('Comments'),
-                                        trailing: ConstrainedBox(
-                                            constraints: BoxConstraints(maxWidth: 180),
-                                            child: Flexible(
+                                                    child: Text(name.capitalize(), maxLines: 3, textAlign: TextAlign.end))))
+                                      ],
+                                    )),
+                                    name.isNotEmpty)
+                                .appendIf(
+                                    CupertinoListTile(
+                                        title: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Comments'),
+                                        Flexible(
+                                            child: Container(
+                                                margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
                                                 child: Opacity(
                                                     opacity: 0.5,
-                                                    child: Text(
-                                                      commentsString,
-                                                      overflow: TextOverflow.ellipsis,
-                                                    )))),
-                                      ),
-                                      commentsString.isNotEmpty)
-                                  .appendIf(
-                                      CupertinoListTile(
-                                        title: Text('Counts to the average'),
-                                        trailing: Opacity(opacity: 0.5, child: Text(countsToAverage.toString())),
-                                      ),
-                                      true))
-                        ])))),
+                                                    child: Text(commentsString, maxLines: 3, textAlign: TextAlign.end))))
+                                      ],
+                                    )),
+                                    commentsString.isNotEmpty)
+                                .appendIf(
+                                    CupertinoListTile(
+                                        title: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Flexible(
+                                            child: Container(
+                                                margin: EdgeInsets.only(right: 3), child: Text('Counts to the average'))),
+                                        Opacity(opacity: 0.5, child: Text(countsToAverage.toString()))
+                                      ],
+                                    )),
+                                    true))
+                      ])
+                    ]))),
         child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(10)),

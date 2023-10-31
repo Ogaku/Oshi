@@ -986,3 +986,15 @@ extension ListAppendExtension on Iterable<Widget> {
     return append(element).toList();
   }
 }
+
+extension TableAppendExtension on Iterable<TableRow> {
+  List<TableRow> appendIf(TableRow element, bool condition) {
+    if (!condition) return toList();
+    return append(element).toList();
+  }
+
+  List<TableRow> appendAllIf(List<TableRow> elements, bool condition) {
+    if (!condition) return toList();
+    return appendAll(elements).toList();
+  }
+}
