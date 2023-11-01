@@ -69,7 +69,7 @@ class HomeWorkAssignment {
   final bool addedFiles;
 
   @JsonKey(name: 'HomeworkAssigmentFiles')
-  final List<dynamic>? homeworkAssigmentFiles;
+  final List<Map<String, dynamic>>? homeworkAssigmentFiles;
 
   @JsonKey(name: 'StudentsWhoMarkedAsDone')
   final List<dynamic>? studentsWhoMarkedAsDone;

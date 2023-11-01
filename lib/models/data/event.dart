@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/interface/cupertino/views/grades_detailed.dart';
 import 'package:oshi/models/data/classroom.dart';
+import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/models/data/teacher.dart';
 
 import 'package:hive/hive.dart';
@@ -22,6 +23,7 @@ class Event extends HiveObject {
       this.category = EventCategory.other,
       this.done = false,
       this.sender,
+      this.attachments,
       this.classroom})
       : timeFrom = timeFrom ?? DateTime(2000);
 
@@ -63,6 +65,10 @@ class Event extends HiveObject {
 
   @HiveField(12)
   Classroom? classroom;
+
+  // Set to null for no attachments
+  @HiveField(13)
+  List<Attachment>? attachments; // For homeworks
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get titleString => "${categoryName.capitalize()}${(title ?? content).isNotEmpty ? ':' : ''} ${title ?? content}";

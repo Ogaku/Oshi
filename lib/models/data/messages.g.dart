@@ -26,8 +26,7 @@ class MessageAdapter extends TypeAdapter<Message> {
       sender: fields[7] as Teacher?,
       sendDate: fields[8] as DateTime?,
       readDate: fields[9] as DateTime?,
-      attachments:
-          (fields[10] as List?)?.cast<({String location, String name})>(),
+      attachments: (fields[10] as List?)?.cast<Attachment>(),
       receivers: (fields[11] as List?)?.cast<Teacher>(),
     );
   }
@@ -111,6 +110,43 @@ class MessagesAdapter extends TypeAdapter<Messages> {
           typeId == other.typeId;
 }
 
+class AttachmentAdapter extends TypeAdapter<Attachment> {
+  @override
+  final int typeId = 99;
+
+  @override
+  Attachment read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Attachment(
+      name: fields[1] as String?,
+      location: fields[2] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Attachment obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(1)
+      ..write(obj.name)
+      ..writeByte(2)
+      ..write(obj.location);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AttachmentAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
@@ -132,13 +168,7 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
           ? null
           : DateTime.parse(json['readDate'] as String),
       attachments: (json['attachments'] as List<dynamic>?)
-          ?.map((e) => _$recordConvert(
-                e,
-                ($jsonValue) => (
-                  location: $jsonValue['location'] as String,
-                  name: $jsonValue['name'] as String,
-                ),
-              ))
+          ?.map((e) => Attachment.fromJson(e as Map<String, dynamic>))
           .toList(),
       receivers: (json['receivers'] as List<dynamic>?)
           ?.map((e) => Teacher.fromJson(e as Map<String, dynamic>))
@@ -164,23 +194,10 @@ Map<String, dynamic> _$MessageToJson(Message instance) {
   writeNotNull('sender', instance.sender);
   val['sendDate'] = instance.sendDate.toIso8601String();
   writeNotNull('readDate', instance.readDate?.toIso8601String());
-  writeNotNull(
-      'attachments',
-      instance.attachments
-          ?.map((e) => {
-                'location': e.location,
-                'name': e.name,
-              })
-          .toList());
+  writeNotNull('attachments', instance.attachments);
   writeNotNull('receivers', instance.receivers);
   return val;
 }
-
-$Rec _$recordConvert<$Rec>(
-  Object? value,
-  $Rec Function(Map) convert,
-) =>
-    convert(value as Map<String, dynamic>);
 
 Messages _$MessagesFromJson(Map<String, dynamic> json) => Messages(
       received: (json['received'] as List<dynamic>?)
@@ -198,4 +215,15 @@ Map<String, dynamic> _$MessagesToJson(Messages instance) => <String, dynamic>{
       'received': instance.received,
       'sent': instance.sent,
       'receivers': instance.receivers,
+    };
+
+Attachment _$AttachmentFromJson(Map<String, dynamic> json) => Attachment(
+      name: json['name'] as String?,
+      location: json['location'] as String?,
+    );
+
+Map<String, dynamic> _$AttachmentToJson(Attachment instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'location': instance.location,
     };

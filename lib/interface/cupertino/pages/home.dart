@@ -900,7 +900,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     // Good morning - 3
     if (currentDay?.dayStart != null &&
         DateTime.now().isBeforeOrSame(currentDay!.dayStart) &&
-        DateTime.now().difference(currentDay.dayStart!) > Duration(hours: 1)) {
+        currentDay.dayStart!.difference(DateTime.now()) > Duration(hours: 1)) {
       return "Don't forget the obentō!";
     }
 

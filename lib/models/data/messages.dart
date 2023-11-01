@@ -53,7 +53,8 @@ class Message extends HiveObject {
 
   // Set to null for no attachments
   @HiveField(10)
-  List<({String name, String location})>? attachments;
+  List<Attachment>? attachments;
+
   // For messages sent by the student - otherwise null
   @HiveField(11)
   List<Teacher>? receivers;
@@ -104,4 +105,22 @@ class Messages extends HiveObject {
   factory Messages.fromJson(Map<String, dynamic> json) => _$MessagesFromJson(json);
 
   Map<String, dynamic> toJson() => _$MessagesToJson(this);
+}
+
+@HiveType(typeId: 99)
+@JsonSerializable()
+class Attachment extends HiveObject {
+  @HiveField(1)
+  String name;
+
+  @HiveField(2)
+  String location;
+
+  Attachment({String? name, String? location})
+      : name = name ?? 'Unknown',
+        location = location ?? 'https://youtu.be/dQw4w9WgXcQ?si=2wQpMrQoFsQbQoKk';
+
+  factory Attachment.fromJson(Map<String, dynamic> json) => _$AttachmentFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AttachmentToJson(this);
 }

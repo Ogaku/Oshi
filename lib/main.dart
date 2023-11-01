@@ -13,7 +13,7 @@ import 'package:oshi/models/data/classroom.dart' show ClassroomAdapter;
 import 'package:oshi/models/data/event.dart' show EventAdapter, EventCategoryAdapter;
 import 'package:oshi/models/data/grade.dart' show GradeAdapter;
 import 'package:oshi/models/data/lesson.dart' show LessonAdapter;
-import 'package:oshi/models/data/messages.dart' show MessagesAdapter, MessageAdapter;
+import 'package:oshi/models/data/messages.dart' show MessagesAdapter, MessageAdapter, AttachmentAdapter;
 import 'package:oshi/models/data/student.dart' show StudentAdapter, AccountAdapter;
 import 'package:oshi/models/data/teacher.dart' show TeacherAdapter;
 import 'package:oshi/models/data/timetables.dart'
@@ -48,6 +48,7 @@ Future<void> main() async {
     ..registerAdapter(LessonAdapter())
     ..registerAdapter(MessagesAdapter())
     ..registerAdapter(MessageAdapter())
+    ..registerAdapter(AttachmentAdapter())
     ..registerAdapter(StudentAdapter())
     ..registerAdapter(AccountAdapter())
     ..registerAdapter(TeacherAdapter())

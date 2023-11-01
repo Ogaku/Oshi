@@ -400,23 +400,34 @@ class LibrusDataReader implements models.IProvider {
     // Read all agenda events (home works) - tests, other events
     addOrReplace(
         student.mainClass.events,
-        HomeWorkAssignments.fromJson(await data!.librusApi!.request('HomeWorkAssignments'))
-                .homeWorkAssignments
-                ?.select((x, index) => models.Event(
-                    id: x.id,
-                    addDate: x.date,
-                    timeFrom: x.date ?? DateTime.now(),
-                    timeTo: x.dueDate,
-                    title: x.topic,
-                    content: x.text,
-                    done: x.studentsWhoMarkedAsDone?.isNotEmpty ?? false,
-                    category: models.EventCategory.homework,
-                    categoryName: homeworkCatgShim.categories!
-                            .firstWhereOrDefault((y) => y.id == x.category?.id, defaultValue: null)
-                            ?.categoryName ??
-                        'Homework',
-                    sender: teachersShim.users!.firstWhereOrDefault((y) => y.id == x.teacher?.id)?.asTeacher()))
-                .toList() ??
+        (await HomeWorkAssignments.fromJson(await data!.librusApi!.request('HomeWorkAssignments'))
+                    .homeWorkAssignments
+                    ?.select((x, index) async => models.Event(
+                        id: x.id,
+                        addDate: x.date,
+                        timeFrom: x.date ?? DateTime.now(),
+                        timeTo: x.dueDate,
+                        title: x.topic,
+                        content: x.text,
+                        done: x.studentsWhoMarkedAsDone?.isNotEmpty ?? false,
+                        category: models.EventCategory.homework,
+                        categoryName: homeworkCatgShim.categories!
+                                .firstWhereOrDefault((y) => y.id == x.category?.id, defaultValue: null)
+                                ?.categoryName ??
+                            'Homework',
+                        sender: teachersShim.users!.firstWhereOrDefault((y) => y.id == x.teacher?.id)?.asTeacher(),
+                        attachments: (await x.homeworkAssigmentFiles?.select((y, index) async {
+                              var url = (await data!.librusApi!
+                                      .request('HomeWorkAssignments/Attachment/${x.id}-${y["Id"]}'))['DownloadUrl']
+                                  ?.toString();
+                              return models.Attachment(
+                                  name: y['Name']?.toString(),
+                                  location: (url?.contains('GetFile') ?? false) ? '$url/get' : url);
+                            }).awaitAll())
+                                ?.toList() ??
+                            []))
+                    .awaitAll())
+                ?.toList() ??
             []);
 
 //#endregion
@@ -690,15 +701,12 @@ class LibrusDataReader implements models.IProvider {
             models.Teacher(
                 firstName: message.data?.senderFirstName ?? 'Unknown', lastName: message.data?.senderLastName ?? 'sender');
 
-        result.attachments = (await message.data?.attachments
-                ?.select((y, index) async => (
-                      name: y.filename,
-                      location: (await data!.librusApi!.messagesRequest('attachments/${y.id}/messages/${parent.id}'))['data']
-                                  ?['downloadLink']
-                              ?.toString() ??
-                          "https://youtu.be/dQw4w9WgXcQ?si=2wQpMrQoFsQbQoKk"
-                    ))
-                .awaitAll())
+        result.attachments = (await message.data?.attachments?.select((y, index) async {
+          var url = (await data!.librusApi!.messagesRequest('attachments/${y.id}/messages/${parent.id}'))['data']
+                  ?['downloadLink']
+              ?.toString();
+          return models.Attachment(name: y.filename, location: (url?.contains('GetFile') ?? false) ? '$url/get' : url);
+        }).awaitAll())
             ?.toList();
       } else {
         // Get the actual underlying message

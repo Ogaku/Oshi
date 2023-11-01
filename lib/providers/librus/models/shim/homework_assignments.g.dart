@@ -41,7 +41,9 @@ HomeWorkAssignment _$HomeWorkAssignmentFromJson(Map<String, dynamic> json) =>
       mustSendAttachFile: json['MustSendAttachFile'] as bool,
       sendFilePossible: json['SendFilePossible'] as bool,
       addedFiles: json['AddedFiles'] as bool,
-      homeworkAssigmentFiles: json['HomeworkAssigmentFiles'] as List<dynamic>?,
+      homeworkAssigmentFiles: (json['HomeworkAssigmentFiles'] as List<dynamic>?)
+          ?.map((e) => e as Map<String, dynamic>)
+          .toList(),
       category: json['Category'] == null
           ? null
           : Category.fromJson(json['Category'] as Map<String, dynamic>),

@@ -29,6 +29,7 @@ class EventAdapter extends TypeAdapter<Event> {
       category: fields[10] as EventCategory,
       done: fields[9] as bool,
       sender: fields[11] as Teacher?,
+      attachments: (fields[13] as List?)?.cast<Attachment>(),
       classroom: fields[12] as Classroom?,
     );
   }
@@ -36,7 +37,7 @@ class EventAdapter extends TypeAdapter<Event> {
   @override
   void write(BinaryWriter writer, Event obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -62,7 +63,9 @@ class EventAdapter extends TypeAdapter<Event> {
       ..writeByte(11)
       ..write(obj.sender)
       ..writeByte(12)
-      ..write(obj.classroom);
+      ..write(obj.classroom)
+      ..writeByte(13)
+      ..write(obj.attachments);
   }
 
   @override
@@ -202,6 +205,9 @@ Event _$EventFromJson(Map<String, dynamic> json) => Event(
       sender: json['sender'] == null
           ? null
           : Teacher.fromJson(json['sender'] as Map<String, dynamic>),
+      attachments: (json['attachments'] as List<dynamic>?)
+          ?.map((e) => Attachment.fromJson(e as Map<String, dynamic>))
+          .toList(),
       classroom: json['classroom'] == null
           ? null
           : Classroom.fromJson(json['classroom'] as Map<String, dynamic>),
@@ -230,6 +236,7 @@ Map<String, dynamic> _$EventToJson(Event instance) {
   val['category'] = _$EventCategoryEnumMap[instance.category]!;
   writeNotNull('sender', instance.sender);
   writeNotNull('classroom', instance.classroom);
+  writeNotNull('attachments', instance.attachments);
   return val;
 }
 
