@@ -12,6 +12,7 @@ import 'package:oshi/models/data/grade.dart';
 import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/share/share.dart';
 import 'package:uuid/v4.dart';
+import 'package:share_plus/share_plus.dart' as sharing;
 
 class GradesDetailedPage extends StatefulWidget {
   const GradesDetailedPage({super.key, required this.lesson});
@@ -68,7 +69,10 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
               title: CupertinoContextMenu.builder(
                   actions: [
                     CupertinoContextMenuAction(
-                      onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+                      onPressed: () {
+                        sharing.Share.share('My average from ${widget.lesson.name} is ${widget.lesson.gradesAverage}!');
+                        Navigator.of(context, rootNavigator: true).pop();
+                      },
                       trailingIcon: CupertinoIcons.share,
                       child: const Text('Share'),
                     ),
@@ -129,7 +133,11 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
           title: CupertinoContextMenu.builder(
               actions: [
                 CupertinoContextMenuAction(
-                  onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+                  onPressed: () {
+                    sharing.Share.share(
+                        'I got a ${widget.lesson.grades.firstWhereOrDefault((x) => x.isFinalProposition || x.isSemesterProposition)?.value} proposition from ${widget.lesson.name}!');
+                    Navigator.of(context, rootNavigator: true).pop();
+                  },
                   trailingIcon: CupertinoIcons.share,
                   child: const Text('Share'),
                 ),
@@ -194,7 +202,11 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
           title: CupertinoContextMenu.builder(
               actions: [
                 CupertinoContextMenuAction(
-                  onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+                  onPressed: () {
+                    sharing.Share.share(
+                        'I got a ${widget.lesson.grades.firstWhereOrDefault((x) => x.isFinal || x.isSemester)?.value} final from ${widget.lesson.name}!');
+                    Navigator.of(context, rootNavigator: true).pop();
+                  },
                   trailingIcon: CupertinoIcons.share,
                   child: const Text('Share'),
                 ),
@@ -283,7 +295,10 @@ extension StringExtension on String {
 extension GradeBodyExtension on Grade {
   Widget asGrade(BuildContext context) => CupertinoContextMenu.builder(actions: [
         CupertinoContextMenuAction(
-          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+          onPressed: () {
+            sharing.Share.share('I got a $value on ${DateFormat("EEEE, MMM d, y").format(date)}!');
+            Navigator.of(context, rootNavigator: true).pop();
+          },
           trailingIcon: CupertinoIcons.share,
           child: const Text('Share'),
         ),

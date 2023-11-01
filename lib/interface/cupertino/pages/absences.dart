@@ -14,6 +14,7 @@ import 'package:oshi/share/share.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
 import 'package:uuid/v4.dart';
+import 'package:share_plus/share_plus.dart' as sharing;
 
 // Boiler: returned to the app tab builder
 StatefulWidget get absencesPage => AbsencesPage();
@@ -154,6 +155,15 @@ extension AttendanceTypeExtension on AttendanceType {
         AttendanceType.other => 'Other',
       };
 
+  String asPrep() => switch (this) {
+        AttendanceType.absent => 'an',
+        AttendanceType.late => 'a',
+        AttendanceType.excused => 'an',
+        AttendanceType.duty => 'a',
+        AttendanceType.present => 'a',
+        AttendanceType.other => 'an',
+      };
+
   Color asColor() => switch (this) {
         AttendanceType.absent => CupertinoColors.systemRed,
         AttendanceType.late => CupertinoColors.systemYellow,
@@ -167,7 +177,11 @@ extension AttendanceTypeExtension on AttendanceType {
 extension LessonWidgetExtension on Attendance {
   Widget asAttendanceWidget(BuildContext context) => CupertinoContextMenu.builder(actions: [
         CupertinoContextMenuAction(
-          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+          onPressed: () {
+            sharing.Share.share(
+                'I got ${type.asPrep()} "${type.asStringLong()}" on ${DateFormat("EEEE, MMM d, y").format(date)} from ${lesson.subject?.name} on lesson $lessonNo!');
+            Navigator.of(context, rootNavigator: true).pop();
+          },
           trailingIcon: CupertinoIcons.share,
           child: const Text('Share'),
         ),

@@ -15,6 +15,7 @@ import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
+import 'package:share_plus/share_plus.dart' as sharing;
 
 // Boiler: returned to the app tab builder
 StatefulWidget get messagesPage => MessagesPage();
@@ -92,7 +93,12 @@ class _MessagesPageState extends State<MessagesPage> {
                   title: CupertinoContextMenu.builder(
                       actions: [
                         CupertinoContextMenuAction(
-                          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+                          onPressed: () {
+                            sharing.Share.share(folder == MessageFolders.outbox
+                                ? 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.sendDate)} ${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name} wrote:\n"${x.topic}\n\n${x.preview}[...]"'
+                                : 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.sendDate)} ${x.sender?.name} wrote:\n"${x.topic}\n\n${x.preview}[...]"');
+                            Navigator.of(context, rootNavigator: true).pop();
+                          },
                           trailingIcon: CupertinoIcons.share,
                           child: const Text('Share'),
                         ),

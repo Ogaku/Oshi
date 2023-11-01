@@ -21,6 +21,8 @@ import 'package:oshi/interface/cupertino/views/events_timeline.dart' show Events
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:uuid/v4.dart';
 import 'package:visibility_aware_state/visibility_aware_state.dart';
+import 'package:add_2_calendar/add_2_calendar.dart' as calendar;
+import 'package:share_plus/share_plus.dart' as sharing;
 
 // Boiler: returned to the app tab builder
 StatefulWidget get timetablePage => TimetablePage();
@@ -338,7 +340,11 @@ extension EventWidgetExtension on Event {
   Widget asEventWidget(BuildContext context, bool isNotEmpty, TimetableDay? day, void Function(VoidCallback fn) setState) =>
       CupertinoContextMenu.builder(actions: [
         CupertinoContextMenuAction(
-          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+          onPressed: () {
+            sharing.Share.share(
+                'There\'s a "$titleString" on ${DateFormat("EEEE, MMM d, y").format(timeFrom)} ${(classroom?.name.isNotEmpty ?? false) ? ("in ${classroom?.name ?? ""}") : "at school"}');
+            Navigator.of(context, rootNavigator: true).pop();
+          },
           trailingIcon: CupertinoIcons.share,
           child: const Text('Share'),
         ),
@@ -356,7 +362,15 @@ extension EventWidgetExtension on Event {
               )
             // Event - add to calendar
             : CupertinoContextMenuAction(
-                onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+                onPressed: () {
+                  calendar.Add2Calendar.addEvent2Cal(calendar.Event(
+                      title: titleString,
+                      description: subtitleString,
+                      location: classroom?.name,
+                      startDate: timeFrom,
+                      endDate: timeTo ?? timeFrom));
+                  Navigator.of(context, rootNavigator: true).pop();
+                },
                 trailingIcon: CupertinoIcons.calendar,
                 child: const Text('Add to calendar'),
               ),
@@ -479,7 +493,10 @@ extension EventWidgetExtension on Event {
                                                   title: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
-                                                  Container(margin: EdgeInsets.only(right: 3), child: Text('Added by')),
+                                                  Container(
+                                                      margin: EdgeInsets.only(right: 3),
+                                                      child:
+                                                          Text(category == EventCategory.teacher ? 'Teacher' : 'Added by')),
                                                   Flexible(
                                                       child: Opacity(
                                                           opacity: 0.5,
@@ -670,14 +687,42 @@ extension LessonWidgetExtension on TimetableLesson {
       CupertinoContextMenu.builder(
           actions: [
             CupertinoContextMenuAction(
-              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+              onPressed: () {
+                sharing.Share.share(
+                    'There\'s ${subject?.name ?? "a lesson"} on ${DateFormat("EEEE, MMM d, y").format(date)} with ${teacher?.name ?? "a teacher"}');
+                Navigator.of(context, rootNavigator: true).pop();
+              },
               trailingIcon: CupertinoIcons.share,
               child: const Text('Share'),
             ),
             CupertinoContextMenuAction(
-              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+              onPressed: () {
+                calendar.Add2Calendar.addEvent2Cal(calendar.Event(
+                    title: subject?.name ?? 'Lesson on ${DateFormat("EEEE, MMM d, y").format(date)}',
+                    location: classroom?.name,
+                    startDate: timeFrom ?? date,
+                    endDate: timeTo ?? date));
+                Navigator.of(context, rootNavigator: true).pop();
+              },
               trailingIcon: CupertinoIcons.calendar,
               child: const Text('Add to calendar'),
+            ),
+            CupertinoContextMenuAction(
+              isDestructiveAction: true,
+              trailingIcon: CupertinoIcons.timer,
+              child: const Text('Call last 15 min'),
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).pop();
+                showCupertinoModalBottomSheet(
+                    context: context,
+                    builder: (context) => MessageComposePage(
+                        receivers: teacher != null ? [teacher!] : [],
+                        subject: 'Zwolnienie z 15 min lekcji w dniu ${DateFormat("y.M.d").format(date)}, L$lessonNo',
+                        message:
+                            'Dzień dobry,\n\nProszę o zwolnienie mnie z ostatnich 15 minut lekcji ${subject?.name} w dniu ${DateFormat("y.M.d").format(date)}, na $lessonNo godzinie lekcyjnej.',
+                        signature:
+                            '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+              },
             ),
             CupertinoContextMenuAction(
               isDestructiveAction: true,

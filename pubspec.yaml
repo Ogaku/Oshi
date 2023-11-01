@@ -34,6 +34,8 @@ dependencies:
   visibility_aware_state: ^1.0.5
   version: ^3.0.2
   logging_to_logcat: ^1.0.0
+  share_plus: ^7.2.1
+  add_2_calendar: ^3.0.1
 
 dev_dependencies:
   flutter_test:

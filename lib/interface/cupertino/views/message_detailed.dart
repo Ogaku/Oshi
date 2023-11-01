@@ -15,6 +15,7 @@ import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:share_plus/share_plus.dart' as sharing;
 
 class MessageDetailsPage extends StatefulWidget {
   const MessageDetailsPage({super.key, required this.message, required this.isByMe});
@@ -55,7 +56,11 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                 PullDownMenuItem(
                   title: 'Share',
                   icon: CupertinoIcons.share,
-                  onTap: () {},
+                  onTap: () {
+                    sharing.Share.share(widget.isByMe
+                        ? 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(widget.message.sendDate)} ${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name} wrote:\n"${widget.message.topic}\n\n${widget.message.content}"'
+                        : 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(widget.message.sendDate)} ${widget.message.sender?.name} wrote:\n"${widget.message.topic}\n\n${widget.message.content}"');
+                  },
                 ),
                 PullDownMenuDivider.large(),
                 PullDownMenuItem(

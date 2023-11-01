@@ -21,6 +21,7 @@ import 'package:oshi/share/share.dart';
 import 'package:oshi/interface/cupertino/widgets/text_chip.dart' show TextChip;
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:visibility_aware_state/visibility_aware_state.dart';
+import 'package:share_plus/share_plus.dart' as sharing;
 
 // Boiler: returned to the app tab builder
 StatefulWidget get homePage => HomePage();
@@ -119,7 +120,11 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                   title: CupertinoContextMenu.builder(
                       actions: [
                         CupertinoContextMenuAction(
-                          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+                          onPressed: () {
+                            sharing.Share.share(
+                                'There\'s a "${x.titleString}" for ${DateFormat("EEEE, MMM d, y").format(x.timeFrom)}');
+                            Navigator.of(context, rootNavigator: true).pop();
+                          },
                           trailingIcon: CupertinoIcons.share,
                           child: const Text('Share'),
                         ),
@@ -564,7 +569,11 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                         title: CupertinoContextMenu.builder(
                             actions: [
                               CupertinoContextMenuAction(
-                                onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+                                onPressed: () {
+                                  sharing.Share.share(
+                                      'There\'s a "${x.titleString}" on ${DateFormat("EEEE, MMM d, y").format(x.timeFrom)} ${(x.classroom?.name.isNotEmpty ?? false) ? ("in ${x.classroom?.name ?? ""}") : "at school"}');
+                                  Navigator.of(context, rootNavigator: true).pop();
+                                },
                                 trailingIcon: CupertinoIcons.share,
                                 child: const Text('Share'),
                               ),
@@ -679,7 +688,11 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                         title: CupertinoContextMenu.builder(
                             actions: [
                               CupertinoContextMenuAction(
-                                onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+                                onPressed: () {
+                                  sharing.Share.share(
+                                      'I got ${x.grades.select((y, s) => y.value).join(", ")} from ${x.lesson.name} last week!');
+                                  Navigator.of(context, rootNavigator: true).pop();
+                                },
                                 trailingIcon: CupertinoIcons.share,
                                 child: const Text('Share'),
                               ),
