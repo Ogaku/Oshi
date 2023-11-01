@@ -363,12 +363,16 @@ extension EventWidgetExtension on Event {
             // Event - add to calendar
             : CupertinoContextMenuAction(
                 onPressed: () {
-                  calendar.Add2Calendar.addEvent2Cal(calendar.Event(
-                      title: titleString,
-                      description: subtitleString,
-                      location: classroom?.name,
-                      startDate: timeFrom,
-                      endDate: timeTo ?? timeFrom));
+                  try {
+                    calendar.Add2Calendar.addEvent2Cal(calendar.Event(
+                        title: titleString,
+                        description: subtitleString,
+                        location: classroom?.name,
+                        startDate: timeFrom,
+                        endDate: timeTo ?? timeFrom));
+                  } catch (ex) {
+                    // ignored
+                  }
                   Navigator.of(context, rootNavigator: true).pop();
                 },
                 trailingIcon: CupertinoIcons.calendar,
@@ -697,11 +701,15 @@ extension LessonWidgetExtension on TimetableLesson {
             ),
             CupertinoContextMenuAction(
               onPressed: () {
-                calendar.Add2Calendar.addEvent2Cal(calendar.Event(
-                    title: subject?.name ?? 'Lesson on ${DateFormat("EEEE, MMM d, y").format(date)}',
-                    location: classroom?.name,
-                    startDate: timeFrom ?? date,
-                    endDate: timeTo ?? date));
+                try {
+                  calendar.Add2Calendar.addEvent2Cal(calendar.Event(
+                      title: subject?.name ?? 'Lesson on ${DateFormat("EEEE, MMM d, y").format(date)}',
+                      location: classroom?.name,
+                      startDate: timeFrom ?? date,
+                      endDate: timeTo ?? date));
+                } catch (ex) {
+                  // ignored
+                }
                 Navigator.of(context, rootNavigator: true).pop();
               },
               trailingIcon: CupertinoIcons.calendar,
