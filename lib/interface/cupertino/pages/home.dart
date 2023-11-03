@@ -517,8 +517,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                     margin: EdgeInsets.only(right: 3),
                                     child: Text(
                                       DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)
-                                          ? 'Tomorrow: ${nextDay?.lessonsNumber} lessons'
-                                          : 'Later: ${(currentDay?.lessonsStrippedCancelled.where((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.timeFrom)) ?? false).count((x) => (x?.isNotEmpty ?? false) && (x?.all((y) => !y.isCanceled) ?? false)) ?? 1) - 1} lessons',
+                                          ? 'Tomorrow: ${nextDay?.lessonsNumber.asLessonNumber()}'
+                                          : 'Later: ${((currentDay?.lessonsStrippedCancelled.where((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.timeFrom)) ?? false).count((x) => (x?.isNotEmpty ?? false) && (x?.all((y) => !y.isCanceled) ?? false)) ?? 1) - 1).asLessonNumber()}',
                                       style: TextStyle(fontWeight: FontWeight.w400),
                                     ))),
                             Text(
@@ -827,7 +827,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     if ((currentDay?.hasLessons ?? false) &&
         DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
         DateTime.now().difference(currentDay?.dayEnd ?? DateTime.now()).inHours < 2) {
-      return (flexible: "You've survived all ${currentDay!.lessonsNumber} lessons!", standard: '');
+      return (flexible: "You've survived all ${currentDay!.lessonsNumber.asLessonNumber()}!", standard: '');
     }
 
     // No lessons today or tomorrow - T5
@@ -839,7 +839,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     if ((nextDay?.hasLessons ?? false) && nextDay?.dayEnd != null) {
       return (
         flexible:
-            '${nextDay!.lessonsNumber} lessons, ${DateFormat("H:mm").format(nextDay.dayStart!)} to ${DateFormat("H:mm").format(nextDay.dayEnd!)}',
+            '${nextDay!.lessonsNumber.asLessonNumber()}, ${DateFormat("H:mm").format(nextDay.dayStart!)} to ${DateFormat("H:mm").format(nextDay.dayEnd!)}',
         standard: ''
       );
     }
@@ -1008,4 +1008,14 @@ extension TableAppendExtension on Iterable<TableRow> {
     if (!condition) return toList();
     return appendAll(elements).toList();
   }
+}
+
+extension LessonNumber on int {
+  String asLessonNumber() => switch (this) {
+        0 => '$this lessons',
+        1 => '$this lesson',
+        _ => '$this lessons'
+        // Note for other languages:
+        // stackoverflow.com/a/76413634
+      };
 }

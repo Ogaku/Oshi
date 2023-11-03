@@ -58,6 +58,7 @@ class TimetableDay extends HiveObject {
       .reverse()
       .skipWhile((value) => (value?.isEmpty ?? true))
       .reverse()
+      .where((value) => (value?.isNotEmpty ?? false))
       .toList();
 
   // Today's lessons, stripped out of empty|null|canc list blocks
@@ -67,6 +68,7 @@ class TimetableDay extends HiveObject {
       .reverse()
       .skipWhile((value) => (value?.isEmpty ?? true) || (value?.all((x) => x.isCanceled) ?? false))
       .reverse()
+      .where((value) => (value?.isNotEmpty ?? false))
       .toList();
 
   // Today's lessons, stripped out of empty|null|canc list blocks

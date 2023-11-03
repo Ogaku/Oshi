@@ -100,7 +100,7 @@ class Grade extends HiveObject {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   double get asValue {
-    double val = switch (value) {
+    double val = switch (value.isNotEmpty ? value[0] : value) {
           _ when (Config.customGradeValues?.containsKey(value) ?? false) => Config.customGradeValues![value],
           '1' => 1,
           '2' => 2,
