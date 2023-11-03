@@ -8,6 +8,7 @@ import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/interface/cupertino/pages/settings.dart';
 import 'package:oshi/interface/cupertino/pages/timetable.dart';
 import 'package:oshi/interface/cupertino/sessions_page.dart';
 import 'package:oshi/interface/cupertino/views/grades_detailed.dart';
@@ -271,10 +272,10 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
         trailing: PullDownButton(
           itemBuilder: (context) => [
             PullDownMenuItem(
-              title: 'Settings',
-              icon: CupertinoIcons.gear,
-              onTap: () {},
-            ),
+                title: 'Settings',
+                icon: CupertinoIcons.gear,
+                onTap: () => Navigator.of(context, rootNavigator: true)
+                    .push(CupertinoPageRoute(builder: (context) => SettingsPage()))),
             PullDownMenuDivider.large(),
             PullDownMenuTitle(title: Text('Accounts')),
             PullDownMenuItem(
@@ -995,6 +996,11 @@ extension ListAppendExtension on Iterable<Widget> {
   List<Widget> appendIf(Widget element, bool condition) {
     if (!condition) return toList();
     return append(element).toList();
+  }
+
+  List<Widget> prependIf(Widget element, bool condition) {
+    if (!condition) return toList();
+    return prepend(element).toList();
   }
 }
 

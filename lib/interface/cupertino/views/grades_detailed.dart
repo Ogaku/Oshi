@@ -470,6 +470,7 @@ extension GradeBodyExtension on Grade {
                                     opacity: name.isNotEmpty ? 1.0 : 0.5,
                                     child: Text(
                                       name.isNotEmpty ? name.capitalize() : 'No description',
+                                      textAlign: TextAlign.end,
                                       style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                                     )),
                                 Visibility(

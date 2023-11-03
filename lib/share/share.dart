@@ -28,6 +28,7 @@ class Share {
   // Raised by the app to notify that the uses's just logged in
   // To subscribe: event.subscribe((args) => {})
   static Event<Value<StatefulWidget Function()>> changeBase = Event<Value<StatefulWidget Function()>>();
+  static Event refreshBase = Event(); // Trigger a setState on the base app and everything subscribed
   static Event<Value<({String title, String message, Map<String, Future<void> Function()> actions})>> showErrorModal =
       Event<Value<({String title, String message, Map<String, Future<void> Function()> actions})>>();
 

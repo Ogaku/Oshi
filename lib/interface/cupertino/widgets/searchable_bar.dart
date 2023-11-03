@@ -18,6 +18,7 @@ class SearchableSliverNavigationBar extends StatefulWidget {
   final Color darkColor;
   final double? anchor;
   final bool? transitionBetweenRoutes;
+  final bool disableAddons;
   final TextEditingController searchController;
   final List<Widget>? children;
   final Widget? child;
@@ -27,9 +28,9 @@ class SearchableSliverNavigationBar extends StatefulWidget {
   final void Function(VoidCallback fn)? setState;
   final Function(({double? progress, String? message})? progress)? onProgress;
 
-  const SearchableSliverNavigationBar(
+  SearchableSliverNavigationBar(
       {super.key,
-      required this.searchController,
+      TextEditingController? searchController,
       this.children,
       this.onChanged,
       this.onSubmitted,
@@ -47,7 +48,10 @@ class SearchableSliverNavigationBar extends StatefulWidget {
       this.darkColor = Colors.black,
       this.backgroundColor,
       this.onProgress,
-      this.anchor});
+      this.anchor,
+      bool? disableAddons})
+      : searchController = searchController ?? TextEditingController(),
+        disableAddons = disableAddons ?? (child != null);
 
   @override
   State<SearchableSliverNavigationBar> createState() => _NavState();
@@ -63,7 +67,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
   @override
   void initState() {
     super.initState();
-    scrollController = ScrollController(initialScrollOffset: widget.child == null ? 55 : 0);
+    scrollController = ScrollController(initialScrollOffset: widget.disableAddons ? 0 : 55);
     groupSelection = widget.segments?.keys.first;
   }
 
@@ -71,7 +75,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
   Widget build(BuildContext context) {
     var navBarSliver = SliverNavigationBar(
       backgroundColor: widget.backgroundColor,
-      alternativeVisibility: widget.child != null,
+      alternativeVisibility: widget.disableAddons,
       transitionBetweenRoutes: widget.transitionBetweenRoutes,
       leading: widget.leading,
       previousPageTitle: widget.previousPageTitle,
@@ -81,7 +85,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
         children: [
           Align(alignment: Alignment.centerLeft, child: widget.largeTitle),
           Visibility(
-              visible: widget.child == null,
+              visible: !widget.disableAddons,
               child: Container(
                 margin: const EdgeInsets.only(top: 5),
                 height: lerpDouble(0, 55, isVisibleSearchBar.clamp(0.0, 55.0) / 55.0),
@@ -153,7 +157,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                 color: Color.fromARGB(255, 242, 242, 247), darkColor: Color.fromARGB(255, 0, 0, 0)),
         child: NotificationListener<ScrollNotification>(
           onNotification: (ScrollNotification scrollInfo) {
-            if (widget.child != null) return true;
+            if (widget.disableAddons) return true;
             if (scrollInfo is ScrollUpdateNotification) {
               if (scrollInfo.metrics.pixels < -120 && !isRefreshing && widget.setState != null) {
                 setState(() => isRefreshing = true);
