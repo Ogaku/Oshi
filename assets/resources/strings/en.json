@@ -41,7 +41,7 @@
         "Grind those marks!",
         "Grind never stops...",
         "A school speedrun?",
-        "School speedrun any%",
+        "School speedrun any%?",
         "A true genius?",
         "Lessons speedrun?",
         "You got this!",
@@ -54,6 +54,8 @@
         "Survive!",
         "Oh man!",
         "Difficulty set to high",
+        "Difficulty set to normal",
+        "Difficulty set to low",
         "Browse some memes...",
         "Have you checked memes?",
         "Check todays memes!",
@@ -67,6 +69,7 @@
         "Now supports åäö!",
         "...!",
         "Godmode enabled!",
+        "Godmode disabled!",
         "Like a pro",
         "Teacher be acting sus",
         "The teacher is a spy!",
@@ -86,6 +89,7 @@
         "Wash your hands",
         "Stay safe!",
         "Stay strong!",
+        "Stay safe and strong!",
         "Maybe stay home today",
         "Prepare for learning",
         "You are valid!",
@@ -115,7 +119,7 @@
         },
         {
             "title": "NOWAY!!!1 ITZ OVER!!!",
-            "subtitle": "YOU HEVE JUST SURVIVED ALL {} LESSONS!"
+            "subtitle": "YOU HAVE JUST SURVIVED ALL {} LESSONS!"
         },
         {
             "title": "It's over. Can you believe it?",
@@ -131,7 +135,7 @@
         },
         {
             "title": "Go home, take some rest",
-            "subtitle": "You passed all {} lessons today"
+            "subtitle": "You've passed all {} lessons today"
         },
         {
             "title": "Supercalifragilisticexpialidocious",
@@ -143,7 +147,7 @@
         },
         {
             "title": "That's a nice lesson you had there...",
-            "subtitle": "You passed all {} lessons today"
+            "subtitle": "You've passed all {} lessons today"
         },
         {
             "title": "The evolution of educating and education",
@@ -163,11 +167,11 @@
         },
         {
             "title": "Keep your head up, there's two of us in that now",
-            "subtitle": "You passed all {} lessons today"
+            "subtitle": "You've passed all {} lessons today"
         },
         {
             "title": "It was a true horror",
-            "subtitle": "You passed all {} lessons today"
+            "subtitle": "You've passed all {} lessons today"
         },
         {
             "title": "Protecc but also attacc",
@@ -187,7 +191,7 @@
         },
         {
             "title": "Now go home and do your homework",
-            "subtitle": "You passed all {} lessons today"
+            "subtitle": "You've passed all {} lessons today"
         },
         {
             "title": "Too EZ",
@@ -195,7 +199,7 @@
         },
         {
             "title": "Did you just finished your lessons?",
-            "subtitle": "All {} lessons passed"
+            "subtitle": "All {} lessons completed"
         },
         {
             "title": "Use some ChatGPT, surely it will help...",
@@ -211,11 +215,11 @@
         },
         {
             "title": "General Kenobi!",
-            "subtitle": "All {} lessons passed"
+            "subtitle": "All {} lessons completed"
         },
         {
             "title": "Good they won't do a sequel...",
-            "subtitle": "All {} lessons passed"
+            "subtitle": "All {} lessons completed"
         },
         {
             "title": "[This splash is locked - require lvl 40]",
@@ -223,11 +227,11 @@
         },
         {
             "title": "And now what...?",
-            "subtitle": "All {} lessons passed"
+            "subtitle": "All {} lessons completed"
         },
         {
             "title": "Hit that new level in that game!",
-            "subtitle": "All {} lessons passed"
+            "subtitle": "All {} lessons completed"
         },
         {
             "title": "Stay strong and stay safe!",
@@ -239,15 +243,15 @@
         },
         {
             "title": "Hey, yoo, look I'm in a splash!",
-            "subtitle": "All {} lessons passed"
+            "subtitle": "All {} lessons completed"
         },
         {
             "title": "What did you expect?",
-            "subtitle": "All {} lessons passed"
+            "subtitle": "All {} lessons completed"
         },
         {
             "title": "Have a marvelous evening!",
-            "subtitle": "You passed all {} lessons today"
+            "subtitle": "You've passed all {} lessons today"
         },
         {
             "title": "All rumors are true...",
@@ -259,7 +263,7 @@
         },
         {
             "title": "Imagine here something funny and satisfacting",
-            "subtitle": "You completed all {} lessons"
+            "subtitle": "You've completed all {} lessons"
         },
         {
             "title": "An illusion! What are you hiding?",
@@ -267,7 +271,7 @@
         },
         {
             "title": "Don't forget to get some covfefe... covafe...",
-            "subtitle": "You know what you should get - {} lessons passed"
+            "subtitle": "You know what you should get - {} lessons completed"
         },
         {
             "title": "HOLY MOLY, you're going too fast!",
@@ -275,7 +279,7 @@
         },
         {
             "title": "Now you can play some games",
-            "subtitle": "All {} lessons passed"
+            "subtitle": "All {} lessons completed"
         },
         {
             "title": "Did you know that this splash message is too long to be displayed correctly? Don't believe me? Just look at me! I hope devs won't find it!",
@@ -287,7 +291,7 @@
         },
         {
             "title": "One day, somewhere in the future, my work will be quoted!",
-            "subtitle": "You completed all {} lessons"
+            "subtitle": "You've completed all {} lessons"
         },
         {
             "title": "??????",
@@ -295,7 +299,7 @@
         },
         {
             "title": "hope you're feeling great because",
-            "subtitle": "You completed all {} lessons"
+            "subtitle": "You've completed all {} lessons"
         },
         {
             "title": "Has ending!",
@@ -311,7 +315,7 @@
         },
         {
             "title": "It was a pleasure to meet you",
-            "subtitle": "You completed all {} lessons"
+            "subtitle": "You've completed all {} lessons"
         },
         {
             "title": "Todays lessons were sponsored by RAID SHADOW LEGENDS!",
@@ -319,7 +323,7 @@
         },
         {
             "title": "Bringing home the bacon",
-            "subtitle": "You completed all {} lessons"
+            "subtitle": "You've completed all {} lessons"
         },
         {
             "title": "Good ending",
@@ -332,6 +336,14 @@
         {
             "title": "See you tomorrow",
             "subtitle": "Today you have completed all {} lessons"
+        },
+        {
+            "title": "I hope you learned something...",
+            "subtitle": "{} lessons wasted"
+        },
+        {
+            "title": "I hope you made a good use of that time",
+            "subtitle": "Time wasted: {} x 45min"
         }
     ]
 }
