@@ -12,6 +12,7 @@ import 'package:oshi/models/progress.dart' show IProgress;
 
 import 'package:oshi/providers/librus/librus_data.dart' show LibrusDataReader;
 import 'package:oshi/providers/sample/sample_data.dart' show FakeDataReader;
+import 'package:oshi/share/config.dart';
 
 part 'share.g.dart';
 
@@ -54,10 +55,21 @@ class Settings {
   // All sessions maintained by the app, including the current one
   SessionsData sessions = SessionsData();
 
+  // The application configuration
+  Config config = Config();
+
   // Load all the data from storage, called manually
   Future<({bool success, Exception? message})> load() async {
     try {
+      // Remove all change listeners
+      config.removeListener(save);
+
+      // Load saved settings
       sessions = (await Hive.openBox('sessions')).get('sessions', defaultValue: SessionsData());
+      config = (await Hive.openBox('config')).get('config', defaultValue: Config());
+
+      // Re-setup change listeners
+      config.addListener(save);
     } on Exception catch (ex) {
       return (success: false, message: ex);
     } catch (ex) {
@@ -70,6 +82,7 @@ class Settings {
   Future<({bool success, Exception? message})> save() async {
     try {
       (await Hive.openBox('sessions')).put('sessions', sessions);
+      (await Hive.openBox('config')).put('config', config);
     } on Exception catch (ex) {
       return (success: false, message: ex);
     } catch (ex) {
@@ -81,7 +94,16 @@ class Settings {
   // Clear provider settings - login data, other custom settings
   Future<({bool success, Exception? message})> clear() async {
     try {
+      // Remove all change listeners
+      config.removeListener(save);
+
+      // Clear internal settings
       (await Hive.openBox('sessions')).clear();
+      (await Hive.openBox('config')).clear();
+
+      // Re-generate settings
+      sessions = SessionsData();
+      config = Config();
     } on Exception catch (ex) {
       return (success: false, message: ex);
     } catch (ex) {

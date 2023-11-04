@@ -3,8 +3,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:oshi/share/config.dart';
 import 'package:oshi/share/share.dart';
-import 'package:oshi/share/config.dart' show Config;
 
 import 'package:oshi/models/data/announcement.dart' show AnnouncementAdapter;
 import 'package:oshi/models/data/attendances.dart' show AttendanceAdapter, AttendanceTypeAdapter;
@@ -60,7 +60,8 @@ Future<void> main() async {
     ..registerAdapter(LessonRangesAdapter())
     ..registerAdapter(ProviderDataAdapter())
     ..registerAdapter(SessionsDataAdapter())
-    ..registerAdapter(SessionAdapter());
+    ..registerAdapter(SessionAdapter())
+    ..registerAdapter(ConfigAdapter());
 
   await Share.settings.load(); // TODO you'll know what to do with this... when time comes.
   Share.session = Share.settings.sessions.lastSession ?? Session(providerGuid: 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER');
@@ -77,7 +78,7 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  StatefulWidget Function() child = Config.useCupertino
+  StatefulWidget Function() child = Share.settings.config.useCupertino
       ? () => (Share.settings.sessions.lastSession != null ? cupertinoapp.baseApp : cupertinoapp.sessionsPage)
       : () => materialapp.sessionsPage;
 

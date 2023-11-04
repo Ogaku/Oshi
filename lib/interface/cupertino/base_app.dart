@@ -12,7 +12,6 @@ import 'package:oshi/interface/cupertino/pages/grades.dart' show gradesPage;
 import 'package:oshi/interface/cupertino/pages/timetable.dart' show timetablePage;
 import 'package:oshi/interface/cupertino/pages/messages.dart' show messagesPage;
 import 'package:oshi/interface/cupertino/pages/absences.dart' show absencesPage;
-import 'package:oshi/share/config.dart';
 import 'package:oshi/share/share.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:version/version.dart';
@@ -160,6 +159,6 @@ class _BaseAppState extends State<BaseApp> {
       return CupertinoThemeData(primaryColor: CupertinoColors.systemRed);
     }
     // Default colors - should be changeable through settings
-    return CupertinoThemeData(primaryColor: Config.cupertinoAccentColor);
+    return CupertinoThemeData(primaryColor: Share.settings.config.cupertinoAccentColor.color);
   }
 }

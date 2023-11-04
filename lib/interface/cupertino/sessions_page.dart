@@ -8,7 +8,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:event/event.dart';
 import 'package:oshi/interface/cupertino/new_session.dart';
 import 'package:oshi/models/progress.dart';
-import 'package:oshi/share/config.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -385,6 +384,6 @@ class _SessionsPageState extends State<SessionsPage> {
       return CupertinoThemeData(primaryColor: CupertinoColors.systemRed);
     }
     // Default colors - should be changeable through settings
-    return CupertinoThemeData(primaryColor: Config.cupertinoAccentColor);
+    return CupertinoThemeData(primaryColor: Share.settings.config.cupertinoAccentColor.color);
   }
 }

@@ -1002,6 +1002,14 @@ extension ListAppendExtension on Iterable<Widget> {
     if (!condition) return toList();
     return prepend(element).toList();
   }
+
+  List<Widget> appendIfEmpty(Widget element) {
+    return appendIf(element, isEmpty).toList();
+  }
+
+  List<Widget> prependIfEmpty(Widget element) {
+    return prependIf(element, isEmpty).toList();
+  }
 }
 
 extension TableAppendExtension on Iterable<TableRow> {

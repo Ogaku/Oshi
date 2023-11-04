@@ -82,7 +82,13 @@ class _NavState extends State<SliverNavigationBar> {
       middle: (widget.middle != null && widget.alternativeVisibility)
           ? VisibilityDetector(
               key: UniqueKey(),
-              onVisibilityChanged: (VisibilityInfo info) => setState(() => _isCollapsed = info.visibleFraction >= 1.0),
+              onVisibilityChanged: (VisibilityInfo info) {
+                try {
+                  setState(() => _isCollapsed = info.visibleFraction >= 1.0);
+                } catch (ex) {
+                  // ignored
+                }
+              },
               child: widget.middle!)
           : widget.middle,
       stretch: true,

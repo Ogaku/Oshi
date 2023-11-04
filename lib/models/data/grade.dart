@@ -4,10 +4,18 @@ import 'package:darq/darq.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/models/data/teacher.dart';
-import 'package:oshi/share/config.dart';
 
 import 'package:hive/hive.dart';
+import 'package:oshi/share/share.dart';
+
 part 'grade.g.dart';
+
+Map<String, double> get _customGradeModifierValues {
+  var values = {...Share.settings.config.customGradeModifierValues};
+  values.update('+', (value) => value, ifAbsent: () => 0.5);
+  values.update('-', (value) => value, ifAbsent: () => -0.25);
+  return values;
+}
 
 @HiveType(typeId: 26)
 @JsonSerializable()
@@ -101,7 +109,8 @@ class Grade extends HiveObject {
   @JsonKey(includeToJson: false, includeFromJson: false)
   double get asValue {
     double val = switch (value.isNotEmpty ? value[0] : value) {
-          _ when (Config.customGradeValues?.containsKey(value) ?? false) => Config.customGradeValues![value],
+          _ when (Share.settings.config.customGradeValues.containsKey(value)) =>
+            Share.settings.config.customGradeValues[value],
           '1' => 1,
           '2' => 2,
           '3' => 3,
@@ -114,9 +123,9 @@ class Grade extends HiveObject {
 
     try {
       // Handle all 6+, 1-, 5+ grade string values
-      if ((Config.customGradeModifierValues?.containsKey(value[value.length - 1]) ?? false) &&
-          !(Config.customGradeValues?.containsKey(value) ?? false))
-        val += (Config.customGradeValues?[value[value.length - 1]] ?? 0);
+      if ((_customGradeModifierValues.containsKey(value[value.length - 1])) &&
+          !(Share.settings.config.customGradeValues.containsKey(value)))
+        val += (_customGradeModifierValues[value[value.length - 1]] ?? 0);
     } catch (ex) {
       // ignored
     }

@@ -4,9 +4,9 @@
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:oshi/interface/cupertino/views/options_page.dart';
+import 'package:oshi/interface/cupertino/widgets/entries_form.dart';
+import 'package:oshi/interface/cupertino/widgets/options_page.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
-import 'package:oshi/share/config.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -66,7 +66,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       context,
                       CupertinoPageRoute(
                           builder: (context) => OptionsPage(
-                              selection: Config.useCupertino,
+                              selection: Share.settings.config.useCupertino,
                               title: 'App Style',
                               description:
                                   'Note, there is no ETA for the Material interface style. Likely, the Cupertino one has to be finished first, as there is only one developer.',
@@ -74,7 +74,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 OptionEntry(name: 'Cupertino', value: true),
                                 OptionEntry(name: 'Material', value: false),
                               ],
-                              update: (v) {}))),
+                              update: <T>(v) {}))),
                   title: Text('App Style', overflow: TextOverflow.ellipsis),
                   trailing: Row(children: [
                     Container(
@@ -86,25 +86,25 @@ class _SettingsPageState extends State<SettingsPage> {
                       context,
                       CupertinoPageRoute(
                           builder: (context) => OptionsPage(
-                              selection: Config.cupertinoAccentColor,
+                              selection: Share.settings.config.cupertinoAccentColor,
                               title: 'Accent Color',
                               description:
                                   'Note, this color may be overridden during certain events, such as Christmas, Easter, or Halloween.',
                               options: Resources.accentColors.entries
                                   .select((x, index) => OptionEntry(
-                                      name: x.value,
+                                      name: x.value.name,
                                       value: x.key,
                                       decoration: Container(
                                           margin: EdgeInsets.only(bottom: 2, right: 7),
                                           child: Container(
                                             height: 10,
                                             width: 10,
-                                            decoration: BoxDecoration(shape: BoxShape.circle, color: x.key),
+                                            decoration: BoxDecoration(shape: BoxShape.circle, color: x.value.color),
                                           ))))
                                   .toList(),
-                              update: (v) {
-                                if (v is! CupertinoDynamicColor) return;
-                                Config.cupertinoAccentColor = v; // Set
+                              update: <T>(v) {
+                                Share.settings.config.cupertinoAccentColor =
+                                    Resources.accentColors[v] ?? Resources.accentColors.values.first; // Set
                                 Share.refreshBase.broadcast(); // Refresh
                               }))),
                   title: Text('Accent Color', overflow: TextOverflow.ellipsis),
@@ -112,7 +112,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     Container(
                         margin: EdgeInsets.symmetric(horizontal: 5),
                         child: Opacity(
-                            opacity: 0.5, child: Text(Resources.accentColors[Config.cupertinoAccentColor] ?? 'System Red'))),
+                            opacity: 0.5,
+                            child: Text(
+                                Resources.accentColors[Share.settings.config.cupertinoAccentColor]?.name ?? 'System Red'))),
                     CupertinoListTileChevron()
                   ])),
               CupertinoListTile(
@@ -120,23 +122,24 @@ class _SettingsPageState extends State<SettingsPage> {
                       context,
                       CupertinoPageRoute(
                           builder: (context) => OptionsPage(
-                              selection: Config.languageCode,
+                              selection: Share.settings.config.languageCode,
                               title: 'Language',
                               description:
                                   'The selected language will only be reflected in the app interface. Grade, event, lesson descriptions and generated messages will not be affected.',
                               options: Resources.languages.entries
                                   .select((x, index) => OptionEntry(name: x.value, value: x.key))
                                   .toList(),
-                              update: (v) {
-                                if (v is! String) return;
-                                Config.languageCode = v; // Set
+                              update: <T>(v) {
+                                Share.settings.config.languageCode = v; // Set
                                 Share.refreshBase.broadcast(); // Refresh
                               }))),
                   title: Text('Language', overflow: TextOverflow.ellipsis),
                   trailing: Row(children: [
                     Container(
                         margin: EdgeInsets.symmetric(horizontal: 5),
-                        child: Opacity(opacity: 0.5, child: Text(Resources.languages[Config.languageCode] ?? 'English'))),
+                        child: Opacity(
+                            opacity: 0.5,
+                            child: Text(Resources.languages[Share.settings.config.languageCode] ?? 'English'))),
                     CupertinoListTileChevron()
                   ])),
               CupertinoListTile(
@@ -202,7 +205,54 @@ class _SettingsPageState extends State<SettingsPage> {
                   title: Text('Average Settings', overflow: TextOverflow.ellipsis),
                   trailing: CupertinoListTileChevron()),
               CupertinoListTile(
-                  onTap: () {},
+                  onTap: () => Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) => CupertinoPageScaffold(
+                              backgroundColor: const CupertinoDynamicColor.withBrightness(
+                                  color: Color.fromARGB(255, 242, 242, 247), darkColor: Color.fromARGB(255, 0, 0, 0)),
+                              navigationBar: CupertinoNavigationBar(
+                                  transitionBetweenRoutes: false,
+                                  automaticallyImplyLeading: true,
+                                  previousPageTitle: 'Back',
+                                  middle: Text('Custom Grade Values'),
+                                  border: null,
+                                  backgroundColor: const CupertinoDynamicColor.withBrightness(
+                                      color: Color.fromARGB(255, 242, 242, 247), darkColor: Color.fromARGB(255, 0, 0, 0))),
+                              child: SingleChildScrollView(
+                                  child: Column(children: [
+                                // Custom grade values
+                                EntriesForm<double>(
+                                    header: 'CUSTOM GRADE MODIFIERS',
+                                    description:
+                                        'These values will overwite all default grade modifiers for the specified entries, e.g. count \'-\' as \'-0.25\', etc.',
+                                    placeholder: 'Value',
+                                    maxKeyLength: 1,
+                                    update: <T>([v]) => (Share.settings.config.customGradeModifierValues =
+                                            v?.cast() ?? Share.settings.config.customGradeModifierValues)
+                                        .cast(),
+                                    validate: (v) => double.tryParse(v)),
+                                // Custom grade values
+                                EntriesForm<double>(
+                                    header: 'CUSTOM GRADE MARGINS',
+                                    description:
+                                        'These values will overwite the default grade margins, e.g. make values such as \'4.75\' count as \'5\', etc.',
+                                    placeholder: 'Value',
+                                    update: <T>([v]) => (Share.settings.config.customGradeMarginValues =
+                                            v?.cast() ?? Share.settings.config.customGradeMarginValues)
+                                        .cast(),
+                                    validate: (v) => double.tryParse(v)),
+                                // Custom grade values
+                                EntriesForm<double>(
+                                    header: 'CUSTOM GRADES',
+                                    description:
+                                        'These values will overwite all default grade values for the specified entries, e.g. from \'nb\' to \'1\', etc.',
+                                    placeholder: 'Value',
+                                    update: <T>([v]) => (Share.settings.config.customGradeValues =
+                                            v?.cast() ?? Share.settings.config.customGradeValues)
+                                        .cast(),
+                                    validate: (v) => double.tryParse(v))
+                              ]))))),
                   title: Text('Custom Grade Values', overflow: TextOverflow.ellipsis),
                   trailing: CupertinoListTileChevron()),
             ],
