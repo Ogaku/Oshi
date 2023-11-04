@@ -71,6 +71,12 @@ Future<void> main() async {
   Share.session = Share.settings.sessions.lastSession ?? Session(providerGuid: 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER');
   if (Share.settings.sessions.lastSession != null) Share.session.tryLogin(); // Auto-login on restart if valid
 
+  // Load localization resources
+  await Share.translator.loadResources(Share.settings.config.languageCode);
+  Share.currentIdleSplash = Share.translator.getRandomSplash();
+  Share.currentEndingSplash = Share.translator.getRandomEndingSplash();
+
+  // Start the actual application
   runApp(const MainApp());
 }
 

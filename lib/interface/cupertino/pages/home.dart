@@ -254,10 +254,11 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       child: SearchableSliverNavigationBar(
         onProgress: (progress) => setState(() => _progressMessage = progress?.message),
         setState: setState,
-        // segments: {'home': 'Home', 'timeline': 'Timeline'},
+        // segments: {'home': Share.translator.get('/Titles/Pages/Home'), 'timeline': 'Timeline'},
         searchController: searchController,
-        largeTitle: Text('Home'),
-        middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('Home')),
+        largeTitle: Text(Share.translator.get('/Titles/Pages/Home')),
+        middle:
+            Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text(Share.translator.get('/Titles/Pages/Home'))),
         leading: Visibility(
             visible: _progressMessage?.isNotEmpty ?? false,
             child: Container(
@@ -295,7 +296,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
               margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
               additionalDividerMargin: 5,
               hasLeading: false,
-              header: Text('Summary'),
+              header: Text(Share.translator.get('/Titles/Pages/Grades')),
               children: [
                 CupertinoListTile(
                     onTap: () {
@@ -316,7 +317,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                               Expanded(
                                   child: Container(
-                                margin: EdgeInsets.only(top: 8),
+                                margin: EdgeInsets.only(top: 10),
                                 child: Text(glanceTitle,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
@@ -829,7 +830,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     if ((currentDay?.hasLessons ?? false) &&
         DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
         DateTime.now().difference(currentDay?.dayEnd ?? DateTime.now()).inHours < 2) {
-      return (flexible: "You've survived all ${currentDay!.lessonsNumber.asLessonNumber()}!", standard: '');
+      return (flexible: Share.currentEndingSplash.subtitle, standard: '');
     }
 
     // No lessons today or tomorrow - T5
@@ -890,7 +891,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     if ((currentDay?.hasLessons ?? false) &&
         DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
         DateTime.now().difference(currentDay?.dayEnd ?? DateTime.now()).inHours < 2) {
-      return 'Way to go!';
+      return Share.currentEndingSplash.title;
     }
 
     // Lessons have ended - 7.2
@@ -946,7 +947,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
 
     // Other options, possibly?
     // Ambient - during the day - BTM
-    return "Keep yourself safe...";
+    return Share.currentIdleSplash;
   }
 
   Widget get _eventfulMenuButton {

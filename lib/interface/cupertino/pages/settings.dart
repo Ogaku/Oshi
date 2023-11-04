@@ -143,7 +143,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                         .toList(),
                                     update: <T>(v) {
                                       Share.settings.config.languageCode = v; // Set
-                                      Share.refreshBase.broadcast(); // Refresh
+                                      Share.translator
+                                          .loadResources(Share.settings.config.languageCode)
+                                          .then((value) => Share.refreshBase.broadcast()); // Refresh
                                     })
                               ]))),
                   title: Text('Language', overflow: TextOverflow.ellipsis),

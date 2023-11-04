@@ -1,6 +1,7 @@
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/models/provider.dart';
 
@@ -13,10 +14,16 @@ import 'package:oshi/models/progress.dart' show IProgress;
 import 'package:oshi/providers/librus/librus_data.dart' show LibrusDataReader;
 import 'package:oshi/providers/sample/sample_data.dart' show FakeDataReader;
 import 'package:oshi/share/config.dart';
+import 'package:oshi/share/translator.dart';
 
 part 'share.g.dart';
 
 class Share {
+  // The application string resources handler
+  static Translator translator = Translator();
+  static String currentIdleSplash = '???';
+  static ({String title, String subtitle}) currentEndingSplash = (title: '???', subtitle: '???');
+
   // The provider and register data for the current session
   // MUST be initialized before switching to the base app
   static late Session session;
@@ -210,6 +217,11 @@ class Session extends HiveObject {
       var result1 = await provider.refresh(weekStart: weekStart, progress: progress);
       var result2 = await provider.refreshMessages(progress: progress);
       await updateData(info: result1.success, messages: result2.success);
+
+      Share.currentIdleSplash = Share.translator.getRandomSplash();
+      Share.currentEndingSplash = Share.translator.getRandomEndingSplash(
+          Share.session.data.timetables[DateTime.now().asDate(utc: true).asDate()]?.lessonsNumber.asLessonNumber() ?? '???');
+          
       return (success: result1.success && result2.success, message: result1.message ?? result2.message);
     } catch (ex, stack) {
       Share.showErrorModal.broadcast(Value((

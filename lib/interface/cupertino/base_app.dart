@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:path/path.dart' as path;
 
 import 'package:oshi/interface/cupertino/pages/home.dart' show homePage;
 import 'package:oshi/interface/cupertino/pages/grades.dart' show gradesPage;
@@ -30,6 +32,17 @@ class _BaseAppState extends State<BaseApp> {
   CupertinoTabController tabController = CupertinoTabController();
 
   @override
+  void initState() {
+    super.initState();
+
+    // Set up a filesystem watcher
+    if (kDebugMode && Platform.isWindows) {
+      File(path.join(Directory.current.path, 'assets/resources/strings')).watch().listen(
+          (event) => Share.translator.loadResources(Share.settings.config.languageCode).then((value) => setState(() {})));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Re-subscribe to all events - navigation
     Share.tabsNavigatePage.unsubscribeAll();
@@ -41,6 +54,11 @@ class _BaseAppState extends State<BaseApp> {
     // Re-subscribe to all events - refresh
     Share.refreshBase.unsubscribeAll();
     Share.refreshBase.subscribe((args) => setState(() {}));
+
+    // // Reload localization resources
+    // if (kDebugMode && Platform.isWindows) {
+    //   Share.translator.loadResources(Share.settings.config.languageCode);
+    // }
 
     return CupertinoApp(
         theme: _eventfulColorTheme,
@@ -100,11 +118,16 @@ class _BaseAppState extends State<BaseApp> {
           return CupertinoTabScaffold(
             controller: tabController,
             tabBar: CupertinoTabBar(backgroundColor: CupertinoTheme.of(context).barBackgroundColor.withAlpha(0xFF), items: [
-              BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: 'Home'),
-              BottomNavigationBarItem(icon: Icon(CupertinoIcons.rosette), label: 'Grades'),
-              BottomNavigationBarItem(icon: Icon(CupertinoIcons.calendar), label: 'Schedule'),
-              BottomNavigationBarItem(icon: Icon(CupertinoIcons.envelope_fill), label: 'Messages'),
-              BottomNavigationBarItem(icon: Icon(CupertinoIcons.person_crop_circle_badge_minus), label: 'Absences'),
+              BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: Share.translator.get('/Titles/Pages/Home')),
+              BottomNavigationBarItem(
+                  icon: Icon(CupertinoIcons.rosette), label: Share.translator.get('/Titles/Pages/Grades')),
+              BottomNavigationBarItem(
+                  icon: Icon(CupertinoIcons.calendar), label: Share.translator.get('/Titles/Pages/Schedule')),
+              BottomNavigationBarItem(
+                  icon: Icon(CupertinoIcons.envelope), label: Share.translator.get('/Titles/Pages/Messages')),
+              BottomNavigationBarItem(
+                  icon: Icon(CupertinoIcons.person_crop_circle_badge_minus),
+                  label: Share.translator.get('/Titles/Pages/Absences')),
             ]),
             tabBuilder: (context, index) => CupertinoTabView(
               builder: (context) => switch (index) {
