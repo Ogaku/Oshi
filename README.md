@@ -16,4 +16,4 @@ If this creepy pun hasn't discouraged you enough to run away yet, here are the:
 - `flutter build ipa`, or just use GitHub Actions
 
 ## Download the beta version (or even alpha version)
-- [releases page](https://github.com/Ogaku/Oshi/releases)
+- [Releases page](https://github.com/Ogaku/Oshi/releases)
