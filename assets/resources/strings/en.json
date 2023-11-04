@@ -1,0 +1,261 @@
+
+{
+    "language" : "English",
+
+    "splashes" : [
+        "May the God bles you",
+        "You will survive!",
+        "Will you survive?",
+        "Brace yourself!",
+        "Keep yourself safe...",
+        "May the force be with you",
+        "Sheeeeeeesh...",
+        "Good luck",
+        "Shh... they're gonna know",
+        "Remember, no absence",
+        "LEEESSSS GOOOOO",
+        "Soon it will end",
+        "Almost there!",
+        "Truancy? Who tf needs it?",
+        "Try Librus! Oh wait...",
+        "Grind those marks!",
+        "Grind never stops...",
+        "A school speedrun?",
+        "School speedrun any%",
+        "A true genius?",
+        "Lessons speedrun?",
+        "You got this!",
+        "You're doin' it!",
+        "He needs some milk!",
+        "Awesome!",
+        "As expected",
+        "Today is a good day",
+        "|-|3110",
+        "Survive!",
+        "Oh man!",
+        "Difficulty set to high",
+        "Browse some memes...",
+        "Have you checked memes?",
+        "Check todays memes!",
+        "A splash text - for real",
+        "Yes, sir!",
+        "Random splash!",
+        "You can do this!",
+        "sqrt(-1) love you!",
+        "150% hyperbole!",
+        "Cogito ergo sum",
+        "Now supports åäö!",
+        "...!",
+        "Godmode enabled!",
+        "Like a pro",
+        "Teacher be acting sus",
+        "The teacher is a spy!",
+        "Stay undefeated!",
+        "Stay hydrated!",
+        "Follow the schedule, CJ!",
+        "Leveraging synerg(ia)y!",
+        "Fnord!",
+        "Child's play!",
+        "/give @p hugs 64",
+        "Something funny",
+        "Something encouraging",
+        "All rumors are true!",
+        "Don't worry, be happy!",
+        "Packed your lunch?",
+        "Go to the dentist",
+        "Wash your hands",
+        "Stay safe!",
+        "Stay strong!",
+        "Maybe stay home today",
+        "Prepare for learning",
+        "You are valid!",
+        "Glad you're here!",
+        "Hello there!",
+        "You're welcome here",
+        "[Put a splash here]",
+        "Innovate innovation",
+        "You read splash text?",
+        "Mostly harmless",
+        "Is homework done?",
+        "School 2 unconfirmed!",
+        "Crush it!",
+        "Teachers gonna teach",
+        "Learners gonna learn",
+        "Not too cool 4 school!",
+        "Get smarter!"
+    ],
+
+    "ending_splashes" : [
+        {"title": "Way to go!",
+        "subtitle": "You've survived all {} lessons"},
+
+        {"title": "It's all over now!",
+        "subtitle": "You've survived all {} lessons"},
+
+        {"title": "NOWAY!!!1 ITZ OVER!!!",
+        "subtitle": "YOU HEVE JUST SURVIVED ALL {} LESSONS!"},
+
+        {"title": "It's over. Can you believe it?",
+        "subtitle": "{} lessons, Can you believe it?"},
+
+        {"title": "School speedrun any%",
+        "subtitle": "You got {} achievements!"},
+        
+        {"title": "You did it",
+        "subtitle": "{} lessons passed"},
+        
+        {"title": "Go home, take some rest",
+        "subtitle": "You passed all {} lessons today"},
+        
+        {"title": "Supercalifragilisticexpialidocious",
+        "subtitle": "You've survived {} lessons"},
+ 
+        {"title": "It's done for today!",
+        "subtitle": "You've survived all {} lessons"},
+        
+        {"title": "That's a nice lesson you had there...",
+        "subtitle": "You passed all {} lessons today"},
+        
+        {"title": "The evolution of educating and education",
+        "subtitle": "(More likely lack of it) {} lessons passed"},
+        
+        {"title": "You did well today ^.^",
+        "subtitle": "You've survived all {} lessons"},
+        
+        {"title": "At least it's not raining outside...",
+        "subtitle": "You've survived all {} lessons"},
+        
+        {"title": "Send us some feedback on this app!",
+        "subtitle": "You've survived all {} lessons"},
+        
+        {"title": "Keep your head up, there's two of us in that now",
+        "subtitle": "You passed all {} lessons today"},
+        
+        {"title": "It was a true horror",
+        "subtitle": "You passed all {} lessons today"},
+        
+        {"title": "Protecc but also attacc",
+        "subtitle": "You've survived {} lessons"},
+        
+        {"title": "We're still working on it",
+        "subtitle": "here, have a lessons passed number - {}"},
+        
+        {"title": "True skill in surviving",
+        "subtitle": "You've survived all {} lessons"},
+        
+        {"title": "[put an ending splash here]",
+        "subtitle": "[put ending splash message here] {}"},
+        
+        {"title": "Now go home and do your homework",
+        "subtitle": "You passed all {} lessons today"},
+        
+        {"title": "Too EZ",
+        "subtitle": "Gained {} XP"},
+        
+        {"title": "Did you just finished your lessons?",
+        "subtitle": "All {} lessons passed"},
+        
+        {"title": "Use some ChatGPT, surely it will help...",
+        "subtitle": "You've survived all {} lessons"},
+        
+        {"title": "Did you know that...",
+        "subtitle": "You've survived all {} lessons?"},
+        
+        {"title": "Fellas, is it ok to finish school?",
+        "subtitle": "You've survived {} lessons"},
+        
+        {"title": "General Kenobi!",
+        "subtitle": "All {} lessons passed"},
+        
+        {"title": "Good they won't do a sequel...",
+        "subtitle": "All {} lessons passed"},
+        
+        {"title": "[This splash is locked - require lvl 40]",
+        "subtitle": "[This splash message is also locked] - {}"},
+
+        {"title": "And now what...?",
+        "subtitle": "All {} lessons passed"},
+        
+        {"title": "Hit that new level in that game!",
+        "subtitle": "All {} lessons passed"},
+        
+        {"title": "Stay strong and stay safe!",
+        "subtitle": "You've survived all {} lessons"},
+        
+        {"title": "LEEESSSS GOOOO DAT TOO EZ!",
+        "subtitle": "You've survived all {} lessons"},
+    
+        {"title": "Hey, yoo, look I'm in a splash!",
+        "subtitle": "All {} lessons passed"},
+        
+        {"title": "What did you expect?",
+        "subtitle": "All {} lessons passed"},
+        
+        {"title": "Have a marvelous evening!",
+        "subtitle": "You passed all {} lessons today"},
+        
+        {"title": "All rumors are true...",
+        "subtitle": "You've survived all {} lessons!"},
+        
+        {"title": "Something's not quite right...",
+        "subtitle": "You survived 've {} all lessons"},
+        
+        {"title": "Imagine here something funny and satisfacting",
+        "subtitle": "You completed all {} lessons"},
+
+        {"title": "An illusion! What are you hiding?",
+        "subtitle": "I'm hiding the fact you've survived {} lessons"},
+        
+        {"title": "Don't forget to get some covfefe... covafe...",
+        "subtitle": "You know what you should get - {} lessons passed"},
+        
+        {"title": "HOLY MOLY, you're going too fast!",
+        "subtitle": "You've survived all {} lessons!"},
+        
+        {"title": "Now you can play some games",
+        "subtitle": "All {} lessons passed"},
+        
+        {"title": "Did you know that this splash message is too long to be displayed correctly? Don't believe me? Just look at me! I hope devs won't find it!",
+        "subtitle": "Today you have completed all {} lessons sir"},
+
+        {"title": "Warning! You've done great today!",
+        "subtitle": "You've survived all {} lessons"},
+        
+        {"title": "One day, somewhere in the future, my work will be quoted!",
+        "subtitle": "You completed all {} lessons"},
+        
+        {"title": "??????",
+        "subtitle": "{} lessons"},
+        
+        {"title": "hope you're feeling great because",
+        "subtitle": "You completed all {} lessons"},
+        
+        {"title": "Has ending!",
+        "subtitle": "You've ended today with all {} lessons"},
+        
+        {"title": "You're finally done!",
+        "subtitle": "Today you have completed all {} lessons sir"},
+        
+        {"title": "U812?",
+        "subtitle": "You've ate all {} lessons"},
+        
+        {"title": "It was a pleasure to meet you",
+        "subtitle": "You completed all {} lessons"},
+        
+        {"title": "Todays lessons were sponsored by RAID SHADOW LEGENDS!",
+        "subtitle": "You've survived {} lessons"},
+        
+        {"title": "Bringing home the bacon",
+        "subtitle": "You completed all {} lessons"},
+        
+        {"title": "Good ending",
+        "subtitle": "You've survived all {} lessons!"},
+
+        {"title": "It was a pleasure to accompany you today",
+        "subtitle": "Today you have completed all {} lessons sir"},
+
+        {"title": "See you tomorrow",
+        "subtitle": "Today you have completed all {} lessons"}
+
+    ]
+}
