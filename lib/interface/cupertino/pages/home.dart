@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import 'package:darq/darq.dart';
+import 'package:duration/duration.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
@@ -810,7 +811,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     if (currentLesson != null) {
       return (
         flexible: currentLesson.subject?.name ?? 'The current lesson',
-        standard: 'ends in ${DateTime.now().difference(currentLesson.timeTo ?? DateTime.now()).inMinutes.abs()} min'
+        standard: 'ends in ${DateTime.now().difference(currentLesson.timeTo ?? DateTime.now()).prettyBellString}'
       );
     }
 
@@ -819,8 +820,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       return (
         flexible: nextLesson.subject?.name ?? 'The next lesson',
         standard: DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inMinutes.abs() < 20
-            ? 'starts in ${DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inMinutes.abs() < 1 ? "${DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inSeconds.abs()}s" : "${DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inMinutes.abs()} min"}'
-            : 'starts at ${DateFormat("HH:mm").format(nextLesson.timeFrom ?? DateTime.now())}'
+            ? 'starts in ${DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).prettyBellString}'
+            : 'starts at ${DateFormat("HH:mm").format((nextLesson.timeFrom ?? DateTime.now()).add(Share.settings.config.bellOffset))}'
       );
     }
 
@@ -1032,4 +1033,13 @@ extension LessonNumber on int {
         // Note for other languages:
         // stackoverflow.com/a/76413634
       };
+}
+
+extension Pretty on Duration {
+  String get prettyBellString => prettyDuration(abs() + Share.settings.config.bellOffset,
+      tersity: this < Duration(minutes: 1) ? DurationTersity.second : DurationTersity.minute,
+      upperTersity: DurationTersity.minute,
+      abbreviated: true,
+      conjunction: ', ',
+      spacer: '');
 }

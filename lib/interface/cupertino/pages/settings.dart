@@ -236,7 +236,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                                         ? prettyDuration(result,
                                                             tersity: DurationTersity.second,
                                                             upperTersity: DurationTersity.minute,
-                                                            abbreviated: true)
+                                                            abbreviated: true,
+                                                            conjunction: ', ',
+                                                            spacer: '')
                                                         : '');
                                                   },
                                                   controller: _bellTimeController,
