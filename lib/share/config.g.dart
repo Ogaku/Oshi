@@ -16,20 +16,34 @@ class ConfigAdapter extends TypeAdapter<Config> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Config(
-      useCupertino: fields[5] as bool?,
-    )
-      .._customGradeValues = (fields[1] as Map).cast<String, double>()
-      .._customGradeMarginValues = (fields[2] as Map).cast<String, double>()
-      .._customGradeModifierValues = (fields[3] as Map).cast<String, double>()
-      .._cupertinoAccentColor = fields[4] as int
-      .._languageCode = fields[6] as String;
+    return Config()
+      .._customGradeValues =
+          fields[1] == null ? {} : (fields[1] as Map).cast<String, double>()
+      .._customGradeMarginValues =
+          fields[2] == null ? {} : (fields[2] as Map).cast<String, double>()
+      .._customGradeModifierValues = fields[3] == null
+          ? {'+': 0.5, '-': -0.25}
+          : (fields[3] as Map).cast<String, double>()
+      .._cupertinoAccentColor = fields[4] == null ? 0 : fields[4] as int
+      .._useCupertino = fields[5] == null ? true : fields[5] as bool
+      .._languageCode = fields[6] == null ? 'en' : fields[6] as String
+      .._weightedAverage = fields[7] == null ? true : fields[7] as bool
+      .._autoArithmeticAverage = fields[8] == null ? false : fields[8] as bool
+      .._yearlyAverageMethod = fields[9] == null
+          ? YearlyAverageMethods.allGradesAverage
+          : fields[9] as YearlyAverageMethods
+      .._lessonCallTime = fields[10] == null ? 15 : fields[10] as int
+      .._lessonCallType = fields[11] == null
+          ? LessonCallTypes.countFromEnd
+          : fields[11] as LessonCallTypes
+      .._bellOffset =
+          fields[12] == null ? Duration.zero : fields[12] as Duration;
   }
 
   @override
   void write(BinaryWriter writer, Config obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(12)
       ..writeByte(1)
       ..write(obj._customGradeValues)
       ..writeByte(2)
@@ -39,9 +53,21 @@ class ConfigAdapter extends TypeAdapter<Config> {
       ..writeByte(4)
       ..write(obj._cupertinoAccentColor)
       ..writeByte(5)
-      ..write(obj.useCupertino)
+      ..write(obj._useCupertino)
       ..writeByte(6)
-      ..write(obj._languageCode);
+      ..write(obj._languageCode)
+      ..writeByte(7)
+      ..write(obj._weightedAverage)
+      ..writeByte(8)
+      ..write(obj._autoArithmeticAverage)
+      ..writeByte(9)
+      ..write(obj._yearlyAverageMethod)
+      ..writeByte(10)
+      ..write(obj._lessonCallTime)
+      ..writeByte(11)
+      ..write(obj._lessonCallType)
+      ..writeByte(12)
+      ..write(obj._bellOffset);
   }
 
   @override
@@ -59,10 +85,6 @@ class ConfigAdapter extends TypeAdapter<Config> {
 // JsonSerializableGenerator
 // **************************************************************************
 
-Config _$ConfigFromJson(Map<String, dynamic> json) => Config(
-      useCupertino: json['useCupertino'] as bool?,
-    );
+Config _$ConfigFromJson(Map<String, dynamic> json) => Config();
 
-Map<String, dynamic> _$ConfigToJson(Config instance) => <String, dynamic>{
-      'useCupertino': instance.useCupertino,
-    };
+Map<String, dynamic> _$ConfigToJson(Config instance) => <String, dynamic>{};

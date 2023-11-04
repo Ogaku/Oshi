@@ -972,7 +972,7 @@ extension DateTimeExtension on DateTime {
 }
 
 extension ColorsExtension on Grade {
-  Color asColor() => switch (asValue.round()) {
+  Color asColor() => switch ((asValue - 0.01).round()) {
         6 => CupertinoColors.systemTeal,
         5 => CupertinoColors.systemGreen,
         4 => Color(0xFF76FF03),

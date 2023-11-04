@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:oshi/share/config.dart';
+import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
 
 import 'package:oshi/models/data/announcement.dart' show AnnouncementAdapter;
@@ -61,7 +62,10 @@ Future<void> main() async {
     ..registerAdapter(ProviderDataAdapter())
     ..registerAdapter(SessionsDataAdapter())
     ..registerAdapter(SessionAdapter())
-    ..registerAdapter(ConfigAdapter());
+    ..registerAdapter(YearlyAverageMethodsAdapter())
+    ..registerAdapter(LessonCallTypesAdapter())
+    ..registerAdapter(ConfigAdapter())
+    ..registerAdapter(DurationAdapter());
 
   await Share.settings.load(); // TODO you'll know what to do with this... when time comes.
   Share.session = Share.settings.sessions.lastSession ?? Session(providerGuid: 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER');
@@ -93,5 +97,20 @@ class _MainAppState extends State<MainApp> {
     });
 
     return child();
+  }
+}
+
+class DurationAdapter extends TypeAdapter<Duration> {
+  @override
+  final int typeId = 103;
+
+  @override
+  Duration read(BinaryReader reader) {
+    return Duration(seconds: reader.read());
+  }
+
+  @override
+  void write(BinaryWriter writer, Duration obj) {
+    writer.write(obj.inSeconds);
   }
 }

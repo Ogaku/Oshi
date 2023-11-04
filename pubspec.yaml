@@ -37,6 +37,7 @@ dependencies:
   share_plus: ^7.2.1
   add_2_calendar: ^3.0.1
   flutter_swipe_action_cell: ^3.1.2
+  duration: ^3.0.13
 
 dev_dependencies:
   flutter_test:
