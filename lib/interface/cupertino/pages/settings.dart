@@ -95,8 +95,8 @@ class _SettingsPageState extends State<SettingsPage> {
                           builder: (context) => CupertinoModalPage(title: 'Accent Color', children: [
                                 OptionsForm(
                                     selection: Resources.cupertinoAccentColors.entries
-                                            .firstWhereOrDefault(
-                                                (value) => value.value == Share.settings.config.cupertinoAccentColor)
+                                            .firstWhereOrDefault((value) =>
+                                                value.value.color == Share.settings.config.cupertinoAccentColor.color)
                                             ?.key ??
                                         0,
                                     description:
@@ -123,10 +123,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   trailing: Row(children: [
                     Container(
                         margin: EdgeInsets.symmetric(horizontal: 5),
-                        child: Opacity(
-                            opacity: 0.5,
-                            child: Text(Resources.cupertinoAccentColors[Share.settings.config.cupertinoAccentColor]?.name ??
-                                'System Red'))),
+                        child: Opacity(opacity: 0.5, child: Text(Share.settings.config.cupertinoAccentColor.name))),
                     CupertinoListTileChevron()
                   ])),
               CupertinoListTile(
@@ -138,8 +135,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                     selection: Share.settings.config.languageCode,
                                     description:
                                         'The selected language will only be reflected in the app interface. Grade, event, lesson descriptions and generated messages will not be affected.',
-                                    options: Resources.languages.entries
-                                        .select((x, index) => OptionEntry(name: x.value, value: x.key))
+                                    options: Share.translator.supportedLanguages
+                                        .select((x, index) => OptionEntry(name: x.name, value: x.code))
                                         .toList(),
                                     update: <T>(v) {
                                       Share.settings.config.languageCode = v; // Set
@@ -152,9 +149,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   trailing: Row(children: [
                     Container(
                         margin: EdgeInsets.symmetric(horizontal: 5),
-                        child: Opacity(
-                            opacity: 0.5,
-                            child: Text(Resources.languages[Share.settings.config.languageCode] ?? 'English'))),
+                        child: Opacity(opacity: 0.5, child: Text(Share.translator.localeName))),
                     CupertinoListTileChevron()
                   ])),
               CupertinoListTile(

@@ -8,8 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 
 class Translator {
-  String _localeLanguageName = '???';
-  String _englishLanguageName = '???';
+  Set<({String code, String name, String path})> _supportedLanguages = {};
+  Set<({String code, String name})> get supportedLanguages =>
+      _supportedLanguages.select((x, index) => (code: x.code, name: x.name)).toSet();
 
   Map<String, String> _localeTextResoures = {};
   Map<String, String> _englishTextResoures = {};
@@ -20,8 +21,8 @@ class Translator {
   List<({String title, String subtitle})> _localeEndingSplashResoures = [];
   List<({String title, String subtitle})> _englishEndingSplashResoures = [];
 
+  String _localeLanguageName = 'Unknown';
   String get localeName => _localeLanguageName;
-  String get englishName => _englishLanguageName;
 
   String get(String key) => _localeTextResoures[key] ?? _englishTextResoures[key] ?? key;
 
@@ -41,9 +42,21 @@ class Translator {
 
   Future<void> loadResources(String languageKey) async {
     try {
+      // Load our resources, scan supported languages
+      var json = await _loadAssets('locales');
+
+      _supportedLanguages = json.entries
+          .select((x, index) =>
+              (code: x.key, name: json[languageKey]?[x.key]?.toString() ?? x.value[x.key]?.toString() ?? x.key, path: x.key))
+          .toSet();
+    } catch (ex) {
+      if (kDebugMode) print(ex);
+    }
+
+    try {
       // Load our resources, and English for fallback
-      var json = await _loadAssets(languageKey);
-      _localeLanguageName = json['language'];
+      var json = await _loadAssets(_supportedLanguages.firstWhereOrDefault((x) => x.code == languageKey)?.path ?? 'en');
+      _localeLanguageName = _supportedLanguages.firstWhereOrDefault((x) => x.code == languageKey)?.name ?? 'Unknown';
 
       // Parse and move to the outer scope
       _localeTextResoures = (json['messages'] as List<dynamic>)
@@ -61,7 +74,6 @@ class Translator {
     try {
       // Load our resources, and English for fallback
       var json = await _loadAssets('en');
-      _englishLanguageName = json['language'];
 
       // Parse and move to the outer scope
       _englishTextResoures = (json['messages'] as List<dynamic>)

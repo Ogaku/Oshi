@@ -49,4 +49,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/resources/strings/locales.json
     - assets/resources/strings/en.json
+    - assets/resources/strings/fr.json

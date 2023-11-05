@@ -1,5 +1,5 @@
 {
-    "language": "English",
+    "language": "en",
     "messages": [
         {
             "id": "/Titles/Pages/Home",
@@ -130,7 +130,7 @@
             "subtitle": "{} lessons passed"
         },
         {
-            "title": "Go home, take some rest",
+            "title": "Go home, have some rest",
             "subtitle": "You passed all {} lessons today"
         },
         {

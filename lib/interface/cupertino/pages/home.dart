@@ -296,7 +296,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
               margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
               additionalDividerMargin: 5,
               hasLeading: false,
-              header: Text(Share.translator.get('/Titles/Pages/Grades')),
+              header: Text('Summary'),
               children: [
                 CupertinoListTile(
                     onTap: () {

@@ -6,6 +6,7 @@ import 'package:oshi/share/resources.dart';
 
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:oshi/share/share.dart';
 
 part 'config.g.dart';
 
@@ -90,8 +91,9 @@ class Config with ChangeNotifier {
       Resources.cupertinoAccentColors[_cupertinoAccentColor] ?? Resources.cupertinoAccentColors.values.first;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get languageCode =>
-      Resources.languages.containsKey(_languageCode) ? _languageCode : (Resources.languages.keys.firstOrDefault() ?? 'en');
+  String get languageCode => Share.translator.supportedLanguages.any((x) => x.code == _languageCode)
+      ? _languageCode
+      : (Share.translator.supportedLanguages.firstOrDefault()?.code ?? 'en');
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get useCupertino => _useCupertino;

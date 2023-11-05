@@ -17,8 +17,6 @@ class Resources {
     9: (color: CupertinoColors.systemIndigo, name: 'System Indigo'),
     10: (color: CupertinoColors.systemPurple, name: 'System Purple')
   };
-
-  static Map<String, String> languages = {'en': 'English'};
 }
 
 @HiveType(typeId: 5)

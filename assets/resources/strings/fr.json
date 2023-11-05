@@ -1,0 +1,55 @@
+{
+    "language": "fr",
+    "messages": [
+        {
+            "id": "/Titles/Pages/Home",
+            "translation": "Accueil"
+        },
+        {
+            "id": "/Titles/Pages/Grades",
+            "translation": "Les notes"
+        },
+        {
+            "id": "/Titles/Pages/Schedule",
+            "translation": "Calendrier"
+        },
+        {
+            "id": "/Titles/Pages/Messages",
+            "translation": "Messages"
+        },
+        {
+            "id": "/Titles/Pages/Absences",
+            "translation": "Absences"
+        }
+    ],
+    "splashes": [
+        "Que Dieu vous bénisse",
+        "Vous survivrez!",
+        "Survivrez-vous?",
+        "Accrochez-vous!",
+        "Veillez à votre sécurité...",
+        "Que la force soit avec vous"
+    ],
+    "ending_splashes": [
+        {
+            "title": "Bravo!",
+            "subtitle": "Vous avez survécu à toutes les leçons {}"
+        },
+        {
+            "title": "C'est fini maintenant!",
+            "subtitle": "Vous avez survécu à toutes les leçons"
+        },
+        {
+            "title": "C'est fini. Vous y croyez?",
+            "subtitle": "{} leçons, pouvez-vous le croire?"
+        },
+        {
+            "title": "Tu as réussi",
+            "subtitle": "{} leçons réussies"
+        },
+        {
+            "title": "Rentrez chez vous, reposez-vous",
+            "subtitle": "Tu as réussi toutes les {} leçons aujourd'hui"
+        }
+    ]
+}
