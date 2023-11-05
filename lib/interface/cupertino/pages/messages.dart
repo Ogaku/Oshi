@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -16,6 +17,7 @@ import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
+import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
 
 // Boiler: returned to the app tab builder
 StatefulWidget get messagesPage => MessagesPage();
@@ -88,190 +90,257 @@ class _MessagesPageState extends State<MessagesPage> {
             ]
           // Bindable messages layout
           : messagesToDisplay
-              .select((x, index) => CupertinoListTile(
-                  padding: EdgeInsets.all(0),
-                  title: CupertinoContextMenu.builder(
-                      actions: [
-                        CupertinoContextMenuAction(
-                          onPressed: () {
-                            sharing.Share.share(folder == MessageFolders.outbox
-                                ? 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.sendDate)} ${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name} wrote:\n"${x.topic}\n\n${x.preview}[...]"'
-                                : 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.sendDate)} ${x.sender?.name} wrote:\n"${x.topic}\n\n${x.preview}[...]"');
-                            Navigator.of(context, rootNavigator: true).pop();
-                          },
-                          trailingIcon: CupertinoIcons.share,
-                          child: const Text('Share'),
+              .select((x, index) => SwipeActionCell(
+                  key: UniqueKey(),
+                  backgroundColor: Colors.transparent,
+                  trailingActions: <SwipeAction>[
+                    SwipeAction(
+                        performsFirstActionWithFullSwipe: true,
+                        content: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            color: CupertinoColors.destructiveRed,
+                          ),
+                          child: Icon(
+                            CupertinoIcons.delete,
+                            color: Colors.white,
+                          ),
                         ),
-                        CupertinoContextMenuAction(
-                          isDestructiveAction: true,
-                          trailingIcon: CupertinoIcons.trash,
-                          child: const Text('Delete'),
-                          onPressed: () {
-                            if (isWorking) return;
-                            try {
-                              setState(() {
-                                (folder == MessageFolders.outbox
-                                        ? Share.session.data.messages.sent
-                                        : Share.session.data.messages.received)
-                                    .remove(x);
-                                isWorking = true;
-                              });
-                              Share.session.provider
-                                  .moveMessageToTrash(parent: x, byMe: folder == MessageFolders.outbox)
-                                  .then((value) => setState(() => isWorking = false));
-                            } on Exception catch (e) {
-                              setState(() => isWorking = false);
-                              if (Platform.isAndroid || Platform.isIOS) {
-                                Fluttertoast.showToast(
-                                  msg: '$e',
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.CENTER,
-                                  timeInSecForIosWeb: 1,
-                                );
-                              }
+                        onTap: (CompletionHandler handler) async {
+                          await handler(true);
+                          try {
+                            setState(() {
+                              (folder == MessageFolders.outbox
+                                      ? Share.session.data.messages.sent
+                                      : Share.session.data.messages.received)
+                                  .remove(x);
+                              isWorking = true;
+                            });
+                            Share.session.provider
+                                .moveMessageToTrash(parent: x, byMe: folder == MessageFolders.outbox)
+                                .then((value) => setState(() => isWorking = false));
+                          } on Exception catch (e) {
+                            setState(() => isWorking = false);
+                            if (Platform.isAndroid || Platform.isIOS) {
+                              Fluttertoast.showToast(
+                                msg: '$e',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.CENTER,
+                                timeInSecForIosWeb: 1,
+                              );
                             }
-                            // Close the current page
-                            Navigator.of(context, rootNavigator: true).pop();
-                          },
+                          }
+                        },
+                        color: CupertinoColors.destructiveRed),
+                    SwipeAction(
+                        content: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            color: CupertinoColors.systemBlue,
+                          ),
+                          child: Icon(
+                            CupertinoIcons.share,
+                            color: Colors.white,
+                          ),
                         ),
-                      ],
-                      builder: (BuildContext context, Animation<double> animation) {
-                        return GestureDetector(
-                            onTap: () {
-                              if (isWorking) return;
-                              try {
-                                if (folder == MessageFolders.announcements) {
-                                  Navigator.push(
-                                      context,
-                                      CupertinoPageRoute(
-                                          builder: (context) => MessageDetailsPage(
-                                                message: x,
-                                                isByMe: false,
-                                              )));
-                                } else {
-                                  setState(() => isWorking = true);
-
-                                  Share.session.provider
-                                      .fetchMessageContent(parent: x, byMe: folder == MessageFolders.outbox)
-                                      .then((result) {
-                                    setState(() => isWorking = false);
-
-                                    if (result.message == null && result.result != null) x.updateMessageData(result.result!);
-                                    if (x.content?.isEmpty ?? true) return;
-                                    if (folder == MessageFolders.inbox) x.readDate = DateTime.now();
-
-                                    Navigator.push(
-                                        context,
-                                        CupertinoPageRoute(
-                                            builder: (context) => MessageDetailsPage(
-                                                  message: x,
-                                                  isByMe: folder == MessageFolders.outbox,
-                                                )));
+                        onTap: (CompletionHandler handler) => sharing.Share.share(folder == MessageFolders.outbox
+                            ? 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.sendDate)} ${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name} wrote:\n"${x.topic}\n\n${x.preview}[...]"'
+                            : 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.sendDate)} ${x.sender?.name} wrote:\n"${x.topic}\n\n${x.preview}[...]"'),
+                        color: CupertinoColors.systemBlue),
+                  ],
+                  child: CupertinoListTile(
+                      padding: EdgeInsets.all(0),
+                      title: CupertinoContextMenu.builder(
+                          actions: [
+                            CupertinoContextMenuAction(
+                              onPressed: () {
+                                sharing.Share.share(folder == MessageFolders.outbox
+                                    ? 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.sendDate)} ${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name} wrote:\n"${x.topic}\n\n${x.preview}[...]"'
+                                    : 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.sendDate)} ${x.sender?.name} wrote:\n"${x.topic}\n\n${x.preview}[...]"');
+                                Navigator.of(context, rootNavigator: true).pop();
+                              },
+                              trailingIcon: CupertinoIcons.share,
+                              child: const Text('Share'),
+                            ),
+                            CupertinoContextMenuAction(
+                              isDestructiveAction: true,
+                              trailingIcon: CupertinoIcons.trash,
+                              child: const Text('Delete'),
+                              onPressed: () {
+                                if (isWorking) return;
+                                try {
+                                  setState(() {
+                                    (folder == MessageFolders.outbox
+                                            ? Share.session.data.messages.sent
+                                            : Share.session.data.messages.received)
+                                        .remove(x);
+                                    isWorking = true;
                                   });
+                                  Share.session.provider
+                                      .moveMessageToTrash(parent: x, byMe: folder == MessageFolders.outbox)
+                                      .then((value) => setState(() => isWorking = false));
+                                } on Exception catch (e) {
+                                  setState(() => isWorking = false);
+                                  if (Platform.isAndroid || Platform.isIOS) {
+                                    Fluttertoast.showToast(
+                                      msg: '$e',
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.CENTER,
+                                      timeInSecForIosWeb: 1,
+                                    );
+                                  }
                                 }
-                              } on Exception catch (e) {
-                                setState(() => isWorking = false);
-                                if (Platform.isAndroid || Platform.isIOS) {
-                                  Fluttertoast.showToast(
-                                    msg: '$e',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.CENTER,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                }
-                              }
-                            },
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                                    color: CupertinoDynamicColor.resolve(
-                                        CupertinoDynamicColor.withBrightness(
-                                            color: const Color.fromARGB(255, 255, 255, 255),
-                                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                                        context)),
-                                padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
-                                child: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                        maxHeight:
-                                            animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
-                                        maxWidth:
-                                            animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
-                                    child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                          Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Visibility(
-                                                    visible: !x.read && folder == MessageFolders.inbox,
-                                                    child: Container(
-                                                        margin: EdgeInsets.only(top: 5, right: 6),
+                                // Close the current page
+                                Navigator.of(context, rootNavigator: true).pop();
+                              },
+                            ),
+                          ],
+                          builder: (BuildContext context, Animation<double> animation) {
+                            return GestureDetector(
+                                onTap: () {
+                                  if (isWorking) return;
+                                  try {
+                                    if (folder == MessageFolders.announcements) {
+                                      Navigator.push(
+                                          context,
+                                          CupertinoPageRoute(
+                                              builder: (context) => MessageDetailsPage(
+                                                    message: x,
+                                                    isByMe: false,
+                                                  )));
+                                    } else {
+                                      setState(() => isWorking = true);
+
+                                      Share.session.provider
+                                          .fetchMessageContent(parent: x, byMe: folder == MessageFolders.outbox)
+                                          .then((result) {
+                                        setState(() => isWorking = false);
+
+                                        if (result.message == null && result.result != null) {
+                                          x.updateMessageData(result.result!);
+                                        }
+                                        if (x.content?.isEmpty ?? true) return;
+                                        if (folder == MessageFolders.inbox) x.readDate = DateTime.now();
+
+                                        Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                                builder: (context) => MessageDetailsPage(
+                                                      message: x,
+                                                      isByMe: folder == MessageFolders.outbox,
+                                                    )));
+                                      });
+                                    }
+                                  } on Exception catch (e) {
+                                    setState(() => isWorking = false);
+                                    if (Platform.isAndroid || Platform.isIOS) {
+                                      Fluttertoast.showToast(
+                                        msg: '$e',
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.CENTER,
+                                        timeInSecForIosWeb: 1,
+                                      );
+                                    }
+                                  }
+                                },
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                                        color: CupertinoDynamicColor.resolve(
+                                            CupertinoDynamicColor.withBrightness(
+                                                color: const Color.fromARGB(255, 255, 255, 255),
+                                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                                            context)),
+                                    padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
+                                    child: ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                            maxHeight: animation.value < CupertinoContextMenu.animationOpensAt
+                                                ? double.infinity
+                                                : 100,
+                                            maxWidth: animation.value < CupertinoContextMenu.animationOpensAt
+                                                ? double.infinity
+                                                : 250),
+                                        child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
+                                              Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Visibility(
+                                                        visible: !x.read && folder == MessageFolders.inbox,
                                                         child: Container(
-                                                          height: 10,
-                                                          width: 10,
-                                                          decoration: BoxDecoration(
-                                                              shape: BoxShape.circle,
-                                                              color: CupertinoTheme.of(context).primaryColor),
-                                                        ))),
-                                                Expanded(
-                                                    child: Container(
-                                                        margin: EdgeInsets.only(right: 10),
-                                                        child: Text(
-                                                          x.senderName,
-                                                          overflow: TextOverflow.ellipsis,
-                                                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                                        ))),
-                                                Visibility(
-                                                  visible: x.hasAttachments,
-                                                  child: Transform.scale(
-                                                      scale: 0.6,
-                                                      child: Icon(CupertinoIcons.paperclip,
-                                                          color: CupertinoColors.inactiveGray)),
-                                                ),
-                                                Container(
-                                                    margin: EdgeInsets.only(top: 1),
-                                                    child: Opacity(
-                                                        opacity: 0.5,
-                                                        child: Text(
-                                                          folder == MessageFolders.announcements
-                                                              ? (x.sendDate.month == x.readDate?.month &&
-                                                                      x.sendDate.year == x.readDate?.year &&
-                                                                      x.sendDate.day != x.readDate?.day
-                                                                  ? '${DateFormat('MMM d').format(x.sendDate)} - ${DateFormat('d').format(x.readDate ?? DateTime.now())}'
-                                                                  : '${DateFormat('MMM d').format(x.sendDate)} - ${DateFormat(x.sendDate.year == x.readDate?.year ? 'MMM d' : 'MMM d y').format(x.readDate ?? DateTime.now())}')
-                                                              : x.sendDateString,
-                                                          overflow: TextOverflow.ellipsis,
-                                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                                                        )))
-                                              ]),
-                                          Container(
-                                              margin: EdgeInsets.only(top: 3),
-                                              child: Text(
-                                                x.topic,
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(fontSize: 16),
-                                              )),
-                                          Opacity(
-                                              opacity: 0.5,
-                                              child: Container(
-                                                  margin: EdgeInsets.only(top: 5),
+                                                            margin: EdgeInsets.only(top: 5, right: 6),
+                                                            child: Container(
+                                                              height: 10,
+                                                              width: 10,
+                                                              decoration: BoxDecoration(
+                                                                  shape: BoxShape.circle,
+                                                                  color: CupertinoTheme.of(context).primaryColor),
+                                                            ))),
+                                                    Expanded(
+                                                        child: Container(
+                                                            margin: EdgeInsets.only(right: 10),
+                                                            child: Text(
+                                                              x.senderName,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                                            ))),
+                                                    Visibility(
+                                                      visible: x.hasAttachments,
+                                                      child: Transform.scale(
+                                                          scale: 0.6,
+                                                          child: Icon(CupertinoIcons.paperclip,
+                                                              color: CupertinoColors.inactiveGray)),
+                                                    ),
+                                                    Container(
+                                                        margin: EdgeInsets.only(top: 1),
+                                                        child: Opacity(
+                                                            opacity: 0.5,
+                                                            child: Text(
+                                                              folder == MessageFolders.announcements
+                                                                  ? (x.sendDate.month == x.readDate?.month &&
+                                                                          x.sendDate.year == x.readDate?.year &&
+                                                                          x.sendDate.day != x.readDate?.day
+                                                                      ? '${DateFormat('MMM d').format(x.sendDate)} - ${DateFormat('d').format(x.readDate ?? DateTime.now())}'
+                                                                      : '${DateFormat('MMM d').format(x.sendDate)} - ${DateFormat(x.sendDate.year == x.readDate?.year ? 'MMM d' : 'MMM d y').format(x.readDate ?? DateTime.now())}')
+                                                                  : x.sendDateString,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                                                            )))
+                                                  ]),
+                                              Container(
+                                                  margin: EdgeInsets.only(top: 3),
                                                   child: Text(
-                                                    x.previewString.replaceAll('\n ', '\n').replaceAll('\n\n', '\n'),
+                                                    x.topic,
                                                     maxLines: 2,
                                                     overflow: TextOverflow.ellipsis,
                                                     style: TextStyle(fontSize: 16),
-                                                  ))),
-                                        ]))));
-                      })))
+                                                  )),
+                                              Opacity(
+                                                  opacity: 0.5,
+                                                  child: Container(
+                                                      margin: EdgeInsets.only(top: 5),
+                                                      child: Text(
+                                                        x.previewString.replaceAll('\n ', '\n').replaceAll('\n\n', '\n'),
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: TextStyle(fontSize: 16),
+                                                      ))),
+                                            ]))));
+                          }))))
               .toList(),
     );
 
     return SearchableSliverNavigationBar(
       setState: setState,
+      useSliverBox: true,
       largeTitle: Text('Messages'),
       middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('Messages')),
       onProgress: (progress) => setState(() => _progressMessage = progress?.message),

@@ -19,6 +19,7 @@ class SearchableSliverNavigationBar extends StatefulWidget {
   final double? anchor;
   final bool? transitionBetweenRoutes;
   final bool disableAddons;
+  final bool useSliverBox;
   final TextEditingController searchController;
   final List<Widget>? children;
   final Widget? child;
@@ -49,7 +50,8 @@ class SearchableSliverNavigationBar extends StatefulWidget {
       this.backgroundColor,
       this.onProgress,
       this.anchor,
-      bool? disableAddons})
+      bool? disableAddons,
+      this.useSliverBox = false})
       : searchController = searchController ?? TextEditingController(),
         disableAddons = disableAddons ?? (child != null);
 
@@ -215,15 +217,24 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                   anchor: widget.anchor ?? 0.07,
                   slivers: <Widget>[
                     navBarSliver,
-                    SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: widget.child ??
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.max,
-                              children: widget.children ?? [],
-                            )),
+                    widget.useSliverBox
+                        ? SliverToBoxAdapter(
+                            child: widget.child ??
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: widget.children ?? [],
+                                ))
+                        : SliverFillRemaining(
+                            hasScrollBody: false,
+                            child: widget.child ??
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: widget.children ?? [],
+                                )),
                   ],
                 ),
         ));
