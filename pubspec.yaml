@@ -52,3 +52,4 @@ flutter:
     - assets/resources/strings/locales.json
     - assets/resources/strings/en.json
     - assets/resources/strings/fr.json
+    - assets/resources/strings/pl.json

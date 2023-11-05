@@ -1,10 +1,17 @@
 {
     "en": {
         "en": "English",
-        "fr": "French"
+        "fr": "French",
+        "pl": "Polish"
     },
     "fr": {
         "en": "Anglais",
-        "fr": "Français"
+        "fr": "Français",
+        "pl": "Polonais"
+    },
+    "pl": {
+        "en": "Angielski",
+        "fr": "Francuski",
+        "pl": "Polski"
     }
 }
