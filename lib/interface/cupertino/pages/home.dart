@@ -1038,9 +1038,8 @@ extension LessonNumber on int {
 
 extension Pretty on Duration {
   String get prettyBellString => prettyDuration(abs() + Share.settings.config.bellOffset,
-      tersity: this < Duration(minutes: 1) ? DurationTersity.second : DurationTersity.minute,
+      tersity: abs() < Duration(minutes: 1) ? DurationTersity.second : DurationTersity.minute,
       upperTersity: DurationTersity.minute,
-      abbreviated: true,
-      conjunction: ', ',
-      spacer: '');
+      abbreviated: abs() < Duration(minutes: 1),
+      conjunction: ', ');
 }

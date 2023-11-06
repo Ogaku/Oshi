@@ -81,7 +81,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
       transitionBetweenRoutes: widget.transitionBetweenRoutes,
       leading: widget.leading,
       previousPageTitle: widget.previousPageTitle,
-      threshold: 97,
+      threshold: 103,
       middle: widget.middle ?? widget.largeTitle,
       largeTitle: Column(
         children: [
