@@ -46,8 +46,12 @@ class Translator {
       var json = await _loadAssets('locales');
 
       _supportedLanguages = json.entries
-          .select((x, index) =>
-              (code: x.key, name: json[languageKey]?[x.key]?.toString() ?? x.value[x.key]?.toString() ?? x.key, path: x.key))
+          .select((x, index) => (
+                code: x.key,
+                name:
+                    '${json[languageKey]?[x.key] ?? x.value[x.key] ?? x.key}${x.key == languageKey ? '' : ' (${x.value[x.key]})'}',
+                path: x.key
+              ))
           .toSet();
     } catch (ex) {
       if (kDebugMode) print(ex);
