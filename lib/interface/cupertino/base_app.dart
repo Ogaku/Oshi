@@ -7,6 +7,7 @@ import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:oshi/share/translator.dart';
 import 'package:path/path.dart' as path;
 
 import 'package:oshi/interface/cupertino/pages/home.dart' show homePage;
@@ -118,16 +119,12 @@ class _BaseAppState extends State<BaseApp> {
           return CupertinoTabScaffold(
             controller: tabController,
             tabBar: CupertinoTabBar(backgroundColor: CupertinoTheme.of(context).barBackgroundColor.withAlpha(0xFF), items: [
-              BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: Share.translator.get('/Titles/Pages/Home')),
+              BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: '/Titles/Pages/Home'.localized),
+              BottomNavigationBarItem(icon: Icon(CupertinoIcons.rosette), label: '/Titles/Pages/Grades'.localized),
+              BottomNavigationBarItem(icon: Icon(CupertinoIcons.calendar), label: '/Titles/Pages/Schedule'.localized),
+              BottomNavigationBarItem(icon: Icon(CupertinoIcons.envelope), label: '/Titles/Pages/Messages'.localized),
               BottomNavigationBarItem(
-                  icon: Icon(CupertinoIcons.rosette), label: Share.translator.get('/Titles/Pages/Grades')),
-              BottomNavigationBarItem(
-                  icon: Icon(CupertinoIcons.calendar), label: Share.translator.get('/Titles/Pages/Schedule')),
-              BottomNavigationBarItem(
-                  icon: Icon(CupertinoIcons.envelope), label: Share.translator.get('/Titles/Pages/Messages')),
-              BottomNavigationBarItem(
-                  icon: Icon(CupertinoIcons.person_crop_circle_badge_minus),
-                  label: Share.translator.get('/Titles/Pages/Absences')),
+                  icon: Icon(CupertinoIcons.person_crop_circle_badge_minus), label: '/Titles/Pages/Absences'.localized),
             ]),
             tabBuilder: (context, index) => CupertinoTabView(
               builder: (context) => switch (index) {

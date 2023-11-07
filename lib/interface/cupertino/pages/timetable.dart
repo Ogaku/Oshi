@@ -338,61 +338,65 @@ extension EventWidgetsExtension on Iterable<Event> {
 
 extension EventWidgetExtension on Event {
   Widget asEventWidget(BuildContext context, bool isNotEmpty, TimetableDay? day, void Function(VoidCallback fn) setState) =>
-      CupertinoContextMenu.builder(actions: [
-        CupertinoContextMenuAction(
-          onPressed: () {
-            sharing.Share.share(
-                'There\'s a "$titleString" on ${DateFormat("EEEE, MMM d, y").format(timeFrom)} ${(classroom?.name.isNotEmpty ?? false) ? ("in ${classroom?.name ?? ""}") : "at school"}');
-            Navigator.of(context, rootNavigator: true).pop();
-          },
-          trailingIcon: CupertinoIcons.share,
-          child: const Text('Share'),
-        ),
-        category == EventCategory.homework
-            // Homework - mark as done
-            ? CupertinoContextMenuAction(
-                onPressed: () {
-                  Share.session.provider.markEventAsDone(parent: this).then((s) {
-                    if (s.success) setState(() => done = true);
-                  });
-                  Navigator.of(context, rootNavigator: true).pop();
-                },
-                trailingIcon: CupertinoIcons.check_mark,
-                child: const Text('Mark as done'),
-              )
-            // Event - add to calendar
-            : CupertinoContextMenuAction(
-                onPressed: () {
-                  try {
-                    calendar.Add2Calendar.addEvent2Cal(calendar.Event(
-                        title: titleString,
-                        description: subtitleString,
-                        location: classroom?.name,
-                        startDate: timeFrom,
-                        endDate: timeTo ?? timeFrom));
-                  } catch (ex) {
-                    // ignored
-                  }
-                  Navigator.of(context, rootNavigator: true).pop();
-                },
-                trailingIcon: CupertinoIcons.calendar,
-                child: const Text('Add to calendar'),
-              ),
-        CupertinoContextMenuAction(
-          isDestructiveAction: true,
-          trailingIcon: CupertinoIcons.chat_bubble_2,
-          child: const Text('Inquiry'),
-          onPressed: () {
-            Navigator.of(context, rootNavigator: true).pop();
-            showCupertinoModalBottomSheet(
-                context: context,
-                builder: (context) => MessageComposePage(
-                    receivers: sender != null ? [sender!] : [],
-                    subject: 'Pytanie o wydarzenie w dniu ${DateFormat("y.M.d").format(date ?? timeFrom)}',
-                    signature: '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-          },
-        ),
-      ], builder: (BuildContext context, Animation<double> animation) => eventBody(isNotEmpty, day, context, animation));
+      CupertinoContextMenu.builder(
+          enableHapticFeedback: true,
+          actions: [
+            CupertinoContextMenuAction(
+              onPressed: () {
+                sharing.Share.share(
+                    'There\'s a "$titleString" on ${DateFormat("EEEE, MMM d, y").format(timeFrom)} ${(classroom?.name.isNotEmpty ?? false) ? ("in ${classroom?.name ?? ""}") : "at school"}');
+                Navigator.of(context, rootNavigator: true).pop();
+              },
+              trailingIcon: CupertinoIcons.share,
+              child: const Text('Share'),
+            ),
+            category == EventCategory.homework
+                // Homework - mark as done
+                ? CupertinoContextMenuAction(
+                    onPressed: () {
+                      Share.session.provider.markEventAsDone(parent: this).then((s) {
+                        if (s.success) setState(() => done = true);
+                      });
+                      Navigator.of(context, rootNavigator: true).pop();
+                    },
+                    trailingIcon: CupertinoIcons.check_mark,
+                    child: const Text('Mark as done'),
+                  )
+                // Event - add to calendar
+                : CupertinoContextMenuAction(
+                    onPressed: () {
+                      try {
+                        calendar.Add2Calendar.addEvent2Cal(calendar.Event(
+                            title: titleString,
+                            description: subtitleString,
+                            location: classroom?.name,
+                            startDate: timeFrom,
+                            endDate: timeTo ?? timeFrom));
+                      } catch (ex) {
+                        // ignored
+                      }
+                      Navigator.of(context, rootNavigator: true).pop();
+                    },
+                    trailingIcon: CupertinoIcons.calendar,
+                    child: const Text('Add to calendar'),
+                  ),
+            CupertinoContextMenuAction(
+              isDestructiveAction: true,
+              trailingIcon: CupertinoIcons.chat_bubble_2,
+              child: const Text('Inquiry'),
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).pop();
+                showCupertinoModalBottomSheet(
+                    context: context,
+                    builder: (context) => MessageComposePage(
+                        receivers: sender != null ? [sender!] : [],
+                        subject: 'Pytanie o wydarzenie w dniu ${DateFormat("y.M.d").format(date ?? timeFrom)}',
+                        signature:
+                            '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+              },
+            ),
+          ],
+          builder: (BuildContext context, Animation<double> animation) => eventBody(isNotEmpty, day, context, animation));
 
   Widget eventBody(bool isNotEmpty, TimetableDay? day, BuildContext context, [Animation<double>? animation]) {
     var tag = UuidV4().generate();
@@ -689,6 +693,7 @@ extension LessonWidgetExtension on TimetableLesson {
   Widget asLessonWidget(BuildContext context, DateTime? selectedDate, TimetableDay? selectedDay,
           void Function(VoidCallback fn) setState) =>
       CupertinoContextMenu.builder(
+          enableHapticFeedback: true,
           actions: [
             CupertinoContextMenuAction(
               onPressed: () {
@@ -793,7 +798,7 @@ extension LessonWidgetExtension on TimetableLesson {
                                               title: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Text('Lesson'),
+                                              Text('Subject'),
                                               Flexible(
                                                   child: Container(
                                                       margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
@@ -838,6 +843,24 @@ extension LessonWidgetExtension on TimetableLesson {
                                             ],
                                           )),
                                           classroom?.name.isNotEmpty ?? false)
+                                      .appendIf(
+                                          CupertinoListTile(
+                                              title: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('Lesson no.'),
+                                              Flexible(
+                                                  child: Container(
+                                                      margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
+                                                      child: Opacity(
+                                                          opacity: 0.5,
+                                                          child: Text(lessonNo.toString(),
+                                                              maxLines: 3,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              textAlign: TextAlign.end))))
+                                            ],
+                                          )),
+                                          lessonNo >= 0)
                                       // Substitution details - original lesson
                                       .appendIf(
                                           CupertinoListTile(

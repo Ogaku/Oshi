@@ -67,11 +67,14 @@ Future<void> main() async {
     ..registerAdapter(ConfigAdapter())
     ..registerAdapter(DurationAdapter());
 
-  await Share.settings.load(); // TODO you'll know what to do with this... when time comes.
+  // Load english localization resources
+  await Share.translator.loadResources('en');
+
+  await Share.settings.load(); // Load all settings from hive, make sure nothing is missing
   Share.session = Share.settings.sessions.lastSession ?? Session(providerGuid: 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER');
   if (Share.settings.sessions.lastSession != null) Share.session.tryLogin(); // Auto-login on restart if valid
 
-  // Load localization resources
+  // Load localization resources, generate placeholder splashes
   await Share.translator.loadResources(Share.settings.config.languageCode);
   Share.currentIdleSplash = Share.translator.getRandomSplash();
   Share.currentEndingSplash = Share.translator.getRandomEndingSplash();

@@ -67,6 +67,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
           child: CupertinoListTile(
               padding: EdgeInsets.all(0),
               title: CupertinoContextMenu.builder(
+                  enableHapticFeedback: true,
                   actions: [
                     CupertinoContextMenuAction(
                       onPressed: () {
@@ -131,6 +132,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
       gradesBottomWidgets.add(CupertinoListTile(
           padding: EdgeInsets.all(0),
           title: CupertinoContextMenu.builder(
+              enableHapticFeedback: true,
               actions: [
                 CupertinoContextMenuAction(
                   onPressed: () {
@@ -200,6 +202,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
       gradesBottomWidgets.add(CupertinoListTile(
           padding: EdgeInsets.all(0),
           title: CupertinoContextMenu.builder(
+              enableHapticFeedback: true,
               actions: [
                 CupertinoContextMenuAction(
                   onPressed: () {
@@ -293,7 +296,9 @@ extension StringExtension on String {
 }
 
 extension GradeBodyExtension on Grade {
-  Widget asGrade(BuildContext context) => CupertinoContextMenu.builder(actions: [
+  Widget asGrade(BuildContext context) => CupertinoContextMenu.builder(
+      enableHapticFeedback: true,
+      actions: [
         CupertinoContextMenuAction(
           onPressed: () {
             sharing.Share.share('I got a $value on ${DateFormat("EEEE, MMM d, y").format(date)}!');
@@ -316,7 +321,8 @@ extension GradeBodyExtension on Grade {
                     signature: '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
           },
         ),
-      ], builder: (BuildContext context, Animation<double> animation) => gradeBody(context, animation));
+      ],
+      builder: (BuildContext context, Animation<double> animation) => gradeBody(context, animation));
 
   Widget gradeBody(BuildContext context, [Animation<double>? animation]) {
     var tag = UuidV4().generate();

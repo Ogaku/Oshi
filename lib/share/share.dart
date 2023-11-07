@@ -1,7 +1,6 @@
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/models/provider.dart';
 
@@ -219,9 +218,8 @@ class Session extends HiveObject {
       await updateData(info: result1.success, messages: result2.success);
 
       Share.currentIdleSplash = Share.translator.getRandomSplash();
-      Share.currentEndingSplash = Share.translator.getRandomEndingSplash(
-          Share.session.data.timetables[DateTime.now().asDate(utc: true).asDate()]?.lessonsNumber.asLessonNumber() ?? '???');
-          
+      Share.currentEndingSplash = Share.translator.getRandomEndingSplash();
+
       return (success: result1.success && result2.success, message: result1.message ?? result2.message);
     } catch (ex, stack) {
       Share.showErrorModal.broadcast(Value((

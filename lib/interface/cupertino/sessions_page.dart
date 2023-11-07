@@ -39,6 +39,7 @@ class _SessionsPageState extends State<SessionsPage> {
               padding: EdgeInsets.all(0),
               title: Builder(
                   builder: (context) => CupertinoContextMenu.builder(
+                          enableHapticFeedback: true,
                           actions: [
                             CupertinoContextMenuAction(
                               onPressed: () async {

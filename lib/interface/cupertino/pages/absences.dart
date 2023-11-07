@@ -175,7 +175,9 @@ extension AttendanceTypeExtension on AttendanceType {
 }
 
 extension LessonWidgetExtension on Attendance {
-  Widget asAttendanceWidget(BuildContext context) => CupertinoContextMenu.builder(actions: [
+  Widget asAttendanceWidget(BuildContext context) => CupertinoContextMenu.builder(
+      enableHapticFeedback: true,
+      actions: [
         CupertinoContextMenuAction(
           onPressed: () {
             sharing.Share.share(
@@ -199,7 +201,8 @@ extension LessonWidgetExtension on Attendance {
                       signature:
                           '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
             }),
-      ], builder: (BuildContext context, Animation<double> animation) => attendanceBody(context, animation));
+      ],
+      builder: (BuildContext context, Animation<double> animation) => attendanceBody(context, animation));
 
   Widget attendanceBody(BuildContext context, [Animation<double>? animation]) {
     var tag = UuidV4().generate();

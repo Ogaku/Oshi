@@ -5,6 +5,8 @@ import 'dart:math';
 import 'package:darq/darq.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:oshi/interface/cupertino/pages/home.dart';
+import 'package:oshi/share/share.dart';
 import 'package:path/path.dart' as path;
 
 class Translator {
@@ -32,13 +34,14 @@ class Translator {
           ? _englishSplashResoures[Random().nextInt(_englishSplashResoures.length)]
           : '?????';
 
-  ({String title, String subtitle}) getRandomEndingSplash([String replace = '???']) =>
-      (_localeEndingSplashResoures.isNotEmpty
-              ? _localeEndingSplashResoures[Random().nextInt(_localeEndingSplashResoures.length)]
-              : _englishEndingSplashResoures.isNotEmpty
-                  ? _englishEndingSplashResoures[Random().nextInt(_englishEndingSplashResoures.length)]
-                  : (title: '?????', subtitle: '?????'))
-          .formatSubtitle(replace);
+  ({String title, String subtitle}) getRandomEndingSplash([String? replace]) => (_localeEndingSplashResoures.isNotEmpty
+          ? _localeEndingSplashResoures[Random().nextInt(_localeEndingSplashResoures.length)]
+          : _englishEndingSplashResoures.isNotEmpty
+              ? _englishEndingSplashResoures[Random().nextInt(_englishEndingSplashResoures.length)]
+              : (title: '?????', subtitle: '?????'))
+      .formatSubtitle(replace ??
+          Share.session.data.timetables[DateTime.now().asDate(utc: true).asDate()]?.lessonsNumber.toString() ??
+          '???');
 
   Future<void> loadResources(String languageKey) async {
     try {
@@ -107,4 +110,8 @@ class Translator {
 extension ReplaceSubtitleExtension on ({String title, String subtitle}) {
   ({String title, String subtitle}) formatSubtitle(String value) =>
       (title: title, subtitle: subtitle.replaceAll('{}', value));
+}
+
+extension TranslatorExtension on String {
+  String get localized => Share.translator.get(this);
 }

@@ -21,6 +21,7 @@ import 'package:oshi/models/data/grade.dart';
 import 'package:oshi/share/share.dart';
 
 import 'package:oshi/interface/cupertino/widgets/text_chip.dart' show TextChip;
+import 'package:oshi/share/translator.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:visibility_aware_state/visibility_aware_state.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
@@ -68,11 +69,11 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
         .firstWhereOrDefault((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.timeFrom)) ?? false)
         ?.firstOrDefault();
 
-    // Event list for the next week (7 days), exc homeworks and teacher absences
+    // Event list for the next 2 weeks (14 days), exc homeworks and teacher absences
     var eventsWeek = Share.session.data.student.mainClass.events
         .where((x) => x.category != EventCategory.homework && x.category != EventCategory.teacher)
         .where((x) => x.date?.isAfterOrSame(DateTime.now().asDate()) ?? false)
-        .where((x) => x.date?.isBeforeOrSame(DateTime.now().add(Duration(days: 7)).asDate()) ?? false)
+        .where((x) => x.date?.isBeforeOrSame(DateTime.now().add(Duration(days: 14)).asDate()) ?? false)
         .orderBy((x) => x.date ?? x.timeTo ?? x.timeFrom)
         .toList();
 
@@ -120,6 +121,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
               .select((x, index) => CupertinoListTile(
                   padding: EdgeInsets.all(0),
                   title: CupertinoContextMenu.builder(
+                      enableHapticFeedback: true,
                       actions: [
                         CupertinoContextMenuAction(
                           onPressed: () {
@@ -254,11 +256,10 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       child: SearchableSliverNavigationBar(
         onProgress: (progress) => setState(() => _progressMessage = progress?.message),
         setState: setState,
-        // segments: {'home': Share.translator.get('/Titles/Pages/Home'), 'timeline': 'Timeline'},
+        // segments: {'home': '/Titles/Pages/Home'.localized, 'timeline': 'Timeline'},
         searchController: searchController,
-        largeTitle: Text(Share.translator.get('/Titles/Pages/Home')),
-        middle:
-            Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text(Share.translator.get('/Titles/Pages/Home'))),
+        largeTitle: Text('/Titles/Pages/Home'.localized),
+        middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('/Titles/Pages/Home'.localized)),
         leading: Visibility(
             visible: _progressMessage?.isNotEmpty ?? false,
             child: Container(
@@ -317,7 +318,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                               Expanded(
                                   child: Container(
-                                margin: EdgeInsets.only(top: 10),
+                                margin: EdgeInsets.only(top: 5),
                                 child: Text(glanceTitle,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
@@ -397,29 +398,31 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                 children: [
                                   Visibility(
                                       visible: currentLesson != null,
-                                      child: Row(children: [
-                                        Text(
-                                          'Now:',
-                                          style: TextStyle(fontWeight: FontWeight.w500),
-                                        ),
-                                        Flexible(
-                                            child: Container(
-                                                margin: EdgeInsets.only(right: 3, left: 3),
-                                                child: Text(
-                                                  currentLesson?.subject?.name ?? 'Your mom',
-                                                  style: TextStyle(fontWeight: FontWeight.w500),
-                                                ))),
-                                        Text(
-                                          'in ${currentLesson?.classroom?.name ?? "the otherworld"}',
-                                          style: TextStyle(fontWeight: FontWeight.w400),
-                                        )
-                                      ])),
+                                      child: Container(
+                                          margin: EdgeInsets.only(bottom: 5),
+                                          child: Row(children: [
+                                            Text(
+                                              'Now:',
+                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                            ),
+                                            Flexible(
+                                                child: Container(
+                                                    margin: EdgeInsets.only(right: 3, left: 3),
+                                                    child: Text(
+                                                      currentLesson?.subject?.name ?? 'Your mom',
+                                                      style: TextStyle(fontWeight: FontWeight.w500),
+                                                    ))),
+                                            Text(
+                                              'in ${currentLesson?.classroom?.name ?? "the otherworld"}',
+                                              style: TextStyle(fontWeight: FontWeight.w400),
+                                            )
+                                          ]))),
                                   Visibility(
                                       visible: nextLesson != null,
                                       child: Opacity(
                                           opacity: 0.5,
                                           child: Container(
-                                              margin: EdgeInsets.only(top: 5),
+                                              margin: EdgeInsets.only(),
                                               child: Row(children: [
                                                 Text(
                                                   // If the "next" lesson is the first one
@@ -570,6 +573,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                     .select((x, index) => CupertinoListTile(
                         padding: EdgeInsets.all(0),
                         title: CupertinoContextMenu.builder(
+                            enableHapticFeedback: true,
                             actions: [
                               CupertinoContextMenuAction(
                                 onPressed: () {
@@ -689,6 +693,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                     .select((x, index) => CupertinoListTile(
                         padding: EdgeInsets.all(0),
                         title: CupertinoContextMenu.builder(
+                            enableHapticFeedback: true,
                             actions: [
                               CupertinoContextMenuAction(
                                 onPressed: () {
