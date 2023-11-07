@@ -1,11 +1,14 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
+import 'package:darq/darq.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/models/data/class.dart';
 import 'package:oshi/models/data/grade.dart';
 import 'package:oshi/models/data/teacher.dart';
 
 import 'package:hive/hive.dart';
+import 'package:oshi/share/resources.dart';
+import 'package:oshi/share/share.dart';
 part 'lesson.g.dart';
 
 @HiveType(typeId: 27)
@@ -66,7 +69,10 @@ class Lesson extends HiveObject {
   bool get hasGradesCurrentSemester => gradesCurrentSemester.isNotEmpty;
 
   String get nameExtra => name + (isExtracurricular ? '*' : '');
-  double get gradesAverage => grades.where((x) => x.countsToAverage && x.asValue >= 0).toList().weightedAverage();
+  double get gradesAverage => grades
+      .where((x) => x.countsToAverage && x.asValue >= 0)
+      .toList()
+      .gadesAverage(weighted: Share.settings.config.weightedAverage, adapt: Share.settings.config.autoArithmeticAverage);
 
   factory Lesson.fromJson(Map<String, dynamic> json) => _$LessonFromJson(json);
 
@@ -80,28 +86,65 @@ extension DateExtension on DateTime {
 }
 
 extension AverageExtension on List<Grade> {
-  double weightedAverage() {
-    if (isEmpty) return -1;
+  double gadesAverage({required bool weighted, required bool adapt}) {
+    /* Weighted or arithmetic average generator */
+    double average(bool weighted, bool adapt, {bool firstSemester = true, bool secondSemester = true}) {
+      if (isEmpty) return -1;
 
-    var count = 0;
-    double valueSum = 0;
-    double weightSum = 0;
+      var count = 0;
+      bool weightedTmp = weighted;
+      double valueSum = 0;
+      double weightSum = 0;
 
-    forEach((record) {
-      count++;
-      valueSum += record.asValue * record.weight;
-      weightSum += record.weight;
-    });
+      var semesterSelector =
+          where((x) => (firstSemester ? (x.semester == 1) : false) || (secondSemester ? (x.semester == 2) : false));
 
-    switch (count) {
-      case 0:
-        return -1;
-      case 1:
-        return first.asValue;
+      if (adapt && semesterSelector.all((x) => x.weight == 0)) weightedTmp = false;
+
+      for (var record in semesterSelector) {
+        count++;
+        valueSum += record.asValue * (weightedTmp ? record.weight : 1);
+        weightSum += (weightedTmp ? record.weight : 1);
+      }
+
+      switch (count) {
+        case 0:
+          return -100;
+        case 1:
+          return first.asValue;
+      }
+
+      if (weightSum != 0) return valueSum / weightSum;
+
+      return -100;
     }
 
-    if (weightSum != 0) return valueSum / weightSum;
-
-    return -1;
+    /* Return the average, depending on the selected configuration */
+    return switch (Share.settings.config.yearlyAverageMethod) {
+      YearlyAverageMethods.allGradesAverage => average(weighted, adapt),
+      YearlyAverageMethods.averagesAverage =>
+        (average(weighted, adapt, secondSemester: false) + average(weighted, adapt, firstSemester: false)) / 2.0,
+      YearlyAverageMethods.finalPlusAverage => ((firstWhereOrDefault((x) =>
+                          x.semester == 2 && (x.isSemesterProposition || x.isSemester || x.isFinalProposition || x.isFinal))
+                      ?.asValue ??
+                  -1) +
+              average(weighted, adapt, firstSemester: false)) /
+          2.0,
+      YearlyAverageMethods.averagePlusFinal => ((firstWhereOrDefault((x) =>
+                          x.semester == 1 && (x.isSemesterProposition || x.isSemester || x.isFinalProposition || x.isFinal))
+                      ?.asValue ??
+                  -1) +
+              average(weighted, adapt, secondSemester: false)) /
+          2.0,
+      YearlyAverageMethods.finalsAverage => ((firstWhereOrDefault((x) =>
+                          x.semester == 1 && (x.isSemesterProposition || x.isSemester || x.isFinalProposition || x.isFinal))
+                      ?.asValue ??
+                  -1) +
+              (firstWhereOrDefault((x) =>
+                          x.semester == 2 && (x.isSemesterProposition || x.isSemester || x.isFinalProposition || x.isFinal))
+                      ?.asValue ??
+                  -1)) /
+          2.0,
+    };
   }
 }
