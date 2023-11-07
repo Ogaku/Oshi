@@ -2,16 +2,25 @@
     "en": {
         "en": "English",
         "fr": "French",
-        "pl": "Polish"
+        "pl": "Polish",
+        "uwu": "English UwUfied"
     },
     "fr": {
         "en": "Anglais",
         "fr": "Français",
-        "pl": "Polonais"
+        "pl": "Polonais",
+        "uwu": "Anglais UwUfied"
     },
     "pl": {
         "en": "Angielski",
         "fr": "Francuski",
-        "pl": "Polski"
+        "pl": "Polski",
+        "uwu": "Uwuśny Angielski"
+    },
+    "uwu": {
+        "en": "Engwish",
+        "fr": "Fwench",
+        "pl": "Powish",
+        "uwu": "Engwish UwUfied"
     }
 }
