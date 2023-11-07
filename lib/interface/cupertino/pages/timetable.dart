@@ -15,6 +15,7 @@ import 'package:oshi/interface/cupertino/widgets/text_chip.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/data/timetables.dart';
+import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:oshi/interface/cupertino/views/events_timeline.dart' show EventsPage;
@@ -690,71 +691,87 @@ extension EventWidgetExtension on Event {
 }
 
 extension LessonWidgetExtension on TimetableLesson {
-  Widget asLessonWidget(BuildContext context, DateTime? selectedDate, TimetableDay? selectedDay,
-          void Function(VoidCallback fn) setState) =>
-      CupertinoContextMenu.builder(
-          enableHapticFeedback: true,
-          actions: [
-            CupertinoContextMenuAction(
-              onPressed: () {
-                sharing.Share.share(
-                    'There\'s ${subject?.name ?? "a lesson"} on ${DateFormat("EEEE, MMM d, y").format(date)} with ${teacher?.name ?? "a teacher"}');
-                Navigator.of(context, rootNavigator: true).pop();
-              },
-              trailingIcon: CupertinoIcons.share,
-              child: const Text('Share'),
-            ),
-            CupertinoContextMenuAction(
-              onPressed: () {
-                try {
-                  calendar.Add2Calendar.addEvent2Cal(calendar.Event(
-                      title: subject?.name ?? 'Lesson on ${DateFormat("EEEE, MMM d, y").format(date)}',
-                      location: classroom?.name,
-                      startDate: timeFrom ?? date,
-                      endDate: timeTo ?? date));
-                } catch (ex) {
-                  // ignored
-                }
-                Navigator.of(context, rootNavigator: true).pop();
-              },
-              trailingIcon: CupertinoIcons.calendar,
-              child: const Text('Add to calendar'),
-            ),
-            CupertinoContextMenuAction(
-              isDestructiveAction: true,
-              trailingIcon: CupertinoIcons.timer,
-              child: const Text('Call last 15 min'),
-              onPressed: () {
-                Navigator.of(context, rootNavigator: true).pop();
-                showCupertinoModalBottomSheet(
-                    context: context,
-                    builder: (context) => MessageComposePage(
-                        receivers: teacher != null ? [teacher!] : [],
-                        subject: 'Zwolnienie z 15 min lekcji w dniu ${DateFormat("y.M.d").format(date)}, L$lessonNo',
-                        message:
-                            'Dzień dobry,\n\nProszę o zwolnienie mnie z ostatnich 15 minut lekcji ${subject?.name} w dniu ${DateFormat("y.M.d").format(date)}, na $lessonNo godzinie lekcyjnej.',
-                        signature:
-                            '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-              },
-            ),
-            CupertinoContextMenuAction(
-              isDestructiveAction: true,
-              trailingIcon: CupertinoIcons.chat_bubble_2,
-              child: const Text('Inquiry'),
-              onPressed: () {
-                Navigator.of(context, rootNavigator: true).pop();
-                showCupertinoModalBottomSheet(
-                    context: context,
-                    builder: (context) => MessageComposePage(
-                        receivers: teacher != null ? [teacher!] : [],
-                        subject: 'Pytanie o lekcję w dniu ${DateFormat("y.M.d").format(date)}, L$lessonNo',
-                        signature:
-                            '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-              },
-            ),
-          ],
-          builder: (BuildContext context, Animation<double> animation) =>
-              lessonBody(context, selectedDate, selectedDay, animation));
+  Widget asLessonWidget(
+      BuildContext context, DateTime? selectedDate, TimetableDay? selectedDay, void Function(VoidCallback fn) setState) {
+    var lessonCallButtonString = switch (Share.settings.config.lessonCallType) {
+      LessonCallTypes.countFromEnd => 'last ${Share.settings.config.lessonCallTime} min',
+      LessonCallTypes.countFromStart => 'first ${Share.settings.config.lessonCallTime} min',
+      LessonCallTypes.halfLesson => 'half the lesson',
+      LessonCallTypes.wholeLesson => 'whole lesson'
+    };
+
+    var lessonCallMessageString = switch (Share.settings.config.lessonCallType) {
+      LessonCallTypes.countFromEnd => 'ostatnich ${Share.settings.config.lessonCallTime} minut lekcji',
+      LessonCallTypes.countFromStart => 'pierwszych ${Share.settings.config.lessonCallTime} minut lekcji',
+      LessonCallTypes.halfLesson => 'połowy',
+      LessonCallTypes.wholeLesson => 'całej'
+    };
+
+    return CupertinoContextMenu.builder(
+        enableHapticFeedback: true,
+        actions: [
+          CupertinoContextMenuAction(
+            onPressed: () {
+              sharing.Share.share(
+                  'There\'s ${subject?.name ?? "a lesson"} on ${DateFormat("EEEE, MMM d, y").format(date)} with ${teacher?.name ?? "a teacher"}');
+              Navigator.of(context, rootNavigator: true).pop();
+            },
+            trailingIcon: CupertinoIcons.share,
+            child: const Text('Share'),
+          ),
+          CupertinoContextMenuAction(
+            onPressed: () {
+              try {
+                calendar.Add2Calendar.addEvent2Cal(calendar.Event(
+                    title: subject?.name ?? 'Lesson on ${DateFormat("EEEE, MMM d, y").format(date)}',
+                    location: classroom?.name,
+                    startDate: timeFrom ?? date,
+                    endDate: timeTo ?? date));
+              } catch (ex) {
+                // ignored
+              }
+              Navigator.of(context, rootNavigator: true).pop();
+            },
+            trailingIcon: CupertinoIcons.calendar,
+            child: const Text('Add to calendar'),
+          ),
+          CupertinoContextMenuAction(
+            isDestructiveAction: true,
+            trailingIcon: CupertinoIcons.timer,
+            child: Text('Call $lessonCallButtonString'),
+            onPressed: () {
+              Navigator.of(context, rootNavigator: true).pop();
+              showCupertinoModalBottomSheet(
+                  context: context,
+                  builder: (context) => MessageComposePage(
+                      receivers: teacher != null ? [teacher!] : [],
+                      subject:
+                          'Zwolnienie z $lessonCallMessageString w dniu ${DateFormat("y.M.d").format(date)}, L$lessonNo',
+                      message:
+                          'Dzień dobry,\n\nProszę o zwolnienie mnie z $lessonCallMessageString lekcji ${subject?.name} w dniu ${DateFormat("y.M.d").format(date)}, na $lessonNo godzinie lekcyjnej.',
+                      signature:
+                          '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+            },
+          ),
+          CupertinoContextMenuAction(
+            isDestructiveAction: true,
+            trailingIcon: CupertinoIcons.chat_bubble_2,
+            child: const Text('Inquiry'),
+            onPressed: () {
+              Navigator.of(context, rootNavigator: true).pop();
+              showCupertinoModalBottomSheet(
+                  context: context,
+                  builder: (context) => MessageComposePage(
+                      receivers: teacher != null ? [teacher!] : [],
+                      subject: 'Pytanie o lekcję w dniu ${DateFormat("y.M.d").format(date)}, L$lessonNo',
+                      signature:
+                          '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+            },
+          ),
+        ],
+        builder: (BuildContext context, Animation<double> animation) =>
+            lessonBody(context, selectedDate, selectedDay, animation));
+  }
 
   Widget lessonBody(BuildContext context, DateTime? selectedDate, TimetableDay? selectedDay,
       [Animation<double>? animation]) {
