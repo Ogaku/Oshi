@@ -3,24 +3,24 @@
         "en": "English",
         "fr": "French",
         "pl": "Polish",
-        "uwu": "English UwUfied"
+        "uw": "Engwish"
     },
     "fr": {
         "en": "Anglais",
         "fr": "Français",
         "pl": "Polonais",
-        "uwu": "Anglais UwUfied"
+        "uw": "Angwais"
     },
     "pl": {
         "en": "Angielski",
         "fr": "Francuski",
         "pl": "Polski",
-        "uwu": "Uwuśny Angielski"
+        "uw": "Angweiski"
     },
-    "uwu": {
+    "uw": {
         "en": "Engwish",
         "fr": "Fwench",
         "pl": "Powish",
-        "uwu": "Engwish UwUfied"
+        "uw": "Engwish"
     }
 }
