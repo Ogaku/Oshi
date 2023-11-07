@@ -76,7 +76,7 @@ jobs:
       - name: Update versioning
         run: |
           sed -i '' "s/9.9.9+9/1.0.$(date '+%Y%m%d')+${{github.run_number}}/g" ./pubspec.yaml
-          sed -i '' "s/9.9.9+9/1.0.$(date '+%Y%m%d')+${{github.run_number}}/g" ./lib/share/share.dart
+          sed -i '' "s/9.9.9.9/1.0.$(date '+%Y%m%d').${{github.run_number}}/g" ./lib/share/share.dart
 
       - name: Set up dependencies
         run: flutter pub get
