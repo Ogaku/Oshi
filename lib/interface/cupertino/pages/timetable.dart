@@ -451,7 +451,7 @@ extension EventWidgetExtension on Event {
                                                                     child: Text(
                                                                       x.name,
                                                                       overflow: TextOverflow.ellipsis,
-                                                                      maxLines: 3,
+                                                                      maxLines: 10,
                                                                       style: TextStyle(
                                                                           fontSize: 16, fontWeight: FontWeight.w600),
                                                                     ))),
@@ -476,7 +476,7 @@ extension EventWidgetExtension on Event {
                                                       margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
                                                       child: Opacity(
                                                           opacity: 0.5,
-                                                          child: Text(titleString, maxLines: 3, textAlign: TextAlign.end))))
+                                                          child: Text(titleString, maxLines: 10, textAlign: TextAlign.end))))
                                             ],
                                           ),
                                         ),
@@ -493,7 +493,7 @@ extension EventWidgetExtension on Event {
                                                           child: Opacity(
                                                               opacity: 0.5,
                                                               child: Text(subtitleString,
-                                                                  maxLines: 3, textAlign: TextAlign.end))))
+                                                                  maxLines: 10, textAlign: TextAlign.end))))
                                                 ],
                                               )),
                                               subtitleString.isNotEmpty)

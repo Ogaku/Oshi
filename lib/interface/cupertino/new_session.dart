@@ -82,7 +82,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
             scrollController: scrollController,
             largeTitle: FittedBox(
                 fit: BoxFit.fitWidth,
-                child: Container(margin: EdgeInsets.only(right: 20), child: Text('What is your e-register?'))),
+                child: Container(margin: EdgeInsets.only(right: 20), child: Text('/Session/New/Register/Question'.localized))),
             trailing: GestureDetector(
               child: Icon(CupertinoIcons.question_circle),
               onTap: () async {
@@ -108,7 +108,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
                         child: Container(
                             margin: EdgeInsets.only(right: 20, left: 20, bottom: 20),
                             child: Text(
-                              "Choose the e-register provider depending on which one your school uses. You'll be able to set up more student accounts and e-registers later as needed.",
+                              '/Session/New/Register/Info'.localized,
                               style: TextStyle(fontSize: 14),
                             ))),
                     CupertinoListSection.insetGrouped(
@@ -123,7 +123,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
                                 child: Container(
                                     margin: EdgeInsets.only(right: 30, left: 30, bottom: 10),
                                     child: Text(
-                                      "All trademarks featured in this app remain the property of their rightful owners, and are used for informational purposes only.",
+                                      '/TrademarkInfo'.localized,
                                       style: TextStyle(fontSize: 12),
                                       textAlign: TextAlign.center,
                                     ))))),

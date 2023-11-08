@@ -20,6 +20,70 @@
         {
             "id": "/Titles/Pages/Absences",
             "translation": "Absences"
+        },
+        {
+            "id": "/TrademarkInfo",
+            "translation": "All trademarks featured in this app remain the property of their rightful owners, and are used for informational purposes only."
+        },
+        {
+            "id": "/BaseApp/Update/AlertHeader",
+            "translation": "Please update 🤓"
+        },
+        {
+            "id": "/BaseApp/Update/AlertPart1",
+            "translation": "The download page of the newer app version for"
+        },
+        {
+            "id": "/BaseApp/Update/AlertPart2",
+            "translation": "will be opened."
+        },
+        {
+            "id": "/Session/New/Register/Question",
+            "translation": "What is your e-register?"
+        },
+        {
+            "id": "/Session/New/Register/Info",
+            "translation": "Choose the e-register provider depending on which one your school uses. You'll be able to set up more student accounts and e-registers later as needed."
+        },
+        {
+            "id": "/Session/Login/Data/Complete",
+            "translation": "No additional data required."
+        },
+        {
+            "id": "/Session/Login/Data/Info",
+            "translation": "Some login credentials may be stored by the e-register service provider, either encoded or as tokens. This data is not shared and will never leave your device for purposes other than logging in."
+        },
+        {
+            "id": "/Session/Login/Splash/Session",
+            "translation": "Seasoning the user session right now..."
+        },
+        {
+            "id": "/Session/Login/Splash/Settings",
+            "translation": "Cannot believe you've made it this far..."
+        },
+        {
+            "id": "/Session/Login/Splash/Error/Title",
+            "translation": "Error logging in!"
+        },
+        {
+            "id": "/Session/Login/Splash/Error/Message",
+            "translation": "Cannot believe you've made it this far..."
+        },
+        {
+            "id": "/Delete",
+            "translation": "Delete"
+        },
+        {
+            "id": "/Sessions/Page/RegisterAcc",
+            "translation": "E-register accounts"
+        },
+        {
+            "id": "/Sessions/Page/RegisterLog",
+            "translation": "These are your e-register accounts. Choose one of the currently logged-in sessions, or go create a new one."
+        },
+        {
+           "id":  "/Sessions",
+           "translation": "Sessions"
         }
     ],
     "splashes": [

@@ -20,6 +20,70 @@
         {
             "id": "/Titles/Pages/Absences",
             "translation": "Abshencwes"
+        },
+        {
+            "id": "/TrademarkInfo",
+            "translation": "All trademarks featured in this app remain the property of their rightful owners, and are used for informational purposes only."
+        },
+        {
+            "id": "/BaseApp/Update/AlertHeader",
+            "translation": "Please update 🤓"
+        },
+        {
+            "id": "/BaseApp/Update/AlertPart1",
+            "translation": "The download page of the newer app version for"
+        },
+        {
+            "id": "/BaseApp/Update/AlertPart2",
+            "translation": "will be opened."
+        },
+        {
+            "id": "/Session/New/Register/Question",
+            "translation": "What is your e-register?"
+        },
+        {
+            "id": "/Session/New/Register/Info",
+            "translation": "Choose the e-register provider depending on which one your school uses. You'll be able to set up more student accounts and e-registers later as needed."
+        },
+        {
+            "id": "/Session/Login/Data/Complete",
+            "translation": "No additional data required."
+        },
+        {
+            "id": "/Session/Login/Data/Info",
+            "translation": "Some login credentials may be stored by the e-register service provider, either encoded or as tokens. This data is not shared and will never leave your device for purposes other than logging in."
+        },
+        {
+            "id": "/Session/Login/Splash/Session",
+            "translation": "Seasoning the user session right now..."
+        },
+        {
+            "id": "/Session/Login/Splash/Settings",
+            "translation": "Cannot believe you've made it this far..."
+        },
+        {
+            "id": "/Session/Login/Splash/Error/Title",
+            "translation": "Error logging in!"
+        },
+        {
+            "id": "/Session/Login/Splash/Error/Message",
+            "translation": "Cannot believe you've made it this far..."
+        },
+        {
+            "id": "/Delete",
+            "translation": "Delete"
+        },
+        {
+            "id": "/Sessions/Page/RegisterAcc",
+            "translation": "E-register accounts"
+        },
+        {
+            "id": "/Sessions/Page/RegisterLog",
+            "translation": "These are your e-register accounts. Choose one of the currently logged-in sessions, or go create a new one."
+        },
+        {
+           "id":  "/Sessions",
+           "translation": "Sessions"
         }
     ],
     "splashes": [
@@ -141,5 +205,243 @@
         "=_=",
         "u_u",
         ";-;"
+    ],
+    "ending_splashes": [
+        {
+            "title": "Way to go!",
+            "subtitle": "You've suwvived aww {} wessons"
+        },
+        {
+            "title": "It's all over now!",
+            "subtitle": "You've suwvived aww {} wessons"
+        },
+        {
+            "title": "NOWAY!!!1 ITZ OVER!!!",
+            "subtitle": "YOU HAVE JUST SURVIVED ALL {} LESSONS!"
+        },
+        {
+            "title": "It's ovew. Can you bewieve it?",
+            "subtitle": "{} wessons, Can you bewieve it?"
+        },
+        {
+            "title": "School speedrun any%",
+            "subtitle": "You got {} achievements!"
+        },
+        {
+            "title": "You did it",
+            "subtitle": "{} lessons passed"
+        },
+        {
+            "title": "Go home, have some rest",
+            "subtitle": "You've passed aww {} wessons todaie"
+        },
+        {
+            "title": "Supercalifragilisticexpialidocious",
+            "subtitle": "You've suwvived {} wessons"
+        },
+        {
+            "title": "It's done for today!",
+            "subtitle": "You've suwvived aww {} wessons"
+        },
+        {
+            "title": "That's a nice lesson you had there...",
+            "subtitle": "You've passed aww {} wessons todaie"
+        },
+        {
+            "title": "The evolution of educating and education",
+            "subtitle": "(More likely lack of it) {} lessons passed"
+        },
+        {
+            "title": "You did well today ^.^",
+            "subtitle": "You've suwvived aww {} wessons"
+        },
+        {
+            "title": "At least it's not raining outside...",
+            "subtitle": "You've suwvived aww {} wessons"
+        },
+        {
+            "title": "Send us some feedback on this app!",
+            "subtitle": "You've suwvived aww {} wessons"
+        },
+        {
+            "title": "Keep your head up, there's two of us in that now",
+            "subtitle": "You've passed aww {} wessons todaie"
+        },
+        {
+            "title": "It was a true horror",
+            "subtitle": "You've passed aww {} wessons todaie"
+        },
+        {
+            "title": "Protecc but also attacc",
+            "subtitle": "You've suwvived {} wessons"
+        },
+        {
+            "title": "We're still working on it",
+            "subtitle": "here, have a lessons passed number - {}"
+        },
+        {
+            "title": "True skill in surviving",
+            "subtitle": "You've suwvived aww {} wessons"
+        },
+        {
+            "title": "[put an ending splash here]",
+            "subtitle": "[put ending splash message here] {}"
+        },
+        {
+            "title": "Now go home and do your homework",
+            "subtitle": "You've passed aww {} wessons todaie"
+        },
+        {
+            "title": "Too EZ",
+            "subtitle": "Gained {} XP"
+        },
+        {
+            "title": "Did you just finished your lessons?",
+            "subtitle": "Aww {} wessons compweted"
+        },
+        {
+            "title": "Use some ChatGPT, surely it will help...",
+            "subtitle": "You've suwvived aww {} wessons"
+        },
+        {
+            "title": "Did you know that...",
+            "subtitle": "You've suwvived aww {} wessons?"
+        },
+        {
+            "title": "Fellas, is it ok to finish school?",
+            "subtitle": "You've suwvived {} wessons"
+        },
+        {
+            "title": "General Kenobi!",
+            "subtitle": "Aww {} wessons compweted"
+        },
+        {
+            "title": "Good they won't do a sequel...",
+            "subtitle": "Aww {} wessons compweted"
+        },
+        {
+            "title": "[This splash is locked - require lvl 40]",
+            "subtitle": "[This splash message is also locked] - {}"
+        },
+        {
+            "title": "And now what...?",
+            "subtitle": "Aww {} wessons compweted"
+        },
+        {
+            "title": "Hit that new level in that game!",
+            "subtitle": "Aww {} wessons compweted"
+        },
+        {
+            "title": "Stay strong and stay safe!",
+            "subtitle": "You've suwvived aww {} wessons"
+        },
+        {
+            "title": "LEEESSSS GOOOO DAT TOO EZ!",
+            "subtitle": "You've suwvived aww {} wessons"
+        },
+        {
+            "title": "Hey, yoo, look I'm in a splash!",
+            "subtitle": "Aww {} wessons compweted"
+        },
+        {
+            "title": "What did you expect?",
+            "subtitle": "Aww {} wessons compweted"
+        },
+        {
+            "title": "Have a marvelous evening!",
+            "subtitle": "You've passed aww {} wessons todaie"
+        },
+        {
+            "title": "All rumors are true...",
+            "subtitle": "You've suwvived aww {} wessons!"
+        },
+        {
+            "title": "Something's not quite right...",
+            "subtitle": "You survived 've {} all lessons"
+        },
+        {
+            "title": "Imagine here something funny and satisfacting",
+            "subtitle": "You've completed all {} lessons"
+        },
+        {
+            "title": "An illusion! What are you hiding?",
+            "subtitle": "I'm hiding the fact You've suwvived {} wessons"
+        },
+        {
+            "title": "Don't forget to get some covfefe... covafe...",
+            "subtitle": "You know what you should get - {} lessons completed"
+        },
+        {
+            "title": "HOLY MOLY, you're going too fast!",
+            "subtitle": "You've suwvived aww {} wessons!"
+        },
+        {
+            "title": "Now you can play some games",
+            "subtitle": "Aww {} wessons compweted"
+        },
+        {
+            "title": "Did you know that this splash message is too long to be displayed correctly? Don't believe me? Just look at me! I hope devs won't find it!",
+            "subtitle": "Today you have completed all {} lessons sir"
+        },
+        {
+            "title": "Warning! You've done great today!",
+            "subtitle": "You've suwvived aww {} wessons"
+        },
+        {
+            "title": "One day, somewhere in the future, my work will be quoted!",
+            "subtitle": "You've completed all {} lessons"
+        },
+        {
+            "title": "??????",
+            "subtitle": "{} lessons"
+        },
+        {
+            "title": "hope you're feeling great because",
+            "subtitle": "You've completed all {} lessons"
+        },
+        {
+            "title": "Has ending!",
+            "subtitle": "You've ended today with all {} lessons"
+        },
+        {
+            "title": "You're finally done!",
+            "subtitle": "Today you have completed all {} lessons sir"
+        },
+        {
+            "title": "U812?",
+            "subtitle": "You've ate all {} lessons"
+        },
+        {
+            "title": "It was a pleasure to meet you",
+            "subtitle": "You've completed all {} lessons"
+        },
+        {
+            "title": "Todays lessons were sponsored by RAID SHADOW LEGENDS!",
+            "subtitle": "You've suwvived {} wessons"
+        },
+        {
+            "title": "Bringing home the bacon",
+            "subtitle": "You've completed all {} lessons"
+        },
+        {
+            "title": "Good ending",
+            "subtitle": "You've suwvived aww {} wessons!"
+        },
+        {
+            "title": "It was a pleasure to accompany you today",
+            "subtitle": "Today you have completed all {} lessons sir"
+        },
+        {
+            "title": "See you tomorrow",
+            "subtitle": "Today you have completed all {} lessons"
+        },
+        {
+            "title": "I hope you learned something...",
+            "subtitle": "{} lessons wasted"
+        },
+        {
+            "title": "I hope you made a good use of that time",
+            "subtitle": "Time wasted: {} x 45min"
+        }
     ]
 }

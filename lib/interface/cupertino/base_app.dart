@@ -144,9 +144,9 @@ class _BaseAppState extends State<BaseApp> {
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
-        title: const Text('Please update 🤓'),
+        title: Text('/BaseApp/Update/AlertHeader'.localized),
         content:
-            Text('The download page of the newer app version for ${Platform.isAndroid ? "Android" : "iOS"} will be opened.'),
+            Text('{h} {w} {f}'.format({'h': '/BaseApp/Update/AlertPart1'.localized, 'w': Platform.isAndroid ? 'Android' : 'iOS', 'f': '/BaseApp/Update/AlertPart2'.localized})),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
             onPressed: () async {

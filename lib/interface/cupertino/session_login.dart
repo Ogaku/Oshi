@@ -129,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                         autoPlay: shakeFields,
                         enableWebMouseHover: false,
                         child: AutofillGroup(child: CupertinoFormSection.insetGrouped(children: credentialEntries)))
-                    : Opacity(opacity: 0.5, child: Text('No additional data required'))),
+                    : Opacity(opacity: 0.5, child: Text('/Session/Login/Data/Complete'.localized))),
             Opacity(
                 opacity: 0.7,
                 child: Container(
@@ -142,8 +142,7 @@ class _LoginPageState extends State<LoginPage> {
                   opacity: 0.5,
                   child: Container(
                       margin: EdgeInsets.only(right: 20, left: 20, bottom: 20),
-                      child: Text(
-                        "Some login credentials may be stored by the e-register service provider, either encoded or as tokens. This data is not shared and will never leave your device for purposes other than logging in.",
+                      child: Text('/Session/Login/Data/Info'.localized,
                         style: TextStyle(fontSize: 12),
                         textAlign: TextAlign.justify,
                       ))),
@@ -158,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
       IProgress<({double? progress, String? message})>? progress}) async {
     try {
       // Create a new session: ID/name/provider are automatic
-      progress?.report((progress: 0.1, message: 'Sessioning the user session right now...'));
+      progress?.report((progress: 0.1, message: '/Session/Login/Splash/Session'.localized ));
       var session = Session(providerGuid: guid);
       var result = await session.tryLogin(credentials: credentials, progress: progress, showErrors: true);
 
@@ -170,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
         Share.settings.sessions.lastSessionId = id; // Update
         Share.session = session; // Set as the currently active one
 
-        progress?.report((progress: 0.2, message: "Cannot believe you've made it this far..."));
+        progress?.report((progress: 0.2, message: '/Session/Login/Splash/Settings'.localized));
         await Share.settings.save(); // Save our settings now
         var result = await Share.session.refreshAll(progress: progress); // Refresh everything
         if (!result.success && result.message != null) return false; // Didn't work, uh
@@ -181,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     } on DioException catch (ex, stack) {
       Share.showErrorModal.broadcast(Value((
-        title: 'Error logging in!',
+        title: '/Session/Login/Splash/Error/Title'.localized,
         message:
             'An error "${ex.message ?? ex}" occurred and the provider couldn\'t log you in to the e-register.\n\nPlease check your credentials and try again later.',
         actions: {
@@ -191,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
       )));
     } on Exception catch (ex, stack) {
       Share.showErrorModal.broadcast(Value((
-        title: 'Error logging in!',
+        title: '/Session/Login/Splash/Error/Title'.localized,
         message:
             'An exception "$ex" occurred and the provider couldn\'t log you in to the e-register.\n\nPlease check your credentials and try again later.',
         actions: {
