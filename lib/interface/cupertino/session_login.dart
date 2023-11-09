@@ -9,6 +9,7 @@ import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/models/provider.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:uuid/uuid.dart';
 

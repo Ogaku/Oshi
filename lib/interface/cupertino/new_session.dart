@@ -3,6 +3,7 @@
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/share/translator.dart';
 import 'package:oshi/share/share.dart';
 import 'package:transparent_image/transparent_image.dart';
 
