@@ -9,6 +9,7 @@ import 'package:event/event.dart';
 import 'package:oshi/interface/cupertino/new_session.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -59,7 +60,7 @@ class _SessionsPageState extends State<SessionsPage> {
                               },
                               isDestructiveAction: true,
                               trailingIcon: CupertinoIcons.delete,
-                              child: const Text('Delete'),
+                              child: Text('/Delete'.localized),
                             ),
                           ],
                           // I know there's onTap too, but we need an opaque background
@@ -248,8 +249,8 @@ class _SessionsPageState extends State<SessionsPage> {
                   scrollController: scrollController,
                   largeTitle: FittedBox(
                       fit: BoxFit.fitWidth,
-                      child: Container(margin: EdgeInsets.only(right: 20), child: Text('E-register accounts'))),
-                  middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('E-register accounts')),
+                      child: Container(margin: EdgeInsets.only(right: 20), child: Text('/Sessions/Page/RegisterAcc'.localized))),
+                  middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('/Sessions/Page/RegisterAcc'.localized)),
                   leading: Visibility(
                       visible: _progressMessage?.isNotEmpty ?? false,
                       child: Container(
@@ -290,7 +291,7 @@ class _SessionsPageState extends State<SessionsPage> {
                               child: Container(
                                   margin: EdgeInsets.only(right: 20, left: 20, bottom: 20),
                                   child: Text(
-                                    'These are your e-register accounts. Choose one of the currently logged-in sessions, or go create a new one.',
+                                    '/Sessions/Page/RegisterLog'.localized,
                                     style: TextStyle(fontSize: 14),
                                   ))),
                           Visibility(
@@ -298,7 +299,7 @@ class _SessionsPageState extends State<SessionsPage> {
                               child: CupertinoListSection.insetGrouped(
                                   margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
                                   hasLeading: false,
-                                  header: sessionsList.isEmpty ? Text('Sessions') : null,
+                                  header: sessionsList.isEmpty ? Text('/Sessions'.localized) : null,
                                   children: sessionsList)),
                           CupertinoListSection.insetGrouped(
                               hasLeading: false,
@@ -329,7 +330,7 @@ class _SessionsPageState extends State<SessionsPage> {
                                       child: Container(
                                           margin: EdgeInsets.only(right: 30, left: 30, bottom: 10),
                                           child: Text(
-                                            "All trademarks featured in this app remain the property of their rightful owners, and are used for informational purposes only.",
+                                            '/TrademarkInfo'.localized,
                                             style: TextStyle(fontSize: 12),
                                             textAlign: TextAlign.center,
                                           ))))),
@@ -350,9 +351,9 @@ class _SessionsPageState extends State<SessionsPage> {
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
-        title: const Text('Please update 🤓'),
+        title: Text('/BaseApp/Update/AlertHeader'.localized),
         content:
-            Text('The download page of the newer app version for ${Platform.isAndroid ? "Android" : "iOS"} will be opened.'),
+            Text('{h} {w} {f}'.format({'h': '/BaseApp/Update/AlertPart1'.localized, 'w': Platform.isAndroid ? 'Android' : 'iOS', 'f': '/BaseApp/Update/AlertPart2'.localized})),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
             onPressed: () async {
