@@ -1,4 +1,3 @@
-// -- unit.dart --
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/models/data/announcement.dart';
 import 'package:oshi/models/data/event.dart';
@@ -8,7 +7,7 @@ part 'unit.g.dart';
 
 @HiveType(typeId: 37)
 @JsonSerializable(includeIfNull: false)
-class Unit extends HiveObject {
+class Unit {
   @HiveField(1)
   int id;
 
@@ -75,7 +74,7 @@ class Unit extends HiveObject {
 
 @HiveType(typeId: 38)
 @JsonSerializable()
-class LessonRanges extends HiveObject {
+class LessonRanges {
   @HiveField(1)
   DateTime from;
 

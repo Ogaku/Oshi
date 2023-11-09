@@ -665,12 +665,7 @@ class LibrusDataReader implements models.IProvider {
       if (!byMe) {
         // Get the actual underlying message
         var message = InboxMessage.fromJson(await data!.librusApi!.messagesRequest('inbox/messages/${parent.id}'));
-
-        result.sendDate = message.data?.sendDate ?? DateTime.now();
-        result.readDate = message.data?.readDate;
-
-        result.topic = message.data?.topic ?? 'No topic';
-        result.content = (message.data?.message ?? '')
+        var content = (message.data?.message ?? '')
             .tryBase64Decoded()
             .replaceAll('<Message><Content><![CDATA[', '')
             .replaceAll(']]></Content><Actions><Actions/></Actions></Message>', '')
@@ -692,31 +687,34 @@ class LibrusDataReader implements models.IProvider {
             // ignored
           }
 
-          result.content = result.content?.replaceFirst(RegExp('<a href="(.*?)</a>'), link);
+          content = content.replaceFirst(RegExp('<a href="(.*?)</a>'), link);
         });
 
-        result.sender = teachersShim.users!
-                .firstWhereOrDefault((user) => user.userId == int.tryParse(message.data?.senderId ?? ''), defaultValue: null)
-                ?.asTeacher() ??
-            models.Teacher(
-                firstName: message.data?.senderFirstName ?? 'Unknown', lastName: message.data?.senderLastName ?? 'sender');
-
-        result.attachments = (await message.data?.attachments?.select((y, index) async {
-          var url = (await data!.librusApi!.messagesRequest('attachments/${y.id}/messages/${parent.id}'))['data']
-                  ?['downloadLink']
-              ?.toString();
-          return models.Attachment(name: y.filename, location: (url?.contains('GetFile') ?? false) ? '$url/get' : url);
-        }).awaitAll())
-            ?.toList();
+        result = Message(
+            id: parent.id,
+            url: parent.url,
+            topic: message.data?.topic ?? 'No topic',
+            sendDate: message.data?.sendDate ?? DateTime.now(),
+            readDate: message.data?.readDate,
+            content: content,
+            sender: teachersShim.users!
+                    .firstWhereOrDefault((user) => user.userId == int.tryParse(message.data?.senderId ?? ''),
+                        defaultValue: null)
+                    ?.asTeacher() ??
+                models.Teacher(
+                    firstName: message.data?.senderFirstName ?? 'Unknown',
+                    lastName: message.data?.senderLastName ?? 'sender'),
+            attachments: (await message.data?.attachments?.select((y, index) async {
+              var url = (await data!.librusApi!.messagesRequest('attachments/${y.id}/messages/${parent.id}'))['data']
+                      ?['downloadLink']
+                  ?.toString();
+              return models.Attachment(name: y.filename, location: (url?.contains('GetFile') ?? false) ? '$url/get' : url);
+            }).awaitAll())
+                ?.toList());
       } else {
         // Get the actual underlying message
         var message = OutboxMessage.fromJson(await data!.librusApi!.messagesRequest('outbox/messages/${parent.id}'));
-
-        result.sendDate = message.data?.sendDate ?? DateTime.now();
-        result.readDate = message.data?.readDate;
-
-        result.topic = message.data?.topic ?? 'No topic';
-        result.content = (message.data?.message ?? '')
+        var content = (message.data?.message ?? '')
             .tryBase64Decoded()
             .replaceAll('<Message><Content><![CDATA[', '')
             .replaceAll(']]></Content><Actions><Actions/></Actions></Message>', '')
@@ -738,14 +736,23 @@ class LibrusDataReader implements models.IProvider {
             // ignored
           }
 
-          result.content = result.content?.replaceFirst(RegExp('<a href="(.*?)</a>'), link);
+          content = content.replaceFirst(RegExp('<a href="(.*?)</a>'), link);
         });
 
-        result.receivers = message.data?.receivers
-            ?.select((y, index) =>
-                teachersShim.users!.firstWhereOrDefault((user) => user.userId == int.tryParse(y.receiverId))?.asTeacher() ??
-                models.Teacher())
-            .toList();
+        result = Message(
+            id: parent.id,
+            url: parent.url,
+            topic: message.data?.topic ?? 'No topic',
+            sendDate: message.data?.sendDate ?? DateTime.now(),
+            readDate: message.data?.readDate,
+            content: content,
+            receivers: message.data?.receivers
+                ?.select((y, index) =>
+                    teachersShim.users!
+                        .firstWhereOrDefault((user) => user.userId == int.tryParse(y.receiverId))
+                        ?.asTeacher() ??
+                    models.Teacher())
+                .toList());
       }
 
       return (success: true, message: null, result: result);

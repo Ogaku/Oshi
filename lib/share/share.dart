@@ -1,18 +1,26 @@
-import 'package:event/event.dart';
+import 'package:darq/darq.dart';
+import 'package:event/event.dart' as events;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:oshi/models/data/announcement.dart';
+import 'package:oshi/models/data/attendances.dart';
+import 'package:oshi/models/data/grade.dart';
 import 'package:oshi/models/data/lesson.dart';
+import 'package:oshi/models/data/messages.dart';
+import 'package:oshi/models/data/timetables.dart';
+import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/provider.dart';
 
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import 'package:oshi/models/data/teacher.dart' show Teacher;
-import 'package:oshi/models/progress.dart' show IProgress;
+import 'package:oshi/models/data/teacher.dart';
+import 'package:oshi/models/progress.dart';
 
-import 'package:oshi/providers/librus/librus_data.dart' show LibrusDataReader;
-import 'package:oshi/providers/sample/sample_data.dart' show FakeDataReader;
+import 'package:oshi/providers/librus/librus_data.dart';
+import 'package:oshi/providers/sample/sample_data.dart';
 import 'package:oshi/share/config.dart';
+import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/translator.dart';
 
 part 'share.g.dart';
@@ -34,19 +42,21 @@ class Share {
 
   // Raised by the app to notify that the uses's just logged in
   // To subscribe: event.subscribe((args) => {})
-  static Event<Value<StatefulWidget Function()>> changeBase = Event<Value<StatefulWidget Function()>>();
-  static Event refreshBase = Event(); // Trigger a setState on the base app and everything subscribed
-  static Event<Value<({String title, String message, Map<String, Future<void> Function()> actions})>> showErrorModal =
-      Event<Value<({String title, String message, Map<String, Future<void> Function()> actions})>>();
+  static events.Event<events.Value<StatefulWidget Function()>> changeBase =
+      events.Event<events.Value<StatefulWidget Function()>>();
+  static events.Event refreshBase = events.Event(); // Trigger a setState on the base app and everything subscribed
+  static events.Event<events.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>
+      showErrorModal =
+      events.Event<events.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>();
 
   // Navigate the grades page to the specified subject
-  static Event<Value<Lesson>> gradesNavigate = Event<Value<Lesson>>();
+  static events.Event<events.Value<Lesson>> gradesNavigate = events.Event<events.Value<Lesson>>();
 
   // Navigate the timetable page to the specified day
-  static Event<Value<DateTime>> timetableNavigateDay = Event<Value<DateTime>>();
+  static events.Event<events.Value<DateTime>> timetableNavigateDay = events.Event<events.Value<DateTime>>();
 
   // Navigate the bottom tab bar to the specified page
-  static Event<Value<int>> tabsNavigatePage = Event<Value<int>>();
+  static events.Event<events.Value<int>> tabsNavigatePage = events.Event<events.Value<int>>();
 
   // Currently supported provider types, maps sample instances to factories
   static Map<String, ({IProvider instance, IProvider Function() factory})> providers = {
@@ -120,7 +130,6 @@ class Settings {
 }
 
 @HiveType(typeId: 2)
-@JsonSerializable(includeIfNull: false)
 class SessionsData extends HiveObject {
   SessionsData({Map<String, Session>? sessions, this.lastSessionId = 'SESSIONS-SHIM-SMPL-FAKE-DATAPROVIDER'})
       : sessions = sessions ?? {};
@@ -140,38 +149,39 @@ class SessionsData extends HiveObject {
   Map<String, Session> sessions = {
     'SESSIONS-SHIM-SMPL-FAKE-DATAPROVIDER': Session(providerGuid: 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER')
   };
-
-  factory SessionsData.fromJson(Map<String, dynamic> json) => _$SessionsDataFromJson(json);
-
-  Map<String, dynamic> toJson() => _$SessionsDataToJson(this);
 }
 
 @HiveType(typeId: 3)
-@JsonSerializable(includeIfNull: false)
 class Session extends HiveObject {
   Session(
       {this.sessionName = 'John Doe',
       this.providerGuid = 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER',
       Map<String, String>? credentials,
-      IProvider? provider})
+      IProvider? provider,
+      List<RegisterChanges>? changes})
       : provider = provider ?? Share.providers[providerGuid]!.factory(),
         sessionCredentials = credentials ?? {},
-        data = ProviderData();
+        data = ProviderData(),
+        changes = changes ?? [];
 
   // Internal 'pretty' name
   @HiveField(1)
   String sessionName;
 
-  @HiveField(5)
-  String providerGuid;
-
   // Persistent login, pass, etc
   @HiveField(2)
   Map<String, String> sessionCredentials;
 
+  // Updates for each refresh (if any)
+  @HiveField(3)
+  List<RegisterChanges> changes;
+
   // Downlaoded data
   @HiveField(4)
   ProviderData data;
+
+  @HiveField(5)
+  String providerGuid;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   IProvider provider;
@@ -193,7 +203,7 @@ class Session extends HiveObject {
       return await provider.login(credentials: credentials ?? sessionCredentials, progress: progress);
     } catch (ex, stack) {
       if (showErrors) {
-        Share.showErrorModal.broadcast(Value((
+        Share.showErrorModal.broadcast(events.Value((
           title: 'Error logging in!',
           message:
               'An exception "$ex" occurred and the provider couldn\'t log you in to the e-register.\n\nPlease check your credentials and try again later.',
@@ -222,7 +232,7 @@ class Session extends HiveObject {
 
       return (success: result1.success && result2.success, message: result1.message ?? result2.message);
     } catch (ex, stack) {
-      Share.showErrorModal.broadcast(Value((
+      Share.showErrorModal.broadcast(events.Value((
         title: 'Error refreshing data!',
         message:
             'A fatal exception "$ex" occurred and the provider couldn\'t update the e-register data.\n\nPlease try again later.\nConsider reporting this error.',
@@ -266,7 +276,97 @@ class Session extends HiveObject {
   // Update session's data based on the provider, save to storage
   Future<void> updateData({bool info = false, bool messages = false}) async {
     if (provider.registerData == null) throw Exception('Provider cannot be null, cannot proceed!');
-    if (messages) data.messages = provider.registerData!.messages; // TODO Only update
+    try {
+      /* Look for any changes, cache everything */
+
+      /* Timetable */
+      var timetableChanges = provider.registerData!.timetables.timetable.entries
+          .select((x, index) => data.timetables.timetable[x.key] == null
+              ? x.value.lessons
+                  .select((y, index) => y?.where((z) => z.modifiedSchedule))
+                  .selectMany((w, index) => w?.toList() ?? <TimetableLesson>[])
+              : x.value.lessons
+                  .except(data.timetables.timetable[x.key]!.lessons)
+                  .select((y, index) => y
+                      ?.where((z) => z.modifiedSchedule)
+                      .except(data.timetables.timetable[x.key]!.lessons.elementAtOrNull(index) ?? []))
+                  .selectMany((w, index) => w?.toList() ?? <TimetableLesson>[]))
+          .selectMany((w, index) => w)
+          .select((lesson, index) => RegisterChange<TimetableLesson>(type: RegisterChangeTypes.added, value: lesson))
+          .toList();
+
+      /* Grades */
+      var allGradesSaved = provider.registerData!.student.subjects
+          .select((subject, index) => subject.grades)
+          .selectMany((subject, index) => subject)
+          .toList();
+      var allGradesDownloaded =
+          data.student.subjects.select((subject, index) => subject.grades).selectMany((subject, index) => subject).toList();
+
+      var gradeChanges = allGradesDownloaded
+          .except(allGradesSaved)
+          .select((x, index) => RegisterChange<Grade>(
+              type: allGradesSaved.any((y) => y.id == x.id && y.id > 0 && x.id > 0)
+                  ? RegisterChangeTypes.changed
+                  : RegisterChangeTypes.added,
+              value: x))
+          .appendAll(allGradesSaved.except(allGradesDownloaded).select((x, index) => RegisterChange<Grade>(
+              type: allGradesDownloaded.any((y) => y.id == x.id && y.id > 0 && x.id > 0)
+                  ? RegisterChangeTypes.changed
+                  : RegisterChangeTypes.removed,
+              value: x)))
+          .toList();
+
+      /* Events */
+      var eventChanges = provider.registerData!.student.mainClass.events
+          .except(data.student.mainClass.events)
+          .select((x, index) => RegisterChange<Event>(
+              type: data.student.mainClass.events.any((y) => y.id == x.id && y.id > 0 && x.id > 0)
+                  ? RegisterChangeTypes.changed
+                  : RegisterChangeTypes.added,
+              value: x))
+          .appendAll(data.student.mainClass.events
+              .except(provider.registerData!.student.mainClass.events)
+              .where((x) => provider.registerData!.student.mainClass.events.any((y) => y.id == x.id && y.id > 0 && x.id > 0))
+              .select((x, index) => RegisterChange<Event>(type: RegisterChangeTypes.removed, value: x)))
+          .toList();
+
+      /* Announcements */
+      var announcementChanges = provider.registerData!.student.mainClass.unit.announcements
+          ?.except(data.student.mainClass.unit.announcements ?? [])
+          .select((x, index) => RegisterChange<Announcement>(
+              type: (data.student.mainClass.unit.announcements?.any((y) => y.id == x.id && y.id > 0 && x.id > 0) ?? false)
+                  ? RegisterChangeTypes.changed
+                  : RegisterChangeTypes.added,
+              value: x))
+          .appendAll(data.student.mainClass.unit.announcements
+                  ?.except(provider.registerData!.student.mainClass.unit.announcements ?? [])
+                  .where((x) => (provider.registerData!.student.mainClass.unit.announcements
+                          ?.any((y) => y.id == x.id && y.id > 0 && x.id > 0) ??
+                      false))
+                  .select((x, index) => RegisterChange<Announcement>(type: RegisterChangeTypes.removed, value: x)) ??
+              [])
+          .toList();
+
+      /* Messages */
+      var messageChanges = provider.registerData!.messages.received
+          .except(data.messages.received)
+          .select((x, index) => RegisterChange<Message>(type: RegisterChangeTypes.added, value: x))
+          .toList();
+
+      /* Push everything to the register */
+      changes.add(RegisterChanges(
+          refreshDate: DateTime.now(),
+          timetableChanges: timetableChanges.nullIfEmpty(info),
+          gradeChanges: gradeChanges.nullIfEmpty(info),
+          eventChanges: eventChanges.nullIfEmpty(info),
+          announcementChanges: announcementChanges?.nullIfEmpty(info),
+          messageChanges: messageChanges.nullIfEmpty(messages)));
+    } catch (ex) {
+      // ignored
+    }
+
+    if (messages) data.messages = provider.registerData!.messages;
     if (info) {
       data.student = provider.registerData!.student;
       sessionName = data.student.account.name;
@@ -278,8 +378,90 @@ class Session extends HiveObject {
     }
     await Share.settings.save();
   }
+}
 
-  factory Session.fromJson(Map<String, dynamic> json) => _$SessionFromJson(json);
+@HiveType(typeId: 59)
+class RegisterChanges {
+  RegisterChanges(
+      {DateTime? refreshDate,
+      List<RegisterChange<TimetableLesson>>? timetableChanges,
+      List<RegisterChange<Grade>>? gradeChanges,
+      List<RegisterChange<Event>>? eventChanges,
+      List<RegisterChange<Announcement>>? announcementChanges,
+      List<RegisterChange<Message>>? messageChanges,
+      List<RegisterChange<Attendance>>? attendanceChanges})
+      : refreshDate = refreshDate ?? DateTime.now(),
+        timetablesChanged = timetableChanges ?? [],
+        gradesChanged = gradeChanges ?? [],
+        eventsChanged = eventChanges ?? [],
+        announcementsChanged = announcementChanges ?? [],
+        messagesChanged = messageChanges ?? [],
+        attendancesChanged = attendanceChanges ?? [];
 
-  Map<String, dynamic> toJson() => _$SessionToJson(this);
+  @HiveField(0)
+  DateTime refreshDate;
+
+  @HiveField(1)
+  List<RegisterChange<TimetableLesson>> timetablesChanged;
+
+  @HiveField(2)
+  List<RegisterChange<Grade>> gradesChanged;
+
+  @HiveField(3)
+  List<RegisterChange<Event>> eventsChanged;
+
+  @HiveField(4)
+  List<RegisterChange<Announcement>> announcementsChanged;
+
+  @HiveField(5)
+  List<RegisterChange<Message>> messagesChanged;
+
+  @HiveField(6)
+  List<RegisterChange<Attendance>> attendancesChanged;
+}
+
+class RegisterChange<T> extends HiveObject {
+  RegisterChange({required this.value, required this.type});
+  T value;
+  RegisterChangeTypes type;
+}
+
+class RegisterChangeAdapter<T> extends TypeAdapter<RegisterChange> {
+  RegisterChangeAdapter({required int id}) : typeId = id;
+
+  @override
+  final int typeId;
+
+  @override
+  RegisterChange<T> read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return RegisterChange<T>(
+      value: fields[1] as T,
+      type: fields[2] as RegisterChangeTypes,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, RegisterChange obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(1)
+      ..write(obj.value)
+      ..writeByte(2)
+      ..write(obj.type);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is RegisterChangeAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+}
+
+extension OrNullExtension<T> on List<T> {
+  List<T>? nullIfEmpty([bool and = true]) => (isNotEmpty && and) ? this : null;
 }

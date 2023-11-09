@@ -56,6 +56,7 @@ class SessionAdapter extends TypeAdapter<Session> {
     return Session(
       sessionName: fields[1] as String,
       providerGuid: fields[5] as String,
+      changes: (fields[3] as List?)?.cast<RegisterChanges>(),
     )
       ..sessionCredentials = (fields[2] as Map).cast<String, String>()
       ..data = fields[4] as ProviderData;
@@ -64,15 +65,17 @@ class SessionAdapter extends TypeAdapter<Session> {
   @override
   void write(BinaryWriter writer, Session obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(1)
       ..write(obj.sessionName)
-      ..writeByte(5)
-      ..write(obj.providerGuid)
       ..writeByte(2)
       ..write(obj.sessionCredentials)
+      ..writeByte(3)
+      ..write(obj.changes)
       ..writeByte(4)
-      ..write(obj.data);
+      ..write(obj.data)
+      ..writeByte(5)
+      ..write(obj.providerGuid);
   }
 
   @override
@@ -86,44 +89,57 @@ class SessionAdapter extends TypeAdapter<Session> {
           typeId == other.typeId;
 }
 
-// **************************************************************************
-// JsonSerializableGenerator
-// **************************************************************************
+class RegisterChangesAdapter extends TypeAdapter<RegisterChanges> {
+  @override
+  final int typeId = 59;
 
-SessionsData _$SessionsDataFromJson(Map<String, dynamic> json) => SessionsData(
-      sessions: (json['sessions'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, Session.fromJson(e as Map<String, dynamic>)),
-      ),
-      lastSessionId: json['lastSessionId'] as String? ??
-          'SESSIONS-SHIM-SMPL-FAKE-DATAPROVIDER',
-    );
-
-Map<String, dynamic> _$SessionsDataToJson(SessionsData instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
+  @override
+  RegisterChanges read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return RegisterChanges(
+      refreshDate: fields[0] as DateTime?,
+    )
+      ..timetablesChanged =
+          (fields[1] as List).cast<RegisterChange<TimetableLesson>>()
+      ..gradesChanged = (fields[2] as List).cast<RegisterChange<Grade>>()
+      ..eventsChanged = (fields[3] as List).cast<RegisterChange<Event>>()
+      ..announcementsChanged =
+          (fields[4] as List).cast<RegisterChange<Announcement>>()
+      ..messagesChanged = (fields[5] as List).cast<RegisterChange<Message>>()
+      ..attendancesChanged =
+          (fields[6] as List).cast<RegisterChange<Attendance>>();
   }
 
-  writeNotNull('lastSessionId', instance.lastSessionId);
-  val['sessions'] = instance.sessions;
-  return val;
+  @override
+  void write(BinaryWriter writer, RegisterChanges obj) {
+    writer
+      ..writeByte(7)
+      ..writeByte(0)
+      ..write(obj.refreshDate)
+      ..writeByte(1)
+      ..write(obj.timetablesChanged)
+      ..writeByte(2)
+      ..write(obj.gradesChanged)
+      ..writeByte(3)
+      ..write(obj.eventsChanged)
+      ..writeByte(4)
+      ..write(obj.announcementsChanged)
+      ..writeByte(5)
+      ..write(obj.messagesChanged)
+      ..writeByte(6)
+      ..write(obj.attendancesChanged);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RegisterChangesAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
-
-Session _$SessionFromJson(Map<String, dynamic> json) => Session(
-      sessionName: json['sessionName'] as String? ?? 'John Doe',
-      providerGuid: json['providerGuid'] as String? ??
-          'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER',
-    )
-      ..sessionCredentials =
-          Map<String, String>.from(json['sessionCredentials'] as Map)
-      ..data = ProviderData.fromJson(json['data'] as Map<String, dynamic>);
-
-Map<String, dynamic> _$SessionToJson(Session instance) => <String, dynamic>{
-      'sessionName': instance.sessionName,
-      'providerGuid': instance.providerGuid,
-      'sessionCredentials': instance.sessionCredentials,
-      'data': instance.data,
-    };

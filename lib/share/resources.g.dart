@@ -108,3 +108,47 @@ class LessonCallTypesAdapter extends TypeAdapter<LessonCallTypes> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+class RegisterChangeTypesAdapter extends TypeAdapter<RegisterChangeTypes> {
+  @override
+  final int typeId = 7;
+
+  @override
+  RegisterChangeTypes read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 1:
+        return RegisterChangeTypes.added;
+      case 2:
+        return RegisterChangeTypes.changed;
+      case 3:
+        return RegisterChangeTypes.removed;
+      default:
+        return RegisterChangeTypes.added;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, RegisterChangeTypes obj) {
+    switch (obj) {
+      case RegisterChangeTypes.added:
+        writer.writeByte(1);
+        break;
+      case RegisterChangeTypes.changed:
+        writer.writeByte(2);
+        break;
+      case RegisterChangeTypes.removed:
+        writer.writeByte(3);
+        break;
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RegisterChangeTypesAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}

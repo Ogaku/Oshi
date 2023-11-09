@@ -5,7 +5,9 @@
 		}
 	],
 	"settings": {
-		"dart.lineLength": 125
+		"dart.lineLength": 125,
+		"dart.previewFlutterUiGuides": true,
+		"dart.previewFlutterUiGuidesCustomTracking": true
 	},
 	"extensions": {
 		"recommendations": [

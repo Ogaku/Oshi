@@ -9,7 +9,7 @@ part 'student.g.dart';
 
 @HiveType(typeId: 30)
 @JsonSerializable()
-class Account extends HiveObject {
+class Account {
   Account({
     this.id = -1,
     this.userId = -1,
@@ -19,19 +19,19 @@ class Account extends HiveObject {
   });
 
   @HiveField(1)
-  int id;
+  final int id;
 
   @HiveField(2)
-  int userId;
+  final int userId;
 
   @HiveField(3)
-  int number;
+  final int number;
 
   @HiveField(4)
-  String firstName;
+  final String firstName;
 
   @HiveField(5)
-  String lastName;
+  final String lastName;
 
   String get name => '$firstName $lastName';
 
@@ -42,21 +42,21 @@ class Account extends HiveObject {
 
 @HiveType(typeId: 31)
 @JsonSerializable(includeIfNull: false)
-class Student extends HiveObject {
+class Student {
   @HiveField(1)
-  Account account;
+  final Account account;
 
   @HiveField(2)
-  Class mainClass;
+  final Class mainClass;
 
   @HiveField(3)
-  List<Class>? virtualClasses;
+  final List<Class>? virtualClasses;
 
   @HiveField(4)
-  List<Attendance>? attendances;
+  final List<Attendance>? attendances;
 
   @HiveField(5)
-  List<Lesson> subjects;
+  final List<Lesson> subjects;
 
   Student({
     Account? account,

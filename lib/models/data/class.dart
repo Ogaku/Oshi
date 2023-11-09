@@ -1,4 +1,3 @@
-// -- class.dart --
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/data/teacher.dart';
@@ -9,7 +8,7 @@ part 'class.g.dart';
 
 @HiveType(typeId: 23)
 @JsonSerializable(includeIfNull: false)
-class Class extends HiveObject {
+class Class {
   Class({
     this.id = -1,
     this.number = -1,
@@ -29,31 +28,31 @@ class Class extends HiveObject {
         events = events ?? [];
 
   @HiveField(0)
-  int id;
+  final int id;
   
   @HiveField(1)  
-  int number;
+  final int number;
   
   @HiveField(2)  
-  String symbol;
+  final String symbol;
   
   @HiveField(3)  
-  String? name;
+  final String? name;
   
   @HiveField(4)  
-  DateTime beginSchoolYear;
+  final DateTime beginSchoolYear;
   
   @HiveField(5)  
-  DateTime endFirstSemester;
+  final DateTime endFirstSemester;
   
   @HiveField(6)  
-  DateTime endSchoolYear;
+  final DateTime endSchoolYear;
   
   @HiveField(7)  
-  Unit unit;
+  final Unit unit;
   
   @HiveField(8)  
-  Teacher classTutor;
+  final Teacher classTutor;
   
   @HiveField(9)  
   List<Event> events;

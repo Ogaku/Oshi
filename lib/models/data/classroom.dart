@@ -5,20 +5,20 @@ part 'classroom.g.dart';
 
 @HiveType(typeId: 24)
 @JsonSerializable()
-class Classroom extends HiveObject {
+class Classroom  {
   Classroom({this.id = -1, this.url = 'https://g.co', this.name = '', this.symbol = ''});
 
   @HiveField(0)
-  int id;
+  final int id;
   
   @HiveField(1)
-  String url;
+  final String url;
   
   @HiveField(2)
-  String name;
+  final String name;
   
   @HiveField(3)
-  String symbol;
+  final String symbol;
 
   factory Classroom.fromJson(Map<String, dynamic> json) => _$ClassroomFromJson(json);
 

@@ -356,7 +356,15 @@ extension EventWidgetExtension on Event {
                 ? CupertinoContextMenuAction(
                     onPressed: () {
                       Share.session.provider.markEventAsDone(parent: this).then((s) {
-                        if (s.success) setState(() => done = true);
+                        try {
+                          if (s.success) {
+                            setState(() => Share.session.data.student.mainClass
+                                    .events[Share.session.data.student.mainClass.events.indexOf(this)] =
+                                Event.from(other: this, done: true));
+                          }
+                        } catch (ex) {
+                          // ignored
+                        }
                       });
                       Navigator.of(context, rootNavigator: true).pop();
                     },

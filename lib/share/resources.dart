@@ -45,6 +45,16 @@ enum LessonCallTypes {
   wholeLesson
 }
 
+@HiveType(typeId: 7)
+enum RegisterChangeTypes {
+  @HiveField(1)
+  added,
+  @HiveField(2)
+  changed,
+  @HiveField(3)
+  removed
+}
+
 extension YearlyAverageMethodsString on YearlyAverageMethods {
   String get name => switch (this) {
         YearlyAverageMethods.allGradesAverage => 'Average of all grades',

@@ -13,7 +13,7 @@ part 'lesson.g.dart';
 
 @HiveType(typeId: 27)
 @JsonSerializable()
-class Lesson extends HiveObject {
+class Lesson {
   Lesson({
     this.id = -1,
     this.url = 'https://g.co',
@@ -30,34 +30,34 @@ class Lesson extends HiveObject {
         grades = grades ?? [];
 
   @HiveField(1)
-  int id;
+  final int id;
 
   @HiveField(2)
-  String url;
+  final String url;
 
   @HiveField(3)
-  String name;
+  final String name;
 
   @HiveField(4)
-  int no;
+  final int no;
 
   @HiveField(5)
-  String short;
+  final String short;
 
   @HiveField(6)
-  bool isExtracurricular;
+  final bool isExtracurricular;
 
   @HiveField(7)
-  bool isBlockLesson;
+  final bool isBlockLesson;
 
   @HiveField(8)
-  Class hostClass;
+  final Class hostClass;
 
   @HiveField(9)
-  Teacher teacher;
+  final Teacher teacher;
 
   @HiveField(10)
-  List<Grade> grades;
+  final List<Grade> grades;
 
   Iterable<Grade> get gradesFirstSemester => grades.where((element) => element.semester == 1);
   Iterable<Grade> get gradesSecondSemester => grades.where((element) => element.semester == 2);

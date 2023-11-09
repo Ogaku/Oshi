@@ -7,18 +7,18 @@ import 'package:oshi/share/config.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
 
-import 'package:oshi/models/data/announcement.dart' show AnnouncementAdapter;
-import 'package:oshi/models/data/attendances.dart' show AttendanceAdapter, AttendanceTypeAdapter;
+import 'package:oshi/models/data/announcement.dart' show Announcement, AnnouncementAdapter;
+import 'package:oshi/models/data/attendances.dart' show Attendance, AttendanceAdapter, AttendanceTypeAdapter;
 import 'package:oshi/models/data/class.dart' show ClassAdapter;
 import 'package:oshi/models/data/classroom.dart' show ClassroomAdapter;
-import 'package:oshi/models/data/event.dart' show EventAdapter, EventCategoryAdapter;
-import 'package:oshi/models/data/grade.dart' show GradeAdapter;
+import 'package:oshi/models/data/event.dart' show Event, EventAdapter, EventCategoryAdapter;
+import 'package:oshi/models/data/grade.dart' show Grade, GradeAdapter;
 import 'package:oshi/models/data/lesson.dart' show LessonAdapter;
-import 'package:oshi/models/data/messages.dart' show MessagesAdapter, MessageAdapter, AttachmentAdapter;
+import 'package:oshi/models/data/messages.dart' show AttachmentAdapter, Message, MessageAdapter, MessagesAdapter;
 import 'package:oshi/models/data/student.dart' show StudentAdapter, AccountAdapter;
 import 'package:oshi/models/data/teacher.dart' show TeacherAdapter;
 import 'package:oshi/models/data/timetables.dart'
-    show TimetablesAdapter, TimetableDayAdapter, TimetableLessonAdapter, SubstitutionDetailsAdapter;
+    show SubstitutionDetailsAdapter, TimetableDayAdapter, TimetableLesson, TimetableLessonAdapter, TimetablesAdapter;
 import 'package:oshi/models/data/unit.dart' show UnitAdapter, LessonRangesAdapter;
 import 'package:oshi/models/provider.dart' show ProviderDataAdapter;
 
@@ -65,7 +65,15 @@ Future<void> main() async {
     ..registerAdapter(YearlyAverageMethodsAdapter())
     ..registerAdapter(LessonCallTypesAdapter())
     ..registerAdapter(ConfigAdapter())
-    ..registerAdapter(DurationAdapter());
+    ..registerAdapter(DurationAdapter())
+    ..registerAdapter(RegisterChangesAdapter())
+    ..registerAdapter(RegisterChangeTypesAdapter())
+    ..registerAdapter(RegisterChangeAdapter<TimetableLesson>(id: 51))
+    ..registerAdapter(RegisterChangeAdapter<Grade>(id: 52))
+    ..registerAdapter(RegisterChangeAdapter<Event>(id: 53))
+    ..registerAdapter(RegisterChangeAdapter<Announcement>(id: 54))
+    ..registerAdapter(RegisterChangeAdapter<Message>(id: 55))
+    ..registerAdapter(RegisterChangeAdapter<Attendance>(id: 56));
 
   // Load english localization resources
   await Share.translator.loadResources('en');

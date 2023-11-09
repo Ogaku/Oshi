@@ -1,4 +1,5 @@
 import 'package:darq/darq.dart';
+import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/interface/cupertino/pages/timetable.dart';
@@ -12,15 +13,16 @@ part 'timetables.g.dart';
 
 @HiveType(typeId: 33)
 @JsonSerializable()
-class Timetables extends HiveObject {
+class Timetables extends Equatable {
   @HiveField(1)
-  Map<DateTime, TimetableDay> timetable;
+  final Map<DateTime, TimetableDay> timetable;
 
-  Timetables({
-    Map<DateTime, TimetableDay>? timetable,
-  }) : timetable = timetable ?? {};
+  Timetables({Map<DateTime, TimetableDay>? timetable}) : timetable = timetable ?? {};
 
   TimetableDay? operator [](DateTime day) => timetable[day]?.withDay(day);
+
+  @override
+  List<Object> get props => [timetable];
 
   factory Timetables.fromJson(Map<String, dynamic> json) => _$TimetablesFromJson(json);
 
@@ -29,13 +31,11 @@ class Timetables extends HiveObject {
 
 @HiveType(typeId: 34)
 @JsonSerializable()
-class TimetableDay extends HiveObject {
+class TimetableDay extends Equatable {
   @HiveField(1)
-  List<List<TimetableLesson>?> lessons;
+  final List<List<TimetableLesson>?> lessons;
 
-  TimetableDay({
-    List<List<TimetableLesson>?>? lessons,
-  }) : lessons = lessons ?? [];
+  TimetableDay({List<List<TimetableLesson>?>? lessons, this.calendarDay}) : lessons = lessons ?? [];
 
   // The start time of the first non-cancelled lesson
   @JsonKey(includeToJson: false, includeFromJson: false)
@@ -86,12 +86,14 @@ class TimetableDay extends HiveObject {
 
   // Placeholder for withDay
   @JsonKey(includeToJson: false, includeFromJson: false)
-  DateTime? calendarDay;
+  final DateTime? calendarDay;
 
   TimetableDay withDay(DateTime day) {
-    calendarDay = day;
-    return this;
+    return TimetableDay(lessons: lessons, calendarDay: day);
   }
+
+  @override
+  List<Object> get props => [lessons];
 
   factory TimetableDay.fromJson(Map<String, dynamic> json) => _$TimetableDayFromJson(json);
 
@@ -100,7 +102,7 @@ class TimetableDay extends HiveObject {
 
 @HiveType(typeId: 35)
 @JsonSerializable()
-class TimetableLesson extends HiveObject {
+class TimetableLesson extends Equatable {
   TimetableLesson({
     this.url = '',
     this.lessonNo = -1,
@@ -118,43 +120,43 @@ class TimetableLesson extends HiveObject {
   }) : date = date ?? DateTime(2000);
 
   @HiveField(1)
-  String url;
+  final String url;
 
   @HiveField(2)
-  int lessonNo;
+  final int lessonNo;
 
   @HiveField(3)
-  bool isCanceled;
+  final bool isCanceled;
 
   @HiveField(4)
-  Class? lessonClass;
+  final Class? lessonClass;
 
   @HiveField(5)
-  Lesson? subject;
+  final Lesson? subject;
 
   @HiveField(6)
-  Teacher? teacher;
+  final Teacher? teacher;
 
   @HiveField(7)
-  Classroom? classroom;
+  final Classroom? classroom;
 
   @HiveField(8)
-  bool modifiedSchedule;
+  final bool modifiedSchedule;
 
   @HiveField(9)
-  String? substitutionNote;
+  final String? substitutionNote;
 
   @HiveField(10)
-  SubstitutionDetails? substitutionDetails;
+  final SubstitutionDetails? substitutionDetails;
 
   @HiveField(11)
-  DateTime date;
+  final DateTime date;
 
   @HiveField(12)
-  DateTime? hourFrom;
+  final DateTime? hourFrom;
 
   @HiveField(13)
-  DateTime? hourTo;
+  final DateTime? hourTo;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   DateTime? get timeFrom => date.withTime(hourFrom);
@@ -212,6 +214,9 @@ class TimetableLesson extends HiveObject {
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get teacherString => 'With ${teacher?.name}';
 
+  @override
+  List<Object> get props => [url, lessonNo, isCanceled, modifiedSchedule, date];
+
   factory TimetableLesson.fromJson(Map<String, dynamic> json) => _$TimetableLessonFromJson(json);
 
   Map<String, dynamic> toJson() => _$TimetableLessonToJson(this);
@@ -221,7 +226,7 @@ class TimetableLesson extends HiveObject {
 // Put the new data in the base object
 @HiveType(typeId: 36)
 @JsonSerializable()
-class SubstitutionDetails extends HiveObject {
+class SubstitutionDetails extends Equatable {
   SubstitutionDetails({
     this.originalUrl = 'htps://g.co',
     this.originalLessonNo = -1,
@@ -236,28 +241,31 @@ class SubstitutionDetails extends HiveObject {
         originalHourTo = originalHourTo ?? DateTime(2000);
 
   @HiveField(1)
-  String originalUrl;
+  final String originalUrl;
 
   @HiveField(2)
-  int originalLessonNo;
+  final int originalLessonNo;
 
   @HiveField(3)
-  Lesson? originalSubject;
+  final Lesson? originalSubject;
 
   @HiveField(4)
-  Teacher? originalTeacher;
+  final Teacher? originalTeacher;
 
   @HiveField(5)
-  Classroom? originalClassroom;
+  final Classroom? originalClassroom;
 
   @HiveField(6)
-  DateTime originalDate;
+  final DateTime originalDate;
 
   @HiveField(7)
-  DateTime originalHourFrom;
+  final DateTime originalHourFrom;
 
   @HiveField(8)
-  DateTime originalHourTo;
+  final DateTime originalHourTo;
+
+  @override
+  List<Object> get props => [originalUrl, originalLessonNo, originalDate, originalHourFrom, originalHourTo];
 
   factory SubstitutionDetails.fromJson(Map<String, dynamic> json) => _$SubstitutionDetailsFromJson(json);
 

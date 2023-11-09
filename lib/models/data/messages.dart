@@ -1,4 +1,5 @@
 import 'package:darq/darq.dart';
+import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/models/data/lesson.dart';
@@ -9,7 +10,7 @@ part 'messages.g.dart';
 
 @HiveType(typeId: 28)
 @JsonSerializable(includeIfNull: false)
-class Message extends HiveObject {
+class Message extends Equatable {
   Message(
       {this.id = -1,
       this.url = 'https://g.co',
@@ -24,40 +25,65 @@ class Message extends HiveObject {
       this.receivers})
       : sendDate = sendDate ?? DateTime(2000);
 
+  Message.from(
+      {Message? other,
+      int? id,
+      String? url,
+      String? topic,
+      String? content,
+      String? preview,
+      bool? hasAttachments,
+      Teacher? sender,
+      DateTime? sendDate,
+      DateTime? readDate,
+      List<Attachment>? attachments,
+      List<Teacher>? receivers})
+      : id = other?.id ?? id ?? -1,
+        url = other?.url ?? url ?? 'https://g.co',
+        topic = other?.topic ?? topic ?? '',
+        content = other?.content ?? content,
+        preview = other?.preview ?? preview,
+        hasAttachments = other?.hasAttachments ?? hasAttachments ?? false,
+        sender = other?.sender ?? sender,
+        sendDate = other?.sendDate ?? sendDate ?? DateTime(2000),
+        readDate = other?.readDate ?? readDate,
+        attachments = other?.attachments ?? attachments,
+        receivers = other?.receivers ?? receivers;
+
   @HiveField(1)
-  int id;
+  final int id;
 
   @HiveField(2)
-  String url;
+  final String url;
 
   @HiveField(3)
-  String topic;
+  final String topic;
 
   @HiveField(4)
-  String? content;
+  final String? content;
 
   @HiveField(5)
-  String? preview;
+  final String? preview;
 
   @HiveField(6)
-  bool hasAttachments;
+  final bool hasAttachments;
 
   @HiveField(7)
-  Teacher? sender;
+  final Teacher? sender;
 
   @HiveField(8)
-  DateTime sendDate;
+  final DateTime sendDate;
 
   @HiveField(9)
-  DateTime? readDate;
+  final DateTime? readDate;
 
   // Set to null for no attachments
   @HiveField(10)
-  List<Attachment>? attachments;
+  final List<Attachment>? attachments;
 
   // For messages sent by the student - otherwise null
   @HiveField(11)
-  List<Teacher>? receivers;
+  final List<Teacher>? receivers;
 
   bool get read => receivers != null || (readDate != null && readDate!.isBefore(DateTime.now()));
 
@@ -77,6 +103,9 @@ class Message extends HiveObject {
       ? ':)' // Placeholder, but it's up to you what to display there
       : sender!.name.split('').where((element) => RegExp('[A-Z]').hasMatch(element)).take(2).join();
 
+  @override
+  List<Object> get props => [id, url, topic, hasAttachments, sendDate];
+
   factory Message.fromJson(Map<String, dynamic> json) => _$MessageFromJson(json);
 
   Map<String, dynamic> toJson() => _$MessageToJson(this);
@@ -84,7 +113,7 @@ class Message extends HiveObject {
 
 @HiveType(typeId: 29)
 @JsonSerializable()
-class Messages extends HiveObject {
+class Messages {
   @HiveField(1)
   List<Message> received;
 
@@ -109,16 +138,19 @@ class Messages extends HiveObject {
 
 @HiveType(typeId: 99)
 @JsonSerializable()
-class Attachment extends HiveObject {
+class Attachment extends Equatable {
   @HiveField(1)
-  String name;
+  final String name;
 
   @HiveField(2)
-  String location;
+  final String location;
 
   Attachment({String? name, String? location})
       : name = name ?? 'Unknown',
         location = location ?? 'https://youtu.be/dQw4w9WgXcQ?si=2wQpMrQoFsQbQoKk';
+
+  @override
+  List<Object> get props => [name, location];
 
   factory Attachment.fromJson(Map<String, dynamic> json) => _$AttachmentFromJson(json);
 

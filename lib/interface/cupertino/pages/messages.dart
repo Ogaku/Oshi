@@ -220,11 +220,23 @@ class _MessagesPageState extends State<MessagesPage> {
                                         .then((result) {
                                       setState(() => isWorking = false);
 
-                                      if (result.message == null && result.result != null) {
-                                        x.updateMessageData(result.result!);
+                                      if (result.message == null && result.result != null && folder == MessageFolders.inbox) {
+                                        var index = Share.session.data.messages.received.indexOf(x);
+                                        Share.session.data.messages.received[index] = Message.from(other: result.result!);
+                                        x = Share.session.data.messages.received[index]; // Update x too
                                       }
+                                      if (result.message == null && result.result != null && folder == MessageFolders.outbox) {
+                                        var index = Share.session.data.messages.sent.indexOf(x);
+                                        Share.session.data.messages.sent[index] = Message.from(other: result.result!);
+                                        x = Share.session.data.messages.sent[index]; // Update x too
+                                      }
+
                                       if (x.content?.isEmpty ?? true) return;
-                                      if (folder == MessageFolders.inbox) x.readDate = DateTime.now();
+                                      if (folder == MessageFolders.inbox) {
+                                        Share.session.data.messages
+                                                .received[Share.session.data.messages.received.indexOf(x)] =
+                                            Message.from(other: x, readDate: DateTime.now());
+                                      }
 
                                       Navigator.push(
                                           context,
@@ -397,22 +409,6 @@ class _MessagesPageState extends State<MessagesPage> {
             ),
       children: [messagesWidget],
     );
-  }
-}
-
-extension MessageUpdateExtension on Message {
-  void updateMessageData(Message other) {
-    id = other.id;
-    url = other.url;
-    topic = other.topic;
-    content = other.content;
-    preview = other.preview;
-    hasAttachments = other.hasAttachments;
-    sender = other.sender;
-    sendDate = other.sendDate;
-    readDate = other.readDate;
-    attachments = other.attachments;
-    receivers = other.receivers;
   }
 }
 

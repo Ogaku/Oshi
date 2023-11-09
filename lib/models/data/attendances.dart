@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/models/data/teacher.dart';
@@ -8,7 +9,7 @@ part 'attendances.g.dart';
 
 @HiveType(typeId: 22)
 @JsonSerializable(includeIfNull: false)
-class Attendance extends HiveObject {
+class Attendance extends Equatable {
   Attendance({
     this.id = -1,
     this.lessonNo = -1,
@@ -24,25 +25,28 @@ class Attendance extends HiveObject {
         teacher = teacher ?? Teacher();
 
   @HiveField(0)
-  int id;
+  final int id;
 
   @HiveField(1)
-  int lessonNo;
+  final int lessonNo;
 
   @HiveField(2)
-  TimetableLesson lesson;
+  final TimetableLesson lesson;
 
   @HiveField(3)
-  DateTime date;
+  final DateTime date;
 
   @HiveField(4)
-  DateTime addDate;
+  final DateTime addDate;
 
   @HiveField(5)
-  AttendanceType type;
+  final AttendanceType type;
 
   @HiveField(6)
-  Teacher teacher;
+  final Teacher teacher;
+
+  @override
+  List<Object> get props => [id, lessonNo, date, type];
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get addedDateString => "${teacher.name} • ${DateFormat('d.M.y').format(date)}";

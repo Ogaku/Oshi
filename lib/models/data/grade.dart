@@ -1,6 +1,7 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
 import 'package:darq/darq.dart';
+import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/models/data/teacher.dart';
@@ -19,7 +20,7 @@ Map<String, double> get _customGradeModifierValues {
 
 @HiveType(typeId: 26)
 @JsonSerializable()
-class Grade extends HiveObject {
+class Grade extends Equatable {
   Grade({
     this.id = -1,
     this.url = 'https://g.co',
@@ -43,52 +44,52 @@ class Grade extends HiveObject {
         addedBy = addedBy ?? Teacher();
 
   @HiveField(0)
-  int id;
+  final int id;
 
   @HiveField(1)
-  String url;
+  final String url;
 
   @HiveField(2)
-  String name;
+  final String name;
 
   @HiveField(3)
-  String value;
+  final String value;
 
   @HiveField(4)
-  int weight;
+  final int weight;
 
   @HiveField(5)
-  List<String> comments;
+  final List<String> comments;
 
   @HiveField(6)
-  bool countsToAverage;
+  final bool countsToAverage;
 
   @HiveField(7)
-  DateTime date;
+  final DateTime date;
 
   @HiveField(8)
-  DateTime addDate;
+  final DateTime addDate;
 
   @HiveField(9)
-  Teacher addedBy;
+  final Teacher addedBy;
 
   @HiveField(10)
-  int semester;
+  final int semester;
 
   @HiveField(11)
-  bool isConstituent;
+  final bool isConstituent;
 
   @HiveField(12)
-  bool isSemester;
+  final bool isSemester;
 
   @HiveField(13)
-  bool isSemesterProposition;
+  final bool isSemesterProposition;
 
   @HiveField(14)
-  bool isFinal;
+  final bool isFinal;
 
   @HiveField(15)
-  bool isFinalProposition;
+  final bool isFinalProposition;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get nameWithWeight => '$name, weight $weight';
@@ -132,6 +133,26 @@ class Grade extends HiveObject {
 
     return val;
   }
+
+  @override
+  List<Object> get props => [
+        id,
+        url,
+        name,
+        value,
+        weight,
+        comments,
+        countsToAverage,
+        date,
+        addDate,
+        addedBy,
+        semester,
+        isConstituent,
+        isSemester,
+        isSemesterProposition,
+        isFinal,
+        isFinalProposition
+      ];
 
   factory Grade.fromJson(Map<String, dynamic> json) => _$GradeFromJson(json);
 

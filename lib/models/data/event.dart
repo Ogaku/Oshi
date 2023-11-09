@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/interface/cupertino/views/grades_detailed.dart';
 import 'package:oshi/models/data/classroom.dart';
@@ -9,7 +10,7 @@ part 'event.g.dart';
 
 @HiveType(typeId: 25)
 @JsonSerializable(includeIfNull: false)
-class Event extends HiveObject {
+class Event extends Equatable {
   Event(
       {this.id = -1,
       this.lessonNo,
@@ -27,48 +28,79 @@ class Event extends HiveObject {
       this.classroom})
       : timeFrom = timeFrom ?? DateTime(2000);
 
+  Event.from(
+      {Event? other,
+      int? id,
+      int? lessonNo,
+      DateTime? date,
+      DateTime? addDate,
+      DateTime? timeFrom,
+      DateTime? timeTo,
+      String? title,
+      String? content,
+      String? categoryName,
+      EventCategory? category,
+      bool? done,
+      Teacher? sender,
+      Classroom? classroom,
+      List<Attachment>? attachments})
+      : id = id ?? other?.id ?? -1,
+        lessonNo = lessonNo ?? other?.lessonNo,
+        date = date ?? other?.date,
+        addDate = addDate ?? other?.addDate,
+        timeFrom = timeFrom ?? other?.timeFrom ?? DateTime(2000),
+        timeTo = timeTo ?? other?.timeTo,
+        title = title ?? other?.title,
+        content = content ?? other?.content ?? '',
+        categoryName = categoryName ?? other?.categoryName ?? '',
+        category = category ?? other?.category ?? EventCategory.other,
+        done = done ?? other?.done ?? false,
+        sender = sender ?? other?.sender,
+        attachments = attachments ?? other?.attachments,
+        classroom = classroom ?? other?.classroom;
+
   @HiveField(0)
-  int id;
+  final int id;
 
   @HiveField(1)
-  int? lessonNo;
+  final int? lessonNo;
 
   @HiveField(2)
-  DateTime? date;
+  final DateTime? date;
 
   @HiveField(3)
-  DateTime? addDate;
+  final DateTime? addDate;
 
   @HiveField(4)
-  DateTime timeFrom;
+  final DateTime timeFrom;
 
   @HiveField(5)
-  DateTime? timeTo;
+  final DateTime? timeTo;
 
   @HiveField(6)
-  String? title;
+  final String? title;
 
   @HiveField(7)
-  String content;
+  final String content;
 
   @HiveField(8)
-  String categoryName;
+  final String categoryName;
 
   @HiveField(9)
-  bool done; // For homeworks
+  final bool done; // For homeworks
 
   @HiveField(10)
-  EventCategory category;
+  final EventCategory category;
 
   @HiveField(11)
-  Teacher? sender;
+  final Teacher? sender;
 
   @HiveField(12)
-  Classroom? classroom;
+  final Classroom? classroom;
 
   // Set to null for no attachments
   @HiveField(13)
-  List<Attachment>? attachments; // For homeworks
+  final List<Attachment>? attachments; // For homeworks
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get titleString => "${categoryName.capitalize()}${(title ?? content).isNotEmpty ? ':' : ''} ${title ?? content}";
@@ -88,6 +120,9 @@ class Event extends HiveObject {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get addedByString => (sender != null ? 'Added by ${sender!.name}' : '');
+
+  @override
+  List<Object> get props => [id, timeFrom, content, categoryName, done, category];
 
   factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
 

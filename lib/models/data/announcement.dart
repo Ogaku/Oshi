@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/models/data/teacher.dart';
 
@@ -6,7 +7,7 @@ part 'announcement.g.dart';
 
 @HiveType(typeId: 21)
 @JsonSerializable()
-class Announcement extends HiveObject {
+class Announcement extends Equatable {
   Announcement({
     this.id = -1,
     this.url = '',
@@ -20,28 +21,31 @@ class Announcement extends HiveObject {
         endDate = endDate ?? DateTime(2000);
 
   @HiveField(0)
-  int id;
+  final int id;
   
   @HiveField(1)
-  String url;
+  final String url;
 
   @HiveField(2)
-  bool read;
+  final bool read;
 
   @HiveField(3)
-  String subject;
+  final String subject;
 
   @HiveField(4)
-  String content;
+  final String content;
 
   @HiveField(5)
-  Teacher? contact;
+  final Teacher? contact;
 
   @HiveField(6)
-  DateTime startDate;
+  final DateTime startDate;
 
   @HiveField(7)
-  DateTime endDate;
+  final DateTime endDate;
+
+  @override
+  List<Object> get props => [id, url, subject, content];
 
   factory Announcement.fromJson(Map<String, dynamic> json) => _$AnnouncementFromJson(json);
 
