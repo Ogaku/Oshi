@@ -83,7 +83,8 @@ class _NewSessionPageState extends State<NewSessionPage> {
             scrollController: scrollController,
             largeTitle: FittedBox(
                 fit: BoxFit.fitWidth,
-                child: Container(margin: EdgeInsets.only(right: 20), child: Text('/Session/New/Register/Question'.localized))),
+                child:
+                    Container(margin: EdgeInsets.only(right: 20), child: Text('/Session/New/Register/Question'.localized))),
             trailing: GestureDetector(
               child: Icon(CupertinoIcons.question_circle),
               onTap: () async {

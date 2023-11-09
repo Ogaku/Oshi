@@ -143,7 +143,8 @@ class _LoginPageState extends State<LoginPage> {
                   opacity: 0.5,
                   child: Container(
                       margin: EdgeInsets.only(right: 20, left: 20, bottom: 20),
-                      child: Text('/Session/Login/Data/Info'.localized,
+                      child: Text(
+                        '/Session/Login/Data/Info'.localized,
                         style: TextStyle(fontSize: 12),
                         textAlign: TextAlign.justify,
                       ))),
@@ -158,7 +159,7 @@ class _LoginPageState extends State<LoginPage> {
       IProgress<({double? progress, String? message})>? progress}) async {
     try {
       // Create a new session: ID/name/provider are automatic
-      progress?.report((progress: 0.1, message: '/Session/Login/Splash/Session'.localized ));
+      progress?.report((progress: 0.1, message: '/Session/Login/Splash/Session'.localized));
       var session = Session(providerGuid: guid);
       var result = await session.tryLogin(credentials: credentials, progress: progress, showErrors: true);
 

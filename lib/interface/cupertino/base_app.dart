@@ -7,6 +7,7 @@ import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:format/format.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:path/path.dart' as path;
 
@@ -145,8 +146,11 @@ class _BaseAppState extends State<BaseApp> {
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
         title: Text('/BaseApp/Update/AlertHeader'.localized),
-        content:
-            Text('{h} {w} {f}'.format({'h': '/BaseApp/Update/AlertPart1'.localized, 'w': Platform.isAndroid ? 'Android' : 'iOS', 'f': '/BaseApp/Update/AlertPart2'.localized})),
+        content: Text('{h} {w} {f}'.format({
+          'h': '/BaseApp/Update/AlertPart1'.localized,
+          'w': Platform.isAndroid ? 'Android' : 'iOS',
+          'f': '/BaseApp/Update/AlertPart2'.localized
+        })),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
             onPressed: () async {

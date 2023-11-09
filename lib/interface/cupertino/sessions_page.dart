@@ -6,6 +6,7 @@ import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:event/event.dart';
+import 'package:format/format.dart';
 import 'package:oshi/interface/cupertino/new_session.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/share/share.dart';
@@ -40,148 +41,141 @@ class _SessionsPageState extends State<SessionsPage> {
               padding: EdgeInsets.all(0),
               title: Builder(
                   builder: (context) => CupertinoContextMenu.builder(
-                          enableHapticFeedback: true,
-                          actions: [
-                            CupertinoContextMenuAction(
-                              onPressed: () async {
-                                // Dismiss the context menu
-                                Navigator.of(context, rootNavigator: true).pop();
+                      enableHapticFeedback: true,
+                      actions: [
+                        CupertinoContextMenuAction(
+                          onPressed: () async {
+                            // Dismiss the context menu
+                            Navigator.of(context, rootNavigator: true).pop();
 
-                                // Remove the session
-                                Share.settings.sessions.sessions.remove(x);
-                                if (Share.settings.sessions.lastSessionId == x) {
-                                  Share.settings.sessions.lastSessionId =
-                                      Share.settings.sessions.sessions.keys.firstOrDefault(defaultValue: null);
-                                }
+                            // Remove the session
+                            Share.settings.sessions.sessions.remove(x);
+                            if (Share.settings.sessions.lastSessionId == x) {
+                              Share.settings.sessions.lastSessionId =
+                                  Share.settings.sessions.sessions.keys.firstOrDefault(defaultValue: null);
+                            }
 
-                                // Save our session changes
-                                await Share.settings.save();
-                                setState(() {}); // Reload
-                              },
-                              isDestructiveAction: true,
-                              trailingIcon: CupertinoIcons.delete,
-                              child: Text('/Delete'.localized),
-                            ),
-                          ],
-                          // I know there's onTap too, but we need an opaque background
-                          builder: (BuildContext context, Animation<double> animation) => Visibility(
-                              visible: Share.settings.sessions.sessions[x] != null,
-                              child: CupertinoButton(
-                                color: CupertinoDynamicColor.withBrightness(
-                                    color: const Color.fromARGB(255, 255, 255, 255),
-                                    darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                                padding: EdgeInsets.only(left: 20),
-                                child: Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                                        color: CupertinoDynamicColor.resolve(
-                                            CupertinoDynamicColor.withBrightness(
-                                                color: const Color.fromARGB(255, 255, 255, 255),
-                                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                                            context)),
-                                    padding: EdgeInsets.only(right: 10, left: 6),
-                                    child: ConstrainedBox(
-                                        constraints: BoxConstraints(
-                                            maxHeight: animation.value < CupertinoContextMenu.animationOpensAt
-                                                ? double.infinity
-                                                : 100,
-                                            maxWidth: animation.value < CupertinoContextMenu.animationOpensAt
-                                                ? double.infinity
-                                                : 300),
-                                        child: Row(children: [
-                                          ConstrainedBox(
-                                              constraints:
-                                                  BoxConstraints(maxWidth: 120, maxHeight: 80, minWidth: 120, minHeight: 80),
-                                              child: Container(
-                                                  margin: EdgeInsets.only(top: 20, bottom: 20),
-                                                  child: Visibility(
-                                                      visible:
-                                                          Share.settings.sessions.sessions[x]?.provider.providerBannerUri !=
-                                                              null,
-                                                      child: FadeInImage.memoryNetwork(
-                                                          height: 37,
-                                                          placeholder: kTransparentImage,
-                                                          image: Share
-                                                                  .settings.sessions.sessions[x]?.provider.providerBannerUri
-                                                                  ?.toString() ??
-                                                              'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg')))),
-                                          Visibility(
-                                              visible:
-                                                  Share.settings.sessions.sessions[x]?.provider.providerBannerUri != null,
-                                              child: Container(
-                                                width: 1,
-                                                height: 40,
-                                                margin: EdgeInsets.only(left: 20, right: 20),
-                                                decoration: const BoxDecoration(
-                                                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                                                    color: Color(0x33AAAAAA)),
-                                              )),
-                                          Flexible(
-                                              child: Container(
-                                                  margin: EdgeInsets.only(right: 20),
-                                                  child: Text(
-                                                    Share.settings.sessions.sessions[x]?.sessionName ?? '',
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.w600,
-                                                        color: CupertinoDynamicColor.resolve(
-                                                            CupertinoDynamicColor.withBrightness(
-                                                                color: CupertinoColors.black,
-                                                                darkColor: CupertinoColors.white),
-                                                            context)),
-                                                  )))
-                                        ]))),
-                                onPressed: () async {
-                                  if (isWorking) return; // Already handling something, give up
-                                  setState(() {
-                                    // Mark as working, the 1st refresh is gonna take a while
-                                    isWorking = true;
-                                  });
+                            // Save our session changes
+                            await Share.settings.save();
+                            setState(() {}); // Reload
+                          },
+                          isDestructiveAction: true,
+                          trailingIcon: CupertinoIcons.delete,
+                          child: Text('/Delete'.localized),
+                        ),
+                      ],
+                      // I know there's onTap too, but we need an opaque background
+                      builder: (BuildContext context, Animation<double> animation) => Visibility(
+                          visible: Share.settings.sessions.sessions[x] != null,
+                          child: CupertinoButton(
+                            color: CupertinoDynamicColor.withBrightness(
+                                color: const Color.fromARGB(255, 255, 255, 255),
+                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                            padding: EdgeInsets.only(left: 20),
+                            child: Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                                    color: CupertinoDynamicColor.resolve(
+                                        CupertinoDynamicColor.withBrightness(
+                                            color: const Color.fromARGB(255, 255, 255, 255),
+                                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                                        context)),
+                                padding: EdgeInsets.only(right: 10, left: 6),
+                                child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                        maxHeight:
+                                            animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
+                                        maxWidth:
+                                            animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 300),
+                                    child: Row(children: [
+                                      ConstrainedBox(
+                                          constraints:
+                                              BoxConstraints(maxWidth: 120, maxHeight: 80, minWidth: 120, minHeight: 80),
+                                          child: Container(
+                                              margin: EdgeInsets.only(top: 20, bottom: 20),
+                                              child: Visibility(
+                                                  visible: Share.settings.sessions.sessions[x]?.provider.providerBannerUri !=
+                                                      null,
+                                                  child: FadeInImage.memoryNetwork(
+                                                      height: 37,
+                                                      placeholder: kTransparentImage,
+                                                      image: Share.settings.sessions.sessions[x]?.provider.providerBannerUri
+                                                              ?.toString() ??
+                                                          'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg')))),
+                                      Visibility(
+                                          visible: Share.settings.sessions.sessions[x]?.provider.providerBannerUri != null,
+                                          child: Container(
+                                            width: 1,
+                                            height: 40,
+                                            margin: EdgeInsets.only(left: 20, right: 20),
+                                            decoration: const BoxDecoration(
+                                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                                color: Color(0x33AAAAAA)),
+                                          )),
+                                      Flexible(
+                                          child: Container(
+                                              margin: EdgeInsets.only(right: 20),
+                                              child: Text(
+                                                Share.settings.sessions.sessions[x]?.sessionName ?? '',
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: CupertinoDynamicColor.resolve(
+                                                        CupertinoDynamicColor.withBrightness(
+                                                            color: CupertinoColors.black, darkColor: CupertinoColors.white),
+                                                        context)),
+                                              )))
+                                    ]))),
+                            onPressed: () async {
+                              if (isWorking) return; // Already handling something, give up
+                              setState(() {
+                                // Mark as working, the 1st refresh is gonna take a while
+                                isWorking = true;
+                              });
 
-                                  var progress = Progress<({double? progress, String? message})>();
-                                  progress.progressChanged
-                                      .subscribe((args) => setState(() => _progressMessage = args?.value.message));
+                              var progress = Progress<({double? progress, String? message})>();
+                              progress.progressChanged
+                                  .subscribe((args) => setState(() => _progressMessage = args?.value.message));
 
-                                  // showCupertinoModalBottomSheet(context: context, builder: (context) => LoginPage(provider: x));
-                                  Share.settings.sessions.lastSessionId = x; // Update
-                                  Share.session = Share.settings.sessions.lastSession!;
-                                  var result =
-                                      await Share.session.tryLogin(progress: progress, showErrors: true); // Log in now
+                              // showCupertinoModalBottomSheet(context: context, builder: (context) => LoginPage(provider: x));
+                              Share.settings.sessions.lastSessionId = x; // Update
+                              Share.session = Share.settings.sessions.lastSession!;
+                              var result = await Share.session.tryLogin(progress: progress, showErrors: true); // Log in now
 
-                                  if (!result.success) {
-                                    setState(() {
-                                      // Reset the animation in case the login method hasn't finished
-                                      isWorking = false;
+                              if (!result.success) {
+                                setState(() {
+                                  // Reset the animation in case the login method hasn't finished
+                                  isWorking = false;
 
-                                      progress.progressChanged.unsubscribeAll();
-                                      _progressMessage = null; // Reset the message
-                                    });
-                                    return; // Give up, not this time
-                                  }
-
-                                  await Share.settings.save(); // Save our settings now
-                                  result = await Share.session.refreshAll(progress: progress); // Refresh everything
-
-                                  if (!result.success) {
-                                    setState(() {
-                                      // Reset the animation in case the login method hasn't finished
-                                      isWorking = false;
-
-                                      progress.progressChanged.unsubscribeAll();
-                                      _progressMessage = null; // Reset the message
-                                    });
-                                    return; // Give up, not this time
-                                  }
-
-                                  // Reset the animation in case we go back somehow
-                                  setState(() => isWorking = false);
                                   progress.progressChanged.unsubscribeAll();
                                   _progressMessage = null; // Reset the message
+                                });
+                                return; // Give up, not this time
+                              }
 
-                                  // Change the main page to the base application
-                                  Share.changeBase.broadcast(Value(() => baseApp));
-                                },
-                              ))))),
+                              await Share.settings.save(); // Save our settings now
+                              result = await Share.session.refreshAll(progress: progress); // Refresh everything
+
+                              if (!result.success) {
+                                setState(() {
+                                  // Reset the animation in case the login method hasn't finished
+                                  isWorking = false;
+
+                                  progress.progressChanged.unsubscribeAll();
+                                  _progressMessage = null; // Reset the message
+                                });
+                                return; // Give up, not this time
+                              }
+
+                              // Reset the animation in case we go back somehow
+                              setState(() => isWorking = false);
+                              progress.progressChanged.unsubscribeAll();
+                              _progressMessage = null; // Reset the message
+
+                              // Change the main page to the base application
+                              Share.changeBase.broadcast(Value(() => baseApp));
+                            },
+                          ))))),
         )
         .toList();
 
@@ -249,8 +243,10 @@ class _SessionsPageState extends State<SessionsPage> {
                   scrollController: scrollController,
                   largeTitle: FittedBox(
                       fit: BoxFit.fitWidth,
-                      child: Container(margin: EdgeInsets.only(right: 20), child: Text('/Sessions/Page/RegisterAcc'.localized))),
-                  middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('/Sessions/Page/RegisterAcc'.localized)),
+                      child: Container(
+                          margin: EdgeInsets.only(right: 20), child: Text('/Sessions/Page/RegisterAcc'.localized))),
+                  middle: Visibility(
+                      visible: _progressMessage?.isEmpty ?? true, child: Text('/Sessions/Page/RegisterAcc'.localized)),
                   leading: Visibility(
                       visible: _progressMessage?.isNotEmpty ?? false,
                       child: Container(
@@ -352,8 +348,11 @@ class _SessionsPageState extends State<SessionsPage> {
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
         title: Text('/BaseApp/Update/AlertHeader'.localized),
-        content:
-            Text('{h} {w} {f}'.format({'h': '/BaseApp/Update/AlertPart1'.localized, 'w': Platform.isAndroid ? 'Android' : 'iOS', 'f': '/BaseApp/Update/AlertPart2'.localized})),
+        content: Text('{h} {w} {f}'.format({
+          'h': '/BaseApp/Update/AlertPart1'.localized,
+          'w': Platform.isAndroid ? 'Android' : 'iOS',
+          'f': '/BaseApp/Update/AlertPart2'.localized
+        })),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
             onPressed: () async {
