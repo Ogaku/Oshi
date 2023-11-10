@@ -244,9 +244,9 @@ class _SessionsPageState extends State<SessionsPage> {
                   largeTitle: FittedBox(
                       fit: BoxFit.fitWidth,
                       child: Container(
-                          margin: EdgeInsets.only(right: 20), child: Text('/Sessions/Page/RegisterAcc'.localized))),
+                          margin: EdgeInsets.only(right: 20), child: Text('/Session/Page/RegisterAcc'.localized))),
                   middle: Visibility(
-                      visible: _progressMessage?.isEmpty ?? true, child: Text('/Sessions/Page/RegisterAcc'.localized)),
+                      visible: _progressMessage?.isEmpty ?? true, child: Text('/Session/Page/RegisterAcc'.localized)),
                   leading: Visibility(
                       visible: _progressMessage?.isNotEmpty ?? false,
                       child: Container(
@@ -287,7 +287,7 @@ class _SessionsPageState extends State<SessionsPage> {
                               child: Container(
                                   margin: EdgeInsets.only(right: 20, left: 20, bottom: 20),
                                   child: Text(
-                                    '/Sessions/Page/RegisterLog'.localized,
+                                    '/Session/Page/RegisterLog'.localized,
                                     style: TextStyle(fontSize: 14),
                                   ))),
                           Visibility(

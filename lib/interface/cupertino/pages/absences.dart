@@ -5,11 +5,13 @@ import 'dart:math';
 
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
@@ -97,7 +99,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
                               child: Container(
                                   alignment: Alignment.center,
                                   child: Text(
-                                    'No attendances',
+                                    '/Page/Absences/No'.localized,
                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                                   ))))
                     ]
@@ -112,8 +114,8 @@ class _AbsencesPageState extends State<AbsencesPage> {
     return SearchableSliverNavigationBar(
         setState: setState,
         segments: {'date': 'By date', 'lesson': 'By lesson', 'type': 'By type'},
-        largeTitle: Text('Attendance'),
-        middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('Attendance')),
+        largeTitle: Text('/Page/Absences/Attendance'.localized),
+        middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('/Page/Absences/Attendance'.localized)),
         onProgress: (progress) => setState(() => _progressMessage = progress?.message),
         leading: Visibility(
             visible: _progressMessage?.isNotEmpty ?? false,
@@ -180,17 +182,16 @@ extension LessonWidgetExtension on Attendance {
       actions: [
         CupertinoContextMenuAction(
           onPressed: () {
-            sharing.Share.share(
-                'I got ${type.asPrep()} "${type.asStringLong()}" on ${DateFormat("EEEE, MMM d, y").format(date)} from ${lesson.subject?.name} on lesson $lessonNo!');
+            sharing.Share.share('/Page/Absences/Share'.localized.format(type.asPrep(),type.asStringLong(),DateFormat("EEEE, MMM d, y").format(date),lesson.subject?.name,lessonNo));
             Navigator.of(context, rootNavigator: true).pop();
           },
           trailingIcon: CupertinoIcons.share,
-          child: const Text('Share'),
+          child: Text('/Share'.localized),
         ),
         CupertinoContextMenuAction(
             isDestructiveAction: true,
             trailingIcon: CupertinoIcons.chat_bubble_2,
-            child: const Text('Inquiry'),
+            child: Text('/Inquiry'.localized),
             onPressed: () {
               Navigator.of(context, rootNavigator: true).pop();
               showCupertinoModalBottomSheet(

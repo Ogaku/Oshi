@@ -5,6 +5,7 @@ import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_shake_animated/flutter_shake_animated.dart';
+import 'package:format/format.dart';
 import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/models/provider.dart';
@@ -74,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
               alignment: Alignment.centerRight,
               child: isWorking
                   ? CupertinoActivityIndicator()
-                  : Text('Next',
+                  : Text('/Next'.localized,
                       style: TextStyle(
                           color: (credentialControllers!.values.every((x) => x.text.isNotEmpty))
                               ? CupertinoTheme.of(context).primaryColor
@@ -184,20 +185,20 @@ class _LoginPageState extends State<LoginPage> {
       Share.showErrorModal.broadcast(Value((
         title: '/Session/Login/Splash/Error/Title'.localized,
         message:
-            'An error "${ex.message ?? ex}" occurred and the provider couldn\'t log you in to the e-register.\n\nPlease check your credentials and try again later.',
+            '/Session/Login/Error/Message'.localized.format(ex.message ?? ex),
         actions: {
-          'Copy Exception': () async => await Clipboard.setData(ClipboardData(text: ex.toString())),
-          'Copy Stack Trace': () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
+          '/Session/Login/Error/Exception'.localized: () async => await Clipboard.setData(ClipboardData(text: ex.toString())),
+          '/Session/Login/Error/Stack'.localized: () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
         }
       )));
     } on Exception catch (ex, stack) {
       Share.showErrorModal.broadcast(Value((
         title: '/Session/Login/Splash/Error/Title'.localized,
         message:
-            'An exception "$ex" occurred and the provider couldn\'t log you in to the e-register.\n\nPlease check your credentials and try again later.',
+            '/Session/Login/Error/Message'.localized.format(ex),
         actions: {
-          'Copy Exception': () async => await Clipboard.setData(ClipboardData(text: ex.toString())),
-          'Copy Stack Trace': () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
+          '/Session/Login/Error/Exception'.localized: () async => await Clipboard.setData(ClipboardData(text: ex.toString())),
+          '/Session/Login/Error/Stack'.localized: () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
         }
       )));
     }

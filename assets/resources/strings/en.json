@@ -70,19 +70,62 @@
             "translation": "Delete"
         },
         {
-            "id": "/Sessions/Page/RegisterAcc",
+            "id": "/Session/Page/RegisterAcc",
             "translation": "E-register accounts"
         },
         {
-            "id": "/Sessions/Page/RegisterLog",
+            "id": "/Session/Page/RegisterLog",
             "translation": "These are your e-register accounts. Choose one of the currently logged-in sessions, or go create a new one."
         },
         {
            "id":  "/Sessions",
            "translation": "Sessions"
+        },
+        {
+            "id":  "/Next",
+            "translation": "Next"
+        },
+        {
+            "id": "/Session/Login/Error/Message",
+            "translation": "An error {} occurred and the provider couldn't log you in to the e-register.\n\nPlease check your credentials and try again later."
+        },
+        {
+            "id": "/Session/Login/Error/Exception",
+            "translation": "Copy Exception"
+        },
+        {
+            "id": "/Session/Login/Error/Stack",
+            "translation": "Copy Stack Trace"
+        },
+        {
+             "id":  "/Required",
+             "translation": "Required"
+        },
+        {
+            "id": "/Page/Absences/No",
+            "translation": "No attendances"
+        },
+        {
+            "id": "/Page/Absences/Attendance",
+            "translation": "Attendance"
+        },
+        {
+            "id": "/Page/Absences/Share",
+            "translation": "I got {} \"{}\" on {} from {} on lesson {}!"
+        },
+        {
+            "id":  "/Share",
+            "translation": "Share"
+        },
+        {
+            "id":  "/Required",
+            "translation": "Required"
+        },
+        {
+            "id":  "/Inquiry",
+            "translation": "Inquiry"
         }
-        
-        
+
     ],
     "splashes": [
         "May the God bless you",
