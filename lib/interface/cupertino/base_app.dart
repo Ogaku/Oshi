@@ -146,11 +146,7 @@ class _BaseAppState extends State<BaseApp> {
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
         title: Text('/BaseApp/Update/AlertHeader'.localized),
-        content: Text('{h} {w} {f}'.format({
-          'h': '/BaseApp/Update/AlertPart1'.localized,
-          'w': Platform.isAndroid ? 'Android' : 'iOS',
-          'f': '/BaseApp/Update/AlertPart2'.localized
-        })),
+        content: Text('/BaseApp/Update/Alert'.localized.format(Platform.isAndroid ? 'Android' : 'iOS')),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
             onPressed: () async {

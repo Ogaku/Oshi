@@ -30,12 +30,8 @@
             "translation": "Please update 🤓"
         },
         {
-            "id": "/BaseApp/Update/AlertPart1",
-            "translation": "The download page of the newer app version for"
-        },
-        {
-            "id": "/BaseApp/Update/AlertPart2",
-            "translation": "will be opened."
+            "id": "/BaseApp/Update/Alert",
+            "translation": "The download page of the newer app version for {} will be opened."
         },
         {
             "id": "/Session/New/Register/Question",
