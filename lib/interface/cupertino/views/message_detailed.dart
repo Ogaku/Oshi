@@ -45,7 +45,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
             previousPageTitle: 'Back',
             largeTitle: Text(
               widget.message.topic,
-              maxLines: (widget.message.topic.length / 20).round().clamp(0, 5),
+              maxLines: (widget.message.topic.length / 20).round().clamp(1, 5),
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),

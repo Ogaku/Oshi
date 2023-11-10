@@ -221,11 +221,11 @@ class Session extends HiveObject {
   // For null 'weekStart' - get (only) the current week's data
   // For reporting 'progress' - mark 'Progress' as null for indeterminate status
   Future<({bool success, Exception? message})> refreshAll(
-      {DateTime? weekStart, IProgress<({double? progress, String? message})>? progress}) async {
+      {DateTime? weekStart, IProgress<({double? progress, String? message})>? progress, bool saveChanges = true}) async {
     try {
       var result1 = await provider.refresh(weekStart: weekStart, progress: progress);
       var result2 = await provider.refreshMessages(progress: progress);
-      await updateData(info: result1.success, messages: result2.success);
+      await updateData(info: result1.success, messages: result2.success, saveChanges: saveChanges);
 
       Share.currentIdleSplash = Share.translator.getRandomSplash();
       Share.currentEndingSplash = Share.translator.getRandomEndingSplash();
@@ -274,7 +274,7 @@ class Session extends HiveObject {
   }
 
   // Update session's data based on the provider, save to storage
-  Future<void> updateData({bool info = false, bool messages = false}) async {
+  Future<void> updateData({bool info = false, bool messages = false, bool saveChanges = true}) async {
     if (provider.registerData == null) throw Exception('Provider cannot be null, cannot proceed!');
     try {
       /* Look for any changes, cache everything */
@@ -296,11 +296,11 @@ class Session extends HiveObject {
           .toList();
 
       /* Grades */
-      var allGradesSaved = provider.registerData!.student.subjects
+      var allGradesDownloaded = provider.registerData!.student.subjects
           .select((subject, index) => subject.grades)
           .selectMany((subject, index) => subject)
           .toList();
-      var allGradesDownloaded =
+      var allGradesSaved =
           data.student.subjects.select((subject, index) => subject.grades).selectMany((subject, index) => subject).toList();
 
       var gradeChanges = allGradesDownloaded
@@ -327,8 +327,27 @@ class Session extends HiveObject {
               value: x))
           .appendAll(data.student.mainClass.events
               .except(provider.registerData!.student.mainClass.events)
-              .where((x) => provider.registerData!.student.mainClass.events.any((y) => y.id == x.id && y.id > 0 && x.id > 0))
+              .where(
+                  (x) => !provider.registerData!.student.mainClass.events.any((y) => y.id == x.id && y.id > 0 && x.id > 0))
               .select((x, index) => RegisterChange<Event>(type: RegisterChangeTypes.removed, value: x)))
+          .toList();
+
+      /* Grades */
+      var allAttendancesDownloaded = provider.registerData!.student.attendances;
+      var allAttendancesSaved = data.student.attendances;
+
+      var attendanceChanges = allAttendancesDownloaded
+          ?.except(allAttendancesSaved ?? [])
+          .select((x, index) => RegisterChange<Attendance>(
+              type: (allAttendancesSaved?.any((y) => y.id == x.id && y.id > 0 && x.id > 0) ?? false)
+                  ? RegisterChangeTypes.changed
+                  : RegisterChangeTypes.added,
+              value: x))
+          .appendAll(allAttendancesSaved
+                  ?.except(allAttendancesDownloaded)
+                  .where((x) => !allAttendancesDownloaded.any((y) => y.id == x.id && y.id > 0 && x.id > 0))
+                  .select((x, index) => RegisterChange<Attendance>(type: RegisterChangeTypes.removed, value: x)) ??
+              [])
           .toList();
 
       /* Announcements */
@@ -355,13 +374,16 @@ class Session extends HiveObject {
           .toList();
 
       /* Push everything to the register */
-      changes.add(RegisterChanges(
+      var detectedChanges = RegisterChanges(
           refreshDate: DateTime.now(),
           timetableChanges: timetableChanges.nullIfEmpty(info),
           gradeChanges: gradeChanges.nullIfEmpty(info),
           eventChanges: eventChanges.nullIfEmpty(info),
+          attendanceChanges: attendanceChanges?.nullIfEmpty(info),
           announcementChanges: announcementChanges?.nullIfEmpty(info),
-          messageChanges: messageChanges.nullIfEmpty(messages)));
+          messageChanges: messageChanges.nullIfEmpty(messages));
+
+      if (saveChanges && detectedChanges.any) changes.add(detectedChanges);
     } catch (ex) {
       // ignored
     }
@@ -418,15 +440,23 @@ class RegisterChanges {
 
   @HiveField(6)
   List<RegisterChange<Attendance>> attendancesChanged;
+
+  bool get any =>
+      timetablesChanged.isNotEmpty ||
+      gradesChanged.isNotEmpty ||
+      eventsChanged.isNotEmpty ||
+      announcementsChanged.isNotEmpty ||
+      messagesChanged.isNotEmpty ||
+      attendancesChanged.isNotEmpty;
 }
 
-class RegisterChange<T> extends HiveObject {
+class RegisterChange<T> {
   RegisterChange({required this.value, required this.type});
   T value;
   RegisterChangeTypes type;
 }
 
-class RegisterChangeAdapter<T> extends TypeAdapter<RegisterChange> {
+class RegisterChangeAdapter<T> extends TypeAdapter<RegisterChange<T>> {
   RegisterChangeAdapter({required int id}) : typeId = id;
 
   @override
@@ -438,8 +468,8 @@ class RegisterChangeAdapter<T> extends TypeAdapter<RegisterChange> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return RegisterChange<T>(
-      value: fields[1] as T,
+    return RegisterChange(
+      value: fields[1],
       type: fields[2] as RegisterChangeTypes,
     );
   }

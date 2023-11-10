@@ -671,7 +671,7 @@ class LibrusDataReader implements models.IProvider {
             .replaceAll(']]></Content><Actions><Actions/></Actions></Message>', '')
             .trim();
 
-        await Future.forEach(RegExp('(?<=systemu.">)(.*?)(?=</a>)').allMatches(result.content ?? ''), (x) async {
+        await Future.forEach(RegExp('(?<=systemu.">)(.*?)(?=</a>)').allMatches(content), (x) async {
           var link = x.group(0) ?? '';
 
           try {
@@ -720,7 +720,7 @@ class LibrusDataReader implements models.IProvider {
             .replaceAll(']]></Content><Actions><Actions/></Actions></Message>', '')
             .trim();
 
-        await Future.forEach(RegExp('(?<=systemu.">)(.*?)(?=</a>)').allMatches(result.content ?? ''), (x) async {
+        await Future.forEach(RegExp('(?<=systemu.">)(.*?)(?=</a>)').allMatches(content), (x) async {
           var link = x.group(0) ?? '';
 
           try {

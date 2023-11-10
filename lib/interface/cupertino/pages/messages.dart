@@ -220,29 +220,33 @@ class _MessagesPageState extends State<MessagesPage> {
                                         .then((result) {
                                       setState(() => isWorking = false);
 
-                                      if (result.message == null && result.result != null && folder == MessageFolders.inbox) {
+                                      if (result.message == null &&
+                                          result.result != null &&
+                                          folder == MessageFolders.inbox) {
                                         var index = Share.session.data.messages.received.indexOf(x);
                                         Share.session.data.messages.received[index] = Message.from(other: result.result!);
                                         x = Share.session.data.messages.received[index]; // Update x too
                                       }
-                                      if (result.message == null && result.result != null && folder == MessageFolders.outbox) {
+                                      if (result.message == null &&
+                                          result.result != null &&
+                                          folder == MessageFolders.outbox) {
                                         var index = Share.session.data.messages.sent.indexOf(x);
                                         Share.session.data.messages.sent[index] = Message.from(other: result.result!);
                                         x = Share.session.data.messages.sent[index]; // Update x too
                                       }
 
-                                      if (x.content?.isEmpty ?? true) return;
+                                      if (result.result?.content?.isEmpty ?? true) return;
                                       if (folder == MessageFolders.inbox) {
                                         Share.session.data.messages
                                                 .received[Share.session.data.messages.received.indexOf(x)] =
-                                            Message.from(other: x, readDate: DateTime.now());
+                                            Message.from(other: result.result, readDate: DateTime.now());
                                       }
 
                                       Navigator.push(
                                           context,
                                           CupertinoPageRoute(
                                               builder: (context) => MessageDetailsPage(
-                                                    message: x,
+                                                    message: result.result ?? x,
                                                     isByMe: folder == MessageFolders.outbox,
                                                   )));
                                     });
