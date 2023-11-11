@@ -296,154 +296,176 @@ extension StringExtension on String {
 }
 
 extension GradeBodyExtension on Grade {
-  Widget asGrade(BuildContext context) => CupertinoContextMenu.builder(
-      enableHapticFeedback: true,
-      actions: [
-        CupertinoContextMenuAction(
-          onPressed: () {
-            sharing.Share.share('I got a $value on ${DateFormat("EEEE, MMM d, y").format(date)}!');
-            Navigator.of(context, rootNavigator: true).pop();
-          },
-          trailingIcon: CupertinoIcons.share,
-          child: const Text('Share'),
-        ),
-        CupertinoContextMenuAction(
-          isDestructiveAction: true,
-          trailingIcon: CupertinoIcons.chat_bubble_2,
-          child: const Text('Inquiry'),
-          onPressed: () {
-            Navigator.of(context, rootNavigator: true).pop();
-            showCupertinoModalBottomSheet(
-                context: context,
-                builder: (context) => MessageComposePage(
-                    receivers: [addedBy],
-                    subject: 'Pytanie o ocenę $value z dnia ${DateFormat("y.M.d").format(addDate)}',
-                    signature: '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-          },
-        ),
-      ],
-      builder: (BuildContext context, Animation<double> animation) => gradeBody(context, animation));
+  Widget asGrade(BuildContext context, {bool markRemoved = false, bool markModified = false, Function()? onTap}) =>
+      CupertinoContextMenu.builder(
+          enableHapticFeedback: true,
+          actions: [
+            CupertinoContextMenuAction(
+              onPressed: () {
+                sharing.Share.share('I got a $value on ${DateFormat("EEEE, MMM d, y").format(date)}!');
+                Navigator.of(context, rootNavigator: true).pop();
+              },
+              trailingIcon: CupertinoIcons.share,
+              child: const Text('Share'),
+            ),
+            CupertinoContextMenuAction(
+              isDestructiveAction: true,
+              trailingIcon: CupertinoIcons.chat_bubble_2,
+              child: const Text('Inquiry'),
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).pop();
+                showCupertinoModalBottomSheet(
+                    context: context,
+                    builder: (context) => MessageComposePage(
+                        receivers: [addedBy],
+                        subject: 'Pytanie o ocenę $value z dnia ${DateFormat("y.M.d").format(addDate)}',
+                        signature:
+                            '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+              },
+            ),
+          ],
+          builder: (BuildContext context, Animation<double> animation) =>
+              gradeBody(context, animation: animation, markRemoved: markRemoved, markModified: markModified, onTap: onTap));
 
-  Widget gradeBody(BuildContext context, [Animation<double>? animation]) {
+  Widget gradeBody(BuildContext context,
+      {Animation<double>? animation,
+      bool markRemoved = false,
+      bool markModified = false,
+      bool useOnTap = false,
+      Function()? onTap}) {
     var tag = UuidV4().generate();
     var body = GestureDetector(
-        onTap: animation == null || animation.value >= CupertinoContextMenu.animationOpensAt
-            ? null
-            : () => showCupertinoModalBottomSheet(
-                expand: false,
-                context: context,
-                builder: (context) => Container(
-                    color: CupertinoDynamicColor.resolve(
-                        CupertinoDynamicColor.withBrightness(
-                            color: const Color.fromARGB(255, 242, 242, 247),
-                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                        context),
-                    child: Table(children: [
-                      TableRow(children: [
-                        Container(
-                            margin: EdgeInsets.only(top: 20, left: 15, right: 15),
-                            child: Hero(tag: tag, child: gradeBody(context)))
-                      ]),
-                      TableRow(children: [
-                        CupertinoListSection.insetGrouped(
-                            margin: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
-                            additionalDividerMargin: 5,
-                            children: [
-                              CupertinoListTile(
-                                  title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        onTap: (useOnTap && onTap != null)
+            ? onTap
+            : (animation == null || animation.value >= CupertinoContextMenu.animationOpensAt)
+                ? null
+                : () => showCupertinoModalBottomSheet(
+                    expand: false,
+                    context: context,
+                    builder: (context) => Container(
+                        color: CupertinoDynamicColor.resolve(
+                            CupertinoDynamicColor.withBrightness(
+                                color: const Color.fromARGB(255, 242, 242, 247),
+                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                            context),
+                        child: Table(children: [
+                          TableRow(children: [
+                            Container(
+                                margin: EdgeInsets.only(top: 20, left: 15, right: 15),
+                                child: Hero(
+                                    tag: tag,
+                                    child: gradeBody(context,
+                                        useOnTap: onTap != null,
+                                        markRemoved: markRemoved,
+                                        markModified: markModified,
+                                        onTap: onTap)))
+                          ]),
+                          TableRow(children: [
+                            CupertinoListSection.insetGrouped(
+                                margin: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
+                                additionalDividerMargin: 5,
                                 children: [
-                                  Container(margin: EdgeInsets.only(right: 3), child: Text('Grade')),
-                                  Flexible(
-                                      child: Opacity(
-                                          opacity: 0.5,
-                                          child: Text('$value, weight $weight', maxLines: 2, textAlign: TextAlign.end)))
-                                ],
-                              )),
-                              CupertinoListTile(
-                                  title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(margin: EdgeInsets.only(right: 3), child: Text('Added by')),
-                                  Flexible(
-                                      child: Opacity(
-                                          opacity: 0.5,
-                                          child: Text(addedBy.name, maxLines: 1, overflow: TextOverflow.ellipsis)))
-                                ],
-                              )),
-                              CupertinoListTile(
-                                  title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(margin: EdgeInsets.only(right: 3), child: Text('Date')),
-                                  Flexible(
-                                      child: Opacity(
-                                          opacity: 0.5,
-                                          child: Text(DateFormat('EEE, d MMM y').format(addDate),
-                                              maxLines: 1, overflow: TextOverflow.ellipsis)))
-                                ],
-                              )),
-                              CupertinoListTile(
-                                  title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(margin: EdgeInsets.only(right: 3), child: Text('Added')),
-                                  Flexible(
-                                      child: Opacity(
-                                          opacity: 0.5,
-                                          child: Text(DateFormat('hh:mm a, d MMM y').format(addDate),
-                                              maxLines: 1, overflow: TextOverflow.ellipsis)))
-                                ],
-                              )),
-                            ]
-                                .appendIf(
-                                    CupertinoListTile(
-                                        title: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text('Description'),
-                                        Flexible(
-                                            child: Container(
-                                                margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                child: Opacity(
-                                                    opacity: 0.5,
-                                                    child: Text(name.capitalize(), maxLines: 3, textAlign: TextAlign.end))))
-                                      ],
-                                    )),
-                                    name.isNotEmpty)
-                                .appendIf(
-                                    CupertinoListTile(
-                                        title: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text('Comments'),
-                                        Flexible(
-                                            child: Container(
-                                                margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                child: Opacity(
-                                                    opacity: 0.5,
-                                                    child: Text(commentsString, maxLines: 3, textAlign: TextAlign.end))))
-                                      ],
-                                    )),
-                                    commentsString.isNotEmpty)
-                                .appendIf(
-                                    CupertinoListTile(
-                                        title: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Flexible(
-                                            child: Container(
-                                                margin: EdgeInsets.only(right: 3), child: Text('Counts to the average'))),
-                                        Opacity(opacity: 0.5, child: Text(countsToAverage.toString()))
-                                      ],
-                                    )),
-                                    true))
-                      ])
-                    ]))),
+                                  CupertinoListTile(
+                                      title: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(margin: EdgeInsets.only(right: 3), child: Text('Grade')),
+                                      Flexible(
+                                          child: Opacity(
+                                              opacity: 0.5,
+                                              child: Text('$value, weight $weight', maxLines: 2, textAlign: TextAlign.end)))
+                                    ],
+                                  )),
+                                  CupertinoListTile(
+                                      title: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(margin: EdgeInsets.only(right: 3), child: Text('Added by')),
+                                      Flexible(
+                                          child: Opacity(
+                                              opacity: 0.5,
+                                              child: Text(addedBy.name, maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                    ],
+                                  )),
+                                  CupertinoListTile(
+                                      title: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(margin: EdgeInsets.only(right: 3), child: Text('Date')),
+                                      Flexible(
+                                          child: Opacity(
+                                              opacity: 0.5,
+                                              child: Text(DateFormat('EEE, d MMM y').format(addDate),
+                                                  maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                    ],
+                                  )),
+                                  CupertinoListTile(
+                                      title: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(margin: EdgeInsets.only(right: 3), child: Text('Added')),
+                                      Flexible(
+                                          child: Opacity(
+                                              opacity: 0.5,
+                                              child: Text(DateFormat('hh:mm a, d MMM y').format(addDate),
+                                                  maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                    ],
+                                  )),
+                                ]
+                                    .appendIf(
+                                        CupertinoListTile(
+                                            title: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text('Description'),
+                                            Flexible(
+                                                child: Container(
+                                                    margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
+                                                    child: Opacity(
+                                                        opacity: 0.5,
+                                                        child:
+                                                            Text(name.capitalize(), maxLines: 3, textAlign: TextAlign.end))))
+                                          ],
+                                        )),
+                                        name.isNotEmpty)
+                                    .appendIf(
+                                        CupertinoListTile(
+                                            title: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text('Comments'),
+                                            Flexible(
+                                                child: Container(
+                                                    margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
+                                                    child: Opacity(
+                                                        opacity: 0.5,
+                                                        child: Text(commentsString, maxLines: 3, textAlign: TextAlign.end))))
+                                          ],
+                                        )),
+                                        commentsString.isNotEmpty)
+                                    .appendIf(
+                                        CupertinoListTile(
+                                            title: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Flexible(
+                                                child: Container(
+                                                    margin: EdgeInsets.only(right: 3),
+                                                    child: Text('Counts to the average'))),
+                                            Opacity(opacity: 0.5, child: Text(countsToAverage.toString()))
+                                          ],
+                                        )),
+                                        true))
+                          ])
+                        ]))),
         child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: animation == null
+                color: (animation == null ||
+                        animation.value >= CupertinoContextMenu.animationOpensAt ||
+                        markModified ||
+                        markRemoved ||
+                        onTap != null)
                     ? CupertinoDynamicColor.resolve(CupertinoColors.tertiarySystemBackground, context)
                     : CupertinoDynamicColor.resolve(
                         CupertinoDynamicColor.withBrightness(
@@ -463,7 +485,12 @@ extension GradeBodyExtension on Grade {
                           padding: EdgeInsets.only(bottom: 5),
                           child: Text(
                             value,
-                            style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600, color: asColor()),
+                            style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.w600,
+                                color: asColor(),
+                                fontStyle: markModified ? FontStyle.italic : null,
+                                decoration: markRemoved ? TextDecoration.lineThrough : null),
                           )),
                       Expanded(
                           flex: 2,
@@ -477,7 +504,11 @@ extension GradeBodyExtension on Grade {
                                     child: Text(
                                       name.isNotEmpty ? name.capitalize() : 'No description',
                                       textAlign: TextAlign.end,
-                                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                      style: TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w600,
+                                          fontStyle: markModified ? FontStyle.italic : null,
+                                          decoration: markRemoved ? TextDecoration.lineThrough : null),
                                     )),
                                 Visibility(
                                     visible: commentsString.isNotEmpty,
@@ -490,7 +521,10 @@ extension GradeBodyExtension on Grade {
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 2,
                                               textAlign: TextAlign.end,
-                                              style: TextStyle(fontSize: 16),
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontStyle: markModified ? FontStyle.italic : null,
+                                                  decoration: markRemoved ? TextDecoration.lineThrough : null),
                                             )))),
                                 Opacity(
                                     opacity: 0.5,
@@ -501,7 +535,10 @@ extension GradeBodyExtension on Grade {
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
                                           textAlign: TextAlign.end,
-                                          style: TextStyle(fontSize: 16),
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontStyle: markModified ? FontStyle.italic : null,
+                                              decoration: markRemoved ? TextDecoration.lineThrough : null),
                                         ))),
                                 Visibility(
                                     visible: (animation?.value ?? 0) >= CupertinoContextMenu.animationOpensAt,
@@ -514,7 +551,10 @@ extension GradeBodyExtension on Grade {
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 1,
                                               textAlign: TextAlign.end,
-                                              style: TextStyle(fontSize: 16),
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontStyle: markModified ? FontStyle.italic : null,
+                                                  decoration: markRemoved ? TextDecoration.lineThrough : null),
                                             )))),
                               ]))
                     ]))));

@@ -20,9 +20,28 @@ class Announcement extends Equatable {
   })  : startDate = startDate ?? DateTime(2000),
         endDate = endDate ?? DateTime(2000);
 
+  Announcement.from({
+    Announcement? other,
+    int? id,
+    String? url,
+    bool? read,
+    String? subject,
+    String? content,
+    Teacher? contact,
+    DateTime? startDate,
+    DateTime? endDate,
+  })  : id = id ?? other?.id ?? -1,
+        url = url ?? other?.url ?? '',
+        read = read ?? other?.read ?? false,
+        subject = subject ?? other?.subject ?? '',
+        content = content ?? other?.content ?? '',
+        contact = contact ?? other?.contact,
+        startDate = startDate ?? other?.startDate ?? DateTime(2000),
+        endDate = endDate ?? other?.endDate ?? DateTime(2000);
+
   @HiveField(0)
   final int id;
-  
+
   @HiveField(1)
   final String url;
 

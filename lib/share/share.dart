@@ -52,6 +52,13 @@ class Share {
   // Navigate the grades page to the specified subject
   static events.Event<events.Value<Lesson>> gradesNavigate = events.Event<events.Value<Lesson>>();
 
+  // Navigate the messages page to the specified message
+  static events.Event<events.Value<Message>> messagesNavigate = events.Event<events.Value<Message>>();
+
+  // Navigate the messages page to the specified announcement
+  static events.Event<events.Value<({Message message, Announcement parent})>> messagesNavigateAnnouncement =
+      events.Event<events.Value<({Message message, Announcement parent})>>();
+
   // Navigate the timetable page to the specified day
   static events.Event<events.Value<DateTime>> timetableNavigateDay = events.Event<events.Value<DateTime>>();
 
@@ -283,16 +290,17 @@ class Session extends HiveObject {
       var timetableChanges = provider.registerData!.timetables.timetable.entries
           .select((x, index) => data.timetables.timetable[x.key] == null
               ? x.value.lessons
-                  .select((y, index) => y?.where((z) => z.modifiedSchedule))
+                  .select((y, index) => y?.where((z) => z.modifiedSchedule || z.isCanceled))
                   .selectMany((w, index) => w?.toList() ?? <TimetableLesson>[])
               : x.value.lessons
                   .except(data.timetables.timetable[x.key]!.lessons)
                   .select((y, index) => y
-                      ?.where((z) => z.modifiedSchedule)
+                      ?.where((z) => z.modifiedSchedule || z.isCanceled)
                       .except(data.timetables.timetable[x.key]!.lessons.elementAtOrNull(index) ?? []))
                   .selectMany((w, index) => w?.toList() ?? <TimetableLesson>[]))
           .selectMany((w, index) => w)
-          .select((lesson, index) => RegisterChange<TimetableLesson>(type: RegisterChangeTypes.added, value: lesson))
+          .select((lesson, index) => RegisterChange<TimetableLesson>(
+              type: lesson.isCanceled ? RegisterChangeTypes.removed : RegisterChangeTypes.changed, value: lesson))
           .toList();
 
       /* Grades */
@@ -338,6 +346,7 @@ class Session extends HiveObject {
 
       var attendanceChanges = allAttendancesDownloaded
           ?.except(allAttendancesSaved ?? [])
+          .where((x) => x.type != AttendanceType.present)
           .select((x, index) => RegisterChange<Attendance>(
               type: (allAttendancesSaved?.any((y) => y.id == x.id && y.id > 0 && x.id > 0) ?? false)
                   ? RegisterChangeTypes.changed
@@ -349,6 +358,9 @@ class Session extends HiveObject {
                   .select((x, index) => RegisterChange<Attendance>(type: RegisterChangeTypes.removed, value: x)) ??
               [])
           .toList();
+
+      data.student.mainClass.unit.announcements
+          ?.removeWhere((element) => element.startDate.difference(DateTime.now()).inDays.abs() < 14);
 
       /* Announcements */
       var announcementChanges = provider.registerData!.student.mainClass.unit.announcements

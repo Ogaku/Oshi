@@ -6,6 +6,10 @@
             "translation": "Główna"
         },
         {
+            "id": "/Titles/Pages/Timeline",
+            "translation": "Zmiany"
+        },
+        {
             "id": "/Titles/Pages/Grades",
             "translation": "Oceny"
         },
@@ -16,6 +20,18 @@
         {
             "id": "/Titles/Pages/Messages",
             "translation": "Wiadomości"
+        },
+        {
+            "id": "/Titles/Pages/Messages/Inbox",
+            "translation": "Odebrane"
+        },
+        {
+            "id": "/Titles/Pages/Messages/Sent",
+            "translation": "Wysłane"
+        },
+        {
+            "id": "/Titles/Pages/Messages/Announcements",
+            "translation": "Ogłoszenia"
         },
         {
             "id": "/Titles/Pages/Absences",
@@ -78,11 +94,11 @@
             "translation": "These are your e-register accounts. Choose one of the currently logged-in sessions, or go create a new one."
         },
         {
-           "id":  "/Sessions",
-           "translation": "Sessions"
+            "id": "/Sessions",
+            "translation": "Sessions"
         },
         {
-            "id":  "/Next",
+            "id": "/Next",
             "translation": "Next"
         },
         {
@@ -98,8 +114,8 @@
             "translation": "Copy Stack Trace"
         },
         {
-             "id":  "/Required",
-             "translation": "Required"
+            "id": "/Required",
+            "translation": "Required"
         },
         {
             "id": "/Page/Absences/No",
@@ -114,15 +130,15 @@
             "translation": "I got {} \"{}\" on {} from {} on lesson {}!"
         },
         {
-            "id":  "/Share",
+            "id": "/Share",
             "translation": "Share"
         },
         {
-            "id":  "/Required",
+            "id": "/Required",
             "translation": "Required"
         },
         {
-            "id":  "/Inquiry",
+            "id": "/Inquiry",
             "translation": "Inquiry"
         }
     ],

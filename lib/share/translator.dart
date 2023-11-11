@@ -113,5 +113,59 @@ extension ReplaceSubtitleExtension on ({String title, String subtitle}) {
 }
 
 extension TranslatorExtension on String {
-  String get localized => Share.translator.get(this);
+  String get localized {
+    var result = Share.translator.get(this);
+    if (kDebugMode && result == this) {
+      try {
+        // ignore: avoid_print, we're already checking for kDebugMode
+        print('Invalid string requested at ${CustomTrace(StackTrace.current)}, "$this"');
+      } catch (ex) {
+        // ignored
+      }
+    }
+    return result;
+  }
+}
+
+class CustomTrace {
+  final StackTrace _trace;
+
+  String? fileName;
+  String? functionName;
+  String? callerFunctionName;
+  int? lineNumber;
+  int? columnNumber;
+
+  CustomTrace(this._trace) {
+    _parseTrace();
+  }
+
+  String _getFunctionNameFromFrame(String frame) {
+    var currentTrace = frame;
+    var indexOfWhiteSpace = currentTrace.indexOf(' ');
+    var subStr = currentTrace.substring(indexOfWhiteSpace);
+    var indexOfFunction = subStr.indexOf(RegExp(r'[A-Za-z0-9]'));
+    subStr = subStr.substring(indexOfFunction);
+    indexOfWhiteSpace = subStr.indexOf(' ');
+    subStr = subStr.substring(0, indexOfWhiteSpace);
+    return subStr;
+  }
+
+  void _parseTrace() {
+    var frames = _trace.toString().split("\n");
+    functionName = _getFunctionNameFromFrame(frames[1]);
+    callerFunctionName = _getFunctionNameFromFrame(frames[2]);
+    var traceString = frames[1];
+    var indexOfFileName = traceString.indexOf(RegExp(r'[A-Za-z]+.dart'));
+    var fileInfo = traceString.substring(indexOfFileName);
+    var listOfInfos = fileInfo.split(":");
+    fileName = listOfInfos[0];
+    lineNumber = int.parse(listOfInfos[1]);
+    var columnStr = listOfInfos[2];
+    columnStr = columnStr.replaceFirst(")", "");
+    columnNumber = int.parse(columnStr);
+  }
+
+  @override
+  String toString() => '$fileName::$functionName:$lineNumber';
 }

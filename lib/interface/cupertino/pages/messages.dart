@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, unnecessary_cast
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'dart:io';
@@ -12,9 +12,11 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
 import 'package:oshi/interface/cupertino/views/message_detailed.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
+import 'package:oshi/models/data/announcement.dart';
 import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
@@ -40,6 +42,19 @@ class _MessagesPageState extends State<MessagesPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Re-subscribe to all events
+    Share.messagesNavigate.unsubscribeAll();
+    Share.messagesNavigate.subscribe((args) {
+      setState(() => folder = ((args?.value.receivers?.isNotEmpty ?? false) ? MessageFolders.outbox : MessageFolders.inbox));
+      openMessage(message: args?.value);
+    });
+
+    Share.messagesNavigateAnnouncement.unsubscribeAll();
+    Share.messagesNavigateAnnouncement.subscribe((args) {
+      setState(() => folder = MessageFolders.announcements);
+      openMessage(message: args?.value.message, announcement: args?.value.parent);
+    });
+
     var messagesToDisplay = (switch (folder) {
       MessageFolders.inbox => Share.session.data.messages.received,
       MessageFolders.outbox => Share.session.data.messages.sent,
@@ -51,7 +66,8 @@ class _MessagesPageState extends State<MessagesPage> {
             x.previewString.contains(RegExp(searchQuery, caseSensitive: false)) ||
             (x.content?.contains(RegExp(searchQuery, caseSensitive: false)) ?? false) ||
             x.senderName.contains(RegExp(searchQuery, caseSensitive: false)))
-        .toList();
+        .toList()
+        .select((element, index) => (message: element, announcement: null as Announcement?));
 
     if (folder == MessageFolders.announcements) {
       messagesToDisplay = Share.session.data.student.mainClass.unit.announcements
@@ -60,12 +76,16 @@ class _MessagesPageState extends State<MessagesPage> {
                   x.content.contains(RegExp(searchQuery, caseSensitive: false)) ||
                   (x.contact?.name.contains(RegExp(searchQuery, caseSensitive: false)) ?? false))
               .orderByDescending((x) => x.startDate)
-              .select((x, index) => Message(
-                  topic: x.subject,
-                  content: x.content,
-                  sender: x.contact ?? Teacher(firstName: Share.session.data.student.mainClass.unit.name),
-                  sendDate: x.startDate,
-                  readDate: x.endDate))
+              .select((x, index) => (
+                    message: Message(
+                        id: x.read ? 1 : 0,
+                        topic: x.subject,
+                        content: x.content,
+                        sender: x.contact ?? Teacher(firstName: Share.session.data.student.mainClass.unit.name),
+                        sendDate: x.startDate,
+                        readDate: x.endDate),
+                    announcement: x
+                  ))
               .toList() ??
           [];
     }
@@ -115,11 +135,11 @@ class _MessagesPageState extends State<MessagesPage> {
                               (folder == MessageFolders.outbox
                                       ? Share.session.data.messages.sent
                                       : Share.session.data.messages.received)
-                                  .remove(x);
+                                  .remove(x.message);
                               isWorking = true;
                             });
                             Share.session.provider
-                                .moveMessageToTrash(parent: x, byMe: folder == MessageFolders.outbox)
+                                .moveMessageToTrash(parent: x.message, byMe: folder == MessageFolders.outbox)
                                 .then((value) => setState(() => isWorking = false));
                           } on Exception catch (e) {
                             setState(() => isWorking = false);
@@ -148,8 +168,8 @@ class _MessagesPageState extends State<MessagesPage> {
                           ),
                         ),
                         onTap: (CompletionHandler handler) => sharing.Share.share(folder == MessageFolders.outbox
-                            ? 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.sendDate)} ${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name} wrote:\n"${x.topic}\n\n${x.preview}[...]"'
-                            : 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.sendDate)} ${x.sender?.name} wrote:\n"${x.topic}\n\n${x.preview}[...]"'),
+                            ? 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate)} ${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name} wrote:\n"${x.message.topic}\n\n${x.message.preview}[...]"'
+                            : 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate)} ${x.message.sender?.name} wrote:\n"${x.message.topic}\n\n${x.message.preview}[...]"'),
                         color: CupertinoColors.systemBlue),
                   ],
                   child: CupertinoListTile(
@@ -160,8 +180,8 @@ class _MessagesPageState extends State<MessagesPage> {
                             CupertinoContextMenuAction(
                               onPressed: () {
                                 sharing.Share.share(folder == MessageFolders.outbox
-                                    ? 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.sendDate)} ${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name} wrote:\n"${x.topic}\n\n${x.preview}[...]"'
-                                    : 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.sendDate)} ${x.sender?.name} wrote:\n"${x.topic}\n\n${x.preview}[...]"');
+                                    ? 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate)} ${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name} wrote:\n"${x.message.topic}\n\n${x.message.preview}[...]"'
+                                    : 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate)} ${x.message.sender?.name} wrote:\n"${x.message.topic}\n\n${x.message.preview}[...]"');
                                 Navigator.of(context, rootNavigator: true).pop();
                               },
                               trailingIcon: CupertinoIcons.share,
@@ -178,11 +198,11 @@ class _MessagesPageState extends State<MessagesPage> {
                                     (folder == MessageFolders.outbox
                                             ? Share.session.data.messages.sent
                                             : Share.session.data.messages.received)
-                                        .remove(x);
+                                        .remove(x.message);
                                     isWorking = true;
                                   });
                                   Share.session.provider
-                                      .moveMessageToTrash(parent: x, byMe: folder == MessageFolders.outbox)
+                                      .moveMessageToTrash(parent: x.message, byMe: folder == MessageFolders.outbox)
                                       .then((value) => setState(() => isWorking = false));
                                 } on Exception catch (e) {
                                   setState(() => isWorking = false);
@@ -201,68 +221,7 @@ class _MessagesPageState extends State<MessagesPage> {
                             ),
                           ],
                           builder: (BuildContext swipeContext, Animation<double> animation) => GestureDetector(
-                              onTap: () {
-                                if (isWorking) return;
-                                try {
-                                  if (folder == MessageFolders.announcements) {
-                                    Navigator.push(
-                                        context,
-                                        CupertinoPageRoute(
-                                            builder: (context) => MessageDetailsPage(
-                                                  message: x,
-                                                  isByMe: false,
-                                                )));
-                                  } else {
-                                    setState(() => isWorking = true);
-
-                                    Share.session.provider
-                                        .fetchMessageContent(parent: x, byMe: folder == MessageFolders.outbox)
-                                        .then((result) {
-                                      setState(() => isWorking = false);
-
-                                      if (result.message == null &&
-                                          result.result != null &&
-                                          folder == MessageFolders.inbox) {
-                                        var index = Share.session.data.messages.received.indexOf(x);
-                                        Share.session.data.messages.received[index] = Message.from(other: result.result!);
-                                        x = Share.session.data.messages.received[index]; // Update x too
-                                      }
-                                      if (result.message == null &&
-                                          result.result != null &&
-                                          folder == MessageFolders.outbox) {
-                                        var index = Share.session.data.messages.sent.indexOf(x);
-                                        Share.session.data.messages.sent[index] = Message.from(other: result.result!);
-                                        x = Share.session.data.messages.sent[index]; // Update x too
-                                      }
-
-                                      if (result.result?.content?.isEmpty ?? true) return;
-                                      if (folder == MessageFolders.inbox) {
-                                        Share.session.data.messages
-                                                .received[Share.session.data.messages.received.indexOf(x)] =
-                                            Message.from(other: result.result, readDate: DateTime.now());
-                                      }
-
-                                      Navigator.push(
-                                          context,
-                                          CupertinoPageRoute(
-                                              builder: (context) => MessageDetailsPage(
-                                                    message: result.result ?? x,
-                                                    isByMe: folder == MessageFolders.outbox,
-                                                  )));
-                                    });
-                                  }
-                                } on Exception catch (e) {
-                                  setState(() => isWorking = false);
-                                  if (Platform.isAndroid || Platform.isIOS) {
-                                    Fluttertoast.showToast(
-                                      msg: '$e',
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.CENTER,
-                                      timeInSecForIosWeb: 1,
-                                    );
-                                  }
-                                }
-                              },
+                              onTap: () => openMessage(message: x.message, announcement: x.announcement),
                               child: Container(
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -290,7 +249,8 @@ class _MessagesPageState extends State<MessagesPage> {
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
                                                   Visibility(
-                                                      visible: !x.read && folder == MessageFolders.inbox,
+                                                      visible: (!x.message.read && folder == MessageFolders.inbox) ||
+                                                          (x.message.id != 1 && folder == MessageFolders.announcements),
                                                       child: Container(
                                                           margin: EdgeInsets.only(top: 5, right: 6),
                                                           child: Container(
@@ -304,12 +264,12 @@ class _MessagesPageState extends State<MessagesPage> {
                                                       child: Container(
                                                           margin: EdgeInsets.only(right: 10),
                                                           child: Text(
-                                                            x.senderName,
+                                                            x.message.senderName,
                                                             overflow: TextOverflow.ellipsis,
                                                             style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                                                           ))),
                                                   Visibility(
-                                                    visible: x.hasAttachments,
+                                                    visible: x.message.hasAttachments,
                                                     child: Transform.scale(
                                                         scale: 0.6,
                                                         child: Icon(CupertinoIcons.paperclip,
@@ -321,12 +281,13 @@ class _MessagesPageState extends State<MessagesPage> {
                                                           opacity: 0.5,
                                                           child: Text(
                                                             folder == MessageFolders.announcements
-                                                                ? (x.sendDate.month == x.readDate?.month &&
-                                                                        x.sendDate.year == x.readDate?.year &&
-                                                                        x.sendDate.day != x.readDate?.day
-                                                                    ? '${DateFormat('MMM d').format(x.sendDate)} - ${DateFormat('d').format(x.readDate ?? DateTime.now())}'
-                                                                    : '${DateFormat('MMM d').format(x.sendDate)} - ${DateFormat(x.sendDate.year == x.readDate?.year ? 'MMM d' : 'MMM d y').format(x.readDate ?? DateTime.now())}')
-                                                                : x.sendDateString,
+                                                                ? (x.message.sendDate.month == x.message.readDate?.month &&
+                                                                        x.message.sendDate.year ==
+                                                                            x.message.readDate?.year &&
+                                                                        x.message.sendDate.day != x.message.readDate?.day
+                                                                    ? '${DateFormat('MMM d').format(x.message.sendDate)} - ${DateFormat('d').format(x.message.readDate ?? DateTime.now())}'
+                                                                    : '${DateFormat('MMM d').format(x.message.sendDate)} - ${DateFormat(x.message.sendDate.year == x.message.readDate?.year ? 'MMM d' : 'MMM d y').format(x.message.readDate ?? DateTime.now())}')
+                                                                : x.message.sendDateString,
                                                             overflow: TextOverflow.ellipsis,
                                                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                                                           )))
@@ -334,7 +295,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                             Container(
                                                 margin: EdgeInsets.only(top: 3),
                                                 child: Text(
-                                                  x.topic,
+                                                  x.message.topic,
                                                   maxLines: 2,
                                                   overflow: TextOverflow.ellipsis,
                                                   style: TextStyle(fontSize: 16),
@@ -344,7 +305,9 @@ class _MessagesPageState extends State<MessagesPage> {
                                                 child: Container(
                                                     margin: EdgeInsets.only(top: 5),
                                                     child: Text(
-                                                      x.previewString.replaceAll('\n ', '\n').replaceAll('\n\n', '\n'),
+                                                      x.message.previewString
+                                                          .replaceAll('\n ', '\n')
+                                                          .replaceAll('\n\n', '\n'),
                                                       maxLines: 2,
                                                       overflow: TextOverflow.ellipsis,
                                                       style: TextStyle(fontSize: 16),
@@ -356,7 +319,11 @@ class _MessagesPageState extends State<MessagesPage> {
     return SearchableSliverNavigationBar(
       setState: setState,
       useSliverBox: true,
-      largeTitle: Text('Messages'),
+      largeTitle: Text(switch (folder) {
+        MessageFolders.announcements => '/Titles/Pages/Messages/Announcements'.localized,
+        MessageFolders.outbox => '/Titles/Pages/Messages/Sent'.localized,
+        MessageFolders.inbox || _ => '/Titles/Pages/Messages/Inbox'.localized
+      }),
       middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('Messages')),
       onProgress: (progress) => setState(() => _progressMessage = progress?.message),
       leading: Visibility(
@@ -391,17 +358,17 @@ class _MessagesPageState extends State<MessagesPage> {
                 PullDownMenuDivider.large(),
                 PullDownMenuTitle(title: Text('Folders')),
                 PullDownMenuItem(
-                  title: 'Received',
+                  title: '/Titles/Pages/Messages/Inbox'.localized,
                   icon: folder == MessageFolders.inbox ? CupertinoIcons.tray_fill : CupertinoIcons.tray,
                   onTap: () => setState(() => folder = MessageFolders.inbox),
                 ),
                 PullDownMenuItem(
-                  title: 'Sent',
+                  title: '/Titles/Pages/Messages/Sent'.localized,
                   icon: folder == MessageFolders.outbox ? CupertinoIcons.paperplane_fill : CupertinoIcons.paperplane,
                   onTap: () => setState(() => folder = MessageFolders.outbox),
                 ),
                 PullDownMenuItem(
-                  title: 'Announcements',
+                  title: '/Titles/Pages/Messages/Announcements'.localized,
                   icon: folder == MessageFolders.announcements ? CupertinoIcons.bell_fill : CupertinoIcons.bell,
                   onTap: () => setState(() => folder = MessageFolders.announcements),
                 )
@@ -413,6 +380,77 @@ class _MessagesPageState extends State<MessagesPage> {
             ),
       children: [messagesWidget],
     );
+  }
+
+  void openMessage({Message? message, Announcement? announcement}) {
+    if (message == null || isWorking) return;
+    if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+
+    try {
+      if (folder == MessageFolders.announcements) {
+        if (announcement != null) {
+          try {
+            Share.session.provider.markAnnouncementAsViewed(parent: announcement);
+            setState(() {
+              Share.session.data.student.mainClass.unit
+                      .announcements?[Share.session.data.student.mainClass.unit.announcements?.indexOf(announcement) ?? -1] =
+                  Announcement.from(other: announcement, read: true);
+            });
+          } catch (ex) {
+            // ignored
+          }
+        }
+
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (context) => MessageDetailsPage(
+                      message: message!,
+                      isByMe: false,
+                    )));
+      } else {
+        setState(() => isWorking = true);
+
+        Share.session.provider.fetchMessageContent(parent: message, byMe: folder == MessageFolders.outbox).then((result) {
+          setState(() => isWorking = false);
+
+          if (result.message == null && result.result != null && folder == MessageFolders.inbox) {
+            var index = Share.session.data.messages.received.indexOf(message!);
+            Share.session.data.messages.received[index] = Message.from(other: result.result!);
+            message = Share.session.data.messages.received[index]; // Update x too
+          }
+          if (result.message == null && result.result != null && folder == MessageFolders.outbox) {
+            var index = Share.session.data.messages.sent.indexOf(message!);
+            Share.session.data.messages.sent[index] = Message.from(other: result.result!);
+            message = Share.session.data.messages.sent[index]; // Update x too
+          }
+
+          if (result.result?.content?.isEmpty ?? true) return;
+          if (folder == MessageFolders.inbox) {
+            Share.session.data.messages.received[Share.session.data.messages.received.indexOf(message!)] =
+                Message.from(other: result.result, readDate: DateTime.now());
+          }
+
+          Navigator.push(
+              context,
+              CupertinoPageRoute(
+                  builder: (context) => MessageDetailsPage(
+                        message: result.result ?? (message!),
+                        isByMe: folder == MessageFolders.outbox,
+                      )));
+        });
+      }
+    } on Exception catch (e) {
+      setState(() => isWorking = false);
+      if (Platform.isAndroid || Platform.isIOS) {
+        Fluttertoast.showToast(
+          msg: '$e',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+        );
+      }
+    }
   }
 }
 

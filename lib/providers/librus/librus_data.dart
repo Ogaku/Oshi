@@ -758,6 +758,8 @@ class LibrusDataReader implements models.IProvider {
       return (success: true, message: null, result: result);
     } on Exception catch (ex) {
       return (success: false, message: ex, result: null);
+    } catch (ex) {
+      return (success: false, message: Exception(ex), result: null);
     }
   }
 
@@ -768,6 +770,8 @@ class LibrusDataReader implements models.IProvider {
       return (success: true, message: null);
     } on Exception catch (ex) {
       return (success: false, message: ex);
+    } catch (ex) {
+      return (success: false, message: Exception(ex));
     }
   }
 
@@ -778,6 +782,8 @@ class LibrusDataReader implements models.IProvider {
       return (success: true, message: null);
     } on Exception catch (ex) {
       return (success: false, message: ex);
+    } catch (ex) {
+      return (success: false, message: Exception(ex));
     }
   }
 
@@ -788,6 +794,20 @@ class LibrusDataReader implements models.IProvider {
       return (success: true, message: null);
     } on Exception catch (ex) {
       return (success: false, message: ex);
+    } catch (ex) {
+      return (success: false, message: Exception(ex));
+    }
+  }
+
+  @override
+  Future<({Exception? message, bool success})> markAnnouncementAsViewed({required models.Announcement parent}) async {
+    try {
+      await data!.librusApi!.post('SchoolNotices/MarkAsRead/${parent.url}', {});
+      return (success: true, message: null);
+    } on Exception catch (ex) {
+      return (success: false, message: ex);
+    } catch (ex) {
+      return (success: false, message: Exception(ex));
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:event/src/event.dart';
 import 'package:event/src/eventargs.dart';
+import 'package:oshi/models/data/announcement.dart';
 import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/models/data/student.dart';
 import 'package:oshi/models/data/teacher.dart';
@@ -69,6 +70,11 @@ class FakeDataReader implements IProvider {
 
   @override
   Future<({Exception? message, bool success})> markEventAsViewed({required models.Event parent}) async {
+    return (success: true, message: null);
+  }
+
+  @override
+  Future<({Exception? message, bool success})> markAnnouncementAsViewed({required Announcement parent}) async {
     return (success: true, message: null);
   }
 }

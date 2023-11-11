@@ -243,8 +243,8 @@ class _SessionsPageState extends State<SessionsPage> {
                   scrollController: scrollController,
                   largeTitle: FittedBox(
                       fit: BoxFit.fitWidth,
-                      child: Container(
-                          margin: EdgeInsets.only(right: 20), child: Text('/Session/Page/RegisterAcc'.localized))),
+                      child:
+                          Container(margin: EdgeInsets.only(right: 20), child: Text('/Session/Page/RegisterAcc'.localized))),
                   middle: Visibility(
                       visible: _progressMessage?.isEmpty ?? true, child: Text('/Session/Page/RegisterAcc'.localized)),
                   leading: Visibility(

@@ -2,6 +2,7 @@
 
 import 'package:event/event.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:oshi/models/data/announcement.dart' show Announcement;
 import 'package:oshi/models/data/teacher.dart' show Teacher;
 import 'package:oshi/models/data/student.dart' show Student;
 import 'package:oshi/models/data/timetables.dart' show Timetables;
@@ -63,6 +64,9 @@ abstract class IProvider {
 
   // Mark event/homework as done (may be needed in some cases)
   Future<({bool success, Exception? message})> markEventAsDone({required models.Event parent});
+
+  // Mark an announcement as viewed (may be needed in some cases)
+  Future<({bool success, Exception? message})> markAnnouncementAsViewed({required Announcement parent});
 }
 
 @HiveType(typeId: 10)

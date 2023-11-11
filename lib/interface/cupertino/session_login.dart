@@ -184,20 +184,20 @@ class _LoginPageState extends State<LoginPage> {
     } on DioException catch (ex, stack) {
       Share.showErrorModal.broadcast(Value((
         title: '/Session/Login/Splash/Error/Title'.localized,
-        message:
-            '/Session/Login/Error/Message'.localized.format(ex.message ?? ex),
+        message: '/Session/Login/Error/Message'.localized.format(ex.message ?? ex),
         actions: {
-          '/Session/Login/Error/Exception'.localized: () async => await Clipboard.setData(ClipboardData(text: ex.toString())),
+          '/Session/Login/Error/Exception'.localized: () async =>
+              await Clipboard.setData(ClipboardData(text: ex.toString())),
           '/Session/Login/Error/Stack'.localized: () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
         }
       )));
     } on Exception catch (ex, stack) {
       Share.showErrorModal.broadcast(Value((
         title: '/Session/Login/Splash/Error/Title'.localized,
-        message:
-            '/Session/Login/Error/Message'.localized.format(ex),
+        message: '/Session/Login/Error/Message'.localized.format(ex),
         actions: {
-          '/Session/Login/Error/Exception'.localized: () async => await Clipboard.setData(ClipboardData(text: ex.toString())),
+          '/Session/Login/Error/Exception'.localized: () async =>
+              await Clipboard.setData(ClipboardData(text: ex.toString())),
           '/Session/Login/Error/Stack'.localized: () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
         }
       )));

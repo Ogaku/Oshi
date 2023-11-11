@@ -24,7 +24,6 @@ class _EventsPageState extends State<EventsPage> {
 
   bool showTeachers = false;
   bool showHomeworks = true;
-  bool showCorrections = true;
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +39,7 @@ class _EventsPageState extends State<EventsPage> {
         .groupBy((x) => DateFormat('EEEE, d MMMM y').format(x.date ?? x.timeFrom))
         .toList();
 
-    // This is gonna be a veeery long list, as there are no expanders in cupertino
-    var attendanceWidgets = eventsToDisplayByDate
+    var eventWidgets = eventsToDisplayByDate
         .select((element, index) => CupertinoListSection.insetGrouped(
             margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
             header: Text(element.key),
@@ -55,7 +53,7 @@ class _EventsPageState extends State<EventsPage> {
                             child: Container(
                                 alignment: Alignment.center,
                                 child: Text(
-                                  'No attendances',
+                                  'No events to display',
                                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                                 ))))
                   ]
@@ -87,6 +85,6 @@ class _EventsPageState extends State<EventsPage> {
         largeTitle: Text('Agenda'),
         searchController: searchController,
         onChanged: (s) => setState(() => searchQuery = s),
-        children: [SingleChildScrollView(child: Column(children: attendanceWidgets))]);
+        children: [SingleChildScrollView(child: Column(children: eventWidgets))]);
   }
 }

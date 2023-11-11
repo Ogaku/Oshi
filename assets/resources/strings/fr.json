@@ -6,6 +6,10 @@
             "translation": "Accueil"
         },
         {
+            "id": "/Titles/Pages/Timeline",
+            "translation": "Changements"
+        },
+        {
             "id": "/Titles/Pages/Grades",
             "translation": "Les notes"
         },
@@ -16,6 +20,18 @@
         {
             "id": "/Titles/Pages/Messages",
             "translation": "Messages"
+        },
+        {
+            "id": "/Titles/Pages/Messages/Inbox",
+            "translation": "Boîte de réception"
+        },
+        {
+            "id": "/Titles/Pages/Messages/Sent",
+            "translation": "Envoyé"
+        },
+        {
+            "id": "/Titles/Pages/Messages/Announcements",
+            "translation": "Annonces"
         },
         {
             "id": "/Titles/Pages/Absences",
@@ -78,11 +94,11 @@
             "translation": "These are your e-register accounts. Choose one of the currently logged-in sessions, or go create a new one."
         },
         {
-           "id":  "/Sessions",
-           "translation": "Sessions"
+            "id": "/Sessions",
+            "translation": "Sessions"
         },
         {
-            "id":  "/Next",
+            "id": "/Next",
             "translation": "Next"
         },
         {
@@ -98,8 +114,8 @@
             "translation": "Copy Stack Trace"
         },
         {
-             "id":  "/Required",
-             "translation": "Required"
+            "id": "/Required",
+            "translation": "Required"
         },
         {
             "id": "/Page/Absences/No",
@@ -114,15 +130,15 @@
             "translation": "I got {} \"{}\" on {} from {} on lesson {}!"
         },
         {
-            "id":  "/Share",
+            "id": "/Share",
             "translation": "Share"
         },
         {
-            "id":  "/Required",
+            "id": "/Required",
             "translation": "Required"
         },
         {
-            "id":  "/Inquiry",
+            "id": "/Inquiry",
             "translation": "Inquiry"
         }
     ],

@@ -177,7 +177,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
               // Events for the selected day/date
               var eventsToday = Share.session.data.student.mainClass.events
                   .where((x) => x.category != EventCategory.homework && x.category != EventCategory.teacher)
-                  .where((x) => x.date == selectedDate)
+                  .where((x) => (x.date ?? x.timeFrom).asDate() == selectedDate)
                   .where((x) =>
                       x.titleString.contains(RegExp(searchQuery, caseSensitive: false)) ||
                       x.subtitleString.contains(RegExp(searchQuery, caseSensitive: false)) ||
@@ -338,7 +338,8 @@ extension EventWidgetsExtension on Iterable<Event> {
 }
 
 extension EventWidgetExtension on Event {
-  Widget asEventWidget(BuildContext context, bool isNotEmpty, TimetableDay? day, void Function(VoidCallback fn) setState) =>
+  Widget asEventWidget(BuildContext context, bool isNotEmpty, TimetableDay? day, void Function(VoidCallback fn) setState,
+          {bool markRemoved = false, bool markModified = false, Function()? onTap}) =>
       CupertinoContextMenu.builder(
           enableHapticFeedback: true,
           actions: [
@@ -405,185 +406,207 @@ extension EventWidgetExtension on Event {
               },
             ),
           ],
-          builder: (BuildContext context, Animation<double> animation) => eventBody(isNotEmpty, day, context, animation));
+          builder: (BuildContext context, Animation<double> animation) => eventBody(isNotEmpty, day, context,
+              animation: animation, markRemoved: markRemoved, markModified: markModified, onTap: onTap));
 
-  Widget eventBody(bool isNotEmpty, TimetableDay? day, BuildContext context, [Animation<double>? animation]) {
+  Widget eventBody(bool isNotEmpty, TimetableDay? day, BuildContext context,
+      {Animation<double>? animation,
+      bool markRemoved = false,
+      bool markModified = false,
+      bool useOnTap = false,
+      Function()? onTap}) {
     var tag = UuidV4().generate();
     var body = GestureDetector(
-        onTap: animation == null || animation.value >= CupertinoContextMenu.animationOpensAt
-            ? null
-            : () => showCupertinoModalBottomSheet(
-                expand: false,
-                context: context,
-                builder: (context) => Container(
-                    color: CupertinoDynamicColor.resolve(
-                        CupertinoDynamicColor.withBrightness(
-                            color: const Color.fromARGB(255, 242, 242, 247),
-                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                        context),
-                    child: Table(
-                        children: [
-                      TableRow(children: [
-                        Container(
-                            margin: EdgeInsets.only(top: 20, left: 15, right: 15),
-                            child: Hero(tag: tag, child: eventBody(isNotEmpty, day, context)))
-                      ]),
-                    ]
-                            .appendAllIf(
-                                attachments
-                                        ?.select((x, index) => TableRow(children: [
-                                              GestureDetector(
-                                                  onTap: () async {
-                                                    try {
-                                                      await launchUrlString(x.location);
-                                                    } catch (ex) {
-                                                      // ignored
-                                                    }
-                                                  },
-                                                  child: Container(
-                                                      padding: EdgeInsets.only(left: 12, top: 10, right: 10, bottom: 10),
-                                                      margin: EdgeInsets.only(left: 15, top: 20, right: 15),
-                                                      decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                                                          color: CupertinoDynamicColor.resolve(
-                                                              CupertinoColors.tertiarySystemBackground, context)),
-                                                      child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                                          children: [
-                                                            Icon(CupertinoIcons.paperclip,
-                                                                color: CupertinoColors.inactiveGray),
-                                                            Expanded(
-                                                                child: Container(
-                                                                    margin: EdgeInsets.only(left: 15),
-                                                                    child: Text(
-                                                                      x.name,
-                                                                      overflow: TextOverflow.ellipsis,
-                                                                      maxLines: 10,
-                                                                      style: TextStyle(
-                                                                          fontSize: 16, fontWeight: FontWeight.w600),
-                                                                    ))),
-                                                          ])))
-                                            ]))
-                                        .toList() ??
-                                    [],
-                                attachments?.isNotEmpty ?? false)
-                            .appendIf(
-                                TableRow(children: [
-                                  CupertinoListSection.insetGrouped(
-                                      margin: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
-                                      additionalDividerMargin: 5,
-                                      children: [
-                                        CupertinoListTile(
-                                          title: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text('Title'),
-                                              Flexible(
-                                                  child: Container(
-                                                      margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                      child: Opacity(
-                                                          opacity: 0.5,
-                                                          child: Text(titleString, maxLines: 10, textAlign: TextAlign.end))))
-                                            ],
-                                          ),
-                                        ),
-                                      ]
-                                          .appendIf(
-                                              CupertinoListTile(
-                                                  title: Row(
+        onTap: (useOnTap && onTap != null)
+            ? onTap
+            : (animation == null || animation.value >= CupertinoContextMenu.animationOpensAt)
+                ? null
+                : () => showCupertinoModalBottomSheet(
+                    expand: false,
+                    context: context,
+                    builder: (context) => Container(
+                        color: CupertinoDynamicColor.resolve(
+                            CupertinoDynamicColor.withBrightness(
+                                color: const Color.fromARGB(255, 242, 242, 247),
+                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                            context),
+                        child: Table(
+                            children: [
+                          TableRow(children: [
+                            Container(
+                                margin: EdgeInsets.only(top: 20, left: 15, right: 15),
+                                child: Hero(
+                                    tag: tag,
+                                    child: eventBody(isNotEmpty, day, context,
+                                        useOnTap: onTap != null,
+                                        markRemoved: markRemoved,
+                                        markModified: markModified,
+                                        onTap: onTap)))
+                          ]),
+                        ]
+                                .appendAllIf(
+                                    attachments
+                                            ?.select((x, index) => TableRow(children: [
+                                                  GestureDetector(
+                                                      onTap: () async {
+                                                        try {
+                                                          await launchUrlString(x.location);
+                                                        } catch (ex) {
+                                                          // ignored
+                                                        }
+                                                      },
+                                                      child: Container(
+                                                          padding: EdgeInsets.only(left: 12, top: 10, right: 10, bottom: 10),
+                                                          margin: EdgeInsets.only(left: 15, top: 20, right: 15),
+                                                          decoration: BoxDecoration(
+                                                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                                                              color: CupertinoDynamicColor.resolve(
+                                                                  CupertinoColors.tertiarySystemBackground, context)),
+                                                          child: Row(
+                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                                              children: [
+                                                                Icon(CupertinoIcons.paperclip,
+                                                                    color: CupertinoColors.inactiveGray),
+                                                                Expanded(
+                                                                    child: Container(
+                                                                        margin: EdgeInsets.only(left: 15),
+                                                                        child: Text(
+                                                                          x.name,
+                                                                          overflow: TextOverflow.ellipsis,
+                                                                          maxLines: 10,
+                                                                          style: TextStyle(
+                                                                              fontSize: 16, fontWeight: FontWeight.w600),
+                                                                        ))),
+                                                              ])))
+                                                ]))
+                                            .toList() ??
+                                        [],
+                                    attachments?.isNotEmpty ?? false)
+                                .appendIf(
+                                    TableRow(children: [
+                                      CupertinoListSection.insetGrouped(
+                                          margin: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
+                                          additionalDividerMargin: 5,
+                                          children: [
+                                            CupertinoListTile(
+                                              title: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
-                                                  Text('Subtitle'),
+                                                  Text('Title'),
                                                   Flexible(
                                                       child: Container(
                                                           margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
                                                           child: Opacity(
                                                               opacity: 0.5,
-                                                              child: Text(subtitleString,
+                                                              child: Text(titleString,
                                                                   maxLines: 10, textAlign: TextAlign.end))))
                                                 ],
-                                              )),
-                                              subtitleString.isNotEmpty)
-                                          .appendIf(
-                                              CupertinoListTile(
-                                                  title: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Container(
-                                                      margin: EdgeInsets.only(right: 3),
-                                                      child:
-                                                          Text(category == EventCategory.teacher ? 'Teacher' : 'Added by')),
-                                                  Flexible(
-                                                      child: Opacity(
-                                                          opacity: 0.5,
-                                                          child: Text(sender?.name ?? '',
-                                                              maxLines: 1, overflow: TextOverflow.ellipsis)))
-                                                ],
-                                              )),
-                                              sender?.name.isNotEmpty ?? false)
-                                          .appendIf(
-                                              CupertinoListTile(
-                                                  title: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Container(margin: EdgeInsets.only(right: 3), child: Text('Date')),
-                                                  Flexible(
-                                                      child: Opacity(
-                                                          opacity: 0.5,
-                                                          child: Text(DateFormat('EEE, d MMM y').format(date ?? timeFrom),
-                                                              maxLines: 1, overflow: TextOverflow.ellipsis)))
-                                                ],
-                                              )),
-                                              date != null)
-                                          .appendIf(
-                                              CupertinoListTile(
-                                                  title: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Container(margin: EdgeInsets.only(right: 3), child: Text('Classroom')),
-                                                  Flexible(
-                                                      child: Opacity(
-                                                          opacity: 0.5,
-                                                          child: Text(classroom?.name ?? '',
-                                                              maxLines: 1, overflow: TextOverflow.ellipsis)))
-                                                ],
-                                              )),
-                                              classroom?.name.isNotEmpty ?? false)
-                                          .appendIf(
-                                              CupertinoListTile(
-                                                  title: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Container(margin: EdgeInsets.only(right: 3), child: Text('Start time')),
-                                                  Flexible(
-                                                      child: Opacity(
-                                                          opacity: 0.5,
-                                                          child: Text(DateFormat('HH:mm').format(timeFrom),
-                                                              maxLines: 1, overflow: TextOverflow.ellipsis)))
-                                                ],
-                                              )),
-                                              timeFrom.hour != 0)
-                                          .appendIf(
-                                              CupertinoListTile(
-                                                  title: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Container(margin: EdgeInsets.only(right: 3), child: Text('End time')),
-                                                  Flexible(
-                                                      child: Opacity(
-                                                          opacity: 0.5,
-                                                          child: Text(DateFormat('HH:mm').format(timeTo ?? timeFrom),
-                                                              maxLines: 1, overflow: TextOverflow.ellipsis)))
-                                                ],
-                                              )),
-                                              timeTo != null && timeTo?.hour != 0))
-                                ]),
-                                true)))),
+                                              ),
+                                            ),
+                                          ]
+                                              .appendIf(
+                                                  CupertinoListTile(
+                                                      title: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Text('Subtitle'),
+                                                      Flexible(
+                                                          child: Container(
+                                                              margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
+                                                              child: Opacity(
+                                                                  opacity: 0.5,
+                                                                  child: Text(subtitleString,
+                                                                      maxLines: 10, textAlign: TextAlign.end))))
+                                                    ],
+                                                  )),
+                                                  subtitleString.isNotEmpty)
+                                              .appendIf(
+                                                  CupertinoListTile(
+                                                      title: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Container(
+                                                          margin: EdgeInsets.only(right: 3),
+                                                          child: Text(
+                                                              category == EventCategory.teacher ? 'Teacher' : 'Added by')),
+                                                      Flexible(
+                                                          child: Opacity(
+                                                              opacity: 0.5,
+                                                              child: Text(sender?.name ?? '',
+                                                                  maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                                    ],
+                                                  )),
+                                                  sender?.name.isNotEmpty ?? false)
+                                              .appendIf(
+                                                  CupertinoListTile(
+                                                      title: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Container(margin: EdgeInsets.only(right: 3), child: Text('Date')),
+                                                      Flexible(
+                                                          child: Opacity(
+                                                              opacity: 0.5,
+                                                              child: Text(
+                                                                  DateFormat('EEE, d MMM y').format(date ?? timeFrom),
+                                                                  maxLines: 1,
+                                                                  overflow: TextOverflow.ellipsis)))
+                                                    ],
+                                                  )),
+                                                  date != null)
+                                              .appendIf(
+                                                  CupertinoListTile(
+                                                      title: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Container(margin: EdgeInsets.only(right: 3), child: Text('Classroom')),
+                                                      Flexible(
+                                                          child: Opacity(
+                                                              opacity: 0.5,
+                                                              child: Text(classroom?.name ?? '',
+                                                                  maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                                    ],
+                                                  )),
+                                                  classroom?.name.isNotEmpty ?? false)
+                                              .appendIf(
+                                                  CupertinoListTile(
+                                                      title: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Container(
+                                                          margin: EdgeInsets.only(right: 3), child: Text('Start time')),
+                                                      Flexible(
+                                                          child: Opacity(
+                                                              opacity: 0.5,
+                                                              child: Text(DateFormat('HH:mm').format(timeFrom),
+                                                                  maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                                    ],
+                                                  )),
+                                                  timeFrom.hour != 0)
+                                              .appendIf(
+                                                  CupertinoListTile(
+                                                      title: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Container(margin: EdgeInsets.only(right: 3), child: Text('End time')),
+                                                      Flexible(
+                                                          child: Opacity(
+                                                              opacity: 0.5,
+                                                              child: Text(DateFormat('HH:mm').format(timeTo ?? timeFrom),
+                                                                  maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                                    ],
+                                                  )),
+                                                  timeTo != null && timeTo?.hour != 0))
+                                    ]),
+                                    true)))),
         child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: animation == null
+                color: (animation == null ||
+                        animation.value >= CupertinoContextMenu.animationOpensAt ||
+                        markModified ||
+                        markRemoved ||
+                        onTap != null)
                     ? CupertinoDynamicColor.resolve(CupertinoColors.tertiarySystemBackground, context)
                     : CupertinoDynamicColor.resolve(
                         CupertinoDynamicColor.withBrightness(
@@ -631,7 +654,11 @@ extension EventWidgetExtension on Event {
                                               child: Text(
                                                 titleString,
                                                 overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                                style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontStyle: markModified ? FontStyle.italic : null,
+                                                    decoration: markRemoved ? TextDecoration.lineThrough : null),
                                               )),
                                           // Symbol/homework/days
                                           Visibility(
@@ -645,7 +672,10 @@ extension EventWidgetExtension on Event {
                                                   child: Text(
                                                     classroom?.name ?? '^^',
                                                     overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(fontSize: 16),
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontStyle: markModified ? FontStyle.italic : null,
+                                                        decoration: markRemoved ? TextDecoration.lineThrough : null),
                                                   ))),
                                           Visibility(
                                               visible: category == EventCategory.teacher,
@@ -656,7 +686,10 @@ extension EventWidgetExtension on Event {
                                                       ? Text(
                                                           "${DateFormat('H:mm').format(timeFrom)} - ${DateFormat('H:mm').format(timeTo ?? DateTime.now())}",
                                                           overflow: TextOverflow.ellipsis,
-                                                          style: TextStyle(fontSize: 15),
+                                                          style: TextStyle(
+                                                              fontSize: 15,
+                                                              fontStyle: markModified ? FontStyle.italic : null,
+                                                              decoration: markRemoved ? TextDecoration.lineThrough : null),
                                                         )
                                                       : Text(
                                                           (timeFrom.month == timeTo?.month && timeFrom.day == timeTo?.day)
@@ -665,7 +698,10 @@ extension EventWidgetExtension on Event {
                                                                   ? "${DateFormat('d').format(timeFrom)} - ${DateFormat('d MMM').format(timeTo ?? DateTime.now())}"
                                                                   : "${DateFormat('d MMM').format(timeFrom)} - ${DateFormat('d MMM').format(timeTo ?? DateTime.now())}",
                                                           overflow: TextOverflow.ellipsis,
-                                                          style: TextStyle(fontSize: 15),
+                                                          style: TextStyle(
+                                                              fontSize: 15,
+                                                              fontStyle: markModified ? FontStyle.italic : null,
+                                                              decoration: markRemoved ? TextDecoration.lineThrough : null),
                                                         )))
                                         ]),
                                     Visibility(
@@ -677,7 +713,10 @@ extension EventWidgetExtension on Event {
                                                 child: Text(
                                                   locationString,
                                                   overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(fontSize: 16),
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontStyle: markModified ? FontStyle.italic : null,
+                                                      decoration: markRemoved ? TextDecoration.lineThrough : null),
                                                 )))),
                                     Visibility(
                                         visible: subtitleString.isNotEmpty,
@@ -689,7 +728,10 @@ extension EventWidgetExtension on Event {
                                                   subtitleString.trim(),
                                                   overflow: TextOverflow.ellipsis,
                                                   maxLines: 2,
-                                                  style: TextStyle(fontSize: 16),
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontStyle: markModified ? FontStyle.italic : null,
+                                                      decoration: markRemoved ? TextDecoration.lineThrough : null),
                                                 )))),
                                   ]))
                         ])))));
@@ -700,7 +742,8 @@ extension EventWidgetExtension on Event {
 
 extension LessonWidgetExtension on TimetableLesson {
   Widget asLessonWidget(
-      BuildContext context, DateTime? selectedDate, TimetableDay? selectedDay, void Function(VoidCallback fn) setState) {
+      BuildContext context, DateTime? selectedDate, TimetableDay? selectedDay, void Function(VoidCallback fn) setState,
+      {bool markRemoved = false, bool markModified = false, Function()? onTap}) {
     var lessonCallButtonString = switch (Share.settings.config.lessonCallType) {
       LessonCallTypes.countFromEnd => 'last ${Share.settings.config.lessonCallTime} min',
       LessonCallTypes.countFromStart => 'first ${Share.settings.config.lessonCallTime} min',
@@ -777,12 +820,16 @@ extension LessonWidgetExtension on TimetableLesson {
             },
           ),
         ],
-        builder: (BuildContext context, Animation<double> animation) =>
-            lessonBody(context, selectedDate, selectedDay, animation));
+        builder: (BuildContext context, Animation<double> animation) => lessonBody(context, selectedDate, selectedDay,
+            animation: animation, markRemoved: markRemoved, markModified: markModified, onTap: onTap));
   }
 
   Widget lessonBody(BuildContext context, DateTime? selectedDate, TimetableDay? selectedDay,
-      [Animation<double>? animation]) {
+      {Animation<double>? animation,
+      bool markRemoved = false,
+      bool markModified = false,
+      bool useOnTap = false,
+      Function()? onTap}) {
     var events = Share.session.data.student.mainClass.events
         .where((y) => y.date == selectedDate)
         .where((y) => (y.lessonNo ?? -1) == lessonNo)
@@ -794,177 +841,189 @@ extension LessonWidgetExtension on TimetableLesson {
 
     var tag = UuidV4().generate();
     var body = GestureDetector(
-        onTap: animation == null || animation.value >= CupertinoContextMenu.animationOpensAt
-            ? null
-            : () => showCupertinoModalBottomSheet(
-                expand: false,
-                context: context,
-                builder: (context) => Container(
-                    color: CupertinoDynamicColor.resolve(
-                        CupertinoDynamicColor.withBrightness(
-                            color: const Color.fromARGB(255, 242, 242, 247),
-                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                        context),
-                    child: Table(
-                        children: <TableRow>[
-                      TableRow(children: [
-                        Container(
-                            margin: EdgeInsets.only(top: 20, left: 15, right: 15),
-                            child: Hero(tag: tag, child: lessonBody(context, selectedDate, selectedDay)))
-                      ])
-                    ].appendAllIf(events, events.isNotEmpty).appendIf(
-                            TableRow(children: [
-                              CupertinoListSection.insetGrouped(
-                                  margin: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
-                                  additionalDividerMargin: 5,
-                                  children: <CupertinoListTile>[]
-                                      .appendIf(
-                                          CupertinoListTile(
-                                              title: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text('Subject'),
-                                              Flexible(
-                                                  child: Container(
-                                                      margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                      child: Opacity(
-                                                          opacity: 0.5,
-                                                          child: Text(subject?.name ?? '',
-                                                              maxLines: 3,
-                                                              overflow: TextOverflow.ellipsis,
-                                                              textAlign: TextAlign.end))))
-                                            ],
-                                          )),
-                                          subject?.name.isNotEmpty ?? false)
-                                      .appendIf(
-                                          CupertinoListTile(
-                                              title: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text('Teacher'),
-                                              Flexible(
-                                                  child: Container(
-                                                      margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                      child: Opacity(
-                                                          opacity: 0.5,
-                                                          child: Text(teacher?.name ?? '',
-                                                              maxLines: 1, overflow: TextOverflow.ellipsis))))
-                                            ],
-                                          )),
-                                          teacher?.name.isNotEmpty ?? false)
-                                      .appendIf(
-                                          CupertinoListTile(
-                                              title: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text('Classroom'),
-                                              Flexible(
-                                                  child: Container(
-                                                      margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                      child: Opacity(
-                                                          opacity: 0.5,
-                                                          child: Text(classroom?.name ?? '',
-                                                              maxLines: 1, textAlign: TextAlign.end))))
-                                            ],
-                                          )),
-                                          classroom?.name.isNotEmpty ?? false)
-                                      .appendIf(
-                                          CupertinoListTile(
-                                              title: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text('Lesson no.'),
-                                              Flexible(
-                                                  child: Container(
-                                                      margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                      child: Opacity(
-                                                          opacity: 0.5,
-                                                          child: Text(lessonNo.toString(),
-                                                              maxLines: 3,
-                                                              overflow: TextOverflow.ellipsis,
-                                                              textAlign: TextAlign.end))))
-                                            ],
-                                          )),
-                                          lessonNo >= 0)
-                                      // Substitution details - original lesson
-                                      .appendIf(
-                                          CupertinoListTile(
-                                              title: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text('Original lesson'),
-                                              Flexible(
-                                                  child: Container(
-                                                      margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                      child: Opacity(
-                                                          opacity: 0.5,
-                                                          child: Text(substitutionDetails?.originalSubject?.name ?? '',
-                                                              maxLines: 3, textAlign: TextAlign.end))))
-                                            ],
-                                          )),
-                                          (isCanceled || modifiedSchedule) &&
-                                              !isMovedLesson &&
-                                              (substitutionDetails?.originalSubject?.name.isNotEmpty ?? false))
-                                      // Substitution details - original teacher
-                                      .appendIf(
-                                          CupertinoListTile(
-                                              title: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text('Original teacher'),
-                                              Flexible(
-                                                  child: Container(
-                                                      margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                      child: Opacity(
-                                                          opacity: 0.5,
-                                                          child: Text(substitutionDetails?.originalTeacher?.name ?? '',
-                                                              maxLines: 3, textAlign: TextAlign.end))))
-                                            ],
-                                          )),
-                                          (isCanceled || modifiedSchedule) &&
-                                              !isMovedLesson &&
-                                              (substitutionDetails?.originalTeacher?.name.isNotEmpty ?? false))
-                                      // Substitution details - moved lesson
-                                      .appendIf(
-                                          CupertinoListTile(
-                                              title: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(isCanceled ? 'Moved to' : 'Moved from'),
-                                              Flexible(
-                                                  child: Container(
-                                                      margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                      child: Opacity(
-                                                          opacity: 0.5,
-                                                          child: Text(
-                                                              '${DateFormat('y.M.d').format(substitutionDetails?.originalDate ?? DateTime.now().asDate())}${substitutionDetails?.originalLessonNo != null ? ', L${substitutionDetails?.originalLessonNo.toString()}' : ''}',
-                                                              maxLines: 3,
-                                                              textAlign: TextAlign.end))))
-                                            ],
-                                          )),
-                                          isMovedLesson)
-                                      // Substitution details - cancelled
-                                      .appendIf(
-                                          CupertinoListTile(
-                                              title: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Flexible(
-                                                  child: Container(
-                                                      margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                      child: Opacity(
-                                                          opacity: 0.5,
-                                                          child: Text('This lesson has been cancelled',
-                                                              maxLines: 1, textAlign: TextAlign.center))))
-                                            ],
-                                          )),
-                                          isCanceled && !isMovedLesson))
-                            ]),
-                            true)))),
+        onTap: (useOnTap && onTap != null)
+            ? onTap
+            : (animation == null || animation.value >= CupertinoContextMenu.animationOpensAt)
+                ? null
+                : () => showCupertinoModalBottomSheet(
+                    expand: false,
+                    context: context,
+                    builder: (context) => Container(
+                        color: CupertinoDynamicColor.resolve(
+                            CupertinoDynamicColor.withBrightness(
+                                color: const Color.fromARGB(255, 242, 242, 247),
+                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                            context),
+                        child: Table(
+                            children: <TableRow>[
+                          TableRow(children: [
+                            Container(
+                                margin: EdgeInsets.only(top: 20, left: 15, right: 15),
+                                child: Hero(
+                                    tag: tag,
+                                    child: lessonBody(context, selectedDate, selectedDay,
+                                        useOnTap: onTap != null,
+                                        markRemoved: markRemoved,
+                                        markModified: markModified,
+                                        onTap: onTap)))
+                          ])
+                        ].appendAllIf(events, events.isNotEmpty).appendIf(
+                                TableRow(children: [
+                                  CupertinoListSection.insetGrouped(
+                                      margin: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
+                                      additionalDividerMargin: 5,
+                                      children: <CupertinoListTile>[]
+                                          .appendIf(
+                                              CupertinoListTile(
+                                                  title: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text('Subject'),
+                                                  Flexible(
+                                                      child: Container(
+                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
+                                                          child: Opacity(
+                                                              opacity: 0.5,
+                                                              child: Text(subject?.name ?? '',
+                                                                  maxLines: 3,
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                  textAlign: TextAlign.end))))
+                                                ],
+                                              )),
+                                              subject?.name.isNotEmpty ?? false)
+                                          .appendIf(
+                                              CupertinoListTile(
+                                                  title: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text('Teacher'),
+                                                  Flexible(
+                                                      child: Container(
+                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
+                                                          child: Opacity(
+                                                              opacity: 0.5,
+                                                              child: Text(teacher?.name ?? '',
+                                                                  maxLines: 1, overflow: TextOverflow.ellipsis))))
+                                                ],
+                                              )),
+                                              teacher?.name.isNotEmpty ?? false)
+                                          .appendIf(
+                                              CupertinoListTile(
+                                                  title: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text('Classroom'),
+                                                  Flexible(
+                                                      child: Container(
+                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
+                                                          child: Opacity(
+                                                              opacity: 0.5,
+                                                              child: Text(classroom?.name ?? '',
+                                                                  maxLines: 1, textAlign: TextAlign.end))))
+                                                ],
+                                              )),
+                                              classroom?.name.isNotEmpty ?? false)
+                                          .appendIf(
+                                              CupertinoListTile(
+                                                  title: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text('Lesson no.'),
+                                                  Flexible(
+                                                      child: Container(
+                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
+                                                          child: Opacity(
+                                                              opacity: 0.5,
+                                                              child: Text(lessonNo.toString(),
+                                                                  maxLines: 3,
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                  textAlign: TextAlign.end))))
+                                                ],
+                                              )),
+                                              lessonNo >= 0)
+                                          // Substitution details - original lesson
+                                          .appendIf(
+                                              CupertinoListTile(
+                                                  title: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text('Original lesson'),
+                                                  Flexible(
+                                                      child: Container(
+                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
+                                                          child: Opacity(
+                                                              opacity: 0.5,
+                                                              child: Text(substitutionDetails?.originalSubject?.name ?? '',
+                                                                  maxLines: 3, textAlign: TextAlign.end))))
+                                                ],
+                                              )),
+                                              (isCanceled || modifiedSchedule) &&
+                                                  !isMovedLesson &&
+                                                  (substitutionDetails?.originalSubject?.name.isNotEmpty ?? false))
+                                          // Substitution details - original teacher
+                                          .appendIf(
+                                              CupertinoListTile(
+                                                  title: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text('Original teacher'),
+                                                  Flexible(
+                                                      child: Container(
+                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
+                                                          child: Opacity(
+                                                              opacity: 0.5,
+                                                              child: Text(substitutionDetails?.originalTeacher?.name ?? '',
+                                                                  maxLines: 3, textAlign: TextAlign.end))))
+                                                ],
+                                              )),
+                                              (isCanceled || modifiedSchedule) &&
+                                                  !isMovedLesson &&
+                                                  (substitutionDetails?.originalTeacher?.name.isNotEmpty ?? false))
+                                          // Substitution details - moved lesson
+                                          .appendIf(
+                                              CupertinoListTile(
+                                                  title: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text(isCanceled ? 'Moved to' : 'Moved from'),
+                                                  Flexible(
+                                                      child: Container(
+                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
+                                                          child: Opacity(
+                                                              opacity: 0.5,
+                                                              child: Text(
+                                                                  '${DateFormat('y.M.d').format(substitutionDetails?.originalDate ?? DateTime.now().asDate())}${substitutionDetails?.originalLessonNo != null ? ', L${substitutionDetails?.originalLessonNo.toString()}' : ''}',
+                                                                  maxLines: 3,
+                                                                  textAlign: TextAlign.end))))
+                                                ],
+                                              )),
+                                              isMovedLesson)
+                                          // Substitution details - cancelled
+                                          .appendIf(
+                                              CupertinoListTile(
+                                                  title: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Flexible(
+                                                      child: Container(
+                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
+                                                          child: Opacity(
+                                                              opacity: 0.5,
+                                                              child: Text('This lesson has been cancelled',
+                                                                  maxLines: 1, textAlign: TextAlign.center))))
+                                                ],
+                                              )),
+                                              isCanceled && !isMovedLesson))
+                                ]),
+                                true)))),
         child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: animation == null
+                color: (animation == null ||
+                        animation.value >= CupertinoContextMenu.animationOpensAt ||
+                        markModified ||
+                        markRemoved ||
+                        onTap != null)
                     ? CupertinoDynamicColor.resolve(CupertinoColors.tertiarySystemBackground, context)
                     : CupertinoDynamicColor.resolve(
                         CupertinoDynamicColor.withBrightness(
@@ -1018,9 +1077,11 @@ extension LessonWidgetExtension on TimetableLesson {
                                               style: TextStyle(
                                                   fontSize: 17,
                                                   fontWeight: FontWeight.w600,
-                                                  fontStyle:
-                                                      (isCanceled || modifiedSchedule) ? FontStyle.italic : FontStyle.normal,
-                                                  decoration: isCanceled ? TextDecoration.lineThrough : null),
+                                                  fontStyle: (isCanceled || modifiedSchedule || markModified)
+                                                      ? FontStyle.italic
+                                                      : FontStyle.normal,
+                                                  decoration:
+                                                      (isCanceled || markRemoved) ? TextDecoration.lineThrough : null),
                                             )),
                                         // Classroom name/symbol
                                         Container(
@@ -1049,10 +1110,11 @@ extension LessonWidgetExtension on TimetableLesson {
                                                     classroom?.name ?? '',
                                                     style: TextStyle(
                                                         fontSize: 17,
-                                                        fontStyle: (isCanceled || modifiedSchedule)
+                                                        fontStyle: (isCanceled || modifiedSchedule || markModified)
                                                             ? FontStyle.italic
                                                             : FontStyle.normal,
-                                                        decoration: isCanceled ? TextDecoration.lineThrough : null),
+                                                        decoration:
+                                                            (isCanceled || markRemoved) ? TextDecoration.lineThrough : null),
                                                   ))
                                       ]),
                           // Time and teacher details
@@ -1069,9 +1131,10 @@ extension LessonWidgetExtension on TimetableLesson {
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                             fontSize: 17,
-                                            fontStyle:
-                                                (isCanceled || modifiedSchedule) ? FontStyle.italic : FontStyle.normal,
-                                            decoration: isCanceled ? TextDecoration.lineThrough : null),
+                                            fontStyle: (isCanceled || modifiedSchedule || markModified)
+                                                ? FontStyle.italic
+                                                : FontStyle.normal,
+                                            decoration: (isCanceled || markRemoved) ? TextDecoration.lineThrough : null),
                                       )))),
                           // Substitution details - visible if context is opened
                           Visibility(
@@ -1086,8 +1149,10 @@ extension LessonWidgetExtension on TimetableLesson {
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                             fontSize: 17,
-                                            fontStyle:
-                                                (isCanceled || modifiedSchedule) ? FontStyle.italic : FontStyle.normal),
+                                            fontStyle: (isCanceled || modifiedSchedule || markModified)
+                                                ? FontStyle.italic
+                                                : FontStyle.normal,
+                                            decoration: (isCanceled || markRemoved) ? TextDecoration.lineThrough : null),
                                       ))))
                         ])))));
 

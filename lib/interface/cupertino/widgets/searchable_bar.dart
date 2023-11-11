@@ -23,8 +23,9 @@ class SearchableSliverNavigationBar extends StatefulWidget {
   final TextEditingController searchController;
   final List<Widget>? children;
   final Widget? child;
-  final Map<String, String>? segments;
+  final Map<dynamic, String>? segments;
   final Function(String)? onChanged;
+  final Function(dynamic)? onSegmentChanged;
   final Function(String)? onSubmitted;
   final void Function(VoidCallback fn)? setState;
   final Function(({double? progress, String? message})? progress)? onProgress;
@@ -34,6 +35,7 @@ class SearchableSliverNavigationBar extends StatefulWidget {
       TextEditingController? searchController,
       this.children,
       this.onChanged,
+      this.onSegmentChanged,
       this.onSubmitted,
       this.transitionBetweenRoutes,
       this.largeTitle,
@@ -61,7 +63,7 @@ class SearchableSliverNavigationBar extends StatefulWidget {
 
 class _NavState extends State<SearchableSliverNavigationBar> {
   late ScrollController scrollController;
-  late String? groupSelection;
+  late dynamic groupSelection;
 
   double previousScrollPosition = 0, isVisibleSearchBar = 0;
   bool isRefreshing = false;
@@ -114,7 +116,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                             onValueChanged: (value) {
                               if (value == null) return;
                               setState(() => groupSelection = value);
-                              if (widget.onChanged != null) widget.onChanged!(value);
+                              if (widget.onSegmentChanged != null) widget.onSegmentChanged!(value);
                             },
                           ))
                       : CupertinoSearchTextField(
