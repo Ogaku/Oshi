@@ -42,3 +42,17 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+.vs/VSWorkspaceState.json
+
+.vs/ProjectSettings.json
+
+.vs/Oshi/v17/.wsuo
+
+.vs/Oshi/FileContentIndex/7e6295ae-819f-41c9-9fc6-d00e48c22682.vsidx
+
+.vs/CMakeWorkspaceSettings.json
+
+.vs/Oshi/v17/Preview/Browse.VC.db
+
+.vs/slnx.sqlite
