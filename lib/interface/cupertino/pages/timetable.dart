@@ -17,6 +17,7 @@ import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/data/timetables.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:oshi/interface/cupertino/views/events_timeline.dart' show EventsPage;
 import 'package:url_launcher/url_launcher_string.dart';
@@ -134,7 +135,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                     }),
                   ),
                   PullDownMenuDivider.large(),
-                  PullDownMenuTitle(title: Text('Schedule')),
+                  PullDownMenuTitle(title: Text('/Titles/Pages/Schedule'.localized)),
                   PullDownMenuItem(
                     title: 'Today',
                     icon: CupertinoIcons.calendar_today,
@@ -164,7 +165,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
               ),
         searchController: searchController,
         onChanged: (s) => setState(() => searchQuery = s),
-        largeTitle: Text('Schedule'),
+        largeTitle: Text('/Titles/Pages/Schedule'.localized),
         child: PageView.builder(
             scrollBehavior: CupertinoScrollBehavior(),
             scrollDirection: Axis.horizontal,

@@ -74,12 +74,8 @@
             "translation": "Cannot believe you've made it this far..."
         },
         {
-            "id": "/Session/Login/Splash/Error/Title",
+            "id": "/Session/Login/Error/Title",
             "translation": "Error logging in!"
-        },
-        {
-            "id": "/Session/Login/Splash/Error/Message",
-            "translation": "Cannot believe you've made it this far..."
         },
         {
             "id": "/Delete",
@@ -140,6 +136,50 @@
         {
             "id": "/Inquiry",
             "translation": "Inquiry"
+        },
+        {
+            "id": "/Grades",
+            "translation": "Grades"
+        },
+        {
+            "id": "/an",
+            "translation": " an"
+        },
+        {
+            "id": "/a",
+            "translation": " a"
+        },
+        {
+            "id": "/Absence",
+            "translation": "Absence"
+        },
+        {
+            "id": "/Late",
+            "translation": "Late"
+        },
+        {
+            "id": "/Excused",
+            "translation": "Excused"
+        },
+        {
+            "id": "/Duty",
+            "translation": "Duty"
+        },
+        {
+            "id": "/Presence",
+            "translation": "Presence"
+        },
+        {
+            "id": "/Other",
+            "translation": "Other"
+        },
+        {
+            "id": "/Lesson",
+            "translation": "Lesson"
+        },
+        {
+            "id": "/Grades/NoLessons",
+            "translation": "No lessons matching the query"
         }
     ],
     "splashes": [

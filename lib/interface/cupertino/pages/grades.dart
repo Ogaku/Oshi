@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:oshi/interface/cupertino/views/grades_detailed.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 
 // Boiler: returned to the app tab builder
 StatefulWidget get gradesPage => GradesPage();
@@ -56,7 +57,7 @@ class _GradesPageState extends State<GradesPage> {
                       child: Container(
                           alignment: Alignment.center,
                           child: Text(
-                            'No lessons matching the query',
+                            '/Grades/NoLessons'.localized,
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                           ))))
             ]
@@ -96,8 +97,8 @@ class _GradesPageState extends State<GradesPage> {
 
     return SearchableSliverNavigationBar(
       setState: setState,
-      largeTitle: Text('Grades'),
-      middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('Grades')),
+      largeTitle: Text('/Grades'.localized),
+      middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('/Grades'.localized)),
       onProgress: (progress) => setState(() => _progressMessage = progress?.message),
       leading: Visibility(
           visible: _progressMessage?.isNotEmpty ?? false,

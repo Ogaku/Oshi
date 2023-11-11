@@ -39,71 +39,67 @@
         },
         {
             "id": "/TrademarkInfo",
-            "translation": "All trademarks featured in this app remain the property of their rightful owners, and are used for informational purposes only."
+            "translation": "Wszystkie znaki towarowe znajdujące się w tej aplikacji pozostają własnością ich właścicieli, zostały one użyte tylko i wyłącznie w celach informacyjnych."
         },
         {
             "id": "/BaseApp/Update/AlertHeader",
-            "translation": "Please update 🤓"
+            "translation": "Zaaktualizuj 🤓"
         },
         {
             "id": "/BaseApp/Update/Alert",
-            "translation": "The download page of the newer app version for {} will be opened."
+            "translation": "Strona z aktualizacją aplikacji dla {} się otworzy."
         },
         {
             "id": "/Session/New/Register/Question",
-            "translation": "What is your e-register?"
+            "translation": "Który jest twój e-dziennik?"
         },
         {
             "id": "/Session/New/Register/Info",
-            "translation": "Choose the e-register provider depending on which one your school uses. You'll be able to set up more student accounts and e-registers later as needed."
+            "translation": "Wybierz e-dziennik, którego używasz. Po zalogowaniu będziesz móc zalogować się do innych dzienników jak i zalogować się na wiele kont."
         },
         {
             "id": "/Session/Login/Data/Complete",
-            "translation": "No additional data required."
+            "translation": "Brak wymaganych dodatkowych informacji."
         },
         {
             "id": "/Session/Login/Data/Info",
-            "translation": "Some login credentials may be stored by the e-register service provider, either encoded or as tokens. This data is not shared and will never leave your device for purposes other than logging in."
+            "translation": "Część informacji o loginie może być przechowywana przez serwis e-dziennika, zakodowana albo w postaci w tokena. Te informacje nie będą przez nas ani przez naszą aplikację udostępniane i nigdy nie opuszczą twojego urządzenia w celach innych niż zalogowanie się do e-dziennika."
         },
         {
             "id": "/Session/Login/Splash/Session",
-            "translation": "Seasoning the user session right now..."
+            "translation": "Przyprawianie sesji urzytkownika..."
         },
         {
             "id": "/Session/Login/Splash/Settings",
-            "translation": "Cannot believe you've made it this far..."
+            "translation": "Nie mogę uwierzyć, że jeszcze tu jesteś..."
         },
         {
-            "id": "/Session/Login/Splash/Error/Title",
-            "translation": "Error logging in!"
-        },
-        {
-            "id": "/Session/Login/Splash/Error/Message",
-            "translation": "Cannot believe you've made it this far..."
+            "id": "/Session/Login/Error/Title",
+            "translation": "Błąd logowania!"
         },
         {
             "id": "/Delete",
-            "translation": "Delete"
+            "translation": "Usuń"
         },
         {
             "id": "/Sessions/Page/RegisterAcc",
-            "translation": "E-register accounts"
+            "translation": "Konta e-dziennik"
         },
         {
             "id": "/Sessions/Page/RegisterLog",
-            "translation": "These are your e-register accounts. Choose one of the currently logged-in sessions, or go create a new one."
+            "translation": "Tu są twoje konta e-dziennik. Wybierz jedno z już zalogowanych kont albo zaloguj się nowym."
         },
         {
             "id": "/Sessions",
-            "translation": "Sessions"
+            "translation": "Sesje"
         },
         {
             "id": "/Next",
-            "translation": "Next"
+            "translation": "Następne"
         },
         {
             "id": "/Session/Login/Error/Message",
-            "translation": "An error {} occurred and the provider couldn't log you in to the e-register.\n\nPlease check your credentials and try again later."
+            "translation": "Wystąpił błąd {} i nie można było załadować sesji urzytkownika.\n\nProszę sprawdź dane logowania i spróbuj ponownie później."
         },
         {
             "id": "/Session/Login/Error/Exception",
@@ -115,31 +111,71 @@
         },
         {
             "id": "/Required",
-            "translation": "Required"
+            "translation": "Wymagane"
         },
         {
             "id": "/Page/Absences/No",
-            "translation": "No attendances"
+            "translation": "Brak obecności"
         },
         {
             "id": "/Page/Absences/Attendance",
-            "translation": "Attendance"
+            "translation": "Obecność"
         },
         {
             "id": "/Page/Absences/Share",
-            "translation": "I got {} \"{}\" on {} from {} on lesson {}!"
+            "translation": "Otrzymałem {} \"{}\" dnia {} z przedmiotu {} na lekcji {}!"
         },
         {
             "id": "/Share",
-            "translation": "Share"
-        },
-        {
-            "id": "/Required",
-            "translation": "Required"
+            "translation": "Udostępnij"
         },
         {
             "id": "/Inquiry",
-            "translation": "Inquiry"
+            "translation": "Zapytanie"
+        },
+        {
+            "id": "/Grades",
+            "translation": "Oceny"
+        },
+        {
+            "id": "/an",
+            "translation": ""
+        },
+        {
+            "id": "/a",
+            "translation": ""
+        },
+        {
+            "id": "/Absence",
+            "translation": "Nieobecność"
+        },
+        {
+            "id": "/Late",
+            "translation": "Spóźnienie"
+        },
+        {
+            "id": "/Excused",
+            "translation": "Usprawiedliwienie"
+        },
+        {
+            "id": "/Duty",
+            "translation": "Zwolnienie"
+        },
+        {
+            "id": "/Presence",
+            "translation": "Obecność"
+        },
+        {
+            "id": "/Other",
+            "translation": "Inna"
+        },
+        {
+            "id": "/Lesson",
+            "translation": "Lekcja"
+        },
+        {
+            "id": "/Grades/NoLessons",
+            "translation": "Brak danych do wyświetlenia"
         }
     ],
     "splashes": [

@@ -149,21 +149,21 @@ extension AttendanceTypeExtension on AttendanceType {
       };
 
   String asStringLong() => switch (this) {
-        AttendanceType.absent => 'Absence',
-        AttendanceType.late => 'Late',
-        AttendanceType.excused => 'Excused',
-        AttendanceType.duty => 'Duty',
-        AttendanceType.present => 'Presence',
-        AttendanceType.other => 'Other',
+        AttendanceType.absent => '/Absence'.localized,
+        AttendanceType.late => '/Late'.localized,
+        AttendanceType.excused => '/Excused'.localized,
+        AttendanceType.duty => '/Duty'.localized,
+        AttendanceType.present => '/Presence'.localized,
+        AttendanceType.other => '/Other'.localized,
       };
 
   String asPrep() => switch (this) {
-        AttendanceType.absent => 'an',
-        AttendanceType.late => 'a',
-        AttendanceType.excused => 'an',
-        AttendanceType.duty => 'a',
-        AttendanceType.present => 'a',
-        AttendanceType.other => 'an',
+        AttendanceType.absent => '/an'.localized,
+        AttendanceType.late => '/a'.localized,
+        AttendanceType.excused => '/an'.localized,
+        AttendanceType.duty => '/a'.localized,
+        AttendanceType.present => '/a'.localized,
+        AttendanceType.other => '/an'.localized,
       };
 
   Color asColor() => switch (this) {
@@ -298,7 +298,7 @@ extension LessonWidgetExtension on Attendance {
                                         title: Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text('Lesson'),
+                                        Text('/Lesson'.localized),
                                         Flexible(
                                             child: Container(
                                                 margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
