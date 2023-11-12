@@ -74,12 +74,8 @@
             "translation": "Cannot believe you've made it this far..."
         },
         {
-            "id": "/Session/Login/Splash/Error/Title",
+            "id": "/Session/Login/Error/Title",
             "translation": "Error logging in!"
-        },
-        {
-            "id": "/Session/Login/Splash/Error/Message",
-            "translation": "Cannot believe you've made it this far..."
         },
         {
             "id": "/Delete",
@@ -127,7 +123,7 @@
         },
         {
             "id": "/Page/Absences/Share",
-            "translation": "I got {} \"{}\" on {} from {} on lesson {}!"
+            "translation": "I got{} \"{}\" on {} from {} on lesson {}!"
         },
         {
             "id": "/Share",
@@ -140,7 +136,100 @@
         {
             "id": "/Inquiry",
             "translation": "Inquiry"
+        },
+        {
+            "id": "/Grades",
+            "translation": "Grades"
+        },
+        {
+            "id": "/an",
+            "translation": " an"
+        },
+        {
+            "id": "/a",
+            "translation": " a"
+        },
+        {
+            "id": "/Absence",
+            "translation": "Absence"
+        },
+        {
+            "id": "/Late",
+            "translation": "Late"
+        },
+        {
+            "id": "/Excused",
+            "translation": "Excused"
+        },
+        {
+            "id": "/Duty",
+            "translation": "Duty"
+        },
+        {
+            "id": "/Presence",
+            "translation": "Presence"
+        },
+        {
+            "id": "/Other",
+            "translation": "Other"
+        },
+        {
+            "id": "/Lesson",
+            "translation": "Lesson"
+        },
+        {
+            "id": "/Grades/NoLessons",
+            "translation": "No lessons matching the query"
+        },
+        {
+            "id": "/Type",
+            "translation": "Type"
+        },
+        {
+            "id": "/AddedBy",
+            "translation": "Added by"
+        },
+        {
+            "id": "/Date",
+            "translation": "Date"
+        },
+        {
+            "id": "/Added",
+            "translation": "Added"
+        },
+        {
+            "id": "/SortBy/Date",
+            "translation": "By date"
+        },
+        {
+            "id": "/SortBy/Lesson",
+            "translation": "By lesson"
+        },
+        {
+            "id": "/SortBy/Type",
+            "translation": "By type"
+        },
+        {
+            "id": "/Homeworks",
+            "translation": "Homeworks"
+        },
+        {
+            "id": "/Homeworks/Done",
+            "translation": "All done, yay!"
+        },
+        {
+            "id": "/Page/Home/Homework/share",
+            "translation": "There's a {} for {}"
+        },
+        {
+            "id": "/Summary",
+            "translation": "Summary"
+        },
+        {
+            "id": "/Now",
+            "translation": "Now:"
         }
+
     ],
     "splashes": [
         "May the God bless you",

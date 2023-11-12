@@ -41,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
             prefix: SizedBox(width: 90, child: Text(x.value.name)),
             child: CupertinoTextFormFieldRow(
               enabled: !isWorking,
-              placeholder: 'Required',
+              placeholder: '/Required'.localized,
               obscureText: x.value.obscure,
               autofillHints: [x.value.obscure ? AutofillHints.password : AutofillHints.username],
               controller: credentialControllers![x.key],
@@ -183,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     } on DioException catch (ex, stack) {
       Share.showErrorModal.broadcast(Value((
-        title: '/Session/Login/Splash/Error/Title'.localized,
+        title: '/Session/Login/Error/Title'.localized,
         message: '/Session/Login/Error/Message'.localized.format(ex.message ?? ex),
         actions: {
           '/Session/Login/Error/Exception'.localized: () async =>
@@ -193,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
       )));
     } on Exception catch (ex, stack) {
       Share.showErrorModal.broadcast(Value((
-        title: '/Session/Login/Splash/Error/Title'.localized,
+        title: '/Session/Login/Error/Title'.localized,
         message: '/Session/Login/Error/Message'.localized.format(ex),
         actions: {
           '/Session/Login/Error/Exception'.localized: () async =>
