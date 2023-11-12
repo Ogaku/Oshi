@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/share/share.dart';
@@ -29,6 +30,8 @@ class SearchableSliverNavigationBar extends StatefulWidget {
   final Function(String)? onSubmitted;
   final void Function(VoidCallback fn)? setState;
   final Function(({double? progress, String? message})? progress)? onProgress;
+  final DateTime? selectedDate;
+  final bool keepBackgroundWatchers;
 
   SearchableSliverNavigationBar(
       {super.key,
@@ -53,7 +56,9 @@ class SearchableSliverNavigationBar extends StatefulWidget {
       this.onProgress,
       this.anchor,
       bool? disableAddons,
-      this.useSliverBox = false})
+      this.useSliverBox = false,
+      this.selectedDate,
+      this.keepBackgroundWatchers = false})
       : searchController = searchController ?? TextEditingController(),
         disableAddons = disableAddons ?? (child != null);
 
@@ -79,17 +84,19 @@ class _NavState extends State<SearchableSliverNavigationBar> {
   Widget build(BuildContext context) {
     var navBarSliver = SliverNavigationBar(
       backgroundColor: widget.backgroundColor,
-      alternativeVisibility: widget.disableAddons,
+      alternativeVisibility: widget.disableAddons && !widget.keepBackgroundWatchers,
       transitionBetweenRoutes: widget.transitionBetweenRoutes,
       leading: widget.leading,
       previousPageTitle: widget.previousPageTitle,
-      threshold: 103,
+      threshold: ((widget.anchor != null && widget.child != null) || (widget.anchor == 0.0 && widget.keepBackgroundWatchers))
+          ? 52
+          : 103,
       middle: widget.middle ?? widget.largeTitle,
       largeTitle: Column(
         children: [
           Align(alignment: Alignment.centerLeft, child: widget.largeTitle),
           Visibility(
-              visible: !widget.disableAddons,
+              visible: !widget.disableAddons && widget.child == null,
               child: Container(
                 margin: const EdgeInsets.only(top: 5),
                 height: lerpDouble(0, 55, isVisibleSearchBar.clamp(0.0, 55.0) / 55.0),
@@ -102,17 +109,20 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                             groupValue: groupSelection,
                             children: widget.segments!.map((key, value) => MapEntry(
                                 key,
-                                Text(value,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: lerpDouble(13, 15, ((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0)),
-                                        color: CupertinoDynamicColor.resolve(
-                                            CupertinoDynamicColor.withBrightness(
-                                                color: CupertinoColors.black.withAlpha(
-                                                    (((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0) * 153).round()),
-                                                darkColor: CupertinoColors.white.withAlpha(
-                                                    (((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0) * 153).round())),
-                                            context))))),
+                                Container(
+                                    width: double.maxFinite,
+                                    alignment: Alignment.center,
+                                    child: Text(value,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontSize: lerpDouble(13, 15, ((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0)),
+                                            color: CupertinoDynamicColor.resolve(
+                                                CupertinoDynamicColor.withBrightness(
+                                                    color: CupertinoColors.black.withAlpha(
+                                                        (((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0) * 153).round()),
+                                                    darkColor: CupertinoColors.white.withAlpha(
+                                                        (((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0) * 153).round())),
+                                                context)))))),
                             onValueChanged: (value) {
                               if (value == null) return;
                               setState(() => groupSelection = value);
@@ -169,7 +179,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                 progress.progressChanged.subscribe((args) {
                   if (widget.onProgress != null) widget.onProgress!(args?.value);
                 });
-                Share.session.refreshAll(progress: progress).then((arg) {
+                Share.session.refreshAll(weekStart: widget.selectedDate, progress: progress).then((arg) {
                   setState(() => isRefreshing = false);
                   if (widget.setState != null) widget.setState!(() {});
 
@@ -194,6 +204,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                 previousScrollPosition = scrollInfo.metrics.pixels;
               });
             } else if (scrollInfo is ScrollEndNotification) {
+              if (widget.disableAddons || widget.child != null) return true;
               Future.delayed(Duration.zero, () {
                 if (isVisibleSearchBar < 25 && isVisibleSearchBar > 10) {
                   setState(() {
@@ -208,37 +219,32 @@ class _NavState extends State<SearchableSliverNavigationBar> {
             }
             return true;
           },
-          child: widget.child != null
-              ? NestedScrollView(
-                  headerSliverBuilder: (context, innerBoxIsScrolled) => [navBarSliver],
-                  body: widget.child!,
-                  controller: scrollController)
-              : CustomScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  controller: scrollController,
-                  anchor: widget.anchor ?? 0.07,
-                  slivers: <Widget>[
-                    navBarSliver,
-                    widget.useSliverBox
-                        ? SliverToBoxAdapter(
-                            child: widget.child ??
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: widget.children ?? [],
-                                ))
-                        : SliverFillRemaining(
-                            hasScrollBody: false,
-                            child: widget.child ??
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: widget.children ?? [],
-                                )),
-                  ],
-                ),
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            controller: scrollController,
+            anchor: widget.anchor ?? 0.07,
+            slivers: <Widget>[
+              navBarSliver,
+              widget.useSliverBox
+                  ? SliverToBoxAdapter(
+                      child: widget.child ??
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            children: widget.children ?? [],
+                          ))
+                  : SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: widget.child ??
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            children: widget.children ?? [],
+                          )),
+            ],
+          ),
         ));
   }
 }
@@ -264,5 +270,109 @@ Widget _buildIndicatorForRefreshState(RefreshIndicatorMode refreshState, double 
     case RefreshIndicatorMode.inactive:
       // Anything else doesn't show anything.
       return const SizedBox.shrink();
+  }
+}
+
+class SizeReportingWidget extends StatefulWidget {
+  final Widget child;
+  final ValueChanged<Size> onSizeChange;
+
+  const SizeReportingWidget({
+    Key? key,
+    required this.child,
+    required this.onSizeChange,
+  }) : super(key: key);
+
+  @override
+  State<SizeReportingWidget> createState() => _SizeReportingWidgetState();
+}
+
+class _SizeReportingWidgetState extends State<SizeReportingWidget> {
+  Size? _oldSize;
+
+  @override
+  Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _notifySize());
+    return widget.child;
+  }
+
+  void _notifySize() {
+    if (!mounted) {
+      return;
+    }
+    final size = context.size;
+    if (_oldSize != size && size != null) {
+      _oldSize = size;
+      widget.onSizeChange(size);
+    }
+  }
+}
+
+// https://stackoverflow.com/a/65332810
+class ExpandablePageView extends StatefulWidget {
+  final NullableIndexedWidgetBuilder builder;
+  final PageController controller;
+  final void Function(int)? pageChanged;
+
+  const ExpandablePageView({
+    Key? key,
+    required this.builder,
+    required this.controller,
+    this.pageChanged,
+  }) : super(key: key);
+
+  @override
+  State<ExpandablePageView> createState() => _ExpandablePageViewState();
+}
+
+class _ExpandablePageViewState extends State<ExpandablePageView> with TickerProviderStateMixin {
+  final Map<int, double> _heights = {};
+  int _currentPage = 0;
+
+  double get _currentHeight => _heights[_currentPage] ?? 0;
+
+  void pageChanged() {
+    final newPage = widget.controller.page?.round() ?? 0;
+    if (_currentPage != newPage) {
+      setState(() => _currentPage = newPage);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(pageChanged);
+    _currentPage = widget.controller.initialPage;
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(pageChanged);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      curve: Curves.easeInOutCubic,
+      duration: const Duration(milliseconds: 100),
+      tween: Tween<double>(begin: _currentHeight, end: _currentHeight),
+      builder: (context, value, child) => SizedBox(height: value, child: child),
+      child: PageView.builder(
+          controller: widget.controller,
+          onPageChanged: widget.pageChanged,
+          scrollBehavior: const CupertinoScrollBehavior(),
+          scrollDirection: Axis.horizontal,
+          pageSnapping: true,
+          itemBuilder: ((context, index) => OverflowBox(
+                minHeight: 0,
+                maxHeight: double.infinity,
+                alignment: Alignment.topCenter,
+                child: SizeReportingWidget(
+                  onSizeChange: (size) => setState(() => _heights[index] = size.height),
+                  child: Align(child: widget.builder(context, index)),
+                ),
+              ))),
+    );
   }
 }

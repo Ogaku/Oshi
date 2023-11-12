@@ -115,6 +115,17 @@ class LibrusDataReader implements models.IProvider {
             "Timetables?weekStart=${DateFormat('y-M-d').format(weekStart.subtract(Duration(days: weekStart.weekday - 1)))}"))
         : Timetables.fromJson(await data!.librusApi!.request('Timetables'));
 
+    try {
+      // Refresh for the next week too, if possible
+      timetableShim.timetable.addAll((weekStart != null
+              ? Timetables.fromJson(await data!.librusApi!.request(
+                  "Timetables?weekStart=${DateFormat('y-M-d').format(weekStart.add(const Duration(days: 7)).subtract(Duration(days: weekStart.weekday - 1)))}"))
+              : Timetables.fromJson(await data!.librusApi!.request(
+                  "Timetables?weekStart=${DateFormat('y-M-d').format((DateTime.now().add(const Duration(days: 7))).subtract(Duration(days: DateTime.now().weekday - 1)))}")))
+          .timetable);
+    } catch (ex) {
+      // ignored
+    }
 //#endregion
 
     progress?.report((progress: 0.1, message: "Checking how many lessons you've skipped..."));

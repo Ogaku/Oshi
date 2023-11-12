@@ -359,9 +359,6 @@ class Session extends HiveObject {
               [])
           .toList();
 
-      data.student.mainClass.unit.announcements
-          ?.removeWhere((element) => element.startDate.difference(DateTime.now()).inDays.abs() < 14);
-
       /* Announcements */
       var announcementChanges = provider.registerData!.student.mainClass.unit.announcements
           ?.except(data.student.mainClass.unit.announcements ?? [])

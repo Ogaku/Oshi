@@ -31,6 +31,7 @@ class _SettingsPageState extends State<SettingsPage> {
           largeTitle: Text('Settings'),
           previousPageTitle: 'Home',
           disableAddons: true,
+          keepBackgroundWatchers: true,
           anchor: 0.0,
           children: [
             // Name and school, avatar picker

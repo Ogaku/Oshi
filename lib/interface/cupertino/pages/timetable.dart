@@ -86,6 +86,10 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
     });
 
     return SearchableSliverNavigationBar(
+        disableAddons: false,
+        setState: setState,
+        anchor: 0.0,
+        selectedDate: selectedDate,
         leading: GestureDetector(
             onTap: () => _showDialog(
                   CupertinoDatePicker(
@@ -121,17 +125,9 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
             : PullDownButton(
                 itemBuilder: (context) => [
                   PullDownMenuItem(
-                    title: 'Refresh',
-                    icon: CupertinoIcons.refresh,
-                    onTap: () => setState(() {
-                      if (isWorking) return;
-                      setState(() => isWorking = true);
-                      try {
-                        Share.session.refreshAll(weekStart: selectedDate).then((value) => setState(() => isWorking = false));
-                      } catch (ex) {
-                        setState(() => isWorking = false);
-                      }
-                    }),
+                    title: 'New event',
+                    icon: CupertinoIcons.add,
+                    onTap: () {},
                   ),
                   PullDownMenuDivider.large(),
                   PullDownMenuTitle(title: Text('Schedule')),
@@ -151,11 +147,6 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                     icon: CupertinoIcons.list_bullet_below_rectangle,
                     onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (context) => EventsPage())),
                   ),
-                  PullDownMenuItem(
-                    title: 'New event',
-                    icon: CupertinoIcons.add,
-                    onTap: () {},
-                  ),
                 ],
                 buttonBuilder: (context, showMenu) => GestureDetector(
                   onTap: showMenu,
@@ -165,11 +156,8 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
         searchController: searchController,
         onChanged: (s) => setState(() => searchQuery = s),
         largeTitle: Text('Schedule'),
-        child: PageView.builder(
-            scrollBehavior: CupertinoScrollBehavior(),
-            scrollDirection: Axis.horizontal,
-            pageSnapping: true,
-            itemBuilder: (context, index) {
+        child: ExpandablePageView(
+            builder: (context, index) {
               DateTime selectedDate =
                   Share.session.data.student.mainClass.beginSchoolYear.asDate(utc: true).add(Duration(days: index)).asDate();
               var selectedDay = Share.session.data.timetables.timetable[selectedDate];
@@ -242,50 +230,47 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                         .toList(),
               );
 
-              return SingleChildScrollView(
-                  child: Container(
-                      margin: EdgeInsets.zero,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          (searchQuery.isEmpty ? lessonsWidget : Container()),
-                          // Homeworks for today
-                          Visibility(
-                              visible: homeworksToday.isNotEmpty,
-                              child: Container(
-                                  margin: EdgeInsets.only(top: 20),
-                                  child: CupertinoListSection.insetGrouped(
-                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-                                    additionalDividerMargin: 5,
-                                    children: homeworksToday.isNotEmpty ? homeworksToday : [Text('')],
-                                  ))),
-                          // Events for today
-                          Visibility(
-                              visible: eventsToday.isNotEmpty,
-                              child: Container(
-                                  margin: EdgeInsets.only(top: 20),
-                                  child: CupertinoListSection.insetGrouped(
-                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-                                    additionalDividerMargin: 5,
-                                    children: eventsToday.isNotEmpty ? eventsToday : [Text('')],
-                                  ))),
-                          // Teachers absent today
-                          Visibility(
-                              visible: teachersAbsentToday.isNotEmpty,
-                              child: Container(
-                                  margin: EdgeInsets.only(top: 20),
-                                  child: CupertinoListSection.insetGrouped(
-                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-                                    additionalDividerMargin: 5,
-                                    children: teachersAbsentToday.isNotEmpty ? teachersAbsentToday : [Text('')],
-                                  ))),
-                        ],
-                      )));
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  (searchQuery.isEmpty ? lessonsWidget : Container()),
+                  // Homeworks for today
+                  Visibility(
+                      visible: homeworksToday.isNotEmpty,
+                      child: Container(
+                          margin: EdgeInsets.only(top: 20),
+                          child: CupertinoListSection.insetGrouped(
+                            margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                            additionalDividerMargin: 5,
+                            children: homeworksToday.isNotEmpty ? homeworksToday : [Text('')],
+                          ))),
+                  // Events for today
+                  Visibility(
+                      visible: eventsToday.isNotEmpty,
+                      child: Container(
+                          margin: EdgeInsets.only(top: 20),
+                          child: CupertinoListSection.insetGrouped(
+                            margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                            additionalDividerMargin: 5,
+                            children: eventsToday.isNotEmpty ? eventsToday : [Text('')],
+                          ))),
+                  // Teachers absent today
+                  Visibility(
+                      visible: teachersAbsentToday.isNotEmpty,
+                      child: Container(
+                          margin: EdgeInsets.only(top: 20),
+                          child: CupertinoListSection.insetGrouped(
+                            margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                            additionalDividerMargin: 5,
+                            children: teachersAbsentToday.isNotEmpty ? teachersAbsentToday : [Text('')],
+                          ))),
+                ],
+              );
             },
             controller: pageController,
-            onPageChanged: (value) => setState(() => dayDifference = value)));
+            pageChanged: (value) => setState(() => dayDifference = value)));
   }
 
   // This function displays a CupertinoModalPopup with a reasonable fixed height

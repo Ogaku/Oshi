@@ -156,11 +156,13 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                         ),
                       ],
                       builder: (BuildContext context, Animation<double> animation) => CupertinoButton(
-                          onPressed: () {
-                            Share.tabsNavigatePage.broadcast(Value(2));
-                            Future.delayed(Duration(milliseconds: 250))
-                                .then((arg) => Share.timetableNavigateDay.broadcast(Value(x.timeTo ?? x.timeFrom)));
-                          },
+                          onPressed: animation.value >= CupertinoContextMenu.animationOpensAt
+                              ? null
+                              : () {
+                                  Share.tabsNavigatePage.broadcast(Value(2));
+                                  Future.delayed(Duration(milliseconds: 250))
+                                      .then((arg) => Share.timetableNavigateDay.broadcast(Value(x.timeTo ?? x.timeFrom)));
+                                },
                           padding: EdgeInsets.zero,
                           child: Container(
                               decoration: BoxDecoration(
@@ -283,7 +285,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                           Expanded(
                               child: Container(
-                            margin: EdgeInsets.only(top: 5),
+                            margin: EdgeInsets.only(top: 10),
                             child: Text(glanceTitle,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -562,11 +564,13 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                           ),
                         ],
                         builder: (BuildContext context, Animation<double> animation) => CupertinoButton(
-                            onPressed: () {
-                              Share.tabsNavigatePage.broadcast(Value(2));
-                              Future.delayed(Duration(milliseconds: 250))
-                                  .then((arg) => Share.timetableNavigateDay.broadcast(Value(x.date ?? x.timeFrom)));
-                            },
+                            onPressed: animation.value >= CupertinoContextMenu.animationOpensAt
+                                ? null
+                                : () {
+                                    Share.tabsNavigatePage.broadcast(Value(2));
+                                    Future.delayed(Duration(milliseconds: 250))
+                                        .then((arg) => Share.timetableNavigateDay.broadcast(Value(x.date ?? x.timeFrom)));
+                                  },
                             padding: EdgeInsets.zero,
                             child: Container(
                                 decoration: BoxDecoration(
@@ -679,11 +683,13 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                           ),
                         ],
                         builder: (BuildContext context, Animation<double> animation) => CupertinoButton(
-                            onPressed: () {
-                              Share.tabsNavigatePage.broadcast(Value(1));
-                              Future.delayed(Duration(milliseconds: 250))
-                                  .then((arg) => Share.gradesNavigate.broadcast(Value(x.lesson)));
-                            },
+                            onPressed: animation.value >= CupertinoContextMenu.animationOpensAt
+                                ? null
+                                : () {
+                                    Share.tabsNavigatePage.broadcast(Value(1));
+                                    Future.delayed(Duration(milliseconds: 250))
+                                        .then((arg) => Share.gradesNavigate.broadcast(Value(x.lesson)));
+                                  },
                             padding: EdgeInsets.zero,
                             child: Container(
                                 decoration: BoxDecoration(
@@ -762,7 +768,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                 margin: EdgeInsets.only(left: 5),
                 child: Text(
                     (x.refreshDate.asDate() == DateTime.now().asDate() ? 'Today, ' : '') +
-                        DateFormat(x.refreshDate.asDate() == DateTime.now().asDate() ? 'h:MM a' : 'EEE, MMM d, h:MM a')
+                        DateFormat(x.refreshDate.asDate() == DateTime.now().asDate() ? 'h:mm a' : 'EEE, MMM d, h:mm a')
                             .format(x.refreshDate),
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray))),
             children: <Widget>[]
@@ -1188,6 +1194,15 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                 .toList())),
                     x.eventsChanged.any((element) => element.type == RegisterChangeTypes.removed))
                 .toList()))
+        .appendIfEmpty(CupertinoListTile(
+            title: Opacity(
+                opacity: 0.5,
+                child: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'No changes to display',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                    )))))
         .toList();
 
     return CupertinoPageScaffold(
