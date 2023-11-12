@@ -30,10 +30,9 @@ class AbsencesPage extends StatefulWidget {
 
 class _AbsencesPageState extends State<AbsencesPage> {
   final searchController = TextEditingController();
+  AbsencesPageSegments _segment = AbsencesPageSegments.date;
 
-  String selectedSegment = 'date';
   String? _progressMessage;
-
   bool showInbox = true;
   bool isWorking = false;
 
@@ -67,11 +66,10 @@ class _AbsencesPageState extends State<AbsencesPage> {
         [];
 
     // This is gonna be a veeery long list, as there are no expanders in cupertino
-    var attendanceWidgets = (switch (selectedSegment) {
-      'date' => attendancesToDisplayByDate,
-      'lesson' => attendancesToDisplayByLesson,
-      'type' => attendancesToDisplayByType,
-      _ => attendancesToDisplayByDate
+    var attendanceWidgets = (switch (_segment) {
+      AbsencesPageSegments.date => attendancesToDisplayByDate,
+      AbsencesPageSegments.lesson => attendancesToDisplayByLesson,
+      AbsencesPageSegments.type => attendancesToDisplayByType
     })
         .select((element, index) => CupertinoListSection.insetGrouped(
               margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
@@ -113,7 +111,13 @@ class _AbsencesPageState extends State<AbsencesPage> {
 
     return SearchableSliverNavigationBar(
         setState: setState,
-        segments: {'date': '/SortBy/Date'.localized, 'lesson': '/SortBy/Lesson'.localized, 'type': '/SortBy/Type'.localized},
+        segments: {
+          AbsencesPageSegments.date: 'By date',
+          AbsencesPageSegments.lesson: 'By lesson',
+          AbsencesPageSegments.type: 'By type'
+        },
+        onSegmentChanged: (segment) =>
+            setState(() => _segment = (segment is AbsencesPageSegments) ? segment : AbsencesPageSegments.date),
         largeTitle: Text('/Page/Absences/Attendance'.localized),
         middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('/Page/Absences/Attendance'.localized)),
         onProgress: (progress) => setState(() => _progressMessage = progress?.message),
@@ -130,13 +134,14 @@ class _AbsencesPageState extends State<AbsencesPage> {
                       style: TextStyle(color: CupertinoColors.inactiveGray, fontSize: 13),
                     )))),
         searchController: searchController,
-        onChanged: (s) => setState(() => selectedSegment = s),
         trailing: isWorking
             ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
             : null,
         children: attendanceWidgets);
   }
 }
+
+enum AbsencesPageSegments { date, lesson, type }
 
 extension AttendanceTypeExtension on AttendanceType {
   String asString() => switch (this) {
