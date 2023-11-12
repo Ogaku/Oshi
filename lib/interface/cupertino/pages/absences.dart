@@ -113,7 +113,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
 
     return SearchableSliverNavigationBar(
         setState: setState,
-        segments: {'date': 'By date', 'lesson': 'By lesson', 'type': 'By type'},
+        segments: {'date': '/SortBy/Date'.localized, 'lesson': '/SortBy/Lesson'.localized, 'type': '/SortBy/Type'.localized},
         largeTitle: Text('/Page/Absences/Attendance'.localized),
         middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('/Page/Absences/Attendance'.localized)),
         onProgress: (progress) => setState(() => _progressMessage = progress?.message),
@@ -251,7 +251,7 @@ extension LessonWidgetExtension on Attendance {
                                       title: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Container(margin: EdgeInsets.only(right: 3), child: Text('Type')),
+                                      Container(margin: EdgeInsets.only(right: 3), child: Text('/Type'.localized)),
                                       Flexible(
                                           child: Opacity(
                                               opacity: 0.5,
@@ -262,7 +262,7 @@ extension LessonWidgetExtension on Attendance {
                                       title: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Container(margin: EdgeInsets.only(right: 3), child: Text('Added by')),
+                                      Container(margin: EdgeInsets.only(right: 3), child: Text('/AddedBy'.localized)),
                                       Flexible(
                                           child: Opacity(
                                               opacity: 0.5,
@@ -273,7 +273,7 @@ extension LessonWidgetExtension on Attendance {
                                       title: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Container(margin: EdgeInsets.only(right: 3), child: Text('Date')),
+                                      Container(margin: EdgeInsets.only(right: 3), child: Text('/Date'.localized)),
                                       Flexible(
                                           child: Opacity(
                                               opacity: 0.5,
@@ -285,7 +285,7 @@ extension LessonWidgetExtension on Attendance {
                                       title: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Container(margin: EdgeInsets.only(right: 3), child: Text('Added')),
+                                      Container(margin: EdgeInsets.only(right: 3), child: Text('/Added'.localized)),
                                       Flexible(
                                           child: Opacity(
                                               opacity: 0.5,

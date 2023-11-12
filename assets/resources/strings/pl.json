@@ -176,6 +176,54 @@
         {
             "id": "/Grades/NoLessons",
             "translation": "Brak danych do wyświetlenia"
+        },
+        {
+            "id": "/Type",
+            "translation": "Type"
+        },
+        {
+            "id": "/AddedBy",
+            "translation": "Added by"
+        },
+        {
+            "id": "/Date",
+            "translation": "Date"
+        },
+        {
+            "id": "/Added",
+            "translation": "Added"
+        },
+        {
+            "id": "/SortBy/Date",
+            "translation": "By date"
+        },
+        {
+            "id": "/SortBy/Lesson",
+            "translation": "By lesson"
+        },
+        {
+            "id": "/SortBy/Type",
+            "translation": "By type"
+        },
+        {
+            "id": "/Homeworks",
+            "translation": "Homeworks"
+        },
+        {
+            "id": "/Homeworks/Done",
+            "translation": "All done, yay!"
+        },
+        {
+            "id": "/Page/Home/Homework/share",
+            "translation": "There's a {} for {}"
+        },
+        {
+            "id": "/Summary",
+            "translation": "Summary"
+        },
+        {
+            "id": "/Now",
+            "translation": "Now:"
         }
     ],
     "splashes": [

@@ -8,6 +8,7 @@ import 'package:duration/duration.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/pages/absences.dart';
@@ -108,7 +109,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     var homeworksWidget = CupertinoListSection.insetGrouped(
       margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
       dividerMargin: 35,
-      header: Text('Homeworks'),
+      header: Text('/Homeworks'.localized),
       children: homeworksWeek.isEmpty
           // No homeworks to display
           ? [
@@ -118,7 +119,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                       child: Container(
                           alignment: Alignment.center,
                           child: Text(
-                            'All done, yay!',
+                            '/Homeworks/Done'.localized,
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                           ))))
             ]
@@ -131,17 +132,16 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                       actions: [
                         CupertinoContextMenuAction(
                           onPressed: () {
-                            sharing.Share.share(
-                                'There\'s a "${x.titleString}" for ${DateFormat("EEEE, MMM d, y").format(x.timeFrom)}');
+                            sharing.Share.share('/Page/Home/Homework/share'.localized.format(x.titleString, DateFormat("EEEE, MMM d, y").format(x.timeFrom)));
                             Navigator.of(context, rootNavigator: true).pop();
                           },
                           trailingIcon: CupertinoIcons.share,
-                          child: const Text('Share'),
+                          child: Text('/Share'.localized),
                         ),
                         CupertinoContextMenuAction(
                           isDestructiveAction: true,
                           trailingIcon: CupertinoIcons.chat_bubble_2,
-                          child: const Text('Inquiry'),
+                          child: Text('/Inquiry'.localized),
                           onPressed: () {
                             Navigator.of(context, rootNavigator: true).pop();
                             showCupertinoModalBottomSheet(
@@ -262,7 +262,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
           margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
           additionalDividerMargin: 5,
           hasLeading: false,
-          header: Text('Summary'),
+          header: Text('/Summary'.localized),
           children: [
             CupertinoListTile(
                 onTap: () {
@@ -365,7 +365,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                       margin: EdgeInsets.only(bottom: 5),
                                       child: Row(children: [
                                         Text(
-                                          'Now:',
+                                          '/Now'.localized,
                                           style: TextStyle(fontWeight: FontWeight.w500),
                                         ),
                                         Flexible(

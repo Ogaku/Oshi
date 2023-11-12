@@ -41,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
             prefix: SizedBox(width: 90, child: Text(x.value.name)),
             child: CupertinoTextFormFieldRow(
               enabled: !isWorking,
-              placeholder: 'Required',
+              placeholder: '/Required'.localized,
               obscureText: x.value.obscure,
               autofillHints: [x.value.obscure ? AutofillHints.password : AutofillHints.username],
               controller: credentialControllers![x.key],
