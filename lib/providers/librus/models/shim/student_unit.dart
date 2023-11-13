@@ -205,5 +205,5 @@ class LessonsRange {
 }
 
 extension DateTimeExtension on String {
-  DateTime asTime() => DateTime.parse("${DateFormat('yyyy-MM-dd').format(DateTime.now())}T$this").toLocal();
+  DateTime asTime() => DateTime.parse("${DateFormat('yyyy-MM-dd').format(DateTime(2000))}T$this").toLocal();
 }

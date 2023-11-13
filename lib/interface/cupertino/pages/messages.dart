@@ -113,86 +113,24 @@ class _MessagesPageState extends State<MessagesPage> {
               .select((x, index) => SwipeActionCell(
                   key: UniqueKey(),
                   backgroundColor: Colors.transparent,
-                  trailingActions: <SwipeAction>[
-                    SwipeAction(
-                        performsFirstActionWithFullSwipe: true,
-                        content: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
-                            color: CupertinoColors.destructiveRed,
-                          ),
-                          child: Icon(
-                            CupertinoIcons.delete,
-                            color: Colors.white,
-                          ),
-                        ),
-                        onTap: (CompletionHandler handler) async {
-                          await handler(true);
-                          try {
-                            setState(() {
-                              (folder == MessageFolders.outbox
-                                      ? Share.session.data.messages.sent
-                                      : Share.session.data.messages.received)
-                                  .remove(x.message);
-                              isWorking = true;
-                            });
-                            Share.session.provider
-                                .moveMessageToTrash(parent: x.message, byMe: folder == MessageFolders.outbox)
-                                .then((value) => setState(() => isWorking = false));
-                          } on Exception catch (e) {
-                            setState(() => isWorking = false);
-                            if (Platform.isAndroid || Platform.isIOS) {
-                              Fluttertoast.showToast(
-                                msg: '$e',
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.CENTER,
-                                timeInSecForIosWeb: 1,
-                              );
-                            }
-                          }
-                        },
-                        color: CupertinoColors.destructiveRed),
-                    SwipeAction(
-                        content: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
-                            color: CupertinoColors.systemBlue,
-                          ),
-                          child: Icon(
-                            CupertinoIcons.share,
-                            color: Colors.white,
-                          ),
-                        ),
-                        onTap: (CompletionHandler handler) => sharing.Share.share(folder == MessageFolders.outbox
-                            ? 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate)} ${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name} wrote:\n"${x.message.topic}\n\n${x.message.preview}[...]"'
-                            : 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate)} ${x.message.sender?.name} wrote:\n"${x.message.topic}\n\n${x.message.preview}[...]"'),
-                        color: CupertinoColors.systemBlue),
-                  ],
-                  child: CupertinoListTile(
-                      padding: EdgeInsets.all(0),
-                      title: CupertinoContextMenu.builder(
-                          enableHapticFeedback: true,
-                          actions: [
-                            CupertinoContextMenuAction(
-                              onPressed: () {
-                                sharing.Share.share(folder == MessageFolders.outbox
-                                    ? 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate)} ${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name} wrote:\n"${x.message.topic}\n\n${x.message.preview}[...]"'
-                                    : 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate)} ${x.message.sender?.name} wrote:\n"${x.message.topic}\n\n${x.message.preview}[...]"');
-                                Navigator.of(context, rootNavigator: true).pop();
-                              },
-                              trailingIcon: CupertinoIcons.share,
-                              child: const Text('Share'),
-                            ),
-                            CupertinoContextMenuAction(
-                              isDestructiveAction: true,
-                              trailingIcon: CupertinoIcons.trash,
-                              child: const Text('Delete'),
-                              onPressed: () {
-                                if (isWorking) return;
+                  trailingActions: <SwipeAction>[]
+                      .appendIf(
+                          SwipeAction(
+                              performsFirstActionWithFullSwipe: true,
+                              content: Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(25),
+                                  color: CupertinoColors.destructiveRed,
+                                ),
+                                child: Icon(
+                                  CupertinoIcons.delete,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              onTap: (CompletionHandler handler) async {
+                                await handler(true);
                                 try {
                                   setState(() {
                                     (folder == MessageFolders.outbox
@@ -215,13 +153,82 @@ class _MessagesPageState extends State<MessagesPage> {
                                     );
                                   }
                                 }
-                                // Close the current page
+                              },
+                              color: CupertinoColors.destructiveRed),
+                          folder != MessageFolders.announcements)
+                      .append(SwipeAction(
+                          content: Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(25),
+                              color: CupertinoColors.systemBlue,
+                            ),
+                            child: Icon(
+                              CupertinoIcons.share,
+                              color: Colors.white,
+                            ),
+                          ),
+                          onTap: (CompletionHandler handler) => sharing.Share.share(folder == MessageFolders.outbox
+                              ? 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate)} ${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name} wrote:\n"${x.message.topic}\n\n${x.message.preview}[...]"'
+                              : 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate)} ${x.message.sender?.name} wrote:\n"${x.message.topic}\n\n${x.message.preview}[...]"'),
+                          color: CupertinoColors.systemBlue))
+                      .toList(),
+                  child: CupertinoListTile(
+                      padding: EdgeInsets.all(0),
+                      title: CupertinoContextMenu.builder(
+                          enableHapticFeedback: true,
+                          actions: [
+                            CupertinoContextMenuAction(
+                              onPressed: () {
+                                sharing.Share.share(folder == MessageFolders.outbox
+                                    ? 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate)} ${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name} wrote:\n"${x.message.topic}\n\n${x.message.preview}[...]"'
+                                    : 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate)} ${x.message.sender?.name} wrote:\n"${x.message.topic}\n\n${x.message.preview}[...]"');
                                 Navigator.of(context, rootNavigator: true).pop();
                               },
-                            ),
-                          ],
+                              trailingIcon: CupertinoIcons.share,
+                              child: const Text('Share'),
+                            )
+                          ]
+                              .appendIf(
+                                  CupertinoContextMenuAction(
+                                    isDestructiveAction: true,
+                                    trailingIcon: CupertinoIcons.trash,
+                                    child: const Text('Delete'),
+                                    onPressed: () {
+                                      if (isWorking) return;
+                                      try {
+                                        setState(() {
+                                          (folder == MessageFolders.outbox
+                                                  ? Share.session.data.messages.sent
+                                                  : Share.session.data.messages.received)
+                                              .remove(x.message);
+                                          isWorking = true;
+                                        });
+                                        Share.session.provider
+                                            .moveMessageToTrash(parent: x.message, byMe: folder == MessageFolders.outbox)
+                                            .then((value) => setState(() => isWorking = false));
+                                      } on Exception catch (e) {
+                                        setState(() => isWorking = false);
+                                        if (Platform.isAndroid || Platform.isIOS) {
+                                          Fluttertoast.showToast(
+                                            msg: '$e',
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.CENTER,
+                                            timeInSecForIosWeb: 1,
+                                          );
+                                        }
+                                      }
+                                      // Close the current page
+                                      Navigator.of(context, rootNavigator: true).pop();
+                                    },
+                                  ),
+                                  folder != MessageFolders.announcements)
+                              .toList(),
                           builder: (BuildContext swipeContext, Animation<double> animation) => GestureDetector(
-                              onTap: () => openMessage(message: x.message, announcement: x.announcement),
+                              onTap: animation.value < CupertinoContextMenu.animationOpensAt
+                                  ? () => openMessage(message: x.message, announcement: x.announcement)
+                                  : null,
                               child: Container(
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -395,6 +402,7 @@ class _MessagesPageState extends State<MessagesPage> {
               Share.session.data.student.mainClass.unit
                       .announcements?[Share.session.data.student.mainClass.unit.announcements?.indexOf(announcement) ?? -1] =
                   Announcement.from(other: announcement, read: true);
+              Share.session.save();
             });
           } catch (ex) {
             // ignored
@@ -438,6 +446,8 @@ class _MessagesPageState extends State<MessagesPage> {
                         message: result.result ?? (message!),
                         isByMe: folder == MessageFolders.outbox,
                       )));
+
+          Share.session.save();
         });
       }
     } on Exception catch (e) {
@@ -455,3 +465,23 @@ class _MessagesPageState extends State<MessagesPage> {
 }
 
 enum MessageFolders { inbox, outbox, announcements }
+
+extension ListAppendExtensionT<T> on Iterable<T> {
+  List<T> appendIf(T element, bool condition) {
+    if (!condition) return toList();
+    return append(element).toList();
+  }
+
+  List<T> prependIf(T element, bool condition) {
+    if (!condition) return toList();
+    return prepend(element).toList();
+  }
+
+  List<T> appendIfEmpty(T element) {
+    return appendIf(element, isEmpty).toList();
+  }
+
+  List<T> prependIfEmpty(T element) {
+    return prependIf(element, isEmpty).toList();
+  }
+}
