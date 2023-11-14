@@ -2,9 +2,11 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'package:darq/darq.dart';
+import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:oshi/interface/cupertino/widgets/entries_form.dart';
 import 'package:oshi/interface/cupertino/widgets/modal_page.dart';
 import 'package:oshi/interface/cupertino/widgets/options_form.dart';
@@ -24,6 +26,10 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   final TextEditingController _callTimeController = TextEditingController();
   final TextEditingController _bellTimeController = TextEditingController();
+
+  final TextEditingController _toTitleController = TextEditingController();
+  final TextEditingController _noTitleController = TextEditingController();
+  final TextEditingController _noContentController = TextEditingController();
 
   @override
   Widget build(BuildContext context) => SearchableSliverNavigationBar(
@@ -417,7 +423,109 @@ class _SettingsPageState extends State<SettingsPage> {
               additionalDividerMargin: 5,
               children: [
                 CupertinoListTile(
-                    onTap: () {},
+                    onTap: () => Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) => CupertinoModalPage(title: 'App Style', children: [
+                                  CupertinoListSection.insetGrouped(
+                                      additionalDividerMargin: 5,
+                                      header: Container(
+                                          margin: EdgeInsets.symmetric(horizontal: 20),
+                                          child: Opacity(
+                                              opacity: 0.5,
+                                              child: Text('APPLICATION DIALOG TESTS',
+                                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
+                                      children: [
+                                        // Toasts
+                                        CupertinoFormRow(
+                                            prefix: Flexible(
+                                                flex: 2,
+                                                child: CupertinoButton(
+                                                    onPressed: () {
+                                                      try {
+                                                        Fluttertoast.showToast(
+                                                          msg: _toTitleController.text,
+                                                          toastLength: Toast.LENGTH_SHORT,
+                                                          gravity: ToastGravity.CENTER,
+                                                          timeInSecForIosWeb: 1,
+                                                        );
+                                                      } catch (ex) {
+                                                        // ignored
+                                                      }
+                                                    },
+                                                    padding: EdgeInsets.zero,
+                                                    child:
+                                                        Text('Toast test', maxLines: 1, overflow: TextOverflow.ellipsis))),
+                                            child: Column(children: [
+                                              CupertinoTextField(controller: _noTitleController, placeholder: 'Title'),
+                                            ])),
+                                        // Modal dialog
+                                        CupertinoFormRow(
+                                            prefix: Flexible(
+                                                flex: 2,
+                                                child: CupertinoButton(
+                                                    onPressed: () {
+                                                      try {
+                                                        showCupertinoModalPopup<void>(
+                                                            context: context,
+                                                            builder: (BuildContext context) => CupertinoAlertDialog(
+                                                                  title: Text(_noTitleController.text),
+                                                                  content: Text(_noContentController.text),
+                                                                ));
+                                                      } catch (ex) {
+                                                        // ignored
+                                                      }
+                                                    },
+                                                    padding: EdgeInsets.zero,
+                                                    child:
+                                                        Text('Modal test', maxLines: 1, overflow: TextOverflow.ellipsis))),
+                                            child: Column(children: [
+                                              CupertinoTextField(controller: _noTitleController, placeholder: 'Title'),
+                                            ])),
+                                        // Alert dialog
+                                        CupertinoFormRow(
+                                            prefix: Flexible(
+                                                flex: 2,
+                                                child: CupertinoButton(
+                                                    onPressed: () {
+                                                      try {
+                                                        Share.showErrorModal.broadcast(Value((
+                                                          title: _noTitleController.text,
+                                                          message: _noContentController.text,
+                                                          actions: {}
+                                                        )));
+                                                      } catch (ex) {
+                                                        // ignored
+                                                      }
+                                                    },
+                                                    padding: EdgeInsets.zero,
+                                                    child:
+                                                        Text('Alert test', maxLines: 1, overflow: TextOverflow.ellipsis))),
+                                            child: Column(children: [
+                                              CupertinoTextField(controller: _noTitleController, placeholder: 'Title'),
+                                              Container(
+                                                  margin: EdgeInsets.only(top: 6),
+                                                  child: CupertinoTextField(
+                                                      controller: _noContentController, placeholder: 'Content')),
+                                            ])),
+                                        // Notifications
+                                        CupertinoFormRow(
+                                            prefix: Flexible(
+                                                flex: 2,
+                                                child: CupertinoButton(
+                                                    onPressed: () {},
+                                                    padding: EdgeInsets.zero,
+                                                    child: Text('Notification test',
+                                                        maxLines: 1, overflow: TextOverflow.ellipsis))),
+                                            child: Column(children: [
+                                              CupertinoTextField(controller: _noTitleController, placeholder: 'Title'),
+                                              Container(
+                                                  margin: EdgeInsets.only(top: 6),
+                                                  child: CupertinoTextField(
+                                                      controller: _noContentController, placeholder: 'Content')),
+                                            ])),
+                                      ]),
+                                ]))),
                     title: Text('App Info', overflow: TextOverflow.ellipsis),
                     trailing: Row(children: [
                       Container(
