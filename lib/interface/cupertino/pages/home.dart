@@ -48,10 +48,6 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
   String? _progressMessage;
   HomepageSegments _segment = HomepageSegments.home;
 
-  bool get isLucky =>
-      Share.session.data.student.mainClass.unit.luckyNumber != null &&
-      Share.session.data.student.account.number == Share.session.data.student.mainClass.unit.luckyNumber;
-
   @override
   void dispose() {
     _everySecond?.cancel();
@@ -103,6 +99,14 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
         .orderByDescending((x) => x.done ? 0 : 1)
         .thenBy((x) => x.date ?? x.timeTo ?? x.timeFrom)
         .toList();
+
+    // Lucky number, check ing wheter it exists is *somewhere* else
+    var isLucky = (DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
+            Share.session.data.student.account.number == Share.session.data.student.mainClass.unit.luckyNumber &&
+            Share.session.data.student.mainClass.unit.luckyNumberTomorrow) ||
+        (DateTime.now().isBeforeOrSame(currentDay?.dayStart) &&
+            Share.session.data.student.account.number == Share.session.data.student.mainClass.unit.luckyNumber &&
+            !Share.session.data.student.mainClass.unit.luckyNumberTomorrow);
 
     // Homeworks - first if any(), otherwise last
     var homeworksLast = homeworksWeek.isEmpty || homeworksWeek.all((x) => x.done);
@@ -294,40 +298,36 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                   fontSize: 21,
                                 )),
                           )),
-                          Visibility(
-                              visible: Share.session.data.student.mainClass.unit.luckyNumber != null,
-                              child: Stack(alignment: Alignment.center, children: [
-                                Text(
-                                    (DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
-                                                Share.session.data.student.account.number ==
-                                                    Share.session.data.student.mainClass.unit.luckyNumber &&
-                                                Share.session.data.student.mainClass.unit.luckyNumberTomorrow) ||
-                                            (DateTime.now().isBeforeOrSame(currentDay?.dayStart) &&
-                                                Share.session.data.student.account.number ==
-                                                    Share.session.data.student.mainClass.unit.luckyNumber &&
-                                                !Share.session.data.student.mainClass.unit.luckyNumberTomorrow)
-                                        ? '🌟'
-                                        : '⭐',
-                                    style: TextStyle(fontSize: 32)),
-                                Container(
-                                    margin: EdgeInsets.only(top: 1),
-                                    child: Text(Share.session.data.student.mainClass.unit.luckyNumber?.toString() ?? '69',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: CupertinoDynamicColor.resolve(
-                                              CupertinoDynamicColor.withBrightness(
-                                                  color: CupertinoColors.black, darkColor: CupertinoColors.white),
-                                              context),
-                                          shadows: [
-                                            Shadow(
-                                              color: CupertinoColors.black,
-                                              blurRadius: 3.0,
-                                              offset: Offset(0.0, 0.0),
-                                            ),
-                                          ],
-                                        ))),
-                              ]))
+                          Container(
+                              margin: EdgeInsets.only(top: isLucky ? 0 : 5),
+                              child: Visibility(
+                                  visible: Share.session.data.student.mainClass.unit.luckyNumber != null,
+                                  child: Stack(alignment: Alignment.center, children: [
+                                    Transform.scale(
+                                        scale: isLucky ? 3.0 : 1.6,
+                                        child: isLucky
+                                            ? Icon(CupertinoIcons.star_fill, color: CupertinoColors.systemYellow)
+                                            : Icon(CupertinoIcons.circle, color: CupertinoColors.inactiveGray)),
+                                    Container(
+                                        margin: EdgeInsets.only(),
+                                        child:
+                                            Text(Share.session.data.student.mainClass.unit.luckyNumber?.toString() ?? '69',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: CupertinoDynamicColor.resolve(
+                                                      CupertinoDynamicColor.withBrightness(
+                                                          color: CupertinoColors.black, darkColor: CupertinoColors.white),
+                                                      context),
+                                                  shadows: [
+                                                    Shadow(
+                                                      color: CupertinoColors.black,
+                                                      blurRadius: 3.0,
+                                                      offset: Offset(0.0, 0.0),
+                                                    ),
+                                                  ],
+                                                ))),
+                                  ])))
                         ]),
                         Container(
                             margin: EdgeInsets.only(top: 2),
