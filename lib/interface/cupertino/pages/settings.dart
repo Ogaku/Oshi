@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:darq/darq.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
@@ -513,7 +514,21 @@ class _SettingsPageState extends State<SettingsPage> {
                                             prefix: Flexible(
                                                 flex: 2,
                                                 child: CupertinoButton(
-                                                    onPressed: () {},
+                                                    onPressed: () {
+                                                      try {
+                                                        AwesomeNotifications().createNotification(
+                                                            content: NotificationContent(
+                                                          id: -1,
+                                                          channelKey: Resources.notificationChannelName,
+                                                          notificationLayout: NotificationLayout.BigPicture,
+                                                          actionType: ActionType.Default,
+                                                          title: _noTitleController.text,
+                                                          body: _noContentController.text,
+                                                        ));
+                                                      } catch (ex) {
+                                                        // ignored
+                                                      }
+                                                    },
                                                     padding: EdgeInsets.zero,
                                                     child: Text('Notification test',
                                                         maxLines: 1, overflow: TextOverflow.ellipsis))),

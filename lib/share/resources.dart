@@ -4,6 +4,8 @@ import 'package:hive/hive.dart';
 part 'resources.g.dart';
 
 class Resources {
+  static String notificationChannelName = 'oshi_notifications';
+
   static Map<int, ({CupertinoDynamicColor color, String name})> cupertinoAccentColors = {
     0: (color: CupertinoColors.systemRed, name: 'System Red'),
     1: (color: CupertinoColors.systemPink, name: 'System Pink'),

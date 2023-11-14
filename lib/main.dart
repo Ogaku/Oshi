@@ -1,6 +1,7 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
 import 'dart:io';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:oshi/share/config.dart';
@@ -86,6 +87,20 @@ Future<void> main() async {
   await Share.translator.loadResources(Share.settings.config.languageCode);
   Share.currentIdleSplash = Share.translator.getRandomSplash();
   Share.currentEndingSplash = Share.translator.getRandomEndingSplash();
+
+  // Set the icon to null if you want to use the default app icon
+  AwesomeNotifications().initialize(
+      null,
+      [
+        NotificationChannel(
+            channelKey: Resources.notificationChannelName,
+            channelName: 'Status notifications',
+            channelDescription: 'Notification channel for status updates',
+            ledColor: Colors.white)
+      ],
+      // Channel groups are only visual and are not required
+      channelGroups: [NotificationChannelGroup(channelGroupKey: 'basic_channel_group', channelGroupName: 'Basic group')],
+      debug: true);
 
   // Start the actual application
   runApp(const MainApp());

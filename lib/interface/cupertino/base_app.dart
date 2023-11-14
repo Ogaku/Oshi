@@ -3,11 +3,15 @@
 
 import 'dart:io';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
+import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:format/format.dart';
+import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:path/path.dart' as path;
 
@@ -42,6 +46,54 @@ class _BaseAppState extends State<BaseApp> {
       File(path.join(Directory.current.path, 'assets/resources/strings')).watch().listen(
           (event) => Share.translator.loadResources(Share.settings.config.languageCode).then((value) => setState(() {})));
     }
+
+    // Only after at least the action method is set, the notification events are delivered
+    AwesomeNotifications().setListeners(
+        onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+        onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
+        onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
+        onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod);
+
+    // Set up other stuff after the app's launched
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      // Check notification access and request if not allowed
+      AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+        if (!isAllowed) {
+          Share.showErrorModal.broadcast(Value((
+            title: 'Allow Oshi to send you notifications?',
+            message:
+                'Oshi needs access to send you notifications regarding timetable changes, new or updated grades, and other school events.',
+            actions: {
+              'Allow': () async => AwesomeNotifications().requestPermissionToSendNotifications(),
+              'Later': () async {},
+              'Never': () async {}
+            }
+          )));
+        }
+      });
+
+      if (!Share.hasCheckedForUpdates) {
+        try {
+          (Dio().get('https://api.github.com/repos/Ogaku/Oshi/releases/latest')).then((value) {
+            try {
+              if (Version.parse(value.data['tag_name']) <= Version.parse(Share.buildNumber)) return;
+              var download = (value.data['assets'] as List<dynamic>?)
+                  ?.firstWhereOrDefault((x) =>
+                      x['name']?.toString().contains(Platform.isAndroid ? '.apk' : '.ipa') ?? false)?['browser_download_url']
+                  ?.toString();
+
+              if (download?.isNotEmpty ?? false) _showAlertDialog(context, download ?? 'https://youtu.be/dQw4w9WgXcQ');
+            } catch (ex) {
+              // ignored
+            }
+          });
+        } catch (ex) {
+          // ignored
+        }
+
+        Share.hasCheckedForUpdates = true;
+      }
+    });
   }
 
   @override
@@ -56,11 +108,6 @@ class _BaseAppState extends State<BaseApp> {
     // Re-subscribe to all events - refresh
     Share.refreshBase.unsubscribeAll();
     Share.refreshBase.subscribe((args) => setState(() {}));
-
-    // // Reload localization resources
-    // if (kDebugMode && Platform.isWindows) {
-    //   Share.translator.loadResources(Share.settings.config.languageCode);
-    // }
 
     return CupertinoApp(
         theme: _eventfulColorTheme,
@@ -94,29 +141,6 @@ class _BaseAppState extends State<BaseApp> {
                             )
                             .toList()));
           });
-
-          if (!Share.hasCheckedForUpdates) {
-            try {
-              (Dio().get('https://api.github.com/repos/Ogaku/Oshi/releases/latest')).then((value) {
-                try {
-                  if (Version.parse(value.data['tag_name']) <= Version.parse(Share.buildNumber)) return;
-                  var download = (value.data['assets'] as List<dynamic>?)
-                      ?.firstWhereOrDefault((x) =>
-                          x['name']?.toString().contains(Platform.isAndroid ? '.apk' : '.ipa') ??
-                          false)?['browser_download_url']
-                      ?.toString();
-
-                  if (download?.isNotEmpty ?? false) _showAlertDialog(context, download ?? 'https://youtu.be/dQw4w9WgXcQ');
-                } catch (ex) {
-                  // ignored
-                }
-              });
-            } catch (ex) {
-              // ignored
-            }
-
-            Share.hasCheckedForUpdates = true;
-          }
 
           return CupertinoTabScaffold(
             controller: tabController,
