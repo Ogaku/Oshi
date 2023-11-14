@@ -159,10 +159,10 @@ class _NavState extends State<SearchableSliverNavigationBar> {
       ),
       scrollController: scrollController,
       alwaysShowMiddle: false,
-      trailing: (previousScrollPosition >= -50 && !isRefreshing) || widget.setState == null
+      trailing: (previousScrollPosition >= -40 && !isRefreshing) || widget.setState == null
           ? widget.trailing != null
               ? Opacity(
-                  opacity: (lerpDouble(2.5, 0.0, previousScrollPosition / -50.0)?.clamp(0.0, 1.0) ?? 0.0),
+                  opacity: (lerpDouble(2.5, 0.0, previousScrollPosition / -40.0)?.clamp(0.0, 1.0) ?? 0.0),
                   child: widget.trailing)
               : widget.trailing
           : Container(
@@ -172,11 +172,11 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                   duration: const Duration(seconds: 1),
                   curve: Curves.ease,
                   child: _buildIndicatorForRefreshState(
-                      (previousScrollPosition < -160 || isRefreshing)
+                      (previousScrollPosition < -130 || isRefreshing)
                           ? RefreshIndicatorMode.refresh
                           : RefreshIndicatorMode.drag,
                       12,
-                      (lerpDouble(-0.3, 1.0, previousScrollPosition / -160.0)?.clamp(0.0, 0.99) ?? 0.0)))),
+                      (lerpDouble(-0.3, 1.0, previousScrollPosition / -130.0)?.clamp(0.0, 0.99) ?? 0.0)))),
     );
 
     return CupertinoPageScaffold(
@@ -187,7 +187,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
           onNotification: (ScrollNotification scrollInfo) {
             if (widget.disableAddons) return true;
             if (scrollInfo is ScrollUpdateNotification) {
-              if (scrollInfo.metrics.pixels < -160 && !isRefreshing && widget.setState != null) {
+              if (scrollInfo.metrics.pixels < -130 && !isRefreshing && widget.setState != null) {
                 setState(() {
                   isRefreshing = true;
                   refreshTurns =
