@@ -132,7 +132,9 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                       actions: [
                         CupertinoContextMenuAction(
                           onPressed: () {
-                            sharing.Share.share('/Page/Home/Homework/share'.localized.format(x.titleString, DateFormat("EEEE, MMM d, y").format(x.timeFrom)));
+                            sharing.Share.share('/Page/Home/Homework/share'
+                                .localized
+                                .format(x.titleString, DateFormat("EEEE, MMM d, y").format(x.timeFrom)));
                             Navigator.of(context, rootNavigator: true).pop();
                           },
                           trailingIcon: CupertinoIcons.share,

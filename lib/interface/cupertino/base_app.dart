@@ -64,6 +64,7 @@ class _BaseAppState extends State<BaseApp> {
 
     return CupertinoApp(
         theme: _eventfulColorTheme,
+        debugShowCheckedModeBanner: false,
         home: Builder(builder: (context) {
           // Re-subscribe to all events - modals
           Share.showErrorModal.unsubscribeAll();

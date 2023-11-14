@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/share/share.dart';
@@ -70,7 +71,10 @@ class _NavState extends State<SearchableSliverNavigationBar> {
   late ScrollController scrollController;
   late dynamic groupSelection;
 
-  double previousScrollPosition = 0, isVisibleSearchBar = 0;
+  double _pixels = 0;
+  int _timestamp = 0;
+
+  double previousScrollPosition = 0, isVisibleSearchBar = 0, refreshTurns = 0;
   bool isRefreshing = false;
 
   @override
@@ -155,14 +159,24 @@ class _NavState extends State<SearchableSliverNavigationBar> {
       ),
       scrollController: scrollController,
       alwaysShowMiddle: false,
-      trailing: (previousScrollPosition >= -20 && !isRefreshing) || widget.setState == null
-          ? widget.trailing
+      trailing: (previousScrollPosition >= -50 && !isRefreshing) || widget.setState == null
+          ? widget.trailing != null
+              ? Opacity(
+                  opacity: (lerpDouble(2.5, 0.0, previousScrollPosition / -50.0)?.clamp(0.0, 1.0) ?? 0.0),
+                  child: widget.trailing)
+              : widget.trailing
           : Container(
               margin: const EdgeInsets.only(right: 5, top: 5),
-              child: _buildIndicatorForRefreshState(
-                  (previousScrollPosition < -120 || isRefreshing) ? RefreshIndicatorMode.refresh : RefreshIndicatorMode.drag,
-                  12,
-                  ((previousScrollPosition + 20) / previousScrollPosition).clamp(0.0, 1.0))),
+              child: AnimatedRotation(
+                  turns: refreshTurns,
+                  duration: const Duration(seconds: 1),
+                  curve: Curves.ease,
+                  child: _buildIndicatorForRefreshState(
+                      (previousScrollPosition < -160 || isRefreshing)
+                          ? RefreshIndicatorMode.refresh
+                          : RefreshIndicatorMode.drag,
+                      12,
+                      (lerpDouble(-0.3, 1.0, previousScrollPosition / -160.0)?.clamp(0.0, 0.99) ?? 0.0)))),
     );
 
     return CupertinoPageScaffold(
@@ -173,20 +187,34 @@ class _NavState extends State<SearchableSliverNavigationBar> {
           onNotification: (ScrollNotification scrollInfo) {
             if (widget.disableAddons) return true;
             if (scrollInfo is ScrollUpdateNotification) {
-              if (scrollInfo.metrics.pixels < -120 && !isRefreshing && widget.setState != null) {
-                setState(() => isRefreshing = true);
+              if (scrollInfo.metrics.pixels < -160 && !isRefreshing && widget.setState != null) {
+                setState(() {
+                  isRefreshing = true;
+                  refreshTurns =
+                      (-2 * (scrollInfo.metrics.pixels - _pixels) / (DateTime.now().millisecondsSinceEpoch - _timestamp))
+                          .clamp(0.3, 1);
+                });
                 var progress = Progress<({double? progress, String? message})>();
                 progress.progressChanged.subscribe((args) {
                   if (widget.onProgress != null) widget.onProgress!(args?.value);
                 });
+                try {
+                  HapticFeedback.mediumImpact(); // Trigger a haptic feedback
+                } catch (ex) {
+                  // ignored
+                }
                 Share.session.refreshAll(weekStart: widget.selectedDate, progress: progress).then((arg) {
-                  setState(() => isRefreshing = false);
-                  if (widget.setState != null) widget.setState!(() {});
+                  setState(() {
+                    isRefreshing = false;
+                    refreshTurns = 0;
+                  });
 
+                  if (widget.setState != null) widget.setState!(() {});
                   progress.progressChanged.unsubscribeAll();
                   if (widget.onProgress != null) widget.onProgress!(null);
                 });
               }
+              // print(scrollInfo.metrics.pixels);
               if (scrollInfo.metrics.pixels > previousScrollPosition) {
                 if (isVisibleSearchBar > 0 && scrollInfo.metrics.pixels > 0) {
                   setState(() {
@@ -194,7 +222,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                   });
                 }
               } else if (scrollInfo.metrics.pixels <= previousScrollPosition) {
-                if (isVisibleSearchBar < 55 && scrollInfo.metrics.pixels >= 0 && scrollInfo.metrics.pixels <= 55) {
+                if (isVisibleSearchBar < 55 /*&& scrollInfo.metrics.pixels >= 0*/ && scrollInfo.metrics.pixels <= 55) {
                   setState(() {
                     isVisibleSearchBar = (55 - scrollInfo.metrics.pixels) <= 55 ? (55 - scrollInfo.metrics.pixels) : 55;
                   });
@@ -202,6 +230,8 @@ class _NavState extends State<SearchableSliverNavigationBar> {
               }
               setState(() {
                 previousScrollPosition = scrollInfo.metrics.pixels;
+                _pixels = scrollInfo.metrics.pixels;
+                _timestamp = DateTime.now().millisecondsSinceEpoch;
               });
             } else if (scrollInfo is ScrollEndNotification) {
               if (widget.disableAddons || widget.child != null) return true;
