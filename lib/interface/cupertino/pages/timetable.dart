@@ -1021,7 +1021,7 @@ extension LessonWidgetExtension on TimetableLesson {
                 opacity: (isCanceled ||
                         (date == DateTime.now().asDate() &&
                             (selectedDay?.dayEnd?.isAfter(DateTime.now()) ?? false) &&
-                            (hourTo?.isBefore(DateTime.now()) ?? false)))
+                            (hourTo?.asHour(DateTime.now()).isBefore(DateTime.now()) ?? false)))
                     ? 0.5
                     : 1.0,
                 child: ConstrainedBox(
@@ -1151,7 +1151,7 @@ extension DateTimeExtension on DateTime {
   bool isBeforeOrSame(DateTime? other) => this == other || isBefore(other ?? DateTime.now());
   DateTime withTime(DateTime? other) =>
       other == null ? this : DateTime(year, month, day, other.hour, other.minute, other.second);
-  DateTime asHour(DateTime? other) => DateTime(2000).withTime(other);
+  DateTime asHour([DateTime? other]) => (other ?? DateTime(2000)).withTime(this);
 
   bool isAfterOrEqualTo(DateTime dateTime) {
     final isAtSameMomentAs = dateTime.isAtSameMomentAs(this);

@@ -204,6 +204,13 @@ class LessonsRange {
   Map<String, dynamic> toJson() => _$LessonsRangeToJson(this);
 }
 
+extension DateTimeHourExtension on DateTime {
+  DateTime withTime(DateTime? other) =>
+      other == null ? this : DateTime(year, month, day, other.hour, other.minute, other.second);
+  DateTime asHour([DateTime? other]) => (other ?? DateTime(2000)).withTime(this);
+}
+
 extension DateTimeExtension on String {
-  DateTime asTime() => DateTime.parse("${DateFormat('yyyy-MM-dd').format(DateTime(2000))}T$this").toLocal();
+  DateTime asTime([DateTime? other]) =>
+      DateTime.parse("${DateFormat('yyyy-MM-dd').format(DateTime(2000))}T$this").toLocal().asHour(other);
 }

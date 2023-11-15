@@ -278,9 +278,12 @@ class LibrusDataReader implements models.IProvider {
                                   originalLessonNo:
                                       int.tryParse(lesson.orgLessonNo ?? '') ?? int.tryParse(lesson.newLessonNo ?? '') ?? 0,
                                   originalDate: lesson.orgDate ?? lesson.newDate ?? DateTime.now(),
-                                  originalHourFrom:
-                                      lesson.orgHourFrom?.asTime() ?? lesson.newHourFrom?.asTime() ?? DateTime.now(),
-                                  originalHourTo: lesson.orgHourTo?.asTime() ?? lesson.newHourTo?.asTime() ?? DateTime.now(),
+                                  originalHourFrom: lesson.orgHourFrom?.asTime(lesson.orgDate) ??
+                                      lesson.newHourFrom?.asTime(lesson.newDate) ??
+                                      DateTime.now(),
+                                  originalHourTo: lesson.orgHourTo?.asTime(lesson.orgDate) ??
+                                      lesson.newHourTo?.asTime(lesson.newDate) ??
+                                      DateTime.now(),
                                   originalClassroom: lesson.orgClassroom?.id != null
                                       ? classroomsShim.classrooms!
                                           .firstWhereOrDefault((y) => y.id == int.tryParse(lesson.orgClassroom?.id ?? ''))
@@ -346,8 +349,8 @@ class LibrusDataReader implements models.IProvider {
                 lessonNo: int.tryParse(x.lessonNo ?? ''),
                 date: x.date,
                 addDate: x.addDate,
-                timeFrom: x.timeFrom.asTime(),
-                timeTo: x.timeTo.asTime(),
+                timeFrom: x.timeFrom.asTime(x.date),
+                timeTo: x.timeTo.asTime(x.date),
                 content: x.content,
                 category: x.category?.asEvent() ?? models.EventCategory.other,
                 categoryName: eventCategoriesShim.categories!
@@ -370,7 +373,7 @@ class LibrusDataReader implements models.IProvider {
                 ?.select((x, index) => models.Event(
                     id: x.id,
                     date: x.date,
-                    timeFrom: x.time.asTime(),
+                    timeFrom: x.time.asTime(x.date),
                     content: x.topic,
                     category: models.EventCategory.conference,
                     categoryName: 'Zebranie z rodzicami',
