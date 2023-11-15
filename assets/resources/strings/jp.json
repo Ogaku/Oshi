@@ -1,0 +1,71 @@
+{
+    "language": "jp",
+    "messages": [
+        {
+            "id": "/Titles/Pages/Home",
+            "translation": "ホーム"
+        },
+        {
+            "id": "/Titles/Pages/Timeline",
+            "translation": "タイムライン"
+        },
+        {
+            "id": "/Titles/Pages/Grades",
+            "translation": "成績"
+        },
+        {
+            "id": "/Titles/Pages/Schedule",
+            "translation": "スケジュール"
+        },
+        {
+            "id": "/Titles/Pages/Messages",
+            "translation": "メッセージ"
+        },
+        {
+            "id": "/Titles/Pages/Messages/Inbox",
+            "translation": "受信トレイ"
+        },
+        {
+            "id": "/Titles/Pages/Messages/Sent",
+            "translation": "送信済み"
+        },
+        {
+            "id": "/Titles/Pages/Messages/Announcements",
+            "translation": "お知らせ"
+        },
+        {
+            "id": "/Titles/Pages/Absences",
+            "translation": "欠席"
+        }
+    ],
+    "splashes": [
+        "Que Dieu vous bénisse",
+        "Vous survivrez!",
+        "Survivrez-vous?",
+        "Accrochez-vous!",
+        "Veillez à votre sécurité...",
+        "Que la force soit avec vous"
+    ],
+    "ending_splashes": [
+        {
+            "title": "Bravo!",
+            "subtitle": "Vous avez survécu à toutes les leçons {}"
+        },
+        {
+            "title": "C'est fini maintenant!",
+            "subtitle": "Vous avez survécu à toutes les leçons"
+        },
+        {
+            "title": "C'est fini. Vous y croyez?",
+            "subtitle": "{} leçons, pouvez-vous le croire?"
+        },
+        {
+            "title": "Tu as réussi",
+            "subtitle": "{} leçons réussies"
+        },
+        {
+            "title": "Rentrez chez vous, reposez-vous",
+            "subtitle": "Tu as réussi toutes les {} leçons aujourd'hui"
+        }
+    ]
+}

@@ -1,25 +1,25 @@
 {
     "en": {
         "en": "English",
-        "fr": "French",
+        "jp": "Japanese",
         "pl": "Polish",
         "uw": "Engwish"
     },
-    "fr": {
-        "en": "Anglais",
-        "fr": "Français",
-        "pl": "Polonais",
-        "uw": "Angwais"
+    "jp": {
+        "en": "英語",
+        "jp": "日本語",
+        "pl": "ポーランド語",
+        "uw": "英語？"
     },
     "pl": {
         "en": "Angielski",
-        "fr": "Francuski",
+        "jp": "Japoński",
         "pl": "Polski",
         "uw": "Angweiski"
     },
     "uw": {
         "en": "Engwish",
-        "fr": "Fwench",
+        "jp": "Animish",
         "pl": "Powish",
         "uw": "Engwish"
     }

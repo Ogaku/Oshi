@@ -784,9 +784,9 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                             margin: EdgeInsets.zero,
                             hasLeading: false,
                             header: Text(
-                                x.timetablesChanged.count((element) => element.type != RegisterChangeTypes.removed) > 1
-                                    ? '${x.timetablesChanged.count((element) => element.type != RegisterChangeTypes.removed)} new timetable changes'
-                                    : '${x.timetablesChanged.count((element) => element.type != RegisterChangeTypes.removed)} new timetable change',
+                                x.timetablesChanged
+                                    .count((element) => element.type != RegisterChangeTypes.removed)
+                                    .asTimetablesNumber(RegisterChangeTypes.added),
                                 style: TextStyle(
                                     fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
                             children: x.timetablesChanged
@@ -813,9 +813,9 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                             margin: EdgeInsets.zero,
                             hasLeading: false,
                             header: Text(
-                                x.timetablesChanged.count((element) => element.type == RegisterChangeTypes.removed) > 1
-                                    ? '${x.timetablesChanged.count((element) => element.type == RegisterChangeTypes.removed)} cancelled lessons'
-                                    : '${x.timetablesChanged.count((element) => element.type == RegisterChangeTypes.removed)} cancelled lesson',
+                                x.timetablesChanged
+                                    .count((element) => element.type == RegisterChangeTypes.removed)
+                                    .asTimetablesNumber(RegisterChangeTypes.removed),
                                 style:
                                     TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
                             children: x.timetablesChanged
@@ -836,7 +836,25 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                             backgroundColor: Colors.transparent,
                             margin: EdgeInsets.zero,
                             hasLeading: false,
-                            header: Text(x.messagesChanged.count((element) => element.type != RegisterChangeTypes.removed) > 1 ? '${x.messagesChanged.count((element) => element.type != RegisterChangeTypes.removed)} new messages' : '${x.messagesChanged.count((element) => element.type != RegisterChangeTypes.removed)} new message', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                            header: () {
+                              var news = x.messagesChanged.count((element) => element.type == RegisterChangeTypes.added);
+                              var changes =
+                                  x.messagesChanged.count((element) => element.type == RegisterChangeTypes.changed);
+
+                              return Text(
+                                  switch (news) {
+                                    // There's only new grades
+                                    > 0 when changes == 0 => news.asMessagesNumber(RegisterChangeTypes.added),
+                                    // There's only changed grades
+                                    0 when changes > 0 => changes.asMessagesNumber(RegisterChangeTypes.changed),
+                                    // Some are new, some are changed
+                                    > 0 when changes > 0 => (news + changes).asMessagesNumber(),
+                                    // Shouldn't happen, but we need a _ case
+                                    _ => 'No changes, WTF?!'
+                                  },
+                                  style: TextStyle(
+                                      fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
+                            }(),
                             children: x.messagesChanged
                                 .where((element) => element.type != RegisterChangeTypes.removed)
                                 .select(
@@ -937,7 +955,25 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                             backgroundColor: Colors.transparent,
                             margin: EdgeInsets.zero,
                             hasLeading: false,
-                            header: Text(x.attendancesChanged.count((element) => element.type != RegisterChangeTypes.removed) > 1 ? '${x.attendancesChanged.count((element) => element.type != RegisterChangeTypes.removed)} new or updated attendances' : '${x.attendancesChanged.count((element) => element.type != RegisterChangeTypes.removed)} new or updated attendance', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                            header: () {
+                              var news = x.attendancesChanged.count((element) => element.type == RegisterChangeTypes.added);
+                              var changes =
+                                  x.attendancesChanged.count((element) => element.type == RegisterChangeTypes.changed);
+
+                              return Text(
+                                  switch (news) {
+                                    // There's only new grades
+                                    > 0 when changes == 0 => news.asAttendancesNumber(RegisterChangeTypes.added),
+                                    // There's only changed grades
+                                    0 when changes > 0 => changes.asAttendancesNumber(RegisterChangeTypes.changed),
+                                    // Some are new, some are changed
+                                    > 0 when changes > 0 => (news + changes).asAttendancesNumber(),
+                                    // Shouldn't happen, but we need a _ case
+                                    _ => 'No changes, WTF?!'
+                                  },
+                                  style: TextStyle(
+                                      fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
+                            }(),
                             children: x.attendancesChanged
                                 .orderByDescending((element) => element.value.addDate)
                                 .where((element) => element.type != RegisterChangeTypes.removed)
@@ -959,7 +995,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                             backgroundColor: Colors.transparent,
                             margin: EdgeInsets.zero,
                             hasLeading: false,
-                            header: Text(x.attendancesChanged.count((element) => element.type == RegisterChangeTypes.removed) > 1 ? '${x.attendancesChanged.count((element) => element.type == RegisterChangeTypes.removed)} removed attendances' : '${x.attendancesChanged.count((element) => element.type == RegisterChangeTypes.removed)} removed attendance', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                            header: Text(x.attendancesChanged.count((element) => element.type == RegisterChangeTypes.removed).asAttendancesNumber(RegisterChangeTypes.removed), style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
                             children: x.attendancesChanged
                                 .where((element) => element.type == RegisterChangeTypes.removed)
                                 .select(
@@ -978,7 +1014,24 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                             backgroundColor: Colors.transparent,
                             margin: EdgeInsets.zero,
                             hasLeading: false,
-                            header: Text(x.gradesChanged.count((element) => element.type != RegisterChangeTypes.removed) > 1 ? '${x.gradesChanged.count((element) => element.type != RegisterChangeTypes.removed)} new or updated grades' : '${x.gradesChanged.count((element) => element.type != RegisterChangeTypes.removed)} new or updated grade', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                            header: () {
+                              var news = x.gradesChanged.count((element) => element.type == RegisterChangeTypes.added);
+                              var changes = x.gradesChanged.count((element) => element.type == RegisterChangeTypes.changed);
+
+                              return Text(
+                                  switch (news) {
+                                    // There's only new grades
+                                    > 0 when changes == 0 => news.asGradesNumber(RegisterChangeTypes.added),
+                                    // There's only changed grades
+                                    0 when changes > 0 => changes.asGradesNumber(RegisterChangeTypes.changed),
+                                    // Some are new, some are changed
+                                    > 0 when changes > 0 => (news + changes).asGradesNumber(),
+                                    // Shouldn't happen, but we need a _ case
+                                    _ => 'No changes, WTF?!'
+                                  },
+                                  style: TextStyle(
+                                      fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
+                            }(),
                             children: x.gradesChanged
                                 .where((element) => element.type != RegisterChangeTypes.removed)
                                 .select(
@@ -1005,7 +1058,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                             backgroundColor: Colors.transparent,
                             margin: EdgeInsets.zero,
                             hasLeading: false,
-                            header: Text(x.gradesChanged.count((element) => element.type == RegisterChangeTypes.removed) > 1 ? '${x.gradesChanged.count((element) => element.type == RegisterChangeTypes.removed)} removed grades' : '${x.gradesChanged.count((element) => element.type == RegisterChangeTypes.removed)} removed grade', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                            header: Text(x.gradesChanged.count((element) => element.type == RegisterChangeTypes.removed).asGradesNumber(RegisterChangeTypes.removed), style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
                             children: x.gradesChanged
                                 .where((element) => element.type == RegisterChangeTypes.removed)
                                 .select(
@@ -1024,7 +1077,26 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                             backgroundColor: Colors.transparent,
                             margin: EdgeInsets.zero,
                             hasLeading: false,
-                            header: Text(x.announcementsChanged.count((element) => element.type != RegisterChangeTypes.removed) > 1 ? '${x.announcementsChanged.count((element) => element.type != RegisterChangeTypes.removed)} new announcements' : '${x.announcementsChanged.count((element) => element.type != RegisterChangeTypes.removed)} new announcement', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                            header: () {
+                              var news =
+                                  x.announcementsChanged.count((element) => element.type == RegisterChangeTypes.added);
+                              var changes =
+                                  x.announcementsChanged.count((element) => element.type == RegisterChangeTypes.changed);
+
+                              return Text(
+                                  switch (news) {
+                                    // There's only new grades
+                                    > 0 when changes == 0 => news.asAnnouncementsNumber(RegisterChangeTypes.added),
+                                    // There's only changed grades
+                                    0 when changes > 0 => changes.asAnnouncementsNumber(RegisterChangeTypes.changed),
+                                    // Some are new, some are changed
+                                    > 0 when changes > 0 => (news + changes).asAnnouncementsNumber(),
+                                    // Shouldn't happen, but we need a _ case
+                                    _ => 'No changes, WTF?!'
+                                  },
+                                  style: TextStyle(
+                                      fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
+                            }(),
                             children: x.announcementsChanged
                                 .where((element) => element.type != RegisterChangeTypes.removed)
                                 .orderByDescending((x) => x.value.startDate)
@@ -1161,7 +1233,24 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                             backgroundColor: Colors.transparent,
                             margin: EdgeInsets.zero,
                             hasLeading: false,
-                            header: Text(x.eventsChanged.count((element) => element.type != RegisterChangeTypes.removed) > 1 ? '${x.eventsChanged.count((element) => element.type != RegisterChangeTypes.removed)} new or updated events' : '${x.eventsChanged.count((element) => element.type != RegisterChangeTypes.removed)} new or updated event', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                            header: () {
+                              var news = x.eventsChanged.count((element) => element.type == RegisterChangeTypes.added);
+                              var changes = x.eventsChanged.count((element) => element.type == RegisterChangeTypes.changed);
+
+                              return Text(
+                                  switch (news) {
+                                    // There's only new grades
+                                    > 0 when changes == 0 => news.asEventsNumber(RegisterChangeTypes.added),
+                                    // There's only changed grades
+                                    0 when changes > 0 => changes.asEventsNumber(RegisterChangeTypes.changed),
+                                    // Some are new, some are changed
+                                    > 0 when changes > 0 => (news + changes).asEventsNumber(),
+                                    // Shouldn't happen, but we need a _ case
+                                    _ => 'No changes, WTF?!'
+                                  },
+                                  style: TextStyle(
+                                      fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
+                            }(),
                             children: x.eventsChanged
                                 .where((element) => element.type != RegisterChangeTypes.removed)
                                 .select(
@@ -1185,7 +1274,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                             backgroundColor: Colors.transparent,
                             margin: EdgeInsets.zero,
                             hasLeading: false,
-                            header: Text(x.eventsChanged.count((element) => element.type == RegisterChangeTypes.removed) > 1 ? '${x.eventsChanged.count((element) => element.type == RegisterChangeTypes.removed)} removed events' : '${x.eventsChanged.count((element) => element.type == RegisterChangeTypes.removed)} removed event', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                            header: Text(x.eventsChanged.count((element) => element.type == RegisterChangeTypes.removed).asEventsNumber(RegisterChangeTypes.removed), style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
                             children: x.eventsChanged
                                 .where((element) => element.type == RegisterChangeTypes.removed)
                                 .select(
@@ -1495,12 +1584,143 @@ extension TableAppendExtension on Iterable<TableRow> {
 
 extension LessonNumber on int {
   String asLessonNumber() => switch (this) {
-        0 => '$this lessons',
-        1 => '$this lesson',
-        _ => '$this lessons'
+        1 => '$this ${"/Home/Counters/Lessons/Singular".localized}', // "lekcja"
+        >= 2 && < 5 ||
+        _ when this % 10 >= 2 && this % 10 < 5 =>
+          '$this ${"/Home/Counters/Lessons/Plural/Start".localized}', // "lekcje"
+        >= 5 && < 22 ||
+        _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
+          '$this ${"/Home/Counters/Lessons/Plural/End".localized}', // "lekcji"
+        _ => '$this ${"/Home/Counters/Lessons/Plural/End".localized}' // "lekcji"
         // Note for other languages:
         // stackoverflow.com/a/76413634
       };
+
+  String asTimetablesNumber([RegisterChangeTypes? changeType]) {
+    var modifier = switch (changeType) {
+      RegisterChangeTypes.added => '/New',
+      RegisterChangeTypes.changed => '/Updated',
+      RegisterChangeTypes.removed => '/Removed',
+      _ => '/Both',
+    };
+    return switch (this) {
+      1 => '$this ${"/Timeline/Lang/Counters/Timetables$modifier/Singular".localized}', // "lekcja"
+      >= 2 && < 5 ||
+      _ when this % 10 >= 2 && this % 10 < 5 =>
+        '$this ${"/Timeline/Lang/Counters/Timetables$modifier/Plural/Start".localized}', // "lekcje"
+      >= 5 && < 22 ||
+      _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
+        '$this ${"/Timeline/Lang/Counters/Timetables$modifier/Plural/End".localized}', // "lekcji"
+      _ => '$this ${"/Timeline/Lang/Counters/Timetables$modifier/Plural/End".localized}' // "lekcji"
+      // Note for other languages:
+      // stackoverflow.com/a/76413634
+    };
+  }
+
+  String asGradesNumber([RegisterChangeTypes? changeType]) {
+    var modifier = switch (changeType) {
+      RegisterChangeTypes.added => '/New',
+      RegisterChangeTypes.changed => '/Updated',
+      RegisterChangeTypes.removed => '/Removed',
+      _ => '/Both',
+    };
+    return switch (this) {
+      1 => '$this ${"/Timeline/Lang/Counters/Grades$modifier/Singular".localized}', // "lekcja"
+      >= 2 && < 5 ||
+      _ when this % 10 >= 2 && this % 10 < 5 =>
+        '$this ${"/Timeline/Lang/Counters/Grades$modifier/Plural/Start".localized}', // "lekcje"
+      >= 5 && < 22 ||
+      _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
+        '$this ${"/Timeline/Lang/Counters/Grades$modifier/Plural/End".localized}', // "lekcji"
+      _ => '$this ${"/Timeline/Lang/Counters/Grades$modifier/Plural/End".localized}' // "lekcji"
+      // Note for other languages:
+      // stackoverflow.com/a/76413634
+    };
+  }
+
+  String asEventsNumber([RegisterChangeTypes? changeType]) {
+    var modifier = switch (changeType) {
+      RegisterChangeTypes.added => '/New',
+      RegisterChangeTypes.changed => '/Updated',
+      RegisterChangeTypes.removed => '/Removed',
+      _ => '/Both',
+    };
+    return switch (this) {
+      1 => '$this ${"/Timeline/Lang/Counters/Events$modifier/Singular".localized}', // "lekcja"
+      >= 2 && < 5 ||
+      _ when this % 10 >= 2 && this % 10 < 5 =>
+        '$this ${"/Timeline/Lang/Counters/Events$modifier/Plural/Start".localized}', // "lekcje"
+      >= 5 && < 22 ||
+      _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
+        '$this ${"/Timeline/Lang/Counters/Events$modifier/Plural/End".localized}', // "lekcji"
+      _ => '$this ${"/Timeline/Lang/Counters/Events$modifier/Plural/End".localized}' // "lekcji"
+      // Note for other languages:
+      // stackoverflow.com/a/76413634
+    };
+  }
+
+  String asAnnouncementsNumber([RegisterChangeTypes? changeType]) {
+    var modifier = switch (changeType) {
+      RegisterChangeTypes.added => '/New',
+      RegisterChangeTypes.changed => '/Updated',
+      RegisterChangeTypes.removed => '/Removed',
+      _ => '/Both',
+    };
+    return switch (this) {
+      1 => '$this ${"/Timeline/Lang/Counters/Announcements$modifier/Singular".localized}', // "lekcja"
+      >= 2 && < 5 ||
+      _ when this % 10 >= 2 && this % 10 < 5 =>
+        '$this ${"/Timeline/Lang/Counters/Announcements$modifier/Plural/Start".localized}', // "lekcje"
+      >= 5 && < 22 ||
+      _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
+        '$this ${"/Timeline/Lang/Counters/Announcements$modifier/Plural/End".localized}', // "lekcji"
+      _ => '$this ${"/Timeline/Lang/Counters/Announcements$modifier/Plural/End".localized}' // "lekcji"
+      // Note for other languages:
+      // stackoverflow.com/a/76413634
+    };
+  }
+
+  String asMessagesNumber([RegisterChangeTypes? changeType]) {
+    var modifier = switch (changeType) {
+      RegisterChangeTypes.added => '/New',
+      RegisterChangeTypes.changed => '/Updated',
+      RegisterChangeTypes.removed => '/Removed',
+      _ => '/Both',
+    };
+    return switch (this) {
+      1 => '$this ${"/Timeline/Lang/Counters/Messages$modifier/Singular".localized}', // "lekcja"
+      >= 2 && < 5 ||
+      _ when this % 10 >= 2 && this % 10 < 5 =>
+        '$this ${"/Timeline/Lang/Counters/Messages$modifier/Plural/Start".localized}', // "lekcje"
+      >= 5 && < 22 ||
+      _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
+        '$this ${"/Timeline/Lang/Counters/Messages$modifier/Plural/End".localized}', // "lekcji"
+      _ => '$this ${"/Timeline/Lang/Counters/Messages$modifier/Plural/End".localized}' // "lekcji"
+      // Note for other languages:
+      // stackoverflow.com/a/76413634
+    };
+  }
+
+  String asAttendancesNumber([RegisterChangeTypes? changeType]) {
+    var modifier = switch (changeType) {
+      RegisterChangeTypes.added => '/New',
+      RegisterChangeTypes.changed => '/Updated',
+      RegisterChangeTypes.removed => '/Removed',
+      _ => '/Both',
+    };
+    return switch (this) {
+      1 => '$this ${"/Timeline/Lang/Counters/Attendances$modifier/Singular".localized}', // "lekcja"
+      >= 2 && < 5 ||
+      _ when this % 10 >= 2 && this % 10 < 5 =>
+        '$this ${"/Timeline/Lang/Counters/Attendances$modifier/Plural/Start".localized}', // "lekcje"
+      >= 5 && < 22 ||
+      _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
+        '$this ${"/Timeline/Lang/Counters/Attendances$modifier/Plural/End".localized}', // "lekcji"
+      _ => '$this ${"/Timeline/Lang/Counters/Attendances$modifier/Plural/End".localized}' // "lekcji"
+      // Note for other languages:
+      // stackoverflow.com/a/76413634
+    };
+  }
 }
 
 extension Pretty on Duration {

@@ -331,7 +331,13 @@ class _MessagesPageState extends State<MessagesPage> {
         MessageFolders.outbox => '/Titles/Pages/Messages/Sent'.localized,
         MessageFolders.inbox || _ => '/Titles/Pages/Messages/Inbox'.localized
       }),
-      middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('Messages')),
+      middle: Visibility(
+          visible: _progressMessage?.isEmpty ?? true,
+          child: Text(switch (folder) {
+            MessageFolders.announcements => '/Titles/Pages/Messages/Announcements'.localized,
+            MessageFolders.outbox => '/Titles/Pages/Messages/Sent'.localized,
+            MessageFolders.inbox || _ => '/Titles/Pages/Messages/Inbox'.localized
+          })),
       onProgress: (progress) => setState(() => _progressMessage = progress?.message),
       leading: Visibility(
           visible: _progressMessage?.isNotEmpty ?? false,

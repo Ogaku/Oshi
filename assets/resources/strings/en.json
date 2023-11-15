@@ -228,8 +228,307 @@
         {
             "id": "/Now",
             "translation": "Now:"
+        },
+        {
+            "id": "/Home/Counters/Lessons/Singular",
+            "translation": "lesson"
+        },
+        {
+            "id": "/Home/Counters/Lessons/Plural/Start",
+            "translation": "lessons"
+        },
+        {
+            "id": "/Home/Counters/Lessons/Plural/End",
+            "translation": "lessons"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Timetables/New/Singular",
+            "translation": "new timetable change"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Timetables/Updated/Singular",
+            "translation": "updated timetable change"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Timetables/Removed/Singular",
+            "translation": "cancelled lesson"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Timetables/Both/Singular",
+            "translation": "added or updated timetable change"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Timetables/New/Plural/Start",
+            "translation": "new timetable changes"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Timetables/Updated/Plural/Start",
+            "translation": "updated timetable events"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Timetables/Removed/Plural/Start",
+            "translation": "cancelled lessons"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Timetables/Both/Plural/Start",
+            "translation": "added or updated timetable events"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Timetables/New/Plural/End",
+            "translation": "new timetable changes"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Timetables/Updated/Plural/End",
+            "translation": "updated timetable events"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Timetables/Removed/Plural/End",
+            "translation": "cancelled lessons"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Timetables/Both/Plural/End",
+            "translation": "added or updated timetable events"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Grades/New/Singular",
+            "translation": "new grade"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Grades/Updated/Singular",
+            "translation": "updated grade"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Grades/Removed/Singular",
+            "translation": "removed grade"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Grades/Both/Singular",
+            "translation": "added or updated grade"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Grades/New/Plural/Start",
+            "translation": "new grades"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Grades/Updated/Plural/Start",
+            "translation": "updated grades"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Grades/Removed/Plural/Start",
+            "translation": "removed grades"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Grades/Both/Plural/Start",
+            "translation": "added or updated grades"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Grades/New/Plural/End",
+            "translation": "new grades"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Grades/Updated/Plural/End",
+            "translation": "updated grades"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Grades/Removed/Plural/End",
+            "translation": "removed grades"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Grades/Both/Plural/End",
+            "translation": "added or updated grades"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Events/New/Singular",
+            "translation": "new event"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Events/Updated/Singular",
+            "translation": "updated event"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Events/Removed/Singular",
+            "translation": "removed event"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Events/Both/Singular",
+            "translation": "added or updated event"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Events/New/Plural/Start",
+            "translation": "new events"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Events/Updated/Plural/Start",
+            "translation": "updated events"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Events/Removed/Plural/Start",
+            "translation": "removed events"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Events/Both/Plural/Start",
+            "translation": "added or updated events"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Events/New/Plural/End",
+            "translation": "new events"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Events/Updated/Plural/End",
+            "translation": "updated events"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Events/Removed/Plural/End",
+            "translation": "removed events"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Events/Both/Plural/End",
+            "translation": "added or updated events"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Announcements/New/Singular",
+            "translation": "new announcement"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Announcements/Updated/Singular",
+            "translation": "updated announcement"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Announcements/Removed/Singular",
+            "translation": "removed announcement"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Announcements/Both/Singular",
+            "translation": "added or updated announcement"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Announcements/New/Plural/Start",
+            "translation": "new announcements"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Announcements/Updated/Plural/Start",
+            "translation": "updated announcements"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Announcements/Removed/Plural/Start",
+            "translation": "removed announcements"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Announcements/Both/Plural/Start",
+            "translation": "added or updated announcements"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Announcements/New/Plural/End",
+            "translation": "new announcements"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Announcements/Updated/Plural/End",
+            "translation": "updated announcements"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Announcements/Removed/Plural/End",
+            "translation": "removed announcements"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Announcements/Both/Plural/End",
+            "translation": "added or updated announcements"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Messages/New/Singular",
+            "translation": "new message"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Messages/Updated/Singular",
+            "translation": "updated message"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Messages/Removed/Singular",
+            "translation": "removed message"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Messages/Both/Singular",
+            "translation": "added or updated message"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Messages/New/Plural/Start",
+            "translation": "new messages"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Messages/Updated/Plural/Start",
+            "translation": "updated messages"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Messages/Removed/Plural/Start",
+            "translation": "removed messages"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Messages/Both/Plural/Start",
+            "translation": "added or updated messages"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Messages/New/Plural/End",
+            "translation": "new messages"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Messages/Updated/Plural/End",
+            "translation": "updated messages"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Messages/Removed/Plural/End",
+            "translation": "removed messages"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Messages/Both/Plural/End",
+            "translation": "added or updated messages"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Attendances/New/Singular",
+            "translation": "new attendance"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Attendances/Updated/Singular",
+            "translation": "updated attendance"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Attendances/Removed/Singular",
+            "translation": "removed attendance"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Attendances/Both/Singular",
+            "translation": "added or updated attendance"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Attendances/New/Plural/Start",
+            "translation": "new attendances"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Attendances/Updated/Plural/Start",
+            "translation": "updated attendances"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Attendances/Removed/Plural/Start",
+            "translation": "removed attendances"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Attendances/Both/Plural/Start",
+            "translation": "added or updated attendances"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Attendances/New/Plural/End",
+            "translation": "new attendances"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Attendances/Updated/Plural/End",
+            "translation": "updated attendances"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Attendances/Removed/Plural/End",
+            "translation": "removed attendances"
+        },
+        {
+            "id": "/Timeline/Lang/Counters/Attendances/Both/Plural/End",
+            "translation": "added or updated attendances"
         }
-
     ],
     "splashes": [
         "May the God bless you",
@@ -553,6 +852,10 @@
         {
             "title": "I hope you made a good use of that time",
             "subtitle": "Time wasted: {} x 45min"
+        },
+        {
+            "title": "It's not the end of your mori...",
+            "subtitle": "But of your {} lessons!"
         }
     ]
 }
