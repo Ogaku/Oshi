@@ -49,5 +49,7 @@
 		<string>Oshi would like to access your calender</string>
 		<key>NSContactsUsageDescription</key>
 		<string>Oshi would like to access your contacts</string>
+		<key>UIStatusBarHidden</key>
+		<false/>
 	</dict>
 </plist>
