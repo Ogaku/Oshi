@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:darq/darq.dart';
 import 'package:event/event.dart' as events;
 import 'package:flutter/material.dart';
@@ -89,7 +91,8 @@ class Settings {
 
       // Load saved settings
       sessions = (await Hive.openBox('sessions')).get('sessions', defaultValue: SessionsData());
-      config = (await Hive.openBox('config')).get('config', defaultValue: Config());
+      config = (await Hive.openBox('config'))
+          .get('config', defaultValue: Config(languageCode: Platform.localeName.substring(0, 2)));
 
       // Re-setup change listeners
       config.addListener(save);

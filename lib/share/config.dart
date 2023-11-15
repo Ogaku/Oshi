@@ -1,5 +1,4 @@
 // ignore_for_file: prefer_final_fields
-
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:oshi/share/resources.dart';
