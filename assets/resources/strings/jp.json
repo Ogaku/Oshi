@@ -39,33 +39,20 @@
         }
     ],
     "splashes": [
-        "Que Dieu vous bénisse",
-        "Vous survivrez!",
-        "Survivrez-vous?",
-        "Accrochez-vous!",
-        "Veillez à votre sécurité...",
-        "Que la force soit avec vous"
+        "頑張ってね！"
     ],
     "ending_splashes": [
         {
-            "title": "Bravo!",
-            "subtitle": "Vous avez survécu à toutes les leçons {}"
+            "title": "やっと終わったんだよ！",
+            "subtitle": "すべての{}授業をやり遂げた！"
         },
         {
-            "title": "C'est fini maintenant!",
-            "subtitle": "Vous avez survécu à toutes les leçons"
+            "title": "頑張った！",
+            "subtitle": "もう日も{}授業終了…"
         },
         {
-            "title": "C'est fini. Vous y croyez?",
-            "subtitle": "{} leçons, pouvez-vous le croire?"
-        },
-        {
-            "title": "Tu as réussi",
-            "subtitle": "{} leçons réussies"
-        },
-        {
-            "title": "Rentrez chez vous, reposez-vous",
-            "subtitle": "Tu as réussi toutes les {} leçons aujourd'hui"
+            "title": "色は匂えど…",
+            "subtitle": "散りぬるを！"
         }
     ]
 }
