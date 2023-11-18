@@ -1,17 +1,23 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'dart:io';
+
 import 'package:darq/darq.dart';
+import 'package:duration/locale.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/widgets/entries_form.dart';
 import 'package:oshi/interface/cupertino/widgets/modal_page.dart';
 import 'package:oshi/interface/cupertino/widgets/options_form.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
+import 'package:oshi/models/data/attendances.dart';
+import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
@@ -52,9 +58,11 @@ class _SettingsPageState extends State<SettingsPage> {
                       Container(
                           margin: EdgeInsets.all(15),
                           child: GestureDetector(
-                              onTap: () => ImagePicker().pickImage(source: ImageSource.gallery).then((value) => value
-                                  ?.readAsBytes()
-                                  .then((result) => setState(() => Share.settings.config.userAvatar = result))),
+                              onTap: (Platform.isAndroid || Platform.isIOS)
+                                  ? () => ImagePicker().pickImage(source: ImageSource.gallery).then((value) => value
+                                      ?.readAsBytes()
+                                      .then((result) => setState(() => Share.settings.config.userAvatar = result)))
+                                  : null,
                               child: Share.settings.config.userAvatarImage != null
                                   ? CircleAvatar(radius: 25, backgroundImage: Share.settings.config.userAvatarImage?.image)
                                   : Icon(CupertinoIcons.person_circle_fill, size: 50))),
@@ -72,6 +80,213 @@ class _SettingsPageState extends State<SettingsPage> {
                         ],
                       ))
                     ]),
+                    onTap: () => Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) => CupertinoModalPage(title: 'About Me', children: [
+                                  CupertinoListSection.insetGrouped(
+                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                                    additionalDividerMargin: 5,
+                                    header: Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 20),
+                                        child: Opacity(
+                                            opacity: 0.5,
+                                            child: Text('ACCOUNT DATA',
+                                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
+                                    children: [
+                                      CupertinoListTile(
+                                          title: Text('Name', overflow: TextOverflow.ellipsis),
+                                          trailing: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 5),
+                                              child: Opacity(
+                                                  opacity: 0.5, child: Text(Share.session.data.student.account.name)))),
+                                      CupertinoListTile(
+                                          title: Text('Class', overflow: TextOverflow.ellipsis),
+                                          trailing: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 5),
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Text(Share.session.data.student.mainClass.className)))),
+                                      CupertinoListTile(
+                                          title: Text('Home teacher', overflow: TextOverflow.ellipsis),
+                                          trailing: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 5),
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Text(Share.session.data.student.mainClass.classTutor.name)))),
+                                    ],
+                                  ),
+                                  CupertinoListSection.insetGrouped(
+                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                                    additionalDividerMargin: 5,
+                                    header: Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 20),
+                                        child: Opacity(
+                                            opacity: 0.5,
+                                            child: Text('SCHOOL DATA',
+                                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
+                                    children: [
+                                      CupertinoListTile(
+                                          title: Text('Name', overflow: TextOverflow.ellipsis),
+                                          trailing: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 5),
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Text(Share.session.data.student.mainClass.unit.name)))),
+                                      CupertinoListTile(
+                                          title: Text('Head teacher', overflow: TextOverflow.ellipsis),
+                                          trailing: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 5),
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Text(Share.session.data.student.mainClass.unit.principalName)))),
+                                      CupertinoListTile(
+                                          title: Text('Address', overflow: TextOverflow.ellipsis),
+                                          trailing: Row(children: [
+                                            Container(
+                                                margin: EdgeInsets.symmetric(horizontal: 5),
+                                                child: Opacity(
+                                                    opacity: 0.5,
+                                                    child: Text(Share.session.data.student.mainClass.unit.address))),
+                                            CupertinoListTileChevron()
+                                          ])),
+                                      CupertinoListTile(
+                                          title: Text('Phone', overflow: TextOverflow.ellipsis),
+                                          trailing: Row(children: [
+                                            Container(
+                                                margin: EdgeInsets.symmetric(horizontal: 5),
+                                                child: Opacity(
+                                                    opacity: 0.5,
+                                                    child: Text(Share.session.data.student.mainClass.unit.phone))),
+                                            CupertinoListTileChevron()
+                                          ])),
+                                      CupertinoListTile(
+                                          title: Text('E-mail', overflow: TextOverflow.ellipsis),
+                                          trailing: Row(children: [
+                                            Container(
+                                                margin: EdgeInsets.symmetric(horizontal: 5),
+                                                child: Opacity(
+                                                    opacity: 0.5,
+                                                    child: Text(Share.session.data.student.mainClass.unit.email))),
+                                            CupertinoListTileChevron()
+                                          ])),
+                                    ],
+                                  ),
+                                  CupertinoListSection.insetGrouped(
+                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                                    additionalDividerMargin: 5,
+                                    header: Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 20),
+                                        child: Opacity(
+                                            opacity: 0.5,
+                                            child: Text('SUMMARY',
+                                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
+                                    footer: Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 20),
+                                        child: Opacity(
+                                            opacity: 0.5,
+                                            child: Text(
+                                                'Presence times are calculated using only the registered attendances, assuming a lesson is 45 minutes long. The shown average is an average of all subjects\' averages.',
+                                                style: TextStyle(fontSize: 13)))),
+                                    children: [
+                                      CupertinoListTile(
+                                          title: Text('Average', overflow: TextOverflow.ellipsis),
+                                          trailing: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 5),
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Text(Share.session.data.student.subjects
+                                                      .where((x) => x.gradesAverage > 0)
+                                                      .average((x) => x.gradesAverage)
+                                                      .toStringAsFixed(2))))),
+                                      CupertinoListTile(
+                                          title: Text('Wasted time', overflow: TextOverflow.ellipsis),
+                                          trailing: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 5),
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Text(prettyDuration(
+                                                      tersity: DurationTersity.minute,
+                                                      upperTersity: DurationTersity.day,
+                                                      conjunction: ', ',
+                                                      Duration(
+                                                          minutes: Share.session.data.student.attendances
+                                                                  ?.where((x) =>
+                                                                      x.lesson.subject?.name.toLowerCase() != 'religia')
+                                                                  .sum((x) => 45) ??
+                                                              0),
+                                                      locale: DurationLocale.fromLanguageCode(
+                                                              Share.settings.config.languageCode) ??
+                                                          EnglishDurationLocale()))))),
+                                      CupertinoListTile(
+                                          title: Text('Gained time', overflow: TextOverflow.ellipsis),
+                                          trailing: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 5),
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Text(prettyDuration(
+                                                      tersity: DurationTersity.minute,
+                                                      upperTersity: DurationTersity.day,
+                                                      conjunction: ', ',
+                                                      Duration(
+                                                          minutes: Share.session.data.student.attendances
+                                                                  ?.where((x) =>
+                                                                      x.lesson.subject?.name.toLowerCase() == 'religia')
+                                                                  .sum((x) => 45) ??
+                                                              0),
+                                                      locale: DurationLocale.fromLanguageCode(
+                                                              Share.settings.config.languageCode) ??
+                                                          EnglishDurationLocale()))))),
+                                      CupertinoListTile(
+                                          title: Text('Total presence', overflow: TextOverflow.ellipsis),
+                                          trailing: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 5),
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Text(
+                                                      '${(100 * (Share.session.data.student.attendances?.count((x) => x.type == AttendanceType.present) ?? 0) / (Share.session.data.student.attendances?.count() ?? 1)).toStringAsFixed(1)}%')))),
+                                    ],
+                                  ),
+                                  CupertinoListSection.insetGrouped(
+                                      margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                                      additionalDividerMargin: 5,
+                                      header: Container(
+                                          margin: EdgeInsets.symmetric(horizontal: 20),
+                                          child: Opacity(
+                                              opacity: 0.5,
+                                              child: Text('ATTENDANCE',
+                                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
+                                      children: (Share.session.data.student.attendances
+                                                  ?.groupBy((element) => element.lesson.subject?.name ?? 'Unknown')
+                                                  .select((element, index) => (
+                                                        lesson: element.key,
+                                                        value:
+                                                            element.toList().count((x) => x.type == AttendanceType.present) /
+                                                                element.count
+                                                      ))
+                                                  .select(
+                                                    (element, index) => CupertinoListTile(
+                                                        title: Text(element.lesson, overflow: TextOverflow.ellipsis),
+                                                        trailing: Container(
+                                                            margin: EdgeInsets.symmetric(horizontal: 5),
+                                                            child: Opacity(
+                                                                opacity: 0.5,
+                                                                child:
+                                                                    Text('${(100 * element.value).toStringAsFixed(2)}%')))),
+                                                  )
+                                                  .toList() ??
+                                              [])
+                                          .appendIfEmpty(
+                                        CupertinoListTile(
+                                            title: Text('', overflow: TextOverflow.ellipsis),
+                                            trailing: Container(
+                                                alignment: Alignment.center,
+                                                margin: EdgeInsets.symmetric(horizontal: 5),
+                                                child: Opacity(
+                                                    opacity: 0.5,
+                                                    child: Text('No attendance to displasy', textAlign: TextAlign.center)))),
+                                      ))
+                                ]))),
                     trailing: CupertinoListTileChevron())
               ],
             ),
@@ -347,7 +562,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                                               upperTersity: DurationTersity.minute,
                                                               abbreviated: true,
                                                               conjunction: ', ',
-                                                              spacer: '')
+                                                              spacer: '',
+                                                              locale: DurationLocale.fromLanguageCode(
+                                                                      Share.settings.config.languageCode) ??
+                                                                  EnglishDurationLocale())
                                                           : '');
                                                     },
                                                     controller: _bellTimeController,

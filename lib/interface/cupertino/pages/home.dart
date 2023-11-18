@@ -5,6 +5,7 @@ import 'dart:async';
 
 import 'package:darq/darq.dart';
 import 'package:duration/duration.dart';
+import 'package:duration/locale.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -307,7 +308,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                         scale: isLucky ? 3.0 : 1.6,
                                         child: isLucky
                                             ? Icon(CupertinoIcons.star_fill, color: CupertinoColors.systemYellow)
-                                            : Icon(CupertinoIcons.circle, color: CupertinoColors.inactiveGray)),
+                                            : Icon(CupertinoIcons.circle_fill, color: Color(0x22777777))),
                                     Container(
                                         margin: EdgeInsets.only(),
                                         child:
@@ -1747,5 +1748,6 @@ extension Pretty on Duration {
       tersity: abs() < Duration(minutes: 1) ? DurationTersity.second : DurationTersity.minute,
       upperTersity: DurationTersity.minute,
       abbreviated: abs() < Duration(minutes: 1),
-      conjunction: ', ');
+      conjunction: ', ',
+      locale: DurationLocale.fromLanguageCode(Share.settings.config.languageCode) ?? EnglishDurationLocale());
 }
