@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:darq/darq.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,6 +11,7 @@ import 'package:oshi/interface/cupertino/widgets/entries_form.dart';
 import 'package:oshi/interface/cupertino/widgets/modal_page.dart';
 import 'package:oshi/interface/cupertino/widgets/options_form.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
+import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -427,119 +427,315 @@ class _SettingsPageState extends State<SettingsPage> {
                     onTap: () => Navigator.push(
                         context,
                         CupertinoPageRoute(
-                            builder: (context) => CupertinoModalPage(title: 'App Style', children: [
+                            builder: (context) => CupertinoModalPage(title: 'App Info', children: [
                                   CupertinoListSection.insetGrouped(
-                                      additionalDividerMargin: 5,
-                                      header: Container(
-                                          margin: EdgeInsets.symmetric(horizontal: 20),
-                                          child: Opacity(
-                                              opacity: 0.5,
-                                              child: Text('APPLICATION DIALOG TESTS',
-                                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
-                                      children: [
-                                        // Toasts
-                                        CupertinoFormRow(
-                                            prefix: Flexible(
-                                                flex: 2,
-                                                child: CupertinoButton(
-                                                    onPressed: () {
-                                                      try {
-                                                        Fluttertoast.showToast(
-                                                          msg: _toTitleController.text,
-                                                          toastLength: Toast.LENGTH_SHORT,
-                                                          gravity: ToastGravity.CENTER,
-                                                          timeInSecForIosWeb: 1,
-                                                        );
-                                                      } catch (ex) {
-                                                        // ignored
-                                                      }
-                                                    },
-                                                    padding: EdgeInsets.zero,
-                                                    child:
-                                                        Text('Toast test', maxLines: 1, overflow: TextOverflow.ellipsis))),
-                                            child: Column(children: [
-                                              CupertinoTextField(controller: _noTitleController, placeholder: 'Title'),
-                                            ])),
-                                        // Modal dialog
-                                        CupertinoFormRow(
-                                            prefix: Flexible(
-                                                flex: 2,
-                                                child: CupertinoButton(
-                                                    onPressed: () {
-                                                      try {
-                                                        showCupertinoModalPopup<void>(
-                                                            context: context,
-                                                            builder: (BuildContext context) => CupertinoAlertDialog(
-                                                                  title: Text(_noTitleController.text),
-                                                                  content: Text(_noContentController.text),
-                                                                ));
-                                                      } catch (ex) {
-                                                        // ignored
-                                                      }
-                                                    },
-                                                    padding: EdgeInsets.zero,
-                                                    child:
-                                                        Text('Modal test', maxLines: 1, overflow: TextOverflow.ellipsis))),
-                                            child: Column(children: [
-                                              CupertinoTextField(controller: _noTitleController, placeholder: 'Title'),
-                                            ])),
-                                        // Alert dialog
-                                        CupertinoFormRow(
-                                            prefix: Flexible(
-                                                flex: 2,
-                                                child: CupertinoButton(
-                                                    onPressed: () {
-                                                      try {
-                                                        Share.showErrorModal.broadcast(Value((
-                                                          title: _noTitleController.text,
-                                                          message: _noContentController.text,
-                                                          actions: {}
-                                                        )));
-                                                      } catch (ex) {
-                                                        // ignored
-                                                      }
-                                                    },
-                                                    padding: EdgeInsets.zero,
-                                                    child:
-                                                        Text('Alert test', maxLines: 1, overflow: TextOverflow.ellipsis))),
-                                            child: Column(children: [
-                                              CupertinoTextField(controller: _noTitleController, placeholder: 'Title'),
-                                              Container(
-                                                  margin: EdgeInsets.only(top: 6),
-                                                  child: CupertinoTextField(
-                                                      controller: _noContentController, placeholder: 'Content')),
-                                            ])),
-                                        // Notifications
-                                        CupertinoFormRow(
-                                            prefix: Flexible(
-                                                flex: 2,
-                                                child: CupertinoButton(
-                                                    onPressed: () {
-                                                      try {
-                                                        AwesomeNotifications().createNotification(
-                                                            content: NotificationContent(
-                                                          id: -1,
-                                                          channelKey: Resources.notificationChannelName,
-                                                          notificationLayout: NotificationLayout.BigPicture,
-                                                          actionType: ActionType.Default,
-                                                          title: _noTitleController.text,
-                                                          body: _noContentController.text,
-                                                        ));
-                                                      } catch (ex) {
-                                                        // ignored
-                                                      }
-                                                    },
-                                                    padding: EdgeInsets.zero,
-                                                    child: Text('Notification test',
-                                                        maxLines: 1, overflow: TextOverflow.ellipsis))),
-                                            child: Column(children: [
-                                              CupertinoTextField(controller: _noTitleController, placeholder: 'Title'),
-                                              Container(
-                                                  margin: EdgeInsets.only(top: 6),
-                                                  child: CupertinoTextField(
-                                                      controller: _noContentController, placeholder: 'Content')),
-                                            ])),
-                                      ]),
+                                    additionalDividerMargin: 5,
+                                    header: Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 20),
+                                        child: Opacity(
+                                            opacity: 0.5,
+                                            child: Text('VERSION INFO',
+                                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
+                                    children: [
+                                      CupertinoListTile(
+                                          title: Text('Version', overflow: TextOverflow.ellipsis),
+                                          trailing: GestureDetector(
+                                              onDoubleTap: () => Navigator.push(
+                                                  context,
+                                                  CupertinoPageRoute(
+                                                      builder: (context) => StatefulBuilder(
+                                                          builder: ((context, setState) => CupertinoModalPage(
+                                                                  title: 'Developers',
+                                                                  previousPageTitle: 'App Info',
+                                                                  children: [
+                                                                    // Developer mode
+                                                                    CupertinoListSection.insetGrouped(
+                                                                        additionalDividerMargin: 5,
+                                                                        header: Container(
+                                                                            margin: EdgeInsets.symmetric(horizontal: 20),
+                                                                            child: Opacity(
+                                                                                opacity: 0.5,
+                                                                                child: Text('FOR DEVELOPERS',
+                                                                                    style: TextStyle(
+                                                                                        fontSize: 13,
+                                                                                        fontWeight: FontWeight.normal)))),
+                                                                        children: [
+                                                                          CupertinoFormRow(
+                                                                              prefix: Flexible(
+                                                                                  flex: 2,
+                                                                                  child: Text('Developer mode',
+                                                                                      maxLines: 1,
+                                                                                      overflow: TextOverflow.ellipsis)),
+                                                                              child: CupertinoSwitch(
+                                                                                  value: Share.settings.config.devMode,
+                                                                                  onChanged: (s) {
+                                                                                    setState(() =>
+                                                                                        Share.settings.config.devMode = s);
+                                                                                    Share.refreshBase
+                                                                                        .broadcast(); // Refresh everything
+                                                                                  }))
+                                                                        ]),
+                                                                    CupertinoListSection.insetGrouped(
+                                                                        additionalDividerMargin: 5,
+                                                                        header: Container(
+                                                                            margin: EdgeInsets.symmetric(horizontal: 20),
+                                                                            child: Opacity(
+                                                                                opacity: 0.5,
+                                                                                child: Text('APPLICATION DIALOG TESTS',
+                                                                                    style: TextStyle(
+                                                                                        fontSize: 13,
+                                                                                        fontWeight: FontWeight.normal)))),
+                                                                        children: [
+                                                                          // Toasts
+                                                                          CupertinoFormRow(
+                                                                              prefix: Flexible(
+                                                                                  flex: 2,
+                                                                                  child: CupertinoButton(
+                                                                                      onPressed: () {
+                                                                                        try {
+                                                                                          Fluttertoast.showToast(
+                                                                                            msg: _toTitleController.text,
+                                                                                            toastLength: Toast.LENGTH_SHORT,
+                                                                                            gravity: ToastGravity.CENTER,
+                                                                                            timeInSecForIosWeb: 1,
+                                                                                          );
+                                                                                        } catch (ex) {
+                                                                                          // ignored
+                                                                                        }
+                                                                                      },
+                                                                                      padding: EdgeInsets.zero,
+                                                                                      child: Text('Toast test',
+                                                                                          maxLines: 1,
+                                                                                          overflow: TextOverflow.ellipsis))),
+                                                                              child: Column(children: [
+                                                                                CupertinoTextField(
+                                                                                    controller: _noTitleController,
+                                                                                    placeholder: 'Title'),
+                                                                              ])),
+                                                                          // Modal dialog
+                                                                          CupertinoFormRow(
+                                                                              prefix: Flexible(
+                                                                                  flex: 2,
+                                                                                  child: CupertinoButton(
+                                                                                      onPressed: () {
+                                                                                        try {
+                                                                                          showCupertinoModalPopup<void>(
+                                                                                              context: context,
+                                                                                              builder:
+                                                                                                  (BuildContext context) =>
+                                                                                                      CupertinoAlertDialog(
+                                                                                                        title: Text(
+                                                                                                            _noTitleController
+                                                                                                                .text),
+                                                                                                        content: Text(
+                                                                                                            _noContentController
+                                                                                                                .text),
+                                                                                                      ));
+                                                                                        } catch (ex) {
+                                                                                          // ignored
+                                                                                        }
+                                                                                      },
+                                                                                      padding: EdgeInsets.zero,
+                                                                                      child: Text('Modal test',
+                                                                                          maxLines: 1,
+                                                                                          overflow: TextOverflow.ellipsis))),
+                                                                              child: Column(children: [
+                                                                                CupertinoTextField(
+                                                                                    controller: _noTitleController,
+                                                                                    placeholder: 'Title'),
+                                                                              ])),
+                                                                          // Alert dialog
+                                                                          CupertinoFormRow(
+                                                                              prefix: Flexible(
+                                                                                  flex: 2,
+                                                                                  child: CupertinoButton(
+                                                                                      onPressed: () {
+                                                                                        try {
+                                                                                          Share.showErrorModal.broadcast(
+                                                                                              Value((
+                                                                                            title: _noTitleController.text,
+                                                                                            message:
+                                                                                                _noContentController.text,
+                                                                                            actions: {}
+                                                                                          )));
+                                                                                        } catch (ex) {
+                                                                                          // ignored
+                                                                                        }
+                                                                                      },
+                                                                                      padding: EdgeInsets.zero,
+                                                                                      child: Text('Alert test',
+                                                                                          maxLines: 1,
+                                                                                          overflow: TextOverflow.ellipsis))),
+                                                                              child: Column(children: [
+                                                                                CupertinoTextField(
+                                                                                    controller: _noTitleController,
+                                                                                    placeholder: 'Title'),
+                                                                                Container(
+                                                                                    margin: EdgeInsets.only(top: 6),
+                                                                                    child: CupertinoTextField(
+                                                                                        controller: _noContentController,
+                                                                                        placeholder: 'Content')),
+                                                                              ])),
+                                                                          // Notifications
+                                                                          CupertinoFormRow(
+                                                                              prefix: Flexible(
+                                                                                  flex: 2,
+                                                                                  child: Column(
+                                                                                    crossAxisAlignment:
+                                                                                        CrossAxisAlignment.start,
+                                                                                    children: [
+                                                                                      CupertinoButton(
+                                                                                          onPressed: () {
+                                                                                            try {
+                                                                                              NotificationController
+                                                                                                  .sendNotification(
+                                                                                                      title:
+                                                                                                          _noTitleController
+                                                                                                              .text,
+                                                                                                      content:
+                                                                                                          _noContentController
+                                                                                                              .text,
+                                                                                                      category:
+                                                                                                          NotificationCategories
+                                                                                                              .register);
+                                                                                            } catch (ex) {
+                                                                                              // ignored
+                                                                                            }
+                                                                                          },
+                                                                                          padding: EdgeInsets.zero,
+                                                                                          child: Text(
+                                                                                              'Register notification',
+                                                                                              maxLines: 1,
+                                                                                              overflow:
+                                                                                                  TextOverflow.ellipsis)),
+                                                                                      CupertinoButton(
+                                                                                          onPressed: () {
+                                                                                            try {
+                                                                                              NotificationController
+                                                                                                  .sendNotification(
+                                                                                                      title:
+                                                                                                          _noTitleController
+                                                                                                              .text,
+                                                                                                      content:
+                                                                                                          _noContentController
+                                                                                                              .text,
+                                                                                                      category:
+                                                                                                          NotificationCategories
+                                                                                                              .messages);
+                                                                                            } catch (ex) {
+                                                                                              // ignored
+                                                                                            }
+                                                                                          },
+                                                                                          padding: EdgeInsets.zero,
+                                                                                          child: Text(
+                                                                                              'Messages notification',
+                                                                                              maxLines: 1,
+                                                                                              overflow:
+                                                                                                  TextOverflow.ellipsis)),
+                                                                                      CupertinoButton(
+                                                                                          onPressed: () {
+                                                                                            try {
+                                                                                              NotificationController
+                                                                                                  .sendNotification(
+                                                                                                      title:
+                                                                                                          _noTitleController
+                                                                                                              .text,
+                                                                                                      content:
+                                                                                                          _noContentController
+                                                                                                              .text,
+                                                                                                      category:
+                                                                                                          NotificationCategories
+                                                                                                              .other);
+                                                                                            } catch (ex) {
+                                                                                              // ignored
+                                                                                            }
+                                                                                          },
+                                                                                          padding: EdgeInsets.zero,
+                                                                                          child: Text(
+                                                                                              'Other notification',
+                                                                                              maxLines: 1,
+                                                                                              overflow:
+                                                                                                  TextOverflow.ellipsis))
+                                                                                    ],
+                                                                                  )),
+                                                                              child: Column(children: [
+                                                                                CupertinoTextField(
+                                                                                    controller: _noTitleController,
+                                                                                    placeholder: 'Title'),
+                                                                                Container(
+                                                                                    margin: EdgeInsets.only(top: 6),
+                                                                                    child: CupertinoTextField(
+                                                                                        controller: _noContentController,
+                                                                                        placeholder: 'Content')),
+                                                                              ])),
+                                                                        ]),
+                                                                  ]))))),
+                                              child: Container(
+                                                  margin: EdgeInsets.symmetric(horizontal: 5),
+                                                  child: Opacity(opacity: 0.5, child: Text(Share.buildNumber))))),
+                                      CupertinoListTile(
+                                          title: Text('Build', overflow: TextOverflow.ellipsis),
+                                          trailing: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 5),
+                                              child: Opacity(opacity: 0.5, child: Text(Share.buildNumber.split('.').last))))
+                                    ],
+                                  ),
+                                  CupertinoListSection.insetGrouped(
+                                    additionalDividerMargin: 5,
+                                    header: Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 20),
+                                        child: Opacity(
+                                            opacity: 0.5,
+                                            child: Text('CONTRIBUTORS',
+                                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
+                                    children: [
+                                      CupertinoListTile(
+                                          onTap: () async {
+                                            try {
+                                              await launchUrlString('https://github.com/KimihikoAkayasaki');
+                                            } catch (ex) {
+                                              // ignored
+                                            }
+                                          },
+                                          title: Text('公彦赤屋先', overflow: TextOverflow.ellipsis),
+                                          trailing: Row(children: [
+                                            Container(
+                                                margin: EdgeInsets.symmetric(horizontal: 5),
+                                                child: Opacity(opacity: 0.5, child: Text('Lead Developer'))),
+                                            CupertinoListTileChevron()
+                                          ])),
+                                      CupertinoListTile(
+                                          onTap: () async {
+                                            try {
+                                              await launchUrlString('https://github.com/xFaiafokkusu');
+                                            } catch (ex) {
+                                              // ignored
+                                            }
+                                          },
+                                          title: Text('Faiafokkusu', overflow: TextOverflow.ellipsis),
+                                          trailing: Row(children: [
+                                            Container(
+                                                margin: EdgeInsets.symmetric(horizontal: 5),
+                                                child: Opacity(opacity: 0.5, child: Text('Support Developer'))),
+                                            CupertinoListTileChevron()
+                                          ])),
+                                      CupertinoListTile(
+                                          onTap: () async {
+                                            try {
+                                              await launchUrlString('https://github.com/AAhockey');
+                                            } catch (ex) {
+                                              // ignored
+                                            }
+                                          },
+                                          title: Text('AAhockey', overflow: TextOverflow.ellipsis),
+                                          trailing: Row(children: [
+                                            Container(
+                                                margin: EdgeInsets.symmetric(horizontal: 5),
+                                                child: Opacity(opacity: 0.5, child: Text('Support'))),
+                                            CupertinoListTileChevron()
+                                          ]))
+                                    ],
+                                  )
                                 ]))),
                     title: Text('App Info', overflow: TextOverflow.ellipsis),
                     trailing: Row(children: [

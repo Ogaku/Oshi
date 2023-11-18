@@ -50,7 +50,9 @@ class _MessageComposePageState extends State<MessageComposePage> {
       searchController: TextEditingController(),
       backgroundColor: CupertinoDynamicColor.withBrightness(
           color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 28, 28, 30)),
-      largeTitle: Text('New message'),
+      largeTitle: subjectController.text.isEmpty
+          ? Text('New message')
+          : Text(subjectController.text, maxLines: 1, overflow: TextOverflow.ellipsis),
       leading: CupertinoButton(
           padding: EdgeInsets.all(0),
           child: Text('Cancel',

@@ -33,6 +33,7 @@ class SearchableSliverNavigationBar extends StatefulWidget {
   final Function(({double? progress, String? message})? progress)? onProgress;
   final DateTime? selectedDate;
   final bool keepBackgroundWatchers;
+  final bool alwaysShowAddons;
 
   SearchableSliverNavigationBar(
       {super.key,
@@ -59,7 +60,8 @@ class SearchableSliverNavigationBar extends StatefulWidget {
       bool? disableAddons,
       this.useSliverBox = false,
       this.selectedDate,
-      this.keepBackgroundWatchers = false})
+      this.keepBackgroundWatchers = false,
+      this.alwaysShowAddons = false})
       : searchController = searchController ?? TextEditingController(),
         disableAddons = disableAddons ?? (child != null);
 
@@ -80,7 +82,8 @@ class _NavState extends State<SearchableSliverNavigationBar> {
   @override
   void initState() {
     super.initState();
-    scrollController = ScrollController(initialScrollOffset: widget.disableAddons ? 0 : 55);
+    scrollController = ScrollController(initialScrollOffset: (widget.disableAddons || widget.alwaysShowAddons) ? 0 : 55);
+    isVisibleSearchBar = widget.alwaysShowAddons ? 60 : 0;
     groupSelection = widget.segments?.keys.first;
   }
 
@@ -218,13 +221,21 @@ class _NavState extends State<SearchableSliverNavigationBar> {
               if (scrollInfo.metrics.pixels > previousScrollPosition) {
                 if (isVisibleSearchBar > 0 && scrollInfo.metrics.pixels > 0) {
                   setState(() {
-                    isVisibleSearchBar = (55 - scrollInfo.metrics.pixels) >= 0 ? (55 - scrollInfo.metrics.pixels) : 0;
+                    isVisibleSearchBar = widget.alwaysShowAddons
+                        ? 60
+                        : (55 - scrollInfo.metrics.pixels) >= 0
+                            ? (55 - scrollInfo.metrics.pixels)
+                            : 0;
                   });
                 }
               } else if (scrollInfo.metrics.pixels <= previousScrollPosition) {
                 if (isVisibleSearchBar < 55 /*&& scrollInfo.metrics.pixels >= 0*/ && scrollInfo.metrics.pixels <= 55) {
                   setState(() {
-                    isVisibleSearchBar = (55 - scrollInfo.metrics.pixels) <= 55 ? (55 - scrollInfo.metrics.pixels) : 55;
+                    isVisibleSearchBar = widget.alwaysShowAddons
+                        ? 60
+                        : (55 - scrollInfo.metrics.pixels) <= 55
+                            ? (55 - scrollInfo.metrics.pixels)
+                            : 55;
                   });
                 }
               }
@@ -236,7 +247,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
             } else if (scrollInfo is ScrollEndNotification) {
               if (widget.disableAddons || widget.child != null) return true;
               Future.delayed(Duration.zero, () {
-                if (isVisibleSearchBar < 25 && isVisibleSearchBar > 10) {
+                if (isVisibleSearchBar < 25 && isVisibleSearchBar > 10 && !widget.alwaysShowAddons) {
                   setState(() {
                     scrollController.animateTo(55, duration: const Duration(milliseconds: 200), curve: Curves.ease);
                   });

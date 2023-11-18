@@ -24,7 +24,9 @@ class Config with ChangeNotifier {
       YearlyAverageMethods? yearlyAverageMethod,
       int? lessonCallTime,
       LessonCallTypes? lessonCallType,
-      Duration? bellOffset})
+      Duration? bellOffset,
+      bool? devMode,
+      bool? notificationsAskedOnce})
       : _customGradeValues = customGradeValues ?? {},
         _customGradeMarginValues = customGradeMarginValues ?? {},
         _customGradeModifierValues = customGradeModifierValues ?? {'+': 0.5, '-': -0.25},
@@ -36,7 +38,9 @@ class Config with ChangeNotifier {
         _yearlyAverageMethod = yearlyAverageMethod ?? YearlyAverageMethods.allGradesAverage,
         _lessonCallTime = lessonCallTime ?? 15,
         _lessonCallType = lessonCallType ?? LessonCallTypes.countFromEnd,
-        _bellOffset = bellOffset ?? Duration.zero;
+        _bellOffset = bellOffset ?? Duration.zero,
+        _devMode = devMode ?? true,
+        _notificationsAskedOnce = notificationsAskedOnce ?? false;
 
   // TODO All HiveFields should be private and trigger a settings save
 
@@ -76,6 +80,12 @@ class Config with ChangeNotifier {
   @HiveField(12, defaultValue: Duration.zero)
   Duration _bellOffset;
 
+  @HiveField(13, defaultValue: false)
+  bool _devMode;
+
+  @HiveField(14, defaultValue: false)
+  bool _notificationsAskedOnce;
+
   @JsonKey(includeToJson: false, includeFromJson: false)
   Map<String, double> get customGradeValues => _customGradeValues;
 
@@ -114,6 +124,12 @@ class Config with ChangeNotifier {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   Duration get bellOffset => _bellOffset;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get devMode => _devMode;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get notificationsAskedOnce => _notificationsAskedOnce;
 
   set customGradeValues(Map<String, double> customGradeValues) {
     _customGradeValues = customGradeValues;
@@ -174,6 +190,16 @@ class Config with ChangeNotifier {
 
   set bellOffset(Duration value) {
     _bellOffset = value;
+    notifyListeners();
+  }
+
+  set devMode(bool value) {
+    _devMode = value;
+    notifyListeners();
+  }
+
+  set notificationsAskedOnce(bool value) {
+    _notificationsAskedOnce = value;
     notifyListeners();
   }
 

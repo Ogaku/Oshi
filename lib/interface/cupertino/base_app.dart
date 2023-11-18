@@ -3,15 +3,14 @@
 
 import 'dart:io';
 
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:format/format.dart';
-import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:path/path.dart' as path;
 
@@ -21,6 +20,7 @@ import 'package:oshi/interface/cupertino/pages/timetable.dart' show timetablePag
 import 'package:oshi/interface/cupertino/pages/messages.dart' show messagesPage;
 import 'package:oshi/interface/cupertino/pages/absences.dart' show absencesPage;
 import 'package:oshi/share/share.dart';
+import 'package:show_fps/show_fps.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:version/version.dart';
 
@@ -47,31 +47,8 @@ class _BaseAppState extends State<BaseApp> {
           (event) => Share.translator.loadResources(Share.settings.config.languageCode).then((value) => setState(() {})));
     }
 
-    // Only after at least the action method is set, the notification events are delivered
-    AwesomeNotifications().setListeners(
-        onActionReceivedMethod: NotificationController.onActionReceivedMethod,
-        onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
-        onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
-        onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod);
-
     // Set up other stuff after the app's launched
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      // Check notification access and request if not allowed
-      AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-        if (!isAllowed) {
-          Share.showErrorModal.broadcast(Value((
-            title: 'Allow Oshi to send you notifications?',
-            message:
-                'Oshi needs access to send you notifications regarding timetable changes, new or updated grades, and other school events.',
-            actions: {
-              'Allow': () async => AwesomeNotifications().requestPermissionToSendNotifications(),
-              'Later': () async {},
-              'Never': () async {}
-            }
-          )));
-        }
-      });
-
       if (!Share.hasCheckedForUpdates) {
         try {
           (Dio().get('https://api.github.com/repos/Ogaku/Oshi/releases/latest')).then((value) {
@@ -93,6 +70,96 @@ class _BaseAppState extends State<BaseApp> {
 
         Share.hasCheckedForUpdates = true;
       }
+
+      try {
+        // Check notification access and request if not allowed : Android
+        Share.notificationsPlugin
+            .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+            ?.areNotificationsEnabled()
+            .then((value) {
+          try {
+            if (!Share.settings.config.notificationsAskedOnce && !(value ?? true)) {
+              Share.showErrorModal.broadcast(Value((
+                title: 'Allow Oshi to send you notifications?',
+                message:
+                    'Oshi needs access to send you notifications regarding timetable changes, new or updated grades, and other school events.',
+                actions: {
+                  'Allow': () async => Share.notificationsPlugin
+                      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+                      ?.requestNotificationsPermission()
+                      .then((value) => Share.settings.config.notificationsAskedOnce = true),
+                  'Later': () async {},
+                  'Never': () async => Share.settings.config.notificationsAskedOnce = true
+                }
+              )));
+            }
+          } catch (ex) {
+            // ignored
+          }
+        });
+      } catch (ex) {
+        // ignored
+      }
+
+      try {
+        // Check notification access and request if not allowed : iOS
+        Share.notificationsPlugin
+            .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+            ?.requestPermissions(alert: true, badge: true, sound: true)
+            .then((value) {
+          try {
+            if (!Share.settings.config.notificationsAskedOnce && !(value ?? true)) {
+              Share.showErrorModal.broadcast(Value((
+                title: 'Allow Oshi to send you notifications?',
+                message:
+                    'Oshi needs access to send you notifications regarding timetable changes, new or updated grades, and other school events.',
+                actions: {
+                  'Allow': () async => Share.notificationsPlugin
+                      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+                      ?.requestNotificationsPermission()
+                      .then((value) => Share.settings.config.notificationsAskedOnce = true),
+                  'Later': () async {},
+                  'Never': () async => Share.settings.config.notificationsAskedOnce = true
+                }
+              )));
+            }
+          } catch (ex) {
+            // ignored
+          }
+        });
+      } catch (ex) {
+        // ignored
+      }
+
+      try {
+        // Check notification access and request if not allowed : macOS
+        Share.notificationsPlugin
+            .resolvePlatformSpecificImplementation<MacOSFlutterLocalNotificationsPlugin>()
+            ?.requestPermissions(alert: true, badge: true, sound: true)
+            .then((value) {
+          try {
+            if (!Share.settings.config.notificationsAskedOnce && !(value ?? true)) {
+              Share.showErrorModal.broadcast(Value((
+                title: 'Allow Oshi to send you notifications?',
+                message:
+                    'Oshi needs access to send you notifications regarding timetable changes, new or updated grades, and other school events.',
+                actions: {
+                  'Allow': () async => Share.notificationsPlugin
+                      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+                      ?.requestNotificationsPermission()
+                      .then((value) => Share.settings.config.notificationsAskedOnce = true),
+                  'Later': () async {},
+                  'Never': () async => Share.settings.config.notificationsAskedOnce = true
+                }
+              )));
+            }
+          } catch (ex) {
+            // ignored
+          }
+        });
+      } catch (ex) {
+        // ignored
+      }
     });
   }
 
@@ -112,58 +179,64 @@ class _BaseAppState extends State<BaseApp> {
     return CupertinoApp(
         theme: _eventfulColorTheme,
         debugShowCheckedModeBanner: false,
-        home: Builder(builder: (context) {
-          // Re-subscribe to all events - modals
-          Share.showErrorModal.unsubscribeAll();
-          Share.showErrorModal.subscribe((args) async {
-            if (args?.value == null) return;
-            await showCupertinoModalPopup(
-                context: context,
-                useRootNavigator: true,
-                builder: (s) => CupertinoActionSheet(
-                    title: Text(args!.value.title),
-                    message: Text(args.value.message),
-                    actions: args.value.actions.isEmpty
-                        ? null
-                        : args.value.actions.entries
-                            .select(
-                              (x, index) => CupertinoActionSheetAction(
-                                child: Text(x.key),
-                                onPressed: () {
-                                  try {
-                                    x.value();
-                                  } catch (ex) {
-                                    // ignored
-                                  }
-                                  Navigator.of(context, rootNavigator: true).pop();
-                                },
-                              ),
-                            )
-                            .toList()));
-          });
+        home: ShowFPS(
+            alignment: Alignment.topLeft,
+            visible: Share.settings.config.devMode,
+            showChart: Share.settings.config.devMode,
+            borderRadius: BorderRadius.all(Radius.circular(11)),
+            child: Builder(builder: (context) {
+              // Re-subscribe to all events - modals
+              Share.showErrorModal.unsubscribeAll();
+              Share.showErrorModal.subscribe((args) async {
+                if (args?.value == null) return;
+                await showCupertinoModalPopup(
+                    context: context,
+                    useRootNavigator: true,
+                    builder: (s) => CupertinoActionSheet(
+                        title: Text(args!.value.title),
+                        message: Text(args.value.message),
+                        actions: args.value.actions.isEmpty
+                            ? null
+                            : args.value.actions.entries
+                                .select(
+                                  (x, index) => CupertinoActionSheetAction(
+                                    child: Text(x.key),
+                                    onPressed: () {
+                                      try {
+                                        x.value();
+                                      } catch (ex) {
+                                        // ignored
+                                      }
+                                      Navigator.of(context, rootNavigator: true).pop();
+                                    },
+                                  ),
+                                )
+                                .toList()));
+              });
 
-          return CupertinoTabScaffold(
-            controller: tabController,
-            tabBar: CupertinoTabBar(backgroundColor: CupertinoTheme.of(context).barBackgroundColor.withAlpha(0xFF), items: [
-              BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: '/Titles/Pages/Home'.localized),
-              BottomNavigationBarItem(icon: Icon(CupertinoIcons.rosette), label: '/Titles/Pages/Grades'.localized),
-              BottomNavigationBarItem(icon: Icon(CupertinoIcons.calendar), label: '/Titles/Pages/Schedule'.localized),
-              BottomNavigationBarItem(icon: Icon(CupertinoIcons.envelope), label: '/Titles/Pages/Messages'.localized),
-              BottomNavigationBarItem(
-                  icon: Icon(CupertinoIcons.person_crop_circle_badge_minus), label: '/Titles/Pages/Absences'.localized),
-            ]),
-            tabBuilder: (context, index) => CupertinoTabView(
-              builder: (context) => switch (index) {
-                0 => homePage,
-                1 => gradesPage,
-                2 => timetablePage,
-                3 => messagesPage,
-                4 => absencesPage,
-                _ => homePage,
-              },
-            ),
-          );
-        }));
+              return CupertinoTabScaffold(
+                controller: tabController,
+                tabBar:
+                    CupertinoTabBar(backgroundColor: CupertinoTheme.of(context).barBackgroundColor.withAlpha(0xFF), items: [
+                  BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: '/Titles/Pages/Home'.localized),
+                  BottomNavigationBarItem(icon: Icon(CupertinoIcons.rosette), label: '/Titles/Pages/Grades'.localized),
+                  BottomNavigationBarItem(icon: Icon(CupertinoIcons.calendar), label: '/Titles/Pages/Schedule'.localized),
+                  BottomNavigationBarItem(icon: Icon(CupertinoIcons.envelope), label: '/Titles/Pages/Messages'.localized),
+                  BottomNavigationBarItem(
+                      icon: Icon(CupertinoIcons.person_crop_circle_badge_minus), label: '/Titles/Pages/Absences'.localized),
+                ]),
+                tabBuilder: (context, index) => CupertinoTabView(
+                  builder: (context) => switch (index) {
+                    0 => homePage,
+                    1 => gradesPage,
+                    2 => timetablePage,
+                    3 => messagesPage,
+                    4 => absencesPage,
+                    _ => homePage,
+                  },
+                ),
+              );
+            })));
   }
 
   void _showAlertDialog(BuildContext context, String url) {

@@ -761,545 +761,564 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     ];
 
     // Widgets for the timeline page
-    var timelineChildren = Share.session.changes
-        .orderByDescending((x) => x.refreshDate)
-        .select((x, index) => CupertinoListSection.insetGrouped(
-            margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-            separatorColor: Colors.transparent,
-            header: Container(
-                margin: EdgeInsets.only(left: 5),
-                child: Text(
-                    (x.refreshDate.asDate() == DateTime.now().asDate() ? 'Today, ' : '') +
-                        DateFormat(x.refreshDate.asDate() == DateTime.now().asDate() ? 'h:mm a' : 'EEE, MMM d, h:mm a')
-                            .format(x.refreshDate),
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray))),
-            children: <Widget>[]
-                // Added or updated lessons
-                .appendIf(
-                    CupertinoListTile(
-                        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                        title: CupertinoListSection.insetGrouped(
-                            separatorColor: Colors.transparent,
-                            backgroundColor: Colors.transparent,
-                            margin: EdgeInsets.zero,
-                            hasLeading: false,
-                            header: Text(
-                                x.timetablesChanged
-                                    .count((element) => element.type != RegisterChangeTypes.removed)
-                                    .asTimetablesNumber(RegisterChangeTypes.added),
-                                style: TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
-                            children: x.timetablesChanged
-                                .where((element) => element.type != RegisterChangeTypes.removed)
-                                .select(
-                                  (y, index) => CupertinoListTile(
-                                      padding: EdgeInsets.only(top: 5, bottom: 5),
-                                      title: y.value.asLessonWidget(context, null, null, setState,
-                                          markModified: y.type == RegisterChangeTypes.changed, onTap: () {
-                                        Share.tabsNavigatePage.broadcast(Value(2));
-                                        Future.delayed(Duration(milliseconds: 250))
-                                            .then((arg) => Share.timetableNavigateDay.broadcast(Value(y.value.date)));
-                                      })),
-                                )
-                                .toList())),
-                    x.timetablesChanged.any((element) => element.type != RegisterChangeTypes.removed))
-                // Deleted lessons
-                .appendIf(
-                    CupertinoListTile(
-                        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                        title: CupertinoListSection.insetGrouped(
-                            separatorColor: Colors.transparent,
-                            backgroundColor: Colors.transparent,
-                            margin: EdgeInsets.zero,
-                            hasLeading: false,
-                            header: Text(
-                                x.timetablesChanged
-                                    .count((element) => element.type == RegisterChangeTypes.removed)
-                                    .asTimetablesNumber(RegisterChangeTypes.removed),
-                                style:
-                                    TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
-                            children: x.timetablesChanged
-                                .where((element) => element.type == RegisterChangeTypes.removed)
-                                .select(
-                                  (y, index) => CupertinoListTile(
-                                      padding: EdgeInsets.only(top: 5, bottom: 5),
-                                      title: y.value.asLessonWidget(context, null, null, setState, markRemoved: true)),
-                                )
-                                .toList())),
-                    x.timetablesChanged.any((element) => element.type == RegisterChangeTypes.removed))
-                // Added or updated messages
-                .appendIf(
-                    CupertinoListTile(
-                        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                        title: CupertinoListSection.insetGrouped(
-                            separatorColor: Colors.transparent,
-                            backgroundColor: Colors.transparent,
-                            margin: EdgeInsets.zero,
-                            hasLeading: false,
-                            header: () {
-                              var news = x.messagesChanged.count((element) => element.type == RegisterChangeTypes.added);
-                              var changes =
-                                  x.messagesChanged.count((element) => element.type == RegisterChangeTypes.changed);
+    var timelineChanges = Share.session.changes.orderByDescending((x) => x.refreshDate).toList();
 
-                              return Text(
-                                  switch (news) {
-                                    // There's only new grades
-                                    > 0 when changes == 0 => news.asMessagesNumber(RegisterChangeTypes.added),
-                                    // There's only changed grades
-                                    0 when changes > 0 => changes.asMessagesNumber(RegisterChangeTypes.changed),
-                                    // Some are new, some are changed
-                                    > 0 when changes > 0 => (news + changes).asMessagesNumber(),
-                                    // Shouldn't happen, but we need a _ case
-                                    _ => 'No changes, WTF?!'
-                                  },
-                                  style: TextStyle(
-                                      fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
-                            }(),
-                            children: x.messagesChanged
-                                .where((element) => element.type != RegisterChangeTypes.removed)
-                                .select(
-                                  (y, index) => CupertinoListTile(
-                                      padding: EdgeInsets.only(top: 5, bottom: 5),
-                                      title: CupertinoListTile(
-                                          padding: EdgeInsets.all(0),
-                                          title: GestureDetector(
-                                              onTap: () {
-                                                Share.tabsNavigatePage.broadcast(Value(3));
-                                                Future.delayed(Duration(milliseconds: 250))
-                                                    .then((arg) => Share.messagesNavigate.broadcast(Value(y.value)));
-                                              },
-                                              child: Container(
-                                                  decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                                                      color: CupertinoDynamicColor.resolve(
-                                                          CupertinoColors.tertiarySystemBackground, context)),
-                                                  padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
-                                                  child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      mainAxisSize: MainAxisSize.max,
-                                                      children: [
-                                                        Row(
-                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            children: [
-                                                              Visibility(
-                                                                  visible:
-                                                                      !y.value.read && (y.value.receivers?.isEmpty ?? true),
-                                                                  child: Container(
-                                                                      margin: EdgeInsets.only(top: 5, right: 6),
-                                                                      child: Container(
-                                                                        height: 10,
-                                                                        width: 10,
-                                                                        decoration: BoxDecoration(
-                                                                            shape: BoxShape.circle,
-                                                                            color: CupertinoTheme.of(context).primaryColor),
-                                                                      ))),
-                                                              Expanded(
-                                                                  child: Container(
-                                                                      margin: EdgeInsets.only(right: 10),
-                                                                      child: Text(
-                                                                        y.value.senderName,
-                                                                        overflow: TextOverflow.ellipsis,
-                                                                        style: TextStyle(
-                                                                            fontSize: 17, fontWeight: FontWeight.w600),
-                                                                      ))),
-                                                              Visibility(
-                                                                visible: y.value.hasAttachments,
-                                                                child: Transform.scale(
-                                                                    scale: 0.6,
-                                                                    child: Icon(CupertinoIcons.paperclip,
-                                                                        color: CupertinoColors.inactiveGray)),
-                                                              ),
-                                                              Container(
-                                                                  margin: EdgeInsets.only(top: 1),
-                                                                  child: Opacity(
-                                                                      opacity: 0.5,
-                                                                      child: Text(
-                                                                        y.value.sendDateString,
-                                                                        overflow: TextOverflow.ellipsis,
-                                                                        style: TextStyle(
-                                                                            fontSize: 16, fontWeight: FontWeight.normal),
-                                                                      )))
-                                                            ]),
-                                                        Container(
-                                                            margin: EdgeInsets.only(top: 3),
-                                                            child: Text(
-                                                              y.value.topic,
-                                                              maxLines: 2,
-                                                              overflow: TextOverflow.ellipsis,
-                                                              style: TextStyle(fontSize: 16),
-                                                            )),
-                                                        Opacity(
-                                                            opacity: 0.5,
-                                                            child: Container(
-                                                                margin: EdgeInsets.only(top: 5),
-                                                                child: Text(
-                                                                  y.value.previewString
-                                                                      .replaceAll('\n ', '\n')
-                                                                      .replaceAll('\n\n', '\n'),
-                                                                  maxLines: 2,
-                                                                  overflow: TextOverflow.ellipsis,
-                                                                  style: TextStyle(fontSize: 16),
-                                                                ))),
-                                                      ]))))),
-                                )
-                                .toList())),
-                    x.messagesChanged.any((element) => element.type != RegisterChangeTypes.removed))
-                // Added or updated attendances
-                .appendIf(
-                    CupertinoListTile(
-                        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                        title: CupertinoListSection.insetGrouped(
-                            separatorColor: Colors.transparent,
-                            backgroundColor: Colors.transparent,
-                            margin: EdgeInsets.zero,
-                            hasLeading: false,
-                            header: () {
-                              var news = x.attendancesChanged.count((element) => element.type == RegisterChangeTypes.added);
-                              var changes =
-                                  x.attendancesChanged.count((element) => element.type == RegisterChangeTypes.changed);
-
-                              return Text(
-                                  switch (news) {
-                                    // There's only new grades
-                                    > 0 when changes == 0 => news.asAttendancesNumber(RegisterChangeTypes.added),
-                                    // There's only changed grades
-                                    0 when changes > 0 => changes.asAttendancesNumber(RegisterChangeTypes.changed),
-                                    // Some are new, some are changed
-                                    > 0 when changes > 0 => (news + changes).asAttendancesNumber(),
-                                    // Shouldn't happen, but we need a _ case
-                                    _ => 'No changes, WTF?!'
-                                  },
-                                  style: TextStyle(
-                                      fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
-                            }(),
-                            children: x.attendancesChanged
-                                .orderByDescending((element) => element.value.addDate)
-                                .where((element) => element.type != RegisterChangeTypes.removed)
-                                .select(
-                                  (y, index) => CupertinoListTile(
-                                      padding: EdgeInsets.only(top: 5, bottom: 5),
-                                      title: y.value.asAttendanceWidget(context,
-                                          markModified: y.type == RegisterChangeTypes.changed,
-                                          onTap: () => Share.tabsNavigatePage.broadcast(Value(4)))),
-                                )
-                                .toList())),
-                    x.attendancesChanged.any((element) => element.type != RegisterChangeTypes.removed))
-                // Deleted attendances
-                .appendIf(
-                    CupertinoListTile(
-                        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                        title: CupertinoListSection.insetGrouped(
-                            separatorColor: Colors.transparent,
-                            backgroundColor: Colors.transparent,
-                            margin: EdgeInsets.zero,
-                            hasLeading: false,
-                            header: Text(x.attendancesChanged.count((element) => element.type == RegisterChangeTypes.removed).asAttendancesNumber(RegisterChangeTypes.removed), style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
-                            children: x.attendancesChanged
-                                .where((element) => element.type == RegisterChangeTypes.removed)
-                                .select(
-                                  (y, index) => CupertinoListTile(
-                                      padding: EdgeInsets.only(top: 5, bottom: 5),
-                                      title: y.value.asAttendanceWidget(context, markRemoved: true)),
-                                )
-                                .toList())),
-                    x.attendancesChanged.any((element) => element.type == RegisterChangeTypes.removed))
-                // Added or updated grades
-                .appendIf(
-                    CupertinoListTile(
-                        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                        title: CupertinoListSection.insetGrouped(
-                            separatorColor: Colors.transparent,
-                            backgroundColor: Colors.transparent,
-                            margin: EdgeInsets.zero,
-                            hasLeading: false,
-                            header: () {
-                              var news = x.gradesChanged.count((element) => element.type == RegisterChangeTypes.added);
-                              var changes = x.gradesChanged.count((element) => element.type == RegisterChangeTypes.changed);
-
-                              return Text(
-                                  switch (news) {
-                                    // There's only new grades
-                                    > 0 when changes == 0 => news.asGradesNumber(RegisterChangeTypes.added),
-                                    // There's only changed grades
-                                    0 when changes > 0 => changes.asGradesNumber(RegisterChangeTypes.changed),
-                                    // Some are new, some are changed
-                                    > 0 when changes > 0 => (news + changes).asGradesNumber(),
-                                    // Shouldn't happen, but we need a _ case
-                                    _ => 'No changes, WTF?!'
-                                  },
-                                  style: TextStyle(
-                                      fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
-                            }(),
-                            children: x.gradesChanged
-                                .where((element) => element.type != RegisterChangeTypes.removed)
-                                .select(
-                                  (y, index) => CupertinoListTile(
-                                      padding: EdgeInsets.only(top: 5, bottom: 5),
-                                      title: y.value.asGrade(context, markModified: y.type == RegisterChangeTypes.changed,
-                                          onTap: () {
-                                        var lesson = Share.session.data.student.subjects
-                                            .firstWhereOrDefault((value) => value.grades.contains(y.value));
-                                        if (lesson == null) return;
-                                        Share.tabsNavigatePage.broadcast(Value(1));
-                                        Future.delayed(Duration(milliseconds: 250))
-                                            .then((arg) => Share.gradesNavigate.broadcast(Value(lesson)));
-                                      })),
-                                )
-                                .toList())),
-                    x.gradesChanged.any((element) => element.type != RegisterChangeTypes.removed))
-                // Deleted grades
-                .appendIf(
-                    CupertinoListTile(
-                        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                        title: CupertinoListSection.insetGrouped(
-                            separatorColor: Colors.transparent,
-                            backgroundColor: Colors.transparent,
-                            margin: EdgeInsets.zero,
-                            hasLeading: false,
-                            header: Text(x.gradesChanged.count((element) => element.type == RegisterChangeTypes.removed).asGradesNumber(RegisterChangeTypes.removed), style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
-                            children: x.gradesChanged
-                                .where((element) => element.type == RegisterChangeTypes.removed)
-                                .select(
-                                  (y, index) => CupertinoListTile(
-                                      padding: EdgeInsets.only(top: 5, bottom: 5),
-                                      title: y.value.asGrade(context, markRemoved: true)),
-                                )
-                                .toList())),
-                    x.gradesChanged.any((element) => element.type == RegisterChangeTypes.removed))
-                // Added or updated announcements
-                .appendIf(
-                    CupertinoListTile(
-                        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                        title: CupertinoListSection.insetGrouped(
-                            separatorColor: Colors.transparent,
-                            backgroundColor: Colors.transparent,
-                            margin: EdgeInsets.zero,
-                            hasLeading: false,
-                            header: () {
-                              var news =
-                                  x.announcementsChanged.count((element) => element.type == RegisterChangeTypes.added);
-                              var changes =
-                                  x.announcementsChanged.count((element) => element.type == RegisterChangeTypes.changed);
-
-                              return Text(
-                                  switch (news) {
-                                    // There's only new grades
-                                    > 0 when changes == 0 => news.asAnnouncementsNumber(RegisterChangeTypes.added),
-                                    // There's only changed grades
-                                    0 when changes > 0 => changes.asAnnouncementsNumber(RegisterChangeTypes.changed),
-                                    // Some are new, some are changed
-                                    > 0 when changes > 0 => (news + changes).asAnnouncementsNumber(),
-                                    // Shouldn't happen, but we need a _ case
-                                    _ => 'No changes, WTF?!'
-                                  },
-                                  style: TextStyle(
-                                      fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
-                            }(),
-                            children: x.announcementsChanged
-                                .where((element) => element.type != RegisterChangeTypes.removed)
-                                .orderByDescending((x) => x.value.startDate)
-                                .select((x, index) => (
-                                      message: Message(
-                                          id: x.value.read ? 1 : 0,
-                                          topic: x.value.subject,
-                                          content: x.value.content,
-                                          sender: x.value.contact ??
-                                              Teacher(firstName: Share.session.data.student.mainClass.unit.name),
-                                          sendDate: x.value.startDate,
-                                          readDate: x.value.endDate),
-                                      parent: x.value
-                                    ))
-                                .toList()
-                                .select(
-                                  (y, index) => CupertinoListTile(
-                                      padding: EdgeInsets.only(top: 5, bottom: 5),
-                                      title: CupertinoListTile(
-                                          padding: EdgeInsets.all(0),
-                                          title: GestureDetector(
-                                              onTap: () {
-                                                Share.tabsNavigatePage.broadcast(Value(3));
-                                                Future.delayed(Duration(milliseconds: 250))
-                                                    .then((arg) => Share.messagesNavigateAnnouncement.broadcast(Value(y)));
-                                              },
-                                              child: Container(
-                                                  decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                                                      color: CupertinoDynamicColor.resolve(
-                                                          CupertinoColors.tertiarySystemBackground, context)),
-                                                  padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
-                                                  child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      mainAxisSize: MainAxisSize.max,
-                                                      children: [
-                                                        Row(
-                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            children: [
-                                                              Visibility(
-                                                                  visible: () {
-                                                                    try {
-                                                                      return !(Share
-                                                                              .session
-                                                                              .data
-                                                                              .student
-                                                                              .mainClass
-                                                                              .unit
-                                                                              .announcements?[Share.session.data.student
-                                                                                      .mainClass.unit.announcements
-                                                                                      ?.indexOf(y.parent) ??
-                                                                                  -1]
-                                                                              .read ??
-                                                                          true);
-                                                                    } catch (ex) {
-                                                                      return true;
-                                                                    }
-                                                                  }(),
-                                                                  child: Container(
-                                                                      margin: EdgeInsets.only(top: 5, right: 6),
-                                                                      child: Container(
-                                                                        height: 10,
-                                                                        width: 10,
-                                                                        decoration: BoxDecoration(
-                                                                            shape: BoxShape.circle,
-                                                                            color: CupertinoTheme.of(context).primaryColor),
-                                                                      ))),
-                                                              Expanded(
-                                                                  child: Container(
-                                                                      margin: EdgeInsets.only(right: 10),
-                                                                      child: Text(
-                                                                        y.message.senderName,
-                                                                        overflow: TextOverflow.ellipsis,
-                                                                        style: TextStyle(
-                                                                            fontSize: 17, fontWeight: FontWeight.w600),
-                                                                      ))),
-                                                              Visibility(
-                                                                visible: y.message.hasAttachments,
-                                                                child: Transform.scale(
-                                                                    scale: 0.6,
-                                                                    child: Icon(CupertinoIcons.paperclip,
-                                                                        color: CupertinoColors.inactiveGray)),
-                                                              ),
-                                                              Container(
-                                                                  margin: EdgeInsets.only(top: 1),
-                                                                  child: Opacity(
-                                                                      opacity: 0.5,
-                                                                      child: Text(
-                                                                        (y.message.sendDate.month ==
-                                                                                    y.message.readDate?.month &&
-                                                                                y.message.sendDate.year ==
-                                                                                    y.message.readDate?.year &&
-                                                                                y.message.sendDate.day !=
-                                                                                    y.message.readDate?.day
-                                                                            ? '${DateFormat('MMM d').format(y.message.sendDate)} - ${DateFormat('d').format(y.message.readDate ?? DateTime.now())}'
-                                                                            : '${DateFormat('MMM d').format(y.message.sendDate)} - ${DateFormat(y.message.sendDate.year == y.message.readDate?.year ? 'MMM d' : 'MMM d y').format(y.message.readDate ?? DateTime.now())}'),
-                                                                        overflow: TextOverflow.ellipsis,
-                                                                        style: TextStyle(
-                                                                            fontSize: 16, fontWeight: FontWeight.normal),
-                                                                      )))
-                                                            ]),
-                                                        Container(
-                                                            margin: EdgeInsets.only(top: 3),
-                                                            child: Text(
-                                                              y.message.topic,
-                                                              maxLines: 2,
-                                                              overflow: TextOverflow.ellipsis,
-                                                              style: TextStyle(fontSize: 16),
-                                                            )),
-                                                        Opacity(
-                                                            opacity: 0.5,
-                                                            child: Container(
-                                                                margin: EdgeInsets.only(top: 5),
-                                                                child: Text(
-                                                                  y.message.previewString
-                                                                      .replaceAll('\n ', '\n')
-                                                                      .replaceAll('\n\n', '\n'),
-                                                                  maxLines: 2,
-                                                                  overflow: TextOverflow.ellipsis,
-                                                                  style: TextStyle(fontSize: 16),
-                                                                ))),
-                                                      ]))))),
-                                )
-                                .toList())),
-                    x.announcementsChanged.any((element) => element.type != RegisterChangeTypes.removed))
-                // Added or updated events
-                .appendIf(
-                    CupertinoListTile(
-                        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                        title: CupertinoListSection.insetGrouped(
-                            separatorColor: Colors.transparent,
-                            backgroundColor: Colors.transparent,
-                            margin: EdgeInsets.zero,
-                            hasLeading: false,
-                            header: () {
-                              var news = x.eventsChanged.count((element) => element.type == RegisterChangeTypes.added);
-                              var changes = x.eventsChanged.count((element) => element.type == RegisterChangeTypes.changed);
-
-                              return Text(
-                                  switch (news) {
-                                    // There's only new grades
-                                    > 0 when changes == 0 => news.asEventsNumber(RegisterChangeTypes.added),
-                                    // There's only changed grades
-                                    0 when changes > 0 => changes.asEventsNumber(RegisterChangeTypes.changed),
-                                    // Some are new, some are changed
-                                    > 0 when changes > 0 => (news + changes).asEventsNumber(),
-                                    // Shouldn't happen, but we need a _ case
-                                    _ => 'No changes, WTF?!'
-                                  },
-                                  style: TextStyle(
-                                      fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
-                            }(),
-                            children: x.eventsChanged
-                                .where((element) => element.type != RegisterChangeTypes.removed)
-                                .select(
-                                  (y, index) => CupertinoListTile(
-                                      padding: EdgeInsets.only(top: 5, bottom: 5),
-                                      title: y.value.asEventWidget(context, true, null, setState,
-                                          markModified: y.type == RegisterChangeTypes.changed, onTap: () {
-                                        Share.tabsNavigatePage.broadcast(Value(2));
-                                        Future.delayed(Duration(milliseconds: 250)).then((arg) =>
-                                            Share.timetableNavigateDay.broadcast(Value(y.value.date ?? y.value.timeFrom)));
-                                      })),
-                                )
-                                .toList())),
-                    x.eventsChanged.any((element) => element.type != RegisterChangeTypes.removed))
-                // Deleted events
-                .appendIf(
-                    CupertinoListTile(
-                        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                        title: CupertinoListSection.insetGrouped(
-                            separatorColor: Colors.transparent,
-                            backgroundColor: Colors.transparent,
-                            margin: EdgeInsets.zero,
-                            hasLeading: false,
-                            header: Text(x.eventsChanged.count((element) => element.type == RegisterChangeTypes.removed).asEventsNumber(RegisterChangeTypes.removed), style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
-                            children: x.eventsChanged
-                                .where((element) => element.type == RegisterChangeTypes.removed)
-                                .select(
-                                  (y, index) => CupertinoListTile(
-                                      padding: EdgeInsets.only(top: 5, bottom: 5),
-                                      title: y.value.asEventWidget(context, true, null, setState, markRemoved: true)),
-                                )
-                                .toList())),
-                    x.eventsChanged.any((element) => element.type == RegisterChangeTypes.removed))
-                .toList()))
-        .appendIfEmpty(CupertinoListTile(
-            title: Opacity(
-                opacity: 0.5,
-                child: Container(
-                    alignment: Alignment.center,
+    var timelineChildren = [
+      ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: timelineChanges.count(),
+          itemBuilder: (BuildContext context, int index) {
+            var x = timelineChanges[index];
+            return CupertinoListSection.insetGrouped(
+                margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                separatorColor: Colors.transparent,
+                header: Container(
+                    margin: EdgeInsets.only(left: 5),
                     child: Text(
-                      'No changes to display',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                    )))))
+                        (x.refreshDate.asDate() == DateTime.now().asDate() ? 'Today, ' : '') +
+                            DateFormat(x.refreshDate.asDate() == DateTime.now().asDate() ? 'h:mm a' : 'EEE, MMM d, h:mm a')
+                                .format(x.refreshDate),
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray))),
+                children: <Widget>[]
+                    // Added or updated lessons
+                    .appendIf(
+                        CupertinoListTile(
+                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                            title: CupertinoListSection.insetGrouped(
+                                separatorColor: Colors.transparent,
+                                backgroundColor: Colors.transparent,
+                                margin: EdgeInsets.zero,
+                                hasLeading: false,
+                                header: Text(
+                                    x.timetablesChanged
+                                        .count((element) => element.type != RegisterChangeTypes.removed)
+                                        .asTimetablesNumber(RegisterChangeTypes.added),
+                                    style: TextStyle(
+                                        fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                                children: x.timetablesChanged
+                                    .where((element) => element.type != RegisterChangeTypes.removed)
+                                    .select(
+                                      (y, index) => CupertinoListTile(
+                                          padding: EdgeInsets.only(top: 5, bottom: 5),
+                                          title: y.value.asLessonWidget(context, null, null, setState,
+                                              markModified: y.type == RegisterChangeTypes.changed, onTap: () {
+                                            Share.tabsNavigatePage.broadcast(Value(2));
+                                            Future.delayed(Duration(milliseconds: 250))
+                                                .then((arg) => Share.timetableNavigateDay.broadcast(Value(y.value.date)));
+                                          })),
+                                    )
+                                    .toList())),
+                        x.timetablesChanged.any((element) => element.type != RegisterChangeTypes.removed))
+                    // Deleted lessons
+                    .appendIf(
+                        CupertinoListTile(
+                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                            title: CupertinoListSection.insetGrouped(
+                                separatorColor: Colors.transparent,
+                                backgroundColor: Colors.transparent,
+                                margin: EdgeInsets.zero,
+                                hasLeading: false,
+                                header: Text(
+                                    x.timetablesChanged
+                                        .count((element) => element.type == RegisterChangeTypes.removed)
+                                        .asTimetablesNumber(RegisterChangeTypes.removed),
+                                    style:
+                                        TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                                children: x.timetablesChanged
+                                    .where((element) => element.type == RegisterChangeTypes.removed)
+                                    .select(
+                                      (y, index) => CupertinoListTile(
+                                          padding: EdgeInsets.only(top: 5, bottom: 5),
+                                          title: y.value.asLessonWidget(context, null, null, setState, markRemoved: true)),
+                                    )
+                                    .toList())),
+                        x.timetablesChanged.any((element) => element.type == RegisterChangeTypes.removed))
+                    // Added or updated messages
+                    .appendIf(
+                        CupertinoListTile(
+                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                            title: CupertinoListSection.insetGrouped(
+                                separatorColor: Colors.transparent,
+                                backgroundColor: Colors.transparent,
+                                margin: EdgeInsets.zero,
+                                hasLeading: false,
+                                header: () {
+                                  var news = x.messagesChanged.count((element) => element.type == RegisterChangeTypes.added);
+                                  var changes =
+                                      x.messagesChanged.count((element) => element.type == RegisterChangeTypes.changed);
+
+                                  return Text(
+                                      switch (news) {
+                                        // There's only new grades
+                                        > 0 when changes == 0 => news.asMessagesNumber(RegisterChangeTypes.added),
+                                        // There's only changed grades
+                                        0 when changes > 0 => changes.asMessagesNumber(RegisterChangeTypes.changed),
+                                        // Some are new, some are changed
+                                        > 0 when changes > 0 => (news + changes).asMessagesNumber(),
+                                        // Shouldn't happen, but we need a _ case
+                                        _ => 'No changes, WTF?!'
+                                      },
+                                      style: TextStyle(
+                                          fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
+                                }(),
+                                children: x.messagesChanged
+                                    .where((element) => element.type != RegisterChangeTypes.removed)
+                                    .select(
+                                      (y, index) => CupertinoListTile(
+                                          padding: EdgeInsets.only(top: 5, bottom: 5),
+                                          title: CupertinoListTile(
+                                              padding: EdgeInsets.all(0),
+                                              title: GestureDetector(
+                                                  onTap: () {
+                                                    Share.tabsNavigatePage.broadcast(Value(3));
+                                                    Future.delayed(Duration(milliseconds: 250))
+                                                        .then((arg) => Share.messagesNavigate.broadcast(Value(y.value)));
+                                                  },
+                                                  child: Container(
+                                                      decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                                                          color: CupertinoDynamicColor.resolve(
+                                                              CupertinoColors.tertiarySystemBackground, context)),
+                                                      padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
+                                                      child: Column(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          mainAxisSize: MainAxisSize.max,
+                                                          children: [
+                                                            Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: [
+                                                                  Visibility(
+                                                                      visible: !y.value.read &&
+                                                                          (y.value.receivers?.isEmpty ?? true),
+                                                                      child: Container(
+                                                                          margin: EdgeInsets.only(top: 5, right: 6),
+                                                                          child: Container(
+                                                                            height: 10,
+                                                                            width: 10,
+                                                                            decoration: BoxDecoration(
+                                                                                shape: BoxShape.circle,
+                                                                                color:
+                                                                                    CupertinoTheme.of(context).primaryColor),
+                                                                          ))),
+                                                                  Expanded(
+                                                                      child: Container(
+                                                                          margin: EdgeInsets.only(right: 10),
+                                                                          child: Text(
+                                                                            y.value.senderName,
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                            style: TextStyle(
+                                                                                fontSize: 17, fontWeight: FontWeight.w600),
+                                                                          ))),
+                                                                  Visibility(
+                                                                    visible: y.value.hasAttachments,
+                                                                    child: Transform.scale(
+                                                                        scale: 0.6,
+                                                                        child: Icon(CupertinoIcons.paperclip,
+                                                                            color: CupertinoColors.inactiveGray)),
+                                                                  ),
+                                                                  Container(
+                                                                      margin: EdgeInsets.only(top: 1),
+                                                                      child: Opacity(
+                                                                          opacity: 0.5,
+                                                                          child: Text(
+                                                                            y.value.sendDateString,
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                            style: TextStyle(
+                                                                                fontSize: 16, fontWeight: FontWeight.normal),
+                                                                          )))
+                                                                ]),
+                                                            Container(
+                                                                margin: EdgeInsets.only(top: 3),
+                                                                child: Text(
+                                                                  y.value.topic,
+                                                                  maxLines: 2,
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                  style: TextStyle(fontSize: 16),
+                                                                )),
+                                                            Opacity(
+                                                                opacity: 0.5,
+                                                                child: Container(
+                                                                    margin: EdgeInsets.only(top: 5),
+                                                                    child: Text(
+                                                                      y.value.previewString
+                                                                          .replaceAll('\n ', '\n')
+                                                                          .replaceAll('\n\n', '\n'),
+                                                                      maxLines: 2,
+                                                                      overflow: TextOverflow.ellipsis,
+                                                                      style: TextStyle(fontSize: 16),
+                                                                    ))),
+                                                          ]))))),
+                                    )
+                                    .toList())),
+                        x.messagesChanged.any((element) => element.type != RegisterChangeTypes.removed))
+                    // Added or updated attendances
+                    .appendIf(
+                        CupertinoListTile(
+                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                            title: CupertinoListSection.insetGrouped(
+                                separatorColor: Colors.transparent,
+                                backgroundColor: Colors.transparent,
+                                margin: EdgeInsets.zero,
+                                hasLeading: false,
+                                header: () {
+                                  var news =
+                                      x.attendancesChanged.count((element) => element.type == RegisterChangeTypes.added);
+                                  var changes =
+                                      x.attendancesChanged.count((element) => element.type == RegisterChangeTypes.changed);
+
+                                  return Text(
+                                      switch (news) {
+                                        // There's only new grades
+                                        > 0 when changes == 0 => news.asAttendancesNumber(RegisterChangeTypes.added),
+                                        // There's only changed grades
+                                        0 when changes > 0 => changes.asAttendancesNumber(RegisterChangeTypes.changed),
+                                        // Some are new, some are changed
+                                        > 0 when changes > 0 => (news + changes).asAttendancesNumber(),
+                                        // Shouldn't happen, but we need a _ case
+                                        _ => 'No changes, WTF?!'
+                                      },
+                                      style: TextStyle(
+                                          fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
+                                }(),
+                                children: x.attendancesChanged
+                                    .orderByDescending((element) => element.value.addDate)
+                                    .where((element) => element.type != RegisterChangeTypes.removed)
+                                    .select(
+                                      (y, index) => CupertinoListTile(
+                                          padding: EdgeInsets.only(top: 5, bottom: 5),
+                                          title: y.value.asAttendanceWidget(context,
+                                              markModified: y.type == RegisterChangeTypes.changed,
+                                              onTap: () => Share.tabsNavigatePage.broadcast(Value(4)))),
+                                    )
+                                    .toList())),
+                        x.attendancesChanged.any((element) => element.type != RegisterChangeTypes.removed))
+                    // Deleted attendances
+                    .appendIf(
+                        CupertinoListTile(
+                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                            title: CupertinoListSection.insetGrouped(
+                                separatorColor: Colors.transparent,
+                                backgroundColor: Colors.transparent,
+                                margin: EdgeInsets.zero,
+                                hasLeading: false,
+                                header: Text(x.attendancesChanged.count((element) => element.type == RegisterChangeTypes.removed).asAttendancesNumber(RegisterChangeTypes.removed), style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                                children: x.attendancesChanged
+                                    .where((element) => element.type == RegisterChangeTypes.removed)
+                                    .select(
+                                      (y, index) => CupertinoListTile(
+                                          padding: EdgeInsets.only(top: 5, bottom: 5),
+                                          title: y.value.asAttendanceWidget(context, markRemoved: true)),
+                                    )
+                                    .toList())),
+                        x.attendancesChanged.any((element) => element.type == RegisterChangeTypes.removed))
+                    // Added or updated grades
+                    .appendIf(
+                        CupertinoListTile(
+                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                            title: CupertinoListSection.insetGrouped(
+                                separatorColor: Colors.transparent,
+                                backgroundColor: Colors.transparent,
+                                margin: EdgeInsets.zero,
+                                hasLeading: false,
+                                header: () {
+                                  var news = x.gradesChanged.count((element) => element.type == RegisterChangeTypes.added);
+                                  var changes =
+                                      x.gradesChanged.count((element) => element.type == RegisterChangeTypes.changed);
+
+                                  return Text(
+                                      switch (news) {
+                                        // There's only new grades
+                                        > 0 when changes == 0 => news.asGradesNumber(RegisterChangeTypes.added),
+                                        // There's only changed grades
+                                        0 when changes > 0 => changes.asGradesNumber(RegisterChangeTypes.changed),
+                                        // Some are new, some are changed
+                                        > 0 when changes > 0 => (news + changes).asGradesNumber(),
+                                        // Shouldn't happen, but we need a _ case
+                                        _ => 'No changes, WTF?!'
+                                      },
+                                      style: TextStyle(
+                                          fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
+                                }(),
+                                children: x.gradesChanged
+                                    .where((element) => element.type != RegisterChangeTypes.removed)
+                                    .select(
+                                      (y, index) => CupertinoListTile(
+                                          padding: EdgeInsets.only(top: 5, bottom: 5),
+                                          title: y.value.asGrade(context,
+                                              markModified: y.type == RegisterChangeTypes.changed, onTap: () {
+                                            var lesson = Share.session.data.student.subjects
+                                                .firstWhereOrDefault((value) => value.grades.contains(y.value));
+                                            if (lesson == null) return;
+                                            Share.tabsNavigatePage.broadcast(Value(1));
+                                            Future.delayed(Duration(milliseconds: 250))
+                                                .then((arg) => Share.gradesNavigate.broadcast(Value(lesson)));
+                                          })),
+                                    )
+                                    .toList())),
+                        x.gradesChanged.any((element) => element.type != RegisterChangeTypes.removed))
+                    // Deleted grades
+                    .appendIf(
+                        CupertinoListTile(
+                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                            title: CupertinoListSection.insetGrouped(
+                                separatorColor: Colors.transparent,
+                                backgroundColor: Colors.transparent,
+                                margin: EdgeInsets.zero,
+                                hasLeading: false,
+                                header: Text(x.gradesChanged.count((element) => element.type == RegisterChangeTypes.removed).asGradesNumber(RegisterChangeTypes.removed), style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                                children: x.gradesChanged
+                                    .where((element) => element.type == RegisterChangeTypes.removed)
+                                    .select(
+                                      (y, index) => CupertinoListTile(
+                                          padding: EdgeInsets.only(top: 5, bottom: 5),
+                                          title: y.value.asGrade(context, markRemoved: true)),
+                                    )
+                                    .toList())),
+                        x.gradesChanged.any((element) => element.type == RegisterChangeTypes.removed))
+                    // Added or updated announcements
+                    .appendIf(
+                        CupertinoListTile(
+                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                            title: CupertinoListSection.insetGrouped(
+                                separatorColor: Colors.transparent,
+                                backgroundColor: Colors.transparent,
+                                margin: EdgeInsets.zero,
+                                hasLeading: false,
+                                header: () {
+                                  var news =
+                                      x.announcementsChanged.count((element) => element.type == RegisterChangeTypes.added);
+                                  var changes =
+                                      x.announcementsChanged.count((element) => element.type == RegisterChangeTypes.changed);
+
+                                  return Text(
+                                      switch (news) {
+                                        // There's only new grades
+                                        > 0 when changes == 0 => news.asAnnouncementsNumber(RegisterChangeTypes.added),
+                                        // There's only changed grades
+                                        0 when changes > 0 => changes.asAnnouncementsNumber(RegisterChangeTypes.changed),
+                                        // Some are new, some are changed
+                                        > 0 when changes > 0 => (news + changes).asAnnouncementsNumber(),
+                                        // Shouldn't happen, but we need a _ case
+                                        _ => 'No changes, WTF?!'
+                                      },
+                                      style: TextStyle(
+                                          fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
+                                }(),
+                                children: x.announcementsChanged
+                                    .where((element) => element.type != RegisterChangeTypes.removed)
+                                    .orderByDescending((x) => x.value.startDate)
+                                    .select((x, index) => (
+                                          message: Message(
+                                              id: x.value.read ? 1 : 0,
+                                              topic: x.value.subject,
+                                              content: x.value.content,
+                                              sender: x.value.contact ??
+                                                  Teacher(firstName: Share.session.data.student.mainClass.unit.name),
+                                              sendDate: x.value.startDate,
+                                              readDate: x.value.endDate),
+                                          parent: x.value
+                                        ))
+                                    .toList()
+                                    .select(
+                                      (y, index) => CupertinoListTile(
+                                          padding: EdgeInsets.only(top: 5, bottom: 5),
+                                          title: CupertinoListTile(
+                                              padding: EdgeInsets.all(0),
+                                              title: GestureDetector(
+                                                  onTap: () {
+                                                    Share.tabsNavigatePage.broadcast(Value(3));
+                                                    Future.delayed(Duration(milliseconds: 250)).then(
+                                                        (arg) => Share.messagesNavigateAnnouncement.broadcast(Value(y)));
+                                                  },
+                                                  child: Container(
+                                                      decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                                                          color: CupertinoDynamicColor.resolve(
+                                                              CupertinoColors.tertiarySystemBackground, context)),
+                                                      padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
+                                                      child: Column(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          mainAxisSize: MainAxisSize.max,
+                                                          children: [
+                                                            Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: [
+                                                                  Visibility(
+                                                                      visible: () {
+                                                                        try {
+                                                                          return !(Share
+                                                                                  .session
+                                                                                  .data
+                                                                                  .student
+                                                                                  .mainClass
+                                                                                  .unit
+                                                                                  .announcements?[Share.session.data.student
+                                                                                          .mainClass.unit.announcements
+                                                                                          ?.indexOf(y.parent) ??
+                                                                                      -1]
+                                                                                  .read ??
+                                                                              true);
+                                                                        } catch (ex) {
+                                                                          return true;
+                                                                        }
+                                                                      }(),
+                                                                      child: Container(
+                                                                          margin: EdgeInsets.only(top: 5, right: 6),
+                                                                          child: Container(
+                                                                            height: 10,
+                                                                            width: 10,
+                                                                            decoration: BoxDecoration(
+                                                                                shape: BoxShape.circle,
+                                                                                color:
+                                                                                    CupertinoTheme.of(context).primaryColor),
+                                                                          ))),
+                                                                  Expanded(
+                                                                      child: Container(
+                                                                          margin: EdgeInsets.only(right: 10),
+                                                                          child: Text(
+                                                                            y.message.senderName,
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                            style: TextStyle(
+                                                                                fontSize: 17, fontWeight: FontWeight.w600),
+                                                                          ))),
+                                                                  Visibility(
+                                                                    visible: y.message.hasAttachments,
+                                                                    child: Transform.scale(
+                                                                        scale: 0.6,
+                                                                        child: Icon(CupertinoIcons.paperclip,
+                                                                            color: CupertinoColors.inactiveGray)),
+                                                                  ),
+                                                                  Container(
+                                                                      margin: EdgeInsets.only(top: 1),
+                                                                      child: Opacity(
+                                                                          opacity: 0.5,
+                                                                          child: Text(
+                                                                            (y.message.sendDate.month ==
+                                                                                        y.message.readDate?.month &&
+                                                                                    y.message.sendDate.year ==
+                                                                                        y.message.readDate?.year &&
+                                                                                    y.message.sendDate.day !=
+                                                                                        y.message.readDate?.day
+                                                                                ? '${DateFormat('MMM d').format(y.message.sendDate)} - ${DateFormat('d').format(y.message.readDate ?? DateTime.now())}'
+                                                                                : '${DateFormat('MMM d').format(y.message.sendDate)} - ${DateFormat(y.message.sendDate.year == y.message.readDate?.year ? 'MMM d' : 'MMM d y').format(y.message.readDate ?? DateTime.now())}'),
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                            style: TextStyle(
+                                                                                fontSize: 16, fontWeight: FontWeight.normal),
+                                                                          )))
+                                                                ]),
+                                                            Container(
+                                                                margin: EdgeInsets.only(top: 3),
+                                                                child: Text(
+                                                                  y.message.topic,
+                                                                  maxLines: 2,
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                  style: TextStyle(fontSize: 16),
+                                                                )),
+                                                            Opacity(
+                                                                opacity: 0.5,
+                                                                child: Container(
+                                                                    margin: EdgeInsets.only(top: 5),
+                                                                    child: Text(
+                                                                      y.message.previewString
+                                                                          .replaceAll('\n ', '\n')
+                                                                          .replaceAll('\n\n', '\n'),
+                                                                      maxLines: 2,
+                                                                      overflow: TextOverflow.ellipsis,
+                                                                      style: TextStyle(fontSize: 16),
+                                                                    ))),
+                                                          ]))))),
+                                    )
+                                    .toList())),
+                        x.announcementsChanged.any((element) => element.type != RegisterChangeTypes.removed))
+                    // Added or updated events
+                    .appendIf(
+                        CupertinoListTile(
+                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                            title: CupertinoListSection.insetGrouped(
+                                separatorColor: Colors.transparent,
+                                backgroundColor: Colors.transparent,
+                                margin: EdgeInsets.zero,
+                                hasLeading: false,
+                                header: () {
+                                  var news = x.eventsChanged.count((element) => element.type == RegisterChangeTypes.added);
+                                  var changes =
+                                      x.eventsChanged.count((element) => element.type == RegisterChangeTypes.changed);
+
+                                  return Text(
+                                      switch (news) {
+                                        // There's only new grades
+                                        > 0 when changes == 0 => news.asEventsNumber(RegisterChangeTypes.added),
+                                        // There's only changed grades
+                                        0 when changes > 0 => changes.asEventsNumber(RegisterChangeTypes.changed),
+                                        // Some are new, some are changed
+                                        > 0 when changes > 0 => (news + changes).asEventsNumber(),
+                                        // Shouldn't happen, but we need a _ case
+                                        _ => 'No changes, WTF?!'
+                                      },
+                                      style: TextStyle(
+                                          fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
+                                }(),
+                                children: x.eventsChanged
+                                    .where((element) => element.type != RegisterChangeTypes.removed)
+                                    .select(
+                                      (y, index) => CupertinoListTile(
+                                          padding: EdgeInsets.only(top: 5, bottom: 5),
+                                          title: y.value.asEventWidget(context, true, null, setState,
+                                              markModified: y.type == RegisterChangeTypes.changed, onTap: () {
+                                            Share.tabsNavigatePage.broadcast(Value(2));
+                                            Future.delayed(Duration(milliseconds: 250)).then((arg) => Share
+                                                .timetableNavigateDay
+                                                .broadcast(Value(y.value.date ?? y.value.timeFrom)));
+                                          })),
+                                    )
+                                    .toList())),
+                        x.eventsChanged.any((element) => element.type != RegisterChangeTypes.removed))
+                    // Deleted events
+                    .appendIf(
+                        CupertinoListTile(
+                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                            title: CupertinoListSection.insetGrouped(
+                                separatorColor: Colors.transparent,
+                                backgroundColor: Colors.transparent,
+                                margin: EdgeInsets.zero,
+                                hasLeading: false,
+                                header: Text(x.eventsChanged.count((element) => element.type == RegisterChangeTypes.removed).asEventsNumber(RegisterChangeTypes.removed), style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                                children: x.eventsChanged
+                                    .where((element) => element.type == RegisterChangeTypes.removed)
+                                    .select(
+                                      (y, index) => CupertinoListTile(
+                                          padding: EdgeInsets.only(top: 5, bottom: 5),
+                                          title: y.value.asEventWidget(context, true, null, setState, markRemoved: true)),
+                                    )
+                                    .toList())),
+                        x.eventsChanged.any((element) => element.type == RegisterChangeTypes.removed))
+                    .toList());
+          })
+    ]
+        .appendIf(
+            CupertinoListTile(
+                title: Opacity(
+                    opacity: 0.5,
+                    child: Container(
+                        alignment: Alignment.center,
+                        child: Text(
+                          'No changes to display',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                        )))),
+            timelineChanges.isEmpty)
         .toList();
 
     return CupertinoPageScaffold(
       backgroundColor: CupertinoDynamicColor.withBrightness(
           color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 0, 0, 0)),
       child: SearchableSliverNavigationBar(
+        useSliverBox: _segment == HomepageSegments.timeline,
+        alwaysShowAddons: _segment == HomepageSegments.timeline,
         onProgress: (progress) => setState(() => _progressMessage = progress?.message),
         setState: setState,
         segments: {

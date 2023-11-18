@@ -66,48 +66,11 @@ class _AbsencesPageState extends State<AbsencesPage> {
         [];
 
     // This is gonna be a veeery long list, as there are no expanders in cupertino
-    var attendanceWidgets = (switch (_segment) {
+    var attendances = (switch (_segment) {
       AbsencesPageSegments.date => attendancesToDisplayByDate,
       AbsencesPageSegments.lesson => attendancesToDisplayByLesson,
       AbsencesPageSegments.type => attendancesToDisplayByType
-    })
-        .select((element, index) => CupertinoListSection.insetGrouped(
-              margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-              header: element.key.contains('\n')
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Flexible(child: Text(element.key.split('\n').first, maxLines: 1, overflow: TextOverflow.ellipsis)),
-                        Container(
-                            margin: EdgeInsets.only(left: 3),
-                            child: Text(element.key.split('\n').last,
-                                style: TextStyle(
-                                    color: CupertinoColors.inactiveGray, fontWeight: FontWeight.w400, fontSize: 16)))
-                      ],
-                    )
-                  : Text(element.key),
-              additionalDividerMargin: 5,
-              children: element.isEmpty
-                  // No messages to display
-                  ? [
-                      CupertinoListTile(
-                          title: Opacity(
-                              opacity: 0.5,
-                              child: Container(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    '/Page/Absences/No'.localized,
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                                  ))))
-                    ]
-                  // Bindable messages layout
-                  : element
-                      .select(
-                          (x, index) => CupertinoListTile(padding: EdgeInsets.all(0), title: x.asAttendanceWidget(context)))
-                      .toList(),
-            ))
-        .toList();
+    });
 
     return SearchableSliverNavigationBar(
         setState: setState,
@@ -137,7 +100,52 @@ class _AbsencesPageState extends State<AbsencesPage> {
         trailing: isWorking
             ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
             : null,
-        children: attendanceWidgets);
+        useSliverBox: true,
+        children: [
+          ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: attendances.count(),
+            itemBuilder: (BuildContext context, int index) => CupertinoListSection.insetGrouped(
+              margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+              header: attendances[index].key.contains('\n')
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Flexible(
+                            child: Text(attendances[index].key.split('\n').first,
+                                maxLines: 1, overflow: TextOverflow.ellipsis)),
+                        Container(
+                            margin: EdgeInsets.only(left: 3),
+                            child: Text(attendances[index].key.split('\n').last,
+                                style: TextStyle(
+                                    color: CupertinoColors.inactiveGray, fontWeight: FontWeight.w400, fontSize: 16)))
+                      ],
+                    )
+                  : Text(attendances[index].key),
+              additionalDividerMargin: 5,
+              children: attendances[index].isEmpty
+                  // No messages to display
+                  ? [
+                      CupertinoListTile(
+                          title: Opacity(
+                              opacity: 0.5,
+                              child: Container(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    '/Page/Absences/No'.localized,
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                                  ))))
+                    ]
+                  // Bindable messages layout
+                  : attendances[index]
+                      .select(
+                          (x, index) => CupertinoListTile(padding: EdgeInsets.all(0), title: x.asAttendanceWidget(context)))
+                      .toList(),
+            ),
+          ),
+        ]);
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:darq/darq.dart';
 import 'package:event/event.dart' as events;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart' as notifications;
 import 'package:oshi/models/data/announcement.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/models/data/grade.dart';
@@ -30,6 +31,8 @@ part 'share.g.dart';
 class Share {
   // The application string resources handler
   static Translator translator = Translator();
+  static notifications.FlutterLocalNotificationsPlugin notificationsPlugin = notifications.FlutterLocalNotificationsPlugin();
+
   static String currentIdleSplash = '???';
   static ({String title, String subtitle}) currentEndingSplash = (title: '???', subtitle: '???');
 

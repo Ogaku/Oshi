@@ -37,13 +37,16 @@ class ConfigAdapter extends TypeAdapter<Config> {
           ? LessonCallTypes.countFromEnd
           : fields[11] as LessonCallTypes
       .._bellOffset =
-          fields[12] == null ? Duration.zero : fields[12] as Duration;
+          fields[12] == null ? Duration.zero : fields[12] as Duration
+      .._devMode = fields[13] == null ? false : fields[13] as bool
+      .._notificationsAskedOnce =
+          fields[14] == null ? false : fields[14] as bool;
   }
 
   @override
   void write(BinaryWriter writer, Config obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(14)
       ..writeByte(1)
       ..write(obj._customGradeValues)
       ..writeByte(2)
@@ -67,7 +70,11 @@ class ConfigAdapter extends TypeAdapter<Config> {
       ..writeByte(11)
       ..write(obj._lessonCallType)
       ..writeByte(12)
-      ..write(obj._bellOffset);
+      ..write(obj._bellOffset)
+      ..writeByte(13)
+      ..write(obj._devMode)
+      ..writeByte(14)
+      ..write(obj._notificationsAskedOnce);
   }
 
   @override

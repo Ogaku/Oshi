@@ -39,8 +39,9 @@ dependencies:
   flutter_swipe_action_cell: ^3.1.2
   duration: ^3.0.13
   equatable: ^2.0.5
-  awesome_notifications: ^0.8.2
+  flutter_local_notifications: ^16.1.0
   flutter_native_splash: ^2.3.5
+  show_fps: ^1.0.6
 
 dev_dependencies:
   flutter_test:
