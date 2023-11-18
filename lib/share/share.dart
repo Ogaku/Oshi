@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_function_literals_in_foreach_calls
+
 import 'dart:io';
 
 import 'package:darq/darq.dart';
@@ -5,6 +7,10 @@ import 'package:event/event.dart' as events;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' as notifications;
+import 'package:format/format.dart';
+import 'package:intl/intl.dart';
+import 'package:oshi/interface/cupertino/pages/absences.dart';
+import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/models/data/announcement.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/models/data/grade.dart';
@@ -19,10 +25,12 @@ import 'package:json_annotation/json_annotation.dart';
 
 import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/models/progress.dart';
+import 'package:oshi/interface/cupertino/pages/home.dart' show DateTimeExtension;
 
-import 'package:oshi/providers/librus/librus_data.dart';
+import 'package:oshi/providers/librus/librus_data.dart' hide DateTimeExtension;
 import 'package:oshi/providers/sample/sample_data.dart';
 import 'package:oshi/share/config.dart';
+import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/translator.dart';
 
@@ -311,24 +319,30 @@ class Session extends HiveObject {
 
       /* Grades */
       var allGradesDownloaded = provider.registerData!.student.subjects
-          .select((subject, index) => subject.grades)
-          .selectMany((subject, index) => subject)
+          .select((subject, index) => (subject: subject, grades: subject.grades))
+          .selectMany(
+              (subject, index) => subject.grades.select((element, index) => (subject: subject.subject, grade: element)))
           .toList();
-      var allGradesSaved =
-          data.student.subjects.select((subject, index) => subject.grades).selectMany((subject, index) => subject).toList();
+      var allGradesSaved = data.student.subjects
+          .select((subject, index) => (subject: subject, grades: subject.grades))
+          .selectMany(
+              (subject, index) => subject.grades.select((element, index) => (subject: subject.subject, grade: element)))
+          .toList();
 
       var gradeChanges = allGradesDownloaded
           .except(allGradesSaved)
           .select((x, index) => RegisterChange<Grade>(
-              type: allGradesSaved.any((y) => y.id == x.id && y.id > 0 && x.id > 0)
+              type: allGradesSaved.any((y) => y.grade.id == x.grade.id && y.grade.id > 0 && x.grade.id > 0)
                   ? RegisterChangeTypes.changed
                   : RegisterChangeTypes.added,
-              value: x))
+              value: x.grade,
+              payload: x.subject))
           .appendAll(allGradesSaved.except(allGradesDownloaded).select((x, index) => RegisterChange<Grade>(
-              type: allGradesDownloaded.any((y) => y.id == x.id && y.id > 0 && x.id > 0)
+              type: allGradesDownloaded.any((y) => y.grade.id == x.grade.id && y.grade.id > 0 && x.grade.id > 0)
                   ? RegisterChangeTypes.changed
                   : RegisterChangeTypes.removed,
-              value: x)))
+              value: x.grade,
+              payload: x.subject)))
           .toList();
 
       /* Events */
@@ -346,7 +360,7 @@ class Session extends HiveObject {
               .select((x, index) => RegisterChange<Event>(type: RegisterChangeTypes.removed, value: x)))
           .toList();
 
-      /* Grades */
+      /* Attendance */
       var allAttendancesDownloaded = provider.registerData!.student.attendances;
       var allAttendancesSaved = data.student.attendances;
 
@@ -398,7 +412,188 @@ class Session extends HiveObject {
           announcementChanges: announcementChanges?.nullIfEmpty(info),
           messageChanges: messageChanges.nullIfEmpty(messages));
 
-      if (saveChanges && detectedChanges.any) changes.add(detectedChanges);
+      if (saveChanges && detectedChanges.any) {
+        changes.add(detectedChanges);
+
+        var notifications = <({String title, String body, String payload})>[];
+        var messageNotifications = <({String title, String body, String payload})>[];
+
+        // Compose timetable notifications
+        if (Share.settings.config.enableTimetableNotifications) {
+          detectedChanges.timetablesChanged.forEach((element) => notifications.add((
+                title: '/Notifications/Categories/Timetable/${switch (element.type) {
+                  RegisterChangeTypes.removed => "Cancelled",
+                  RegisterChangeTypes.changed when element.value.isMovedLesson => "Moved",
+                  RegisterChangeTypes.changed when element.value.isSubstitution => "Substitution",
+                  _ => "New"
+                }}'
+                    .localized
+                    .format(DateFormat('yyyy.MM.dd').format(element.value.date), element.value.lessonNo),
+                body: (element.value.isSubstitution &&
+                            (element.value.substitutionDetails?.originalSubject?.name.isNotEmpty ?? false)
+                        ? '${element.value.substitutionDetails?.originalSubject?.name} → '
+                        : '') +
+                    '/Notifications/Captions/Joiners/Lesson'.localized.format(
+                        element.value.subject?.name ?? element.value.classroomString,
+                        element.value.teacher?.name ?? '/Notifications/Placeholder/Teacher'.localized),
+                payload: 'timetables\n${DateFormat('yyyy.MM.dd').format(element.value.date)}'
+              )));
+        }
+
+        // Compose message notifications
+        if (Share.settings.config.enableMessagesNotifications) {
+          detectedChanges.messagesChanged
+              .where((element) => element.type == RegisterChangeTypes.added)
+              .forEach((element) => messageNotifications.add((
+                    title: '/Notifications/Categories/Messages/New'.localized.format(element.value.senderName),
+                    body: element.value.topic,
+                    payload: 'messages\n${element.value.topic}\n${element.value.senderName}'
+                  )));
+        }
+
+        // Compose attendance notifications
+        if (Share.settings.config.enableAttendanceNotifications) {
+          detectedChanges.attendancesChanged
+              .where((element) =>
+                  element.type == RegisterChangeTypes.added &&
+                  (element.value.type == AttendanceType.absent ||
+                      element.value.type == AttendanceType.late ||
+                      element.value.type == AttendanceType.excused))
+              .forEach((element) => notifications.add((
+                    title: '/Notifications/Categories/Attendance/${switch (element.value.type) {
+                      AttendanceType.absent => "Absence",
+                      AttendanceType.late => "Late",
+                      AttendanceType.excused => "Excused",
+                      _ => "New"
+                    }}'
+                        .localized
+                        .format(DateFormat('yyyy.MM.dd').format(element.value.date), element.value.lessonNo),
+                    body: '/Notifications/Captions/Joiners/Lesson'.localized.format(
+                        element.value.lesson.subject?.name ?? '/Notifications/Placeholder/Lesson'.localized,
+                        element.value.teacher.name),
+                    payload: 'attendances'
+                  )));
+
+          detectedChanges.attendancesChanged
+              .where((element) =>
+                  element.type == RegisterChangeTypes.changed ||
+                  element.type == RegisterChangeTypes.removed ||
+                  (element.type == RegisterChangeTypes.added &&
+                      element.value.type != AttendanceType.absent &&
+                      element.value.type != AttendanceType.late &&
+                      element.value.type != AttendanceType.excused))
+              .forEach((element) => notifications.add((
+                    title: '/Notifications/Categories/Attendance/${switch (element.type) {
+                      RegisterChangeTypes.added => "New",
+                      RegisterChangeTypes.changed => "Changed",
+                      RegisterChangeTypes.removed => "Removed"
+                    }}'
+                        .localized
+                        .format(element.value.type.asString(), DateFormat('yyyy.MM.dd').format(element.value.date),
+                            element.value.lessonNo),
+                    body: '/Notifications/Captions/Joiners/Lesson'.localized.format(
+                        element.value.lesson.subject?.name ?? '/Notifications/Placeholder/Lesson'.localized,
+                        element.value.teacher.name),
+                    payload: 'attendances'
+                  )));
+        }
+
+        // Compose grade notifications
+        if (Share.settings.config.enableGradesNotifications) {
+          detectedChanges.gradesChanged
+              .where((element) => element.type == RegisterChangeTypes.added)
+              .forEach((element) => notifications.add((
+                    title: '/Notifications/Categories/Grades/New'.localized.format(element.value.value, element.value.name),
+                    body: '/Notifications/Captions/Joiners/Lesson'.localized.format(
+                        (element.payload is Lesson ? element.payload as Lesson : null)?.name ??
+                            '/Notifications/Placeholder/Lesson'.localized,
+                        (element.payload is Lesson ? element.payload as Lesson : null)?.teacher.name ??
+                            '/Notifications/Placeholder/Teacher'.localized),
+                    payload: 'grades\n${(element.payload is Lesson ? element.payload as Lesson : null)?.name}'
+                  )));
+
+          detectedChanges.gradesChanged
+              .where((element) => element.type == RegisterChangeTypes.removed || element.type == RegisterChangeTypes.changed)
+              .forEach((element) => notifications.add((
+                    title: '/Notifications/Categories/Grades/${switch (element.type) {
+                      RegisterChangeTypes.added => "New",
+                      RegisterChangeTypes.changed => "Changed",
+                      RegisterChangeTypes.removed => "Removed"
+                    }}'
+                        .localized
+                        .format(element.value.value, DateFormat('yyyy.MM.dd').format(element.value.date)),
+                    body: '/Notifications/Captions/Joiners/Lesson'.localized.format(
+                        (element.payload is Lesson ? element.payload as Lesson : null)?.name ??
+                            '/Notifications/Placeholder/Lesson'.localized,
+                        (element.payload is Lesson ? element.payload as Lesson : null)?.teacher.name ??
+                            '/Notifications/Placeholder/Teacher'.localized),
+                    payload: 'grades\n${(element.payload is Lesson ? element.payload as Lesson : null)?.name}'
+                  )));
+        }
+
+        // Compose announcement notifications
+        if (Share.settings.config.enableAnnouncementsNotifications) {
+          detectedChanges.announcementsChanged.forEach((element) => notifications.add((
+                title: '/Notifications/Categories/Announcement/${switch (element.type) {
+                  RegisterChangeTypes.changed => "Changed",
+                  _ => "New"
+                }}'
+                    .localized
+                    .format(element.value.contact?.name ?? '/Notifications/Placeholder/Teacher'.localized),
+                body: element.value.subject,
+                payload: 'announcements\n${element.value.subject}\n${element.value.contact?.name}'
+              )));
+        }
+
+        // Compose event notifications
+        if (Share.settings.config.enableEventsNotifications) {
+          detectedChanges.eventsChanged
+              .where((element) => element.value.category == EventCategory.teacher)
+              .forEach((element) => notifications.add((
+                    title: '/Notifications/Categories/Event/Teacher/${switch (element.type) {
+                      RegisterChangeTypes.added => "New",
+                      RegisterChangeTypes.changed => "Changed",
+                      RegisterChangeTypes.removed => "Removed"
+                    }}'
+                        .localized
+                        .format(element.value.sender?.name ?? ''),
+                    body: '/Notifications/Captions/Joiners/Lesson'.localized.format((element.value.timeFrom.hour != 0 &&
+                                element.value.timeTo?.hour != 0) &&
+                            (element.value.timeFrom.asDate() == element.value.timeTo?.asDate())
+                        ? "${DateFormat('HH:mm').format(element.value.timeFrom)} - ${DateFormat('HH:mm').format(element.value.timeTo ?? DateTime.now())}"
+                        : (element.value.timeFrom.month == element.value.timeTo?.month &&
+                                element.value.timeFrom.day == element.value.timeTo?.day)
+                            ? DateFormat('EEEE, MMM d').format(element.value.timeTo ?? DateTime.now())
+                            : (element.value.timeFrom.month == element.value.timeTo?.month)
+                                ? "${DateFormat('d').format(element.value.timeFrom)} - ${DateFormat('d MMM yyyy').format(element.value.timeTo ?? DateTime.now())}"
+                                : "${DateFormat('EEE, MMM d').format(element.value.timeFrom)} - ${DateFormat('EEE, MMM d').format(element.value.timeTo ?? DateTime.now())}"),
+                    payload: 'timetables\n${DateFormat('yyyy.MM.dd').format(element.value.date ?? element.value.timeFrom)}'
+                  )));
+
+          detectedChanges.eventsChanged
+              .where((element) => element.value.category != EventCategory.teacher)
+              .forEach((element) => notifications.add((
+                    title: '/Notifications/Categories/Event/${switch (element.type) {
+                      RegisterChangeTypes.added => "New",
+                      RegisterChangeTypes.changed => "Changed",
+                      RegisterChangeTypes.removed => "Removed"
+                    }}'
+                        .localized
+                        .format(element.value.categoryName,
+                            DateFormat('EEEE, MMM d').format(element.value.date ?? element.value.timeFrom)),
+                    body: element.value.titleString.isNotEmpty
+                        ? element.value.titleString
+                        : (element.value.sender?.name ?? element.value.subtitleString),
+                    payload: 'timetables\n${DateFormat('yyyy.MM.dd').format(element.value.date ?? element.value.timeFrom)}'
+                  )));
+        }
+
+        // Send all composed notifications
+        notifications.forEach((element) =>
+            NotificationController.sendNotification(title: element.title, content: element.body, data: element.payload));
+        messageNotifications.forEach((element) => NotificationController.sendNotification(
+            title: element.title, content: element.body, category: NotificationCategories.messages, data: element.payload));
+      }
     } catch (ex) {
       // ignored
     }
@@ -466,8 +661,9 @@ class RegisterChanges {
 }
 
 class RegisterChange<T> {
-  RegisterChange({required this.value, required this.type});
+  RegisterChange({required this.value, required this.type, this.payload});
   T value;
+  dynamic payload;
   RegisterChangeTypes type;
 }
 

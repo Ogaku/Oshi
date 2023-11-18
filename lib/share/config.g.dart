@@ -40,13 +40,25 @@ class ConfigAdapter extends TypeAdapter<Config> {
           fields[12] == null ? Duration.zero : fields[12] as Duration
       .._devMode = fields[13] == null ? false : fields[13] as bool
       .._notificationsAskedOnce =
-          fields[14] == null ? false : fields[14] as bool;
+          fields[14] == null ? false : fields[14] as bool
+      .._enableTimetableNotifications =
+          fields[15] == null ? true : fields[15] as bool
+      .._enableGradesNotifications =
+          fields[16] == null ? true : fields[16] as bool
+      .._enableEventsNotifications =
+          fields[17] == null ? true : fields[17] as bool
+      .._enableAttendanceNotifications =
+          fields[18] == null ? true : fields[18] as bool
+      .._enableAnnouncementsNotifications =
+          fields[19] == null ? true : fields[19] as bool
+      .._enableMessagesNotifications =
+          fields[20] == null ? true : fields[20] as bool;
   }
 
   @override
   void write(BinaryWriter writer, Config obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(20)
       ..writeByte(1)
       ..write(obj._customGradeValues)
       ..writeByte(2)
@@ -74,7 +86,19 @@ class ConfigAdapter extends TypeAdapter<Config> {
       ..writeByte(13)
       ..write(obj._devMode)
       ..writeByte(14)
-      ..write(obj._notificationsAskedOnce);
+      ..write(obj._notificationsAskedOnce)
+      ..writeByte(15)
+      ..write(obj._enableTimetableNotifications)
+      ..writeByte(16)
+      ..write(obj._enableGradesNotifications)
+      ..writeByte(17)
+      ..write(obj._enableEventsNotifications)
+      ..writeByte(18)
+      ..write(obj._enableAttendanceNotifications)
+      ..writeByte(19)
+      ..write(obj._enableAnnouncementsNotifications)
+      ..writeByte(20)
+      ..write(obj._enableMessagesNotifications);
   }
 
   @override

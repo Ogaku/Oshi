@@ -528,6 +528,110 @@
         {
             "id": "/Timeline/Lang/Counters/Attendances/Both/Plural/End",
             "translation": "added or updated attendances"
+        },
+        {
+            "id": "/Notifications/Categories/Timetable/New",
+            "translation": "Added changes for some lessons on {}, L{}"
+        },
+        {
+            "id": "/Notifications/Categories/Timetable/Substitution",
+            "translation": "Added substitution for a lesson on {}, L{}"
+        },
+        {
+            "id": "/Notifications/Categories/Timetable/Moved",
+            "translation": "A lesson has been moved to {}, L{}"
+        },
+        {
+            "id": "/Notifications/Categories/Timetable/Cancelled",
+            "translation": "A lesson on {}, L{} has been cancelled"
+        },
+        {
+            "id": "/Notifications/Categories/Messages/New",
+            "translation": "New message from {}"
+        },
+        {
+            "id": "/Notifications/Categories/Attendance/Absence",
+            "translation": "New absence on {}, L{}"
+        },
+        {
+            "id": "/Notifications/Categories/Attendance/Late",
+            "translation": "New belate on {}, L{}"
+        },
+        {
+            "id": "/Notifications/Categories/Attendance/Excused",
+            "translation": "An absence on {}, L{} was excused"
+        },
+        {
+            "id": "/Notifications/Categories/Attendance/New",
+            "translation": "New attendance \"{}\" on {}, L{}"
+        },
+        {
+            "id": "/Notifications/Categories/Attendance/Changed",
+            "translation": "An attendance \"{}\" on {}, L{} was changed"
+        },
+        {
+            "id": "/Notifications/Categories/Attendance/Removed",
+            "translation": "An attendance \"{}\" on {}, L{} was removed"
+        },
+        {
+            "id": "/Notifications/Categories/Grades/New",
+            "translation": "New grade {} - {}"
+        },
+        {
+            "id": "/Notifications/Categories/Grades/Changed",
+            "translation": "A grade {} from {} was changed"
+        },
+        {
+            "id": "/Notifications/Categories/Grades/Removed",
+            "translation": "A grade {} from {} was removed"
+        },
+        {
+            "id": "/Notifications/Categories/Announcement/New",
+            "translation": "New announcement by {}"
+        },
+        {
+            "id": "/Notifications/Categories/Announcement/Changed",
+            "translation": "An announcement by {} was changed"
+        },
+        {
+            "id": "/Notifications/Categories/Event/New",
+            "translation": "Added \"{}\" on {}"
+        },
+        {
+            "id": "/Notifications/Categories/Event/Changed",
+            "translation": "\"{}\" on {} was changed"
+        },
+        {
+            "id": "/Notifications/Categories/Event/Removed",
+            "translation": "\"{}\" on {} was removed"
+        },
+        {
+            "id": "/Notifications/Categories/Event/Teacher/New",
+            "translation": "{} will be vacant"
+        },
+        {
+            "id": "/Notifications/Categories/Event/Teacher/Changed",
+            "translation": "Changed vacation of {}"
+        },
+        {
+            "id": "/Notifications/Categories/Event/Teacher/Removed",
+            "translation": "Cancelled vacation of {}"
+        },
+        {
+            "id": "/Notifications/Captions/Joiners/Lesson",
+            "translation": "{} with {}"
+        },
+        {
+            "id": "/Notifications/Placeholder/Teacher",
+            "translation": "other teacher"
+        },
+        {
+            "id": "/Notifications/Placeholder/Lesson",
+            "translation": "Other lesson"
+        },
+        {
+            "id": "/Notifications/Captions/ViewDetails",
+            "translation": "Click to see more details"
         }
     ],
     "splashes": [

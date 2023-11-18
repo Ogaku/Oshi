@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
+import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:oshi/share/share.dart';
@@ -47,29 +49,37 @@ class NotificationController {
       required String content,
       NotificationCategories category = NotificationCategories.register,
       String? data}) async {
-    AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails('status_notifications', 'Status notifications',
-            channelDescription: 'Notification channel for status updates',
-            actions: switch (category) {
-              NotificationCategories.register => [
-                  AndroidNotificationAction('id_1', 'Share'),
-                  AndroidNotificationAction('id_2', 'Inquiry')
-                ],
-              NotificationCategories.messages => [
-                  AndroidNotificationAction('id_1', 'Share'),
-                  AndroidNotificationAction('id_2', 'Forward'),
-                  AndroidNotificationAction('id_3', 'Reply')
-                ],
-              _ => null
-            });
+    if (Platform.isWindows || Platform.isFuchsia) return;
 
-    NotificationDetails notificationDetails = NotificationDetails(
-        android: androidNotificationDetails,
-        iOS: DarwinNotificationDetails(
-            threadIdentifier: category.toString(), categoryIdentifier: notificationCategories[category]?.identifier),
-        macOS: DarwinNotificationDetails(
-            threadIdentifier: category.toString(), categoryIdentifier: notificationCategories[category]?.identifier));
-    await Share.notificationsPlugin.show(Random().nextInt(999999), title, content, notificationDetails, payload: data);
+    try {
+      AndroidNotificationDetails androidNotificationDetails =
+          AndroidNotificationDetails('status_notifications', 'Status notifications',
+              channelDescription: 'Notification channel for status updates',
+              actions: switch (NotificationCategories.other /* category */) {
+                NotificationCategories.register => [
+                    AndroidNotificationAction('id_1', 'Share'),
+                    AndroidNotificationAction('id_2', 'Inquiry')
+                  ],
+                NotificationCategories.messages => [
+                    AndroidNotificationAction('id_1', 'Share'),
+                    AndroidNotificationAction('id_2', 'Forward'),
+                    AndroidNotificationAction('id_3', 'Reply')
+                  ],
+                _ => null
+              });
+
+      NotificationDetails notificationDetails = NotificationDetails(
+          android: androidNotificationDetails,
+          iOS: DarwinNotificationDetails(
+              threadIdentifier: category.toString(),
+              categoryIdentifier: notificationCategories[NotificationCategories.other /* category */]?.identifier),
+          macOS: DarwinNotificationDetails(
+              threadIdentifier: category.toString(),
+              categoryIdentifier: notificationCategories[NotificationCategories.other /* category */]?.identifier));
+      await Share.notificationsPlugin.show(Random().nextInt(999999), title, content, notificationDetails, payload: data);
+    } catch (ex) {
+      // ignore
+    }
   }
 
   static final Map<NotificationCategories, DarwinNotificationCategory> notificationCategories = {
@@ -125,6 +135,98 @@ class NotificationController {
       },
     )
   };
+
+  static void requestNotificationAccess() {
+    try {
+      // Check notification access and request if not allowed : Android
+      Share.notificationsPlugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          ?.areNotificationsEnabled()
+          .then((value) {
+        try {
+          if (!Share.settings.config.notificationsAskedOnce && !(value ?? true)) {
+            Share.showErrorModal.broadcast(Value((
+              title: 'Allow Oshi to send you notifications?',
+              message:
+                  'Oshi needs access to send you notifications regarding timetable changes, new or updated grades, and other school events.',
+              actions: {
+                'Allow': () async => Share.notificationsPlugin
+                    .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+                    ?.requestNotificationsPermission()
+                    .then((value) => Share.settings.config.notificationsAskedOnce = true),
+                'Later': () async {},
+                'Never': () async => Share.settings.config.notificationsAskedOnce = true
+              }
+            )));
+          }
+        } catch (ex) {
+          // ignored
+        }
+      });
+    } catch (ex) {
+      // ignored
+    }
+
+    try {
+      // Check notification access and request if not allowed : iOS
+      Share.notificationsPlugin
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(alert: true, badge: true, sound: true)
+          .then((value) {
+        try {
+          if (!Share.settings.config.notificationsAskedOnce && !(value ?? true)) {
+            Share.showErrorModal.broadcast(Value((
+              title: 'Allow Oshi to send you notifications?',
+              message:
+                  'Oshi needs access to send you notifications regarding timetable changes, new or updated grades, and other school events.',
+              actions: {
+                'Allow': () async => Share.notificationsPlugin
+                    .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+                    ?.requestNotificationsPermission()
+                    .then((value) => Share.settings.config.notificationsAskedOnce = true),
+                'Later': () async {},
+                'Never': () async => Share.settings.config.notificationsAskedOnce = true
+              }
+            )));
+          }
+        } catch (ex) {
+          // ignored
+        }
+      });
+    } catch (ex) {
+      // ignored
+    }
+
+    try {
+      // Check notification access and request if not allowed : macOS
+      Share.notificationsPlugin
+          .resolvePlatformSpecificImplementation<MacOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(alert: true, badge: true, sound: true)
+          .then((value) {
+        try {
+          if (!Share.settings.config.notificationsAskedOnce && !(value ?? true)) {
+            Share.showErrorModal.broadcast(Value((
+              title: 'Allow Oshi to send you notifications?',
+              message:
+                  'Oshi needs access to send you notifications regarding timetable changes, new or updated grades, and other school events.',
+              actions: {
+                'Allow': () async => Share.notificationsPlugin
+                    .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+                    ?.requestNotificationsPermission()
+                    .then((value) => Share.settings.config.notificationsAskedOnce = true),
+                'Later': () async {},
+                'Never': () async => Share.settings.config.notificationsAskedOnce = true
+              }
+            )));
+          }
+        } catch (ex) {
+          // ignored
+        }
+      });
+    } catch (ex) {
+      // ignored
+    }
+  }
 }
 
 class ReceivedNotification {

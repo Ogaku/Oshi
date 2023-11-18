@@ -12,22 +12,28 @@ part 'config.g.dart';
 @HiveType(typeId: 4)
 @JsonSerializable(includeIfNull: false)
 class Config with ChangeNotifier {
-  Config(
-      {Map<String, double>? customGradeValues,
-      Map<String, double>? customGradeMarginValues,
-      Map<String, double>? customGradeModifierValues,
-      int? cupertinoAccentColor,
-      bool? useCupertino,
-      String? languageCode,
-      bool? weightedAverage,
-      bool? autoArithmeticAverage,
-      YearlyAverageMethods? yearlyAverageMethod,
-      int? lessonCallTime,
-      LessonCallTypes? lessonCallType,
-      Duration? bellOffset,
-      bool? devMode,
-      bool? notificationsAskedOnce})
-      : _customGradeValues = customGradeValues ?? {},
+  Config({
+    Map<String, double>? customGradeValues,
+    Map<String, double>? customGradeMarginValues,
+    Map<String, double>? customGradeModifierValues,
+    int? cupertinoAccentColor,
+    bool? useCupertino,
+    String? languageCode,
+    bool? weightedAverage,
+    bool? autoArithmeticAverage,
+    YearlyAverageMethods? yearlyAverageMethod,
+    int? lessonCallTime,
+    LessonCallTypes? lessonCallType,
+    Duration? bellOffset,
+    bool? devMode,
+    bool? notificationsAskedOnce,
+    bool? enableTimetableNotifications,
+    bool? enableGradesNotifications,
+    bool? enableEventsNotifications,
+    bool? enableAttendanceNotifications,
+    bool? enableAnnouncementsNotifications,
+    bool? enableMessagesNotifications,
+  })  : _customGradeValues = customGradeValues ?? {},
         _customGradeMarginValues = customGradeMarginValues ?? {},
         _customGradeModifierValues = customGradeModifierValues ?? {'+': 0.5, '-': -0.25},
         _cupertinoAccentColor = cupertinoAccentColor ?? Resources.cupertinoAccentColors.keys.first,
@@ -40,7 +46,13 @@ class Config with ChangeNotifier {
         _lessonCallType = lessonCallType ?? LessonCallTypes.countFromEnd,
         _bellOffset = bellOffset ?? Duration.zero,
         _devMode = devMode ?? true,
-        _notificationsAskedOnce = notificationsAskedOnce ?? false;
+        _notificationsAskedOnce = notificationsAskedOnce ?? false,
+        _enableTimetableNotifications = enableTimetableNotifications ?? true,
+        _enableGradesNotifications = enableGradesNotifications ?? true,
+        _enableEventsNotifications = enableEventsNotifications ?? true,
+        _enableAttendanceNotifications = enableAttendanceNotifications ?? true,
+        _enableAnnouncementsNotifications = enableAnnouncementsNotifications ?? true,
+        _enableMessagesNotifications = enableMessagesNotifications ?? true;
 
   // TODO All HiveFields should be private and trigger a settings save
 
@@ -86,6 +98,24 @@ class Config with ChangeNotifier {
   @HiveField(14, defaultValue: false)
   bool _notificationsAskedOnce;
 
+  @HiveField(15, defaultValue: true)
+  bool _enableTimetableNotifications;
+
+  @HiveField(16, defaultValue: true)
+  bool _enableGradesNotifications;
+
+  @HiveField(17, defaultValue: true)
+  bool _enableEventsNotifications;
+
+  @HiveField(18, defaultValue: true)
+  bool _enableAttendanceNotifications;
+
+  @HiveField(19, defaultValue: true)
+  bool _enableAnnouncementsNotifications;
+
+  @HiveField(20, defaultValue: true)
+  bool _enableMessagesNotifications;
+
   @JsonKey(includeToJson: false, includeFromJson: false)
   Map<String, double> get customGradeValues => _customGradeValues;
 
@@ -130,6 +160,24 @@ class Config with ChangeNotifier {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get notificationsAskedOnce => _notificationsAskedOnce;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get enableTimetableNotifications => _enableTimetableNotifications;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get enableGradesNotifications => _enableGradesNotifications;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get enableEventsNotifications => _enableEventsNotifications;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get enableAttendanceNotifications => _enableAttendanceNotifications;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get enableAnnouncementsNotifications => _enableAnnouncementsNotifications;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get enableMessagesNotifications => _enableMessagesNotifications;
 
   set customGradeValues(Map<String, double> customGradeValues) {
     _customGradeValues = customGradeValues;
@@ -200,6 +248,36 @@ class Config with ChangeNotifier {
 
   set notificationsAskedOnce(bool value) {
     _notificationsAskedOnce = value;
+    notifyListeners();
+  }
+
+  set enableTimetableNotifications(bool value) {
+    _enableTimetableNotifications = value;
+    notifyListeners();
+  }
+
+  set enableGradesNotifications(bool value) {
+    _enableGradesNotifications = value;
+    notifyListeners();
+  }
+
+  set enableEventsNotifications(bool value) {
+    _enableEventsNotifications = value;
+    notifyListeners();
+  }
+
+  set enableAttendanceNotifications(bool value) {
+    _enableAttendanceNotifications = value;
+    notifyListeners();
+  }
+
+  set enableAnnouncementsNotifications(bool value) {
+    _enableAnnouncementsNotifications = value;
+    notifyListeners();
+  }
+
+  set enableMessagesNotifications(bool value) {
+    _enableMessagesNotifications = value;
     notifyListeners();
   }
 

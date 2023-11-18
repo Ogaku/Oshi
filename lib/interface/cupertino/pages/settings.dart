@@ -43,6 +43,7 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             // Name and school, avatar picker
             CupertinoListSection.insetGrouped(
+              margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
               children: [
                 CupertinoListTile(
                     padding: EdgeInsets.only(right: 15),
@@ -72,6 +73,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             // Settings - appearance settings
             CupertinoListSection.insetGrouped(
+              margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
               additionalDividerMargin: 5,
               children: [
                 CupertinoListTile(
@@ -174,6 +176,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             // Settings - app settings
             CupertinoListSection.insetGrouped(
+              margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
               additionalDividerMargin: 5,
               children: [
                 CupertinoListTile(
@@ -185,17 +188,111 @@ class _SettingsPageState extends State<SettingsPage> {
                       CupertinoListTileChevron()
                     ])),
                 CupertinoListTile(
-                    onTap: () {},
+                    onTap: () => Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) => StatefulBuilder(
+                                builder: ((context, setState) => CupertinoModalPage(title: 'Notifications', children: [
+                                      CupertinoListSection.insetGrouped(
+                                          additionalDividerMargin: 5,
+                                          margin: EdgeInsets.only(left: 15, right: 15),
+                                          header: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 20),
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Text('NOTIFICATION FILTERS',
+                                                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
+                                          children: [
+                                            CupertinoListTile(
+                                              title: Text('Request notification access'),
+                                              trailing: CupertinoListTileChevron(),
+                                            )
+                                          ]),
+                                      CupertinoListSection.insetGrouped(
+                                          additionalDividerMargin: 5,
+                                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
+                                          children: [
+                                            CupertinoFormRow(
+                                                prefix: Flexible(
+                                                    flex: 2,
+                                                    child:
+                                                        Text('App updates', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                                child: CupertinoSwitch(
+                                                    value: true,
+                                                    onChanged: (s) => NotificationController.sendNotification(
+                                                        title: 'Pathetic.',
+                                                        content: 'You thought you could escape?',
+                                                        category: NotificationCategories.other)))
+                                          ]),
+                                      CupertinoListSection.insetGrouped(
+                                          additionalDividerMargin: 5,
+                                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                                          footer: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 20),
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Text(
+                                                      'Notifications will be sent for the selected categories once the new data is downloaded and there are any chnages.',
+                                                      style: TextStyle(fontSize: 13)))),
+                                          children: [
+                                            CupertinoFormRow(
+                                                prefix: Flexible(
+                                                    flex: 2,
+                                                    child: Text('Timetables', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                                child: CupertinoSwitch(
+                                                    value: Share.settings.config.enableTimetableNotifications,
+                                                    onChanged: (s) => setState(
+                                                        () => Share.settings.config.enableTimetableNotifications = s))),
+                                            CupertinoFormRow(
+                                                prefix: Flexible(
+                                                    flex: 2,
+                                                    child: Text('Grades', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                                child: CupertinoSwitch(
+                                                    value: Share.settings.config.enableGradesNotifications,
+                                                    onChanged: (s) => setState(
+                                                        () => Share.settings.config.enableGradesNotifications = s))),
+                                            CupertinoFormRow(
+                                                prefix: Flexible(
+                                                    flex: 2,
+                                                    child: Text('Events', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                                child: CupertinoSwitch(
+                                                    value: Share.settings.config.enableEventsNotifications,
+                                                    onChanged: (s) => setState(
+                                                        () => Share.settings.config.enableEventsNotifications = s))),
+                                            CupertinoFormRow(
+                                                prefix: Flexible(
+                                                    flex: 2,
+                                                    child: Text('Attendance', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                                child: CupertinoSwitch(
+                                                    value: Share.settings.config.enableAttendanceNotifications,
+                                                    onChanged: (s) => setState(
+                                                        () => Share.settings.config.enableAttendanceNotifications = s))),
+                                            CupertinoFormRow(
+                                                prefix: Flexible(
+                                                    flex: 2,
+                                                    child:
+                                                        Text('Announcements', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                                child: CupertinoSwitch(
+                                                    value: Share.settings.config.enableAnnouncementsNotifications,
+                                                    onChanged: (s) => setState(
+                                                        () => Share.settings.config.enableAnnouncementsNotifications = s))),
+                                            CupertinoFormRow(
+                                                prefix: Flexible(
+                                                    flex: 2,
+                                                    child: Text('Messages', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                                child: CupertinoSwitch(
+                                                    value: Share.settings.config.enableMessagesNotifications,
+                                                    onChanged: (s) => setState(
+                                                        () => Share.settings.config.enableMessagesNotifications = s))),
+                                          ])
+                                    ]))))),
                     title: Text('Notifications', overflow: TextOverflow.ellipsis),
-                    trailing: Row(children: [
-                      Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5), child: Opacity(opacity: 0.5, child: Text('TODO'))),
-                      CupertinoListTileChevron()
-                    ]))
+                    trailing: CupertinoListTileChevron())
               ],
             ),
             // Settings - timetable settings
             CupertinoListSection.insetGrouped(
+              margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
               additionalDividerMargin: 5,
               children: [
                 CupertinoListTile(
@@ -204,6 +301,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         CupertinoPageRoute(
                             builder: (context) => CupertinoModalPage(title: 'Timetable Settings', children: [
                                   CupertinoListSection.insetGrouped(
+                                      margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
                                       additionalDividerMargin: 5,
                                       header: Container(
                                           margin: EdgeInsets.symmetric(horizontal: 20),
@@ -259,6 +357,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                         )),
                                       ]),
                                   CupertinoListSection.insetGrouped(
+                                      margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
                                       additionalDividerMargin: 5,
                                       header: Container(
                                           margin: EdgeInsets.symmetric(horizontal: 20),
@@ -328,6 +427,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             builder: (context) => StatefulBuilder(
                                 builder: ((context, setState) => CupertinoModalPage(title: 'Grades Settings', children: [
                                       CupertinoListSection.insetGrouped(
+                                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
                                           additionalDividerMargin: 5,
                                           header: Container(
                                               margin: EdgeInsets.symmetric(horizontal: 20),
@@ -421,6 +521,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             // Settings - credits
             CupertinoListSection.insetGrouped(
+              margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
               additionalDividerMargin: 5,
               children: [
                 CupertinoListTile(
@@ -429,6 +530,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         CupertinoPageRoute(
                             builder: (context) => CupertinoModalPage(title: 'App Info', children: [
                                   CupertinoListSection.insetGrouped(
+                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
                                     additionalDividerMargin: 5,
                                     header: Container(
                                         margin: EdgeInsets.symmetric(horizontal: 20),
@@ -450,6 +552,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                   children: [
                                                                     // Developer mode
                                                                     CupertinoListSection.insetGrouped(
+                                                                        margin:
+                                                                            EdgeInsets.only(left: 15, right: 15, bottom: 10),
                                                                         additionalDividerMargin: 5,
                                                                         header: Container(
                                                                             margin: EdgeInsets.symmetric(horizontal: 20),
@@ -476,6 +580,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                                   }))
                                                                         ]),
                                                                     CupertinoListSection.insetGrouped(
+                                                                        margin:
+                                                                            EdgeInsets.only(left: 15, right: 15, bottom: 10),
                                                                         additionalDividerMargin: 5,
                                                                         header: Container(
                                                                             margin: EdgeInsets.symmetric(horizontal: 20),
@@ -651,8 +757,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                                             }
                                                                                           },
                                                                                           padding: EdgeInsets.zero,
-                                                                                          child: Text(
-                                                                                              'Other notification',
+                                                                                          child: Text('Other notification',
                                                                                               maxLines: 1,
                                                                                               overflow:
                                                                                                   TextOverflow.ellipsis))
@@ -681,6 +786,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                     ],
                                   ),
                                   CupertinoListSection.insetGrouped(
+                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
                                     additionalDividerMargin: 5,
                                     header: Container(
                                         margin: EdgeInsets.symmetric(horizontal: 20),

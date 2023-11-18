@@ -63,7 +63,7 @@
         },
         {
             "id": "/Session/Login/Data/Info",
-            "translation": "Część informacji o loginie może być przechowywana przez serwis e-dziennika, zakodowana albo w postaci w tokena. Te informacje nie będą przez nas ani przez naszą aplikację udostępniane i nigdy nie opuszczą twojego urządzenia w celach innych niż zalogowanie się do e-dziennika."
+            "translation": "Część informacji o loginie może być przechowywana przez serwis e-dziennika, zakodowana albo w postaci w tokena. Te informacje nie będą przez nas ani przez naszą aplikację udostępniane i nigdy nie opuszczą twojego urządzenia w celach innych niż logowanie."
         },
         {
             "id": "/Session/Login/Splash/Session",
@@ -95,7 +95,7 @@
         },
         {
             "id": "/Next",
-            "translation": "Następne"
+            "translation": "Dalej"
         },
         {
             "id": "/Session/Login/Error/Message",
@@ -524,6 +524,110 @@
         {
             "id": "/Timeline/Lang/Counters/Attendances/Both/Plural/End",
             "translation": "dodanych lub zmienionych wpisów frekwencji"
+        },
+        {
+            "id": "/Notifications/Categories/Timetable/New",
+            "translation": "Wprowadzono zmiany dla lekcji w dniu {}, L{}"
+        },
+        {
+            "id": "/Notifications/Categories/Timetable/Substitution",
+            "translation": "Dodano zastępstwo za lekcję w dniu {}, L{}"
+        },
+        {
+            "id": "/Notifications/Categories/Timetable/Moved",
+            "translation": "Przeniesiono lekcję na dzień {}, L{}"
+        },
+        {
+            "id": "/Notifications/Categories/Timetable/Cancelled",
+            "translation": "Odwołano lekcję w dniu {}, L{}"
+        },
+        {
+            "id": "/Notifications/Categories/Messages/New",
+            "translation": "Nowa wiadomość od {}"
+        },
+        {
+            "id": "/Notifications/Categories/Attendance/Absence",
+            "translation": "Nieobecność w dniu {}, L{}"
+        },
+        {
+            "id": "/Notifications/Categories/Attendance/Late",
+            "translation": "Spóźnienie w dniu {}, L{}"
+        },
+        {
+            "id": "/Notifications/Categories/Attendance/Excused",
+            "translation": "Usprawiedliwiono nieobecność z dnia {}, L{}"
+        },
+        {
+            "id": "/Notifications/Categories/Attendance/New",
+            "translation": "Nowa frekwencja \"{}\" w dniu {}, L{}"
+        },
+        {
+            "id": "/Notifications/Categories/Attendance/Changed",
+            "translation": "Zmieniona frekwencja \"{}\" w dniu {}, L{}"
+        },
+        {
+            "id": "/Notifications/Categories/Attendance/Removed",
+            "translation": "Usunięto frekwencję \"{}\" w dniu {}, L{}"
+        },
+        {
+            "id": "/Notifications/Categories/Grades/New",
+            "translation": "Nowa ocena {} - {}"
+        },
+        {
+            "id": "/Notifications/Categories/Grades/Changed",
+            "translation": "Zmieniona ocena {} w dniu {}"
+        },
+        {
+            "id": "/Notifications/Categories/Grades/Removed",
+            "translation": "Ununięto ocenę {} z dnia {}"
+        },
+        {
+            "id": "/Notifications/Categories/Announcement/New",
+            "translation": "Nowe ogłoszenie od {}"
+        },
+        {
+            "id": "/Notifications/Categories/Announcement/Changed",
+            "translation": "Zmienione ogłoszenie od {}"
+        },
+        {
+            "id": "/Notifications/Categories/Event/New",
+            "translation": "Dodano \"{}\" w dniu {}"
+        },
+        {
+            "id": "/Notifications/Categories/Event/Changed",
+            "translation": "Zmieniono \"{}\" w dniu {}"
+        },
+        {
+            "id": "/Notifications/Categories/Event/Removed",
+            "translation": "Usunięto \"{}\" w dniu {}"
+        },
+        {
+            "id": "/Notifications/Categories/Event/Teacher/New",
+            "translation": "Dodano nieobecność nauczyciela {}"
+        },
+        {
+            "id": "/Notifications/Categories/Event/Teacher/Changed",
+            "translation": "Zmieniono nieobecność nauczyciela {}"
+        },
+        {
+            "id": "/Notifications/Categories/Event/Teacher/Removed",
+            "translation": "Usunięto nieobecność nauczyciela {}"
+        },
+        {
+            "id": "/Notifications/Captions/Joiners/Lesson",
+            "translation": "{} z {}"
+        },
+        {
+            "id": "/Notifications/Placeholder/Teacher",
+            "translation": "innym nauczycielem"
+        },
+        {
+            "id": "/Notifications/Placeholder/Lesson",
+            "translation": "Inna lekcja"
+        },
+        {
+            "id": "/Notifications/Captions/ViewDetails",
+            "translation": "Naciśnij aby zobaczyć więcej detali"
         }
     ],
     "splashes": [

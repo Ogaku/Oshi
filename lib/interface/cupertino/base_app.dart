@@ -5,12 +5,11 @@ import 'dart:io';
 
 import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
-import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:format/format.dart';
+import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:path/path.dart' as path;
 
@@ -71,95 +70,7 @@ class _BaseAppState extends State<BaseApp> {
         Share.hasCheckedForUpdates = true;
       }
 
-      try {
-        // Check notification access and request if not allowed : Android
-        Share.notificationsPlugin
-            .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-            ?.areNotificationsEnabled()
-            .then((value) {
-          try {
-            if (!Share.settings.config.notificationsAskedOnce && !(value ?? true)) {
-              Share.showErrorModal.broadcast(Value((
-                title: 'Allow Oshi to send you notifications?',
-                message:
-                    'Oshi needs access to send you notifications regarding timetable changes, new or updated grades, and other school events.',
-                actions: {
-                  'Allow': () async => Share.notificationsPlugin
-                      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-                      ?.requestNotificationsPermission()
-                      .then((value) => Share.settings.config.notificationsAskedOnce = true),
-                  'Later': () async {},
-                  'Never': () async => Share.settings.config.notificationsAskedOnce = true
-                }
-              )));
-            }
-          } catch (ex) {
-            // ignored
-          }
-        });
-      } catch (ex) {
-        // ignored
-      }
-
-      try {
-        // Check notification access and request if not allowed : iOS
-        Share.notificationsPlugin
-            .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
-            ?.requestPermissions(alert: true, badge: true, sound: true)
-            .then((value) {
-          try {
-            if (!Share.settings.config.notificationsAskedOnce && !(value ?? true)) {
-              Share.showErrorModal.broadcast(Value((
-                title: 'Allow Oshi to send you notifications?',
-                message:
-                    'Oshi needs access to send you notifications regarding timetable changes, new or updated grades, and other school events.',
-                actions: {
-                  'Allow': () async => Share.notificationsPlugin
-                      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-                      ?.requestNotificationsPermission()
-                      .then((value) => Share.settings.config.notificationsAskedOnce = true),
-                  'Later': () async {},
-                  'Never': () async => Share.settings.config.notificationsAskedOnce = true
-                }
-              )));
-            }
-          } catch (ex) {
-            // ignored
-          }
-        });
-      } catch (ex) {
-        // ignored
-      }
-
-      try {
-        // Check notification access and request if not allowed : macOS
-        Share.notificationsPlugin
-            .resolvePlatformSpecificImplementation<MacOSFlutterLocalNotificationsPlugin>()
-            ?.requestPermissions(alert: true, badge: true, sound: true)
-            .then((value) {
-          try {
-            if (!Share.settings.config.notificationsAskedOnce && !(value ?? true)) {
-              Share.showErrorModal.broadcast(Value((
-                title: 'Allow Oshi to send you notifications?',
-                message:
-                    'Oshi needs access to send you notifications regarding timetable changes, new or updated grades, and other school events.',
-                actions: {
-                  'Allow': () async => Share.notificationsPlugin
-                      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-                      ?.requestNotificationsPermission()
-                      .then((value) => Share.settings.config.notificationsAskedOnce = true),
-                  'Later': () async {},
-                  'Never': () async => Share.settings.config.notificationsAskedOnce = true
-                }
-              )));
-            }
-          } catch (ex) {
-            // ignored
-          }
-        });
-      } catch (ex) {
-        // ignored
-      }
+      NotificationController.requestNotificationAccess();
     });
   }
 
