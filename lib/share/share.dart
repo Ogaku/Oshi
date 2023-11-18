@@ -330,19 +330,20 @@ class Session extends HiveObject {
           .toList();
 
       var gradeChanges = allGradesDownloaded
-          .except(allGradesSaved)
+          .except(allGradesSaved, (element) => element.grade)
           .select((x, index) => RegisterChange<Grade>(
               type: allGradesSaved.any((y) => y.grade.id == x.grade.id && y.grade.id > 0 && x.grade.id > 0)
                   ? RegisterChangeTypes.changed
                   : RegisterChangeTypes.added,
               value: x.grade,
               payload: x.subject))
-          .appendAll(allGradesSaved.except(allGradesDownloaded).select((x, index) => RegisterChange<Grade>(
-              type: allGradesDownloaded.any((y) => y.grade.id == x.grade.id && y.grade.id > 0 && x.grade.id > 0)
-                  ? RegisterChangeTypes.changed
-                  : RegisterChangeTypes.removed,
-              value: x.grade,
-              payload: x.subject)))
+          .appendAll(allGradesSaved.except(allGradesDownloaded, (element) => element.grade).select((x, index) =>
+              RegisterChange<Grade>(
+                  type: allGradesDownloaded.any((y) => y.grade.id == x.grade.id && y.grade.id > 0 && x.grade.id > 0)
+                      ? RegisterChangeTypes.changed
+                      : RegisterChangeTypes.removed,
+                  value: x.grade,
+                  payload: x.subject)))
           .toList();
 
       /* Events */

@@ -17,7 +17,6 @@ import 'package:oshi/interface/cupertino/widgets/modal_page.dart';
 import 'package:oshi/interface/cupertino/widgets/options_form.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/attendances.dart';
-import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
@@ -64,7 +63,13 @@ class _SettingsPageState extends State<SettingsPage> {
                                       .then((result) => setState(() => Share.settings.config.userAvatar = result)))
                                   : null,
                               child: Share.settings.config.userAvatarImage != null
-                                  ? CircleAvatar(radius: 25, backgroundImage: Share.settings.config.userAvatarImage?.image)
+                                  ? CircleAvatar(
+                                      radius: 25,
+                                      foregroundImage: Share.settings.config.userAvatarImage?.image,
+                                      backgroundColor: Colors.transparent,
+                                      child: Icon(CupertinoIcons.person_circle_fill,
+                                          size: 50, color: Share.settings.config.cupertinoAccentColor.color),
+                                    )
                                   : Icon(CupertinoIcons.person_circle_fill, size: 50))),
                       Expanded(
                           child: Column(
@@ -264,6 +269,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                             element.toList().count((x) => x.type == AttendanceType.present) /
                                                                 element.count
                                                       ))
+                                                  .orderByDescending((element) => element.lesson)
                                                   .select(
                                                     (element, index) => CupertinoListTile(
                                                         title: Text(element.lesson, overflow: TextOverflow.ellipsis),
@@ -284,7 +290,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                                 margin: EdgeInsets.symmetric(horizontal: 5),
                                                 child: Opacity(
                                                     opacity: 0.5,
-                                                    child: Text('No attendance to displasy', textAlign: TextAlign.center)))),
+                                                    child:
+                                                        Text('No attendances to displasy', textAlign: TextAlign.center)))),
                                       ))
                                 ]))),
                     trailing: CupertinoListTileChevron())

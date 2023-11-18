@@ -579,11 +579,11 @@
         },
         {
             "id": "/Notifications/Categories/Grades/Changed",
-            "translation": "A grade {} from {} was changed"
+            "translation": "{} from {} was updated"
         },
         {
             "id": "/Notifications/Categories/Grades/Removed",
-            "translation": "A grade {} from {} was removed"
+            "translation": "{} from {} was removed"
         },
         {
             "id": "/Notifications/Categories/Announcement/New",
