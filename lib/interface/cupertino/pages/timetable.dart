@@ -1107,7 +1107,7 @@ extension LessonWidgetExtension on TimetableLesson {
                           Visibility(
                               visible: !(date == DateTime.now().asDate() &&
                                   (selectedDay?.dayEnd?.isAfter(DateTime.now()) ?? false) &&
-                                  ((hourTo?.isBefore(DateTime.now()) ?? false) || isCanceled)),
+                                  ((hourTo?.asHour(DateTime.now()).isBefore(DateTime.now()) ?? false) || isCanceled)),
                               child: Container(
                                   margin: EdgeInsets.only(top: 4),
                                   child: Opacity(
