@@ -269,16 +269,21 @@ class _SettingsPageState extends State<SettingsPage> {
                                                             element.toList().count((x) => x.type == AttendanceType.present) /
                                                                 element.count
                                                       ))
-                                                  .orderByDescending((element) => element.lesson)
+                                                  .orderBy((element) => element.lesson)
                                                   .select(
                                                     (element, index) => CupertinoListTile(
                                                         title: Text(element.lesson, overflow: TextOverflow.ellipsis),
                                                         trailing: Container(
                                                             margin: EdgeInsets.symmetric(horizontal: 5),
                                                             child: Opacity(
-                                                                opacity: 0.5,
-                                                                child:
-                                                                    Text('${(100 * element.value).toStringAsFixed(2)}%')))),
+                                                                opacity: element.value >= 0.6 ? 0.5 : 1.0,
+                                                                child: Text('${(100 * element.value).toStringAsFixed(2)}%',
+                                                                    style: TextStyle(
+                                                                        color: switch (element.value) {
+                                                                      < 0.5 => CupertinoColors.systemRed,
+                                                                      < 0.6 => CupertinoColors.activeOrange,
+                                                                      _ => null // Default
+                                                                    }))))),
                                                   )
                                                   .toList() ??
                                               [])
