@@ -46,10 +46,14 @@
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
 		<key>NSCalendarsUsageDescription</key>
-		<string>Oshi would like to access your calender</string>
+		<string>Oshi would like to access your calendar</string>
 		<key>NSContactsUsageDescription</key>
 		<string>Oshi would like to access your contacts</string>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Oshi would like to access your photo library</string>
+		<key>NSCameraUsageDescription</key>
+		<string>Oshi would like to access your camera</string>
 	</dict>
 </plist>

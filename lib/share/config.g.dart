@@ -52,13 +52,14 @@ class ConfigAdapter extends TypeAdapter<Config> {
       .._enableAnnouncementsNotifications =
           fields[19] == null ? true : fields[19] as bool
       .._enableMessagesNotifications =
-          fields[20] == null ? true : fields[20] as bool;
+          fields[20] == null ? true : fields[20] as bool
+      .._userAvatarImage = fields[21] == null ? '' : fields[21] as String;
   }
 
   @override
   void write(BinaryWriter writer, Config obj) {
     writer
-      ..writeByte(20)
+      ..writeByte(21)
       ..writeByte(1)
       ..write(obj._customGradeValues)
       ..writeByte(2)
@@ -98,7 +99,9 @@ class ConfigAdapter extends TypeAdapter<Config> {
       ..writeByte(19)
       ..write(obj._enableAnnouncementsNotifications)
       ..writeByte(20)
-      ..write(obj._enableMessagesNotifications);
+      ..write(obj._enableMessagesNotifications)
+      ..writeByte(21)
+      ..write(obj._userAvatarImage);
   }
 
   @override

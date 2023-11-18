@@ -1,4 +1,7 @@
 // ignore_for_file: prefer_final_fields
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:oshi/share/resources.dart';
@@ -33,6 +36,7 @@ class Config with ChangeNotifier {
     bool? enableAttendanceNotifications,
     bool? enableAnnouncementsNotifications,
     bool? enableMessagesNotifications,
+    String? userAvatarImage,
   })  : _customGradeValues = customGradeValues ?? {},
         _customGradeMarginValues = customGradeMarginValues ?? {},
         _customGradeModifierValues = customGradeModifierValues ?? {'+': 0.5, '-': -0.25},
@@ -52,7 +56,8 @@ class Config with ChangeNotifier {
         _enableEventsNotifications = enableEventsNotifications ?? true,
         _enableAttendanceNotifications = enableAttendanceNotifications ?? true,
         _enableAnnouncementsNotifications = enableAnnouncementsNotifications ?? true,
-        _enableMessagesNotifications = enableMessagesNotifications ?? true;
+        _enableMessagesNotifications = enableMessagesNotifications ?? true,
+        _userAvatarImage = userAvatarImage ?? '';
 
   // TODO All HiveFields should be private and trigger a settings save
 
@@ -116,6 +121,9 @@ class Config with ChangeNotifier {
   @HiveField(20, defaultValue: true)
   bool _enableMessagesNotifications;
 
+  @HiveField(21, defaultValue: '')
+  String _userAvatarImage;
+
   @JsonKey(includeToJson: false, includeFromJson: false)
   Map<String, double> get customGradeValues => _customGradeValues;
 
@@ -178,6 +186,25 @@ class Config with ChangeNotifier {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get enableMessagesNotifications => _enableMessagesNotifications;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  Uint8List? get userAvatar {
+    try {
+      return base64Decode(_userAvatarImage);
+    } catch (ex) {
+      return null;
+    }
+  }
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  Image? get userAvatarImage {
+    try {
+      if (userAvatar?.isEmpty ?? true) return null;
+      return Image.memory(userAvatar!);
+    } catch (ex) {
+      return null;
+    }
+  }
 
   set customGradeValues(Map<String, double> customGradeValues) {
     _customGradeValues = customGradeValues;
@@ -279,6 +306,15 @@ class Config with ChangeNotifier {
   set enableMessagesNotifications(bool value) {
     _enableMessagesNotifications = value;
     notifyListeners();
+  }
+
+  set userAvatar(Uint8List? value) {
+    try {
+      _userAvatarImage = value != null ? base64Encode(value) : '';
+      notifyListeners();
+    } catch (ex) {
+      // ignored
+    }
   }
 
   factory Config.fromJson(Map<String, dynamic> json) => _$ConfigFromJson(json);

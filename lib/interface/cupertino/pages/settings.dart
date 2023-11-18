@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:oshi/interface/cupertino/widgets/entries_form.dart';
 import 'package:oshi/interface/cupertino/widgets/modal_page.dart';
 import 'package:oshi/interface/cupertino/widgets/options_form.dart';
@@ -50,10 +51,13 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: Row(children: [
                       Container(
                           margin: EdgeInsets.all(15),
-                          child: CircleAvatar(
-                            radius: 25,
-                            backgroundImage: NetworkImage('https://i.redd.it/5irxtxlxrtw41.png'),
-                          )),
+                          child: GestureDetector(
+                              onTap: () => ImagePicker().pickImage(source: ImageSource.gallery).then((value) => value
+                                  ?.readAsBytes()
+                                  .then((result) => setState(() => Share.settings.config.userAvatar = result))),
+                              child: Share.settings.config.userAvatarImage != null
+                                  ? CircleAvatar(radius: 25, backgroundImage: Share.settings.config.userAvatarImage?.image)
+                                  : Icon(CupertinoIcons.person_circle_fill, size: 50))),
                       Expanded(
                           child: Column(
                         mainAxisSize: MainAxisSize.max,

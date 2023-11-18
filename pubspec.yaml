@@ -42,6 +42,7 @@ dependencies:
   flutter_local_notifications: ^16.1.0
   flutter_native_splash: ^2.3.5
   show_fps: ^1.0.6
+  image_picker: ^1.0.4
 
 dev_dependencies:
   flutter_test:
