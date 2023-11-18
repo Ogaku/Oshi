@@ -97,7 +97,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
       previousPageTitle: widget.previousPageTitle,
       threshold: ((widget.anchor != null && widget.child != null) || (widget.anchor == 0.0 && widget.keepBackgroundWatchers))
           ? 52
-          : 103,
+          : 112,
       middle: widget.middle ?? widget.largeTitle,
       largeTitle: Column(
         children: [
@@ -263,7 +263,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             controller: scrollController,
-            anchor: widget.anchor ?? 0.07,
+            anchor: widget.anchor ?? 0.077,
             slivers: <Widget>[
               navBarSliver,
               widget.useSliverBox

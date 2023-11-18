@@ -49,7 +49,7 @@ class Config with ChangeNotifier {
         _lessonCallTime = lessonCallTime ?? 15,
         _lessonCallType = lessonCallType ?? LessonCallTypes.countFromEnd,
         _bellOffset = bellOffset ?? Duration.zero,
-        _devMode = devMode ?? true,
+        _devMode = devMode ?? false,
         _notificationsAskedOnce = notificationsAskedOnce ?? false,
         _enableTimetableNotifications = enableTimetableNotifications ?? true,
         _enableGradesNotifications = enableGradesNotifications ?? true,

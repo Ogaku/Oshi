@@ -118,6 +118,11 @@ class Settings {
   // Save all received data to storage, called automatically
   Future<({bool success, Exception? message})> save() async {
     try {
+      // Remove everything, as Hive's append-only
+      (await Hive.openBox('sessions')).clear();
+      (await Hive.openBox('config')).clear();
+
+      // Put the new data in, thank the dev for being an idiot
       (await Hive.openBox('sessions')).put('sessions', sessions);
       (await Hive.openBox('config')).put('config', config);
     } on Exception catch (ex) {
