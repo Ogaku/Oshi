@@ -116,5 +116,5 @@ jobs:
         uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          repository: Ogaku/Oshi
+          repository: Ogaku/Toudai
           event-type: update-event

@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/widgets/entries_form.dart';
 import 'package:oshi/interface/cupertino/widgets/modal_page.dart';
@@ -147,6 +148,14 @@ class _SettingsPageState extends State<SettingsPage> {
                                                   child: Text(Share.session.data.student.mainClass.unit.principalName)))),
                                       CupertinoListTile(
                                           title: Text('Address', overflow: TextOverflow.ellipsis),
+                                          onTap: () {
+                                            try {
+                                              MapsLauncher.launchQuery(
+                                                  '${Share.session.data.student.mainClass.unit.name}, ${Share.session.data.student.mainClass.unit.address}');
+                                            } catch (ex) {
+                                              // ignored
+                                            }
+                                          },
                                           trailing: Row(children: [
                                             Container(
                                                 margin: EdgeInsets.symmetric(horizontal: 5),
@@ -157,6 +166,13 @@ class _SettingsPageState extends State<SettingsPage> {
                                           ])),
                                       CupertinoListTile(
                                           title: Text('Phone', overflow: TextOverflow.ellipsis),
+                                          onTap: () {
+                                            try {
+                                              launchUrlString('tel:${Share.session.data.student.mainClass.unit.phone}');
+                                            } catch (ex) {
+                                              // ignored
+                                            }
+                                          },
                                           trailing: Row(children: [
                                             Container(
                                                 margin: EdgeInsets.symmetric(horizontal: 5),
@@ -167,6 +183,13 @@ class _SettingsPageState extends State<SettingsPage> {
                                           ])),
                                       CupertinoListTile(
                                           title: Text('E-mail', overflow: TextOverflow.ellipsis),
+                                          onTap: () {
+                                            try {
+                                              launchUrlString('mailto:${Share.session.data.student.mainClass.unit.email}');
+                                            } catch (ex) {
+                                              // ignored
+                                            }
+                                          },
                                           trailing: Row(children: [
                                             Container(
                                                 margin: EdgeInsets.symmetric(horizontal: 5),
@@ -1030,9 +1053,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
                                     children: [
                                       CupertinoListTile(
-                                          onTap: () async {
+                                          onTap: () {
                                             try {
-                                              await launchUrlString('https://github.com/KimihikoAkayasaki');
+                                              launchUrlString('https://github.com/KimihikoAkayasaki');
                                             } catch (ex) {
                                               // ignored
                                             }
@@ -1045,9 +1068,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                             CupertinoListTileChevron()
                                           ])),
                                       CupertinoListTile(
-                                          onTap: () async {
+                                          onTap: () {
                                             try {
-                                              await launchUrlString('https://github.com/xFaiafokkusu');
+                                              launchUrlString('https://github.com/xFaiafokkusu');
                                             } catch (ex) {
                                               // ignored
                                             }
@@ -1060,9 +1083,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                             CupertinoListTileChevron()
                                           ])),
                                       CupertinoListTile(
-                                          onTap: () async {
+                                          onTap: () {
                                             try {
-                                              await launchUrlString('https://github.com/AAhockey');
+                                              launchUrlString('https://github.com/AAhockey');
                                             } catch (ex) {
                                               // ignored
                                             }
@@ -1085,9 +1108,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       CupertinoListTileChevron()
                     ])),
                 CupertinoListTile(
-                    onTap: () async {
+                    onTap: () {
                       try {
-                        await launchUrlString('https://github.com/Ogaku');
+                        launchUrlString('https://github.com/Ogaku');
                       } catch (ex) {
                         // ignored
                       }
@@ -1099,9 +1122,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       CupertinoListTileChevron()
                     ])),
                 CupertinoListTile(
-                    onTap: () async {
+                    onTap: () {
                       try {
-                        await launchUrlString('https://ko-fi.com/ogaku_oshi');
+                        launchUrlString('https://ko-fi.com/ogaku_oshi');
                       } catch (ex) {
                         // ignored
                       }
@@ -1113,9 +1136,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       CupertinoListTileChevron()
                     ])),
                 CupertinoListTile(
-                    onTap: () async {
+                    onTap: () {
                       try {
-                        await launchUrlString('https://youtu.be/dQw4w9WgXcQ');
+                        launchUrlString('https://youtu.be/dQw4w9WgXcQ');
                       } catch (ex) {
                         // ignored
                       }

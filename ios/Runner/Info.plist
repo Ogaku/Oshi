@@ -55,5 +55,10 @@
 		<string>Oshi would like to access your photo library</string>
 		<key>NSCameraUsageDescription</key>
 		<string>Oshi would like to access your camera</string>
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<string>mailto</string>
+			<string>tel</string>
+		</array>
 	</dict>
 </plist>

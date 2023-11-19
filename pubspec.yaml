@@ -43,6 +43,7 @@ dependencies:
   flutter_native_splash: ^2.3.5
   show_fps: ^1.0.6
   image_picker: ^1.0.4
+  maps_launcher: ^2.2.0
 
 dev_dependencies:
   flutter_test:
