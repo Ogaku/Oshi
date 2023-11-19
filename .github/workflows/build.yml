@@ -111,3 +111,10 @@ jobs:
           artifacts: "artifacts/android-release/Oshi.apk,artifacts/ios-release/Oshi.ipa"
           tag: ${{ env.NOW }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Update store releases
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: Ogaku/Oshi
+          event-type: update-event
