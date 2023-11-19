@@ -93,6 +93,7 @@ jobs:
 
   release:
     runs-on: macos-latest
+    environment: Dispatch
     needs: [build-android, build-ios]
     steps:
       - uses: actions/checkout@v3
@@ -110,11 +111,11 @@ jobs:
         with:
           artifacts: "artifacts/android-release/Oshi.apk,artifacts/ios-release/Oshi.ipa"
           tag: ${{ env.NOW }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT }}
           
       - name: Update store releases
         uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT }}
           repository: Ogaku/Toudai
           event-type: update-event
