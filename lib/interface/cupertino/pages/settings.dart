@@ -68,8 +68,6 @@ class _SettingsPageState extends State<SettingsPage> {
                                       radius: 25,
                                       foregroundImage: Share.settings.config.userAvatarImage?.image,
                                       backgroundColor: Colors.transparent,
-                                      child: Icon(CupertinoIcons.person_circle_fill,
-                                          size: 50, color: Share.settings.config.cupertinoAccentColor.color),
                                     )
                                   : Icon(CupertinoIcons.person_circle_fill, size: 50))),
                       Expanded(
