@@ -48,28 +48,7 @@ class _BaseAppState extends State<BaseApp> {
 
     // Set up other stuff after the app's launched
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (!Share.hasCheckedForUpdates) {
-        try {
-          (Dio().get('https://api.github.com/repos/Ogaku/Oshi/releases/latest')).then((value) {
-            try {
-              if (Version.parse(value.data['tag_name']) <= Version.parse(Share.buildNumber)) return;
-              var download = (value.data['assets'] as List<dynamic>?)
-                  ?.firstWhereOrDefault((x) =>
-                      x['name']?.toString().contains(Platform.isAndroid ? '.apk' : '.ipa') ?? false)?['browser_download_url']
-                  ?.toString();
-
-              if (download?.isNotEmpty ?? false) _showAlertDialog(context, download ?? 'https://youtu.be/dQw4w9WgXcQ');
-            } catch (ex) {
-              // ignored
-            }
-          });
-        } catch (ex) {
-          // ignored
-        }
-
-        Share.hasCheckedForUpdates = true;
-      }
-
+      _checkforUpdates(context); // Check for updates
       NotificationController.requestNotificationAccess();
     });
   }
@@ -85,7 +64,14 @@ class _BaseAppState extends State<BaseApp> {
 
     // Re-subscribe to all events - refresh
     Share.refreshBase.unsubscribeAll();
-    Share.refreshBase.subscribe((args) => setState(() {}));
+    Share.refreshBase.subscribe((args) {
+      _checkforUpdates(context);
+      setState(() {});
+    });
+
+    // Re-subscribe to all events - update
+    Share.checkUpdates.unsubscribeAll();
+    Share.checkUpdates.subscribe((args) => _checkforUpdates(context));
 
     return CupertinoApp(
         theme: _eventfulColorTheme,
@@ -171,6 +157,22 @@ class _BaseAppState extends State<BaseApp> {
         ],
       ),
     );
+  }
+
+  void _checkforUpdates(BuildContext context) {
+    (Dio().get('https://api.github.com/repos/Ogaku/Oshi/releases/latest')).then((value) {
+      try {
+        if (Version.parse(value.data['tag_name']) <= Version.parse(Share.buildNumber)) return;
+        var download = (value.data['assets'] as List<dynamic>?)
+            ?.firstWhereOrDefault((x) => x['name']?.toString().contains(Platform.isAndroid ? '.apk' : '.ipa') ?? false)?[
+                'browser_download_url']
+            ?.toString();
+
+        if (download?.isNotEmpty ?? false) _showAlertDialog(context, download ?? 'https://youtu.be/dQw4w9WgXcQ');
+      } catch (ex) {
+        // ignored
+      }
+    }).catchError((ex) {});
   }
 
   CupertinoThemeData get _eventfulColorTheme {

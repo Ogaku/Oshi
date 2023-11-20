@@ -43,7 +43,7 @@
         },
         {
             "id": "/BaseApp/Update/AlertHeader",
-            "translation": "Zaaktualizuj 🤓"
+            "translation": "Zaktualizuj 🤓"
         },
         {
             "id": "/BaseApp/Update/Alert",
@@ -571,7 +571,7 @@
         },
         {
             "id": "/Notifications/Categories/Grades/New",
-            "translation": "Nowa ocena {} - {}"
+            "translation": "Ocena {} z przedmiotu {}"
         },
         {
             "id": "/Notifications/Categories/Grades/Changed",

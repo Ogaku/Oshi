@@ -51,13 +51,13 @@ class Share {
   // Shared settings data for managing sessions
   static Settings settings = Settings();
   static String buildNumber = '9.9.9.9';
-  static bool hasCheckedForUpdates = false;
 
   // Raised by the app to notify that the uses's just logged in
   // To subscribe: event.subscribe((args) => {})
   static events.Event<events.Value<StatefulWidget Function()>> changeBase =
       events.Event<events.Value<StatefulWidget Function()>>();
   static events.Event refreshBase = events.Event(); // Trigger a setState on the base app and everything subscribed
+  static events.Event checkUpdates = events.Event(); // Trigger an udate on the base app and everything subscribed
   static events.Event<events.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>
       showErrorModal =
       events.Event<events.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>();
@@ -248,6 +248,7 @@ class Session extends HiveObject {
   // For reporting 'progress' - mark 'Progress' as null for indeterminate status
   Future<({bool success, Exception? message})> refreshAll(
       {DateTime? weekStart, IProgress<({double? progress, String? message})>? progress, bool saveChanges = true}) async {
+    Share.checkUpdates.broadcast(); // Check for updates everywhere
     try {
       var result1 = await provider.refresh(weekStart: weekStart, progress: progress);
       var result2 = await provider.refreshMessages(progress: progress);
@@ -509,12 +510,11 @@ class Session extends HiveObject {
           detectedChanges.gradesChanged
               .where((element) => element.type == RegisterChangeTypes.added)
               .forEach((element) => notifications.add((
-                    title: '/Notifications/Categories/Grades/New'.localized.format(element.value.value, element.value.name),
-                    body: '/Notifications/Captions/Joiners/Lesson'.localized.format(
+                    title: '/Notifications/Categories/Grades/New'.localized.format(
+                        element.value.value,
                         (element.payload is Lesson ? element.payload as Lesson : null)?.name ??
-                            '/Notifications/Placeholder/Lesson'.localized,
-                        (element.payload is Lesson ? element.payload as Lesson : null)?.teacher.name ??
-                            '/Notifications/Placeholder/Teacher'.localized),
+                            '/Notifications/Placeholder/Lesson'.localized.toLowerCase()),
+                    body: element.value.name,
                     payload: 'grades\n${(element.payload is Lesson ? element.payload as Lesson : null)?.name}'
                   )));
 
@@ -563,8 +563,7 @@ class Session extends HiveObject {
                     }}'
                         .localized
                         .format(element.value.sender?.name ?? ''),
-                    body: '/Notifications/Captions/Joiners/Lesson'.localized.format((element.value.timeFrom.hour != 0 &&
-                                element.value.timeTo?.hour != 0) &&
+                    body: (element.value.timeFrom.hour != 0 && element.value.timeTo?.hour != 0) &&
                             (element.value.timeFrom.asDate() == element.value.timeTo?.asDate())
                         ? "${DateFormat('HH:mm').format(element.value.timeFrom)} - ${DateFormat('HH:mm').format(element.value.timeTo ?? DateTime.now())}"
                         : (element.value.timeFrom.month == element.value.timeTo?.month &&
@@ -572,7 +571,7 @@ class Session extends HiveObject {
                             ? DateFormat('EEEE, MMM d').format(element.value.timeTo ?? DateTime.now())
                             : (element.value.timeFrom.month == element.value.timeTo?.month)
                                 ? "${DateFormat('d').format(element.value.timeFrom)} - ${DateFormat('d MMM yyyy').format(element.value.timeTo ?? DateTime.now())}"
-                                : "${DateFormat('EEE, MMM d').format(element.value.timeFrom)} - ${DateFormat('EEE, MMM d').format(element.value.timeTo ?? DateTime.now())}"),
+                                : "${DateFormat('EEE, MMM d').format(element.value.timeFrom)} - ${DateFormat('EEE, MMM d').format(element.value.timeTo ?? DateTime.now())}",
                     payload: 'timetables\n${DateFormat('yyyy.MM.dd').format(element.value.date ?? element.value.timeFrom)}'
                   )));
 

@@ -212,28 +212,19 @@ class _SessionsPageState extends State<SessionsPage> {
                             .toList()));
           });
 
-          if (!Share.hasCheckedForUpdates) {
+          (Dio().get('https://api.github.com/repos/Ogaku/Oshi/releases/latest')).then((value) {
             try {
-              (Dio().get('https://api.github.com/repos/Ogaku/Oshi/releases/latest')).then((value) {
-                try {
-                  if (Version.parse(value.data['tag_name']) <= Version.parse(Share.buildNumber)) return;
-                  var download = (value.data['assets'] as List<dynamic>?)
-                      ?.firstWhereOrDefault((x) =>
-                          x['name']?.toString().contains(Platform.isAndroid ? '.apk' : '.ipa') ??
-                          false)?['browser_download_url']
-                      ?.toString();
+              if (Version.parse(value.data['tag_name']) <= Version.parse(Share.buildNumber)) return;
+              var download = (value.data['assets'] as List<dynamic>?)
+                  ?.firstWhereOrDefault((x) =>
+                      x['name']?.toString().contains(Platform.isAndroid ? '.apk' : '.ipa') ?? false)?['browser_download_url']
+                  ?.toString();
 
-                  if (download?.isNotEmpty ?? false) _showAlertDialog(context, download ?? 'https://youtu.be/dQw4w9WgXcQ');
-                } catch (ex) {
-                  // ignored
-                }
-              });
+              if (download?.isNotEmpty ?? false) _showAlertDialog(context, download ?? 'https://youtu.be/dQw4w9WgXcQ');
             } catch (ex) {
               // ignored
             }
-
-            Share.hasCheckedForUpdates = true;
-          }
+          }).catchError((ex) {});
 
           return CupertinoPageScaffold(
               backgroundColor: CupertinoDynamicColor.withBrightness(

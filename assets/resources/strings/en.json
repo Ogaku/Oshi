@@ -575,7 +575,7 @@
         },
         {
             "id": "/Notifications/Categories/Grades/New",
-            "translation": "New grade {} - {}"
+            "translation": "{} from {}"
         },
         {
             "id": "/Notifications/Categories/Grades/Changed",
