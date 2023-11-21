@@ -4,11 +4,11 @@
 import 'dart:io';
 
 import 'package:darq/darq.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:format/format.dart';
+import 'package:oshi/share/appcenter.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:path/path.dart' as path;
@@ -20,8 +20,7 @@ import 'package:oshi/interface/cupertino/pages/messages.dart' show messagesPage;
 import 'package:oshi/interface/cupertino/pages/absences.dart' show absencesPage;
 import 'package:oshi/share/share.dart';
 import 'package:show_fps/show_fps.dart';
-import 'package:url_launcher/url_launcher_string.dart';
-import 'package:version/version.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // Boiler: returned to the main application
 StatefulWidget get baseApp => BaseApp();
@@ -48,7 +47,7 @@ class _BaseAppState extends State<BaseApp> {
 
     // Set up other stuff after the app's launched
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      _checkforUpdates(context); // Check for updates
+      Share.checkUpdates.broadcast(); // Check for updates
       NotificationController.requestNotificationAccess();
     });
   }
@@ -64,79 +63,82 @@ class _BaseAppState extends State<BaseApp> {
 
     // Re-subscribe to all events - refresh
     Share.refreshBase.unsubscribeAll();
-    Share.refreshBase.subscribe((args) {
-      _checkforUpdates(context);
-      setState(() {});
-    });
-
-    // Re-subscribe to all events - update
-    Share.checkUpdates.unsubscribeAll();
-    Share.checkUpdates.subscribe((args) => _checkforUpdates(context));
+    Share.refreshBase.subscribe((args) => setState(() {}));
 
     return CupertinoApp(
         theme: _eventfulColorTheme,
         debugShowCheckedModeBanner: false,
-        home: ShowFPS(
-            alignment: Alignment.topLeft,
-            visible: Share.settings.config.devMode,
-            showChart: Share.settings.config.devMode,
-            borderRadius: BorderRadius.all(Radius.circular(11)),
-            child: Builder(builder: (context) {
-              // Re-subscribe to all events - modals
-              Share.showErrorModal.unsubscribeAll();
-              Share.showErrorModal.subscribe((args) async {
-                if (args?.value == null) return;
-                await showCupertinoModalPopup(
-                    context: context,
-                    useRootNavigator: true,
-                    builder: (s) => CupertinoActionSheet(
-                        title: Text(args!.value.title),
-                        message: Text(args.value.message),
-                        actions: args.value.actions.isEmpty
-                            ? null
-                            : args.value.actions.entries
-                                .select(
-                                  (x, index) => CupertinoActionSheetAction(
-                                    child: Text(x.key),
-                                    onPressed: () {
-                                      try {
-                                        x.value();
-                                      } catch (ex) {
-                                        // ignored
-                                      }
-                                      Navigator.of(context, rootNavigator: true).pop();
-                                    },
-                                  ),
-                                )
-                                .toList()));
-              });
+        home: Builder(builder: (context) {
+          // Re-subscribe to all events - update
+          Share.checkUpdates.unsubscribeAll();
+          Share.checkUpdates.subscribe((args) => _checkforUpdates(context));
 
-              return CupertinoTabScaffold(
-                controller: tabController,
-                tabBar:
-                    CupertinoTabBar(backgroundColor: CupertinoTheme.of(context).barBackgroundColor.withAlpha(0xFF), items: [
-                  BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: '/Titles/Pages/Home'.localized),
-                  BottomNavigationBarItem(icon: Icon(CupertinoIcons.rosette), label: '/Titles/Pages/Grades'.localized),
-                  BottomNavigationBarItem(icon: Icon(CupertinoIcons.calendar), label: '/Titles/Pages/Schedule'.localized),
-                  BottomNavigationBarItem(icon: Icon(CupertinoIcons.envelope), label: '/Titles/Pages/Messages'.localized),
-                  BottomNavigationBarItem(
-                      icon: Icon(CupertinoIcons.person_crop_circle_badge_minus), label: '/Titles/Pages/Absences'.localized),
-                ]),
-                tabBuilder: (context, index) => CupertinoTabView(
-                  builder: (context) => switch (index) {
-                    0 => homePage,
-                    1 => gradesPage,
-                    2 => timetablePage,
-                    3 => messagesPage,
-                    4 => absencesPage,
-                    _ => homePage,
-                  },
-                ),
-              );
-            })));
+          return ShowFPS(
+              alignment: Alignment.topLeft,
+              visible: Share.settings.config.devMode,
+              showChart: Share.settings.config.devMode,
+              borderRadius: BorderRadius.all(Radius.circular(11)),
+              child: Builder(builder: (context) {
+                // Re-subscribe to all events - modals
+                Share.showErrorModal.unsubscribeAll();
+                Share.showErrorModal.subscribe((args) async {
+                  if (args?.value == null) return;
+                  await showCupertinoModalPopup(
+                      context: context,
+                      useRootNavigator: true,
+                      builder: (s) => CupertinoActionSheet(
+                          title: Text(args!.value.title),
+                          message: Text(args.value.message),
+                          actions: args.value.actions.isEmpty
+                              ? null
+                              : args.value.actions.entries
+                                  .select(
+                                    (x, index) => CupertinoActionSheetAction(
+                                      child: Text(x.key),
+                                      onPressed: () {
+                                        try {
+                                          x.value();
+                                        } catch (ex) {
+                                          // ignored
+                                        }
+                                        Navigator.of(context, rootNavigator: true).pop();
+                                      },
+                                    ),
+                                  )
+                                  .toList()));
+                });
+
+                return CupertinoTabScaffold(
+                  controller: tabController,
+                  tabBar: CupertinoTabBar(
+                      backgroundColor: CupertinoTheme.of(context).barBackgroundColor.withAlpha(0xFF),
+                      items: [
+                        BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: '/Titles/Pages/Home'.localized),
+                        BottomNavigationBarItem(icon: Icon(CupertinoIcons.rosette), label: '/Titles/Pages/Grades'.localized),
+                        BottomNavigationBarItem(
+                            icon: Icon(CupertinoIcons.calendar), label: '/Titles/Pages/Schedule'.localized),
+                        BottomNavigationBarItem(
+                            icon: Icon(CupertinoIcons.envelope), label: '/Titles/Pages/Messages'.localized),
+                        BottomNavigationBarItem(
+                            icon: Icon(CupertinoIcons.person_crop_circle_badge_minus),
+                            label: '/Titles/Pages/Absences'.localized),
+                      ]),
+                  tabBuilder: (context, index) => CupertinoTabView(
+                    builder: (context) => switch (index) {
+                      0 => homePage,
+                      1 => gradesPage,
+                      2 => timetablePage,
+                      3 => messagesPage,
+                      4 => absencesPage,
+                      _ => homePage,
+                    },
+                  ),
+                );
+              }));
+        }));
   }
 
-  void _showAlertDialog(BuildContext context, String url) {
+  void _showAlertDialog(BuildContext context, Uri url) {
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
@@ -147,7 +149,7 @@ class _BaseAppState extends State<BaseApp> {
             onPressed: () async {
               Navigator.pop(context);
               try {
-                await launchUrlString(url);
+                await launchUrl(url);
               } catch (ex) {
                 // ignored
               }
@@ -160,18 +162,8 @@ class _BaseAppState extends State<BaseApp> {
   }
 
   void _checkforUpdates(BuildContext context) {
-    (Dio().get('https://api.github.com/repos/Ogaku/Oshi/releases/latest')).then((value) {
-      try {
-        if (Version.parse(value.data['tag_name']) <= Version.parse(Share.buildNumber)) return;
-        var download = (value.data['assets'] as List<dynamic>?)
-            ?.firstWhereOrDefault((x) => x['name']?.toString().contains(Platform.isAndroid ? '.apk' : '.ipa') ?? false)?[
-                'browser_download_url']
-            ?.toString();
-
-        if (download?.isNotEmpty ?? false) _showAlertDialog(context, download ?? 'https://youtu.be/dQw4w9WgXcQ');
-      } catch (ex) {
-        // ignored
-      }
+    AppCenter.checkForUpdates().then((value) {
+      if (value.result) _showAlertDialog(context, value.download);
     }).catchError((ex) {});
   }
 

@@ -25,6 +25,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.2.0"
+  app_installer:
+    dependency: "direct main"
+    description:
+      name: app_installer
+      sha256: e125a0c44666b6f1c2e96b48347e798e127654b5eb5281b005ccf0f3a320d621
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
+  appcenter_sdk_flutter:
+    dependency: "direct main"
+    description:
+      name: appcenter_sdk_flutter
+      sha256: "5877f11fda76979689592597a593c67188cc5bfe16e132351c53f9d53589317e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.1"
   archive:
     dependency: transitive
     description:
@@ -737,7 +753,7 @@ packages:
     source: hosted
     version: "1.8.3"
   path_provider:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider
       sha256: a1aa8aaa2542a6bc57e381f132af822420216c80d4781f7aa085ca3229208aaa
