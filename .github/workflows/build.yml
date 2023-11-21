@@ -99,7 +99,7 @@ jobs:
           path: build/ios/iphoneos/Oshi.ipa
 
   release:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     environment: Dispatch
     needs: [build-android, build-ios]
     steps:
