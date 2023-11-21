@@ -3,20 +3,20 @@
 import 'dart:io';
 
 import 'package:darq/darq.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:event/event.dart';
 import 'package:format/format.dart';
 import 'package:oshi/interface/cupertino/new_session.dart';
 import 'package:oshi/models/progress.dart';
+import 'package:oshi/share/appcenter.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart' show SliverNavigationBar;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:version/version.dart';
 
 // Boiler: returned to the main application
 StatefulWidget get sessionsPage => SessionsPage();
@@ -212,18 +212,8 @@ class _SessionsPageState extends State<SessionsPage> {
                             .toList()));
           });
 
-          (Dio().get('https://api.github.com/repos/Ogaku/Oshi/releases/latest')).then((value) {
-            try {
-              if (Version.parse(value.data['tag_name']) <= Version.parse(Share.buildNumber)) return;
-              var download = (value.data['assets'] as List<dynamic>?)
-                  ?.firstWhereOrDefault((x) =>
-                      x['name']?.toString().contains(Platform.isAndroid ? '.apk' : '.ipa') ?? false)?['browser_download_url']
-                  ?.toString();
-
-              if (download?.isNotEmpty ?? false) _showAlertDialog(context, download ?? 'https://youtu.be/dQw4w9WgXcQ');
-            } catch (ex) {
-              // ignored
-            }
+          AppCenter.checkForUpdates().then((value) {
+            if (value.result) _showAlertDialog(context, value.download);
           }).catchError((ex) {});
 
           return CupertinoPageScaffold(
@@ -335,7 +325,7 @@ class _SessionsPageState extends State<SessionsPage> {
         }));
   }
 
-  void _showAlertDialog(BuildContext context, String url) {
+  void _showAlertDialog(BuildContext context, Uri url) {
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
@@ -346,7 +336,7 @@ class _SessionsPageState extends State<SessionsPage> {
             onPressed: () async {
               Navigator.pop(context);
               try {
-                await launchUrlString(url);
+                await launchUrl(url);
               } catch (ex) {
                 // ignored
               }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path path="Android/data/Oshi/" name="files_root" />
+    <external-path path="/data/user/0/com.ogaku.oshi/cache/" name="files_cache" />
+    <external-path path="." name="external_storage_root" />
+</paths>

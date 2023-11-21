@@ -5,8 +5,8 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:event/event.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:open_file_plus/open_file_plus.dart';
 import 'package:oshi/share/share.dart';
 
 class NotificationController {
@@ -16,15 +16,18 @@ class NotificationController {
   /// Use this method to detect when the user taps on a notification or action button
   @pragma('vm:entry-point')
   static void notificationResponseReceived(NotificationResponse notificationResponse) async {
-    final String? payload = notificationResponse.payload;
-    if (notificationResponse.payload != null) {
-      debugPrint('notification payload: $payload');
-    }
+    try {
+      if (notificationResponse.payload?.startsWith('update_android') ?? false) {
+        await OpenFile.open(notificationResponse.payload!.substring(notificationResponse.payload!.indexOf('\n') + 1));
+      }
 
-    // await Navigator.push(
-    //   context,
-    //   MaterialPageRoute<void>(builder: (context) => SecondScreen(payload)),
-    // );
+      // await Navigator.push(
+      //   context,
+      //   MaterialPageRoute<void>(builder: (context) => SecondScreen(payload)),
+      // );
+    } catch (ex) {
+      // ignored
+    }
   }
 
   @pragma('vm:entry-point')
@@ -48,12 +51,17 @@ class NotificationController {
       {required String title,
       required String content,
       NotificationCategories category = NotificationCategories.register,
-      String? data}) async {
+      String? data,
+      int? id,
+      double? progress}) async {
     if (Platform.isWindows || Platform.isFuchsia) return;
 
     try {
       AndroidNotificationDetails androidNotificationDetails =
           AndroidNotificationDetails('status_notifications', 'Status notifications',
+              showProgress: progress != null,
+              progress: (progress != null ? progress * 100 : 1).round(),
+              maxProgress: progress != null ? 100 : 1,
               channelDescription: 'Notification channel for status updates',
               actions: switch (NotificationCategories.other /* category */) {
                 NotificationCategories.register => [
@@ -76,9 +84,11 @@ class NotificationController {
           macOS: DarwinNotificationDetails(
               threadIdentifier: category.toString(),
               categoryIdentifier: notificationCategories[NotificationCategories.other /* category */]?.identifier));
-      await Share.notificationsPlugin.show(Random().nextInt(999999), title, content, notificationDetails, payload: data);
+      await Share.notificationsPlugin
+          .show(id ?? Random().nextInt(999999), title, content, notificationDetails, payload: data);
     } catch (ex) {
       // ignore
+      print(ex);
     }
   }
 

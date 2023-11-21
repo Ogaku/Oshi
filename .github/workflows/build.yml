@@ -36,6 +36,9 @@ jobs:
           sed -i '' "s/9.9.9+9/1.0.$(date '+%Y%m%d')+${{github.run_number}}/g" ./pubspec.yaml
           sed -i '' "s/9.9.9.9/1.0.$(date '+%Y%m%d').${{github.run_number}}/g" ./lib/share/share.dart
 
+          sed -i '' "s/APPXTOKEN/${{ secrets.APPXTOKEN }}/g" ./lib/share/share.dart
+          sed -i '' "s/APPSECRET/${{ secrets.APPSECRET }}/g" ./lib/share/share.dart
+
       - name: Set up dependencies
         run: flutter pub get
         
@@ -65,6 +68,7 @@ jobs:
 
   build-ios:
     runs-on: macos-latest
+    environment: iOS
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -77,6 +81,9 @@ jobs:
         run: |
           sed -i '' "s/9.9.9+9/1.0.$(date '+%Y%m%d')+${{github.run_number}}/g" ./pubspec.yaml
           sed -i '' "s/9.9.9.9/1.0.$(date '+%Y%m%d').${{github.run_number}}/g" ./lib/share/share.dart
+
+          sed -i '' "s/APPXTOKEN/${{ secrets.APPXTOKEN }}/g" ./lib/share/share.dart
+          sed -i '' "s/APPSECRET/${{ secrets.APPSECRET }}/g" ./lib/share/share.dart
 
       - name: Set up dependencies
         run: flutter pub get
@@ -119,3 +126,13 @@ jobs:
           token: ${{ secrets.PAT }}
           repository: Ogaku/Toudai
           event-type: update-event
+
+      - name: Upload AppCenter release
+        uses: wzieba/AppCenter-Github-Action@v1
+        with:
+          appName: Ogaku/Oshi
+          token: ${{secrets.APP_CENTER_TOKEN}}
+          group: Public
+          file: artifacts/android-release/Oshi.apk
+          notifyTesters: true
+          debug: false
