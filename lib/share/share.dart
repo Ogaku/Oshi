@@ -50,7 +50,7 @@ class Share {
 
   // Shared settings data for managing sessions
   static Settings settings = Settings();
-  static String buildNumber = '0.0.0.0'; // TODO
+  static String buildNumber = '9.9.9.9';
 
   // Raised by the app to notify that the uses's just logged in
   // To subscribe: event.subscribe((args) => {})

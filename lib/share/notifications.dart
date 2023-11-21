@@ -4,9 +4,9 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:app_installer/app_installer.dart';
 import 'package:event/event.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:open_file_plus/open_file_plus.dart';
 import 'package:oshi/share/share.dart';
 
 class NotificationController {
@@ -18,9 +18,7 @@ class NotificationController {
   static void notificationResponseReceived(NotificationResponse notificationResponse) async {
     try {
       if (notificationResponse.payload?.startsWith('update_android') ?? false) {
-        await AppInstaller.installApk(notificationResponse.payload!
-            .substring(notificationResponse.payload!.indexOf('\n') + 1)
-            .replaceFirst('/data', ''));
+        await OpenFile.open(notificationResponse.payload!.substring(notificationResponse.payload!.indexOf('\n') + 1));
       }
 
       // await Navigator.push(
@@ -62,6 +60,8 @@ class NotificationController {
       AndroidNotificationDetails androidNotificationDetails =
           AndroidNotificationDetails('status_notifications', 'Status notifications',
               showProgress: progress != null,
+              playSound: progress == null,
+              enableVibration: progress == null,
               progress: (progress != null ? progress * 100 : 1).round(),
               maxProgress: progress != null ? 100 : 1,
               channelDescription: 'Notification channel for status updates',

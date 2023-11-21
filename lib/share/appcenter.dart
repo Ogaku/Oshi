@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:appcenter_sdk_flutter/appcenter_sdk_flutter.dart' as apps;
 import 'package:dio/dio.dart';
-import 'package:event/event.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/share.dart';
@@ -28,11 +27,6 @@ class AppCenter {
               ? result['download_url']
               : 'https://github.com/Ogaku/Oshi/releases/latest/download/Oshi.ipa'));
     } catch (ex) {
-      Share.showErrorModal.broadcast(Value((
-        title: 'Exception on fetch', // TODO
-        message: '$ex',
-        actions: {}
-      )));
       return null;
     }
   }
@@ -78,11 +72,6 @@ class AppCenter {
 
       return (result: false, download: Uri());
     } catch (ex) {
-      Share.showErrorModal.broadcast(Value((
-        title: 'Exception on update', // TODO
-        message: '$ex',
-        actions: {}
-      )));
       return (result: false, download: Uri());
     }
   }
