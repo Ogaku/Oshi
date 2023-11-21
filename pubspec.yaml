@@ -44,6 +44,9 @@ dependencies:
   show_fps: ^1.0.6
   image_picker: ^1.0.4
   maps_launcher: ^2.2.0
+  appcenter_sdk_flutter: ^0.5.1
+  path_provider: ^2.1.1
+  app_installer: ^1.1.0
 
 dev_dependencies:
   flutter_test:
