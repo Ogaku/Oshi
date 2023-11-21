@@ -128,7 +128,7 @@ jobs:
           event-type: update-event
 
       - name: Upload AppCenter release
-        uses: avocaddo/App-Center-action@v1.0.2
+        uses: avocaddo/AppCenter-Github-Action@v1.0.2
         with:
           command: appcenter distribute groups publish -g Public -f artifacts/android-release/Oshi.apk -a Ogaku/Oshi
           token: ${{ secrets.APP_CENTER_TOKEN }}
