@@ -36,8 +36,8 @@ jobs:
           sed -i '' "s/9.9.9+9/1.0.$(date '+%Y%m%d')+${{github.run_number}}/g" ./pubspec.yaml
           sed -i '' "s/9.9.9.9/1.0.$(date '+%Y%m%d').${{github.run_number}}/g" ./lib/share/share.dart
 
-          sed -i '' "s/APPXTOKEN/${{ secrets.APPXTOKEN }}/g" ./lib/share/share.dart
-          sed -i '' "s/APPSECRET/${{ secrets.APPSECRET }}/g" ./lib/share/share.dart
+          sed -i '' "s/APPXTOKEN/${{ secrets.APPXTOKEN }}/g" ./lib/share/appcenter.dart
+          sed -i '' "s/APPSECRET/${{ secrets.APPSECRET }}/g" ./lib/share/appcenter.dart
 
       - name: Set up dependencies
         run: flutter pub get
@@ -82,8 +82,8 @@ jobs:
           sed -i '' "s/9.9.9+9/1.0.$(date '+%Y%m%d')+${{github.run_number}}/g" ./pubspec.yaml
           sed -i '' "s/9.9.9.9/1.0.$(date '+%Y%m%d').${{github.run_number}}/g" ./lib/share/share.dart
 
-          sed -i '' "s/APPXTOKEN/${{ secrets.APPXTOKEN }}/g" ./lib/share/share.dart
-          sed -i '' "s/APPSECRET/${{ secrets.APPSECRET }}/g" ./lib/share/share.dart
+          sed -i '' "s/APPXTOKEN/${{ secrets.APPXTOKEN }}/g" ./lib/share/appcenter.dart
+          sed -i '' "s/APPSECRET/${{ secrets.APPSECRET }}/g" ./lib/share/appcenter.dart
 
       - name: Set up dependencies
         run: flutter pub get
@@ -99,7 +99,7 @@ jobs:
           path: build/ios/iphoneos/Oshi.ipa
 
   release:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     environment: Dispatch
     needs: [build-android, build-ios]
     steps:
@@ -128,11 +128,7 @@ jobs:
           event-type: update-event
 
       - name: Upload AppCenter release
-        uses: wzieba/AppCenter-Github-Action@v1
+        uses: avocaddo/App-Center-action@v1.0.2
         with:
-          appName: Ogaku/Oshi
-          token: ${{secrets.APP_CENTER_TOKEN}}
-          group: Public
-          file: artifacts/android-release/Oshi.apk
-          notifyTesters: true
-          debug: false
+          command: appcenter distribute groups publish -g Public -f artifacts/android-release/Oshi.apk -a Ogaku/Oshi
+          token: ${{ secrets.APP_CENTER_TOKEN }}
