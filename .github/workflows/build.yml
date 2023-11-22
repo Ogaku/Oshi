@@ -99,7 +99,7 @@ jobs:
           path: build/ios/iphoneos/Oshi.ipa
 
   release:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     environment: Dispatch
     needs: [build-android, build-ios]
     steps:
@@ -127,8 +127,11 @@ jobs:
           repository: Ogaku/Toudai
           event-type: update-event
 
+      - task: UseNode@1
+        inputs:
+        version: '10.15.1'
+
       - name: Upload AppCenter release
-        uses: avocaddo/AppCenter-Github-Action@v1.0.2
-        with:
-          command: appcenter distribute groups publish -g Public -f artifacts/android-release/Oshi.apk -a Ogaku/Oshi
-          token: ${{ secrets.APP_CENTER_TOKEN }}
+        run: |
+          npm install -g appcenter-cli
+          appcenter distribute groups publish -g Public -f artifacts/android-release/Oshi.apk -a Ogaku/Oshi --token ${{ secrets.APP_CENTER_TOKEN }}
