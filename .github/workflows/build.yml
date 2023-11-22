@@ -127,9 +127,9 @@ jobs:
           repository: Ogaku/Toudai
           event-type: update-event
 
-      - task: UseNode@1
-        inputs:
-        version: '10.15.1'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 10.15.1
 
       - name: Upload AppCenter release
         run: |
