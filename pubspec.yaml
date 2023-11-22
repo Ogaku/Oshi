@@ -47,6 +47,7 @@ dependencies:
   appcenter_sdk_flutter: ^0.5.1
   path_provider: ^2.1.1
   open_file_plus: ^3.4.1
+  background_fetch: ^1.2.1
 
 dev_dependencies:
   flutter_test:
