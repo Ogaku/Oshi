@@ -99,7 +99,7 @@ jobs:
           path: build/ios/iphoneos/Oshi.ipa
 
   release:
-    runs-on: macos-latest
+    runs-on: linux-latest
     environment: Dispatch
     needs: [build-android, build-ios]
     steps:
@@ -132,6 +132,11 @@ jobs:
           node-version: 10.15.3
 
       - name: Upload AppCenter release
-        run: |
-          npm install -g appcenter-cli
-          appcenter distribute release --app Ogaku/Oshi --group "Public" --file "artifacts/android-release/Oshi.apk" --token "${{ secrets.APP_CENTER_TOKEN }}"
+        uses: wzieba/AppCenter-Github-Action@v1.3.4
+        with:
+          appName: Ogaku/Oshi
+          token: ${{ secrets.APP_CENTER_TOKEN }}
+          group: Public
+          file: artifacts/android-release/Oshi.apk
+          notifyTesters: false
+          debug: false
