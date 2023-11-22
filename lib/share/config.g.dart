@@ -53,13 +53,17 @@ class ConfigAdapter extends TypeAdapter<Config> {
           fields[19] == null ? true : fields[19] as bool
       .._enableMessagesNotifications =
           fields[20] == null ? true : fields[20] as bool
-      .._userAvatarImage = fields[21] == null ? '' : fields[21] as String;
+      .._userAvatarImage = fields[21] == null ? '' : fields[21] as String
+      .._enableBackgroundSync = fields[22] == null ? true : fields[22] as bool
+      .._backgroundSyncWiFiOnly =
+          fields[23] == null ? false : fields[23] as bool
+      .._backgroundSyncInterval = fields[24] == null ? 15 : fields[24] as int;
   }
 
   @override
   void write(BinaryWriter writer, Config obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(24)
       ..writeByte(1)
       ..write(obj._customGradeValues)
       ..writeByte(2)
@@ -101,7 +105,13 @@ class ConfigAdapter extends TypeAdapter<Config> {
       ..writeByte(20)
       ..write(obj._enableMessagesNotifications)
       ..writeByte(21)
-      ..write(obj._userAvatarImage);
+      ..write(obj._userAvatarImage)
+      ..writeByte(22)
+      ..write(obj._enableBackgroundSync)
+      ..writeByte(23)
+      ..write(obj._backgroundSyncWiFiOnly)
+      ..writeByte(24)
+      ..write(obj._backgroundSyncInterval);
   }
 
   @override

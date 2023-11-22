@@ -1,10 +1,13 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
 import 'dart:io';
+import 'package:background_fetch/background_fetch.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' as notifications;
 import 'package:hive_flutter/adapters.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:oshi/share/background.dart';
 import 'package:oshi/share/config.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
@@ -107,6 +110,10 @@ Future<void> main() async {
 
   // Start the actual application
   runApp(const MainApp());
+
+  // Register to receive BackgroundFetch events after app is terminated.
+  // Requires {stopOnTerminate: false, enableHeadless: true}
+  BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
 }
 
 class MainApp extends StatefulWidget {
@@ -125,6 +132,47 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
     initializeDateFormatting();
+
+    if (Platform.isAndroid || Platform.isIOS) initPlatformState();
+  }
+
+  Future<void> initPlatformState() async {
+    // Configure BackgroundFetch
+    Share.backgroundSyncActive = false;
+    await BackgroundFetch.configure(
+        BackgroundFetchConfig(
+            minimumFetchInterval: Share.settings.config.backgroundSyncInterval,
+            stopOnTerminate: false,
+            enableHeadless: true,
+            requiresBatteryNotLow: false,
+            requiresCharging: false,
+            requiresStorageNotLow: false,
+            requiresDeviceIdle: false,
+            requiredNetworkType: NetworkType.ANY), (String taskId) async {
+      // <-- Event handler
+      // This is the fetch-event callback
+
+      // Validate our internet connection
+      if (Share.settings.config.backgroundSyncWiFiOnly &&
+          (await (Connectivity().checkConnectivity())) != ConnectivityResult.wifi) return;
+
+      // Validate our session data
+      if (Share.settings.sessions.lastSession == null) return;
+
+      // Try to log in and refresh everything
+      Share.session.tryLogin(); // Auto-login on restart if valid
+      Share.session.refreshAll(); // Refresh everything
+
+      // IMPORTANT:  You must signal completion of your task
+      // or the OS can punish your app for taking too long
+      BackgroundFetch.finish(taskId);
+    }, (String taskId) async {
+      // <-- Task timeout handler.
+      BackgroundFetch.finish(taskId);
+    });
+
+    Share.backgroundSyncActive = true;
+    if (!mounted) return;
   }
 
   @override

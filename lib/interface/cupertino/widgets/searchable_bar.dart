@@ -1,11 +1,11 @@
 import 'dart:ui';
 
+import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart';
-import 'package:oshi/models/progress.dart';
 import 'package:oshi/share/share.dart';
 
 class SearchableSliverNavigationBar extends StatefulWidget {
@@ -87,8 +87,25 @@ class _NavState extends State<SearchableSliverNavigationBar> {
     groupSelection = widget.segments?.keys.first;
   }
 
+  void refreshChanged(Value<bool>? value) => setState(() {
+        isRefreshing = value?.value ?? false;
+        if (!isRefreshing && widget.onProgress != null) widget.onProgress!(null);
+      });
+
+  void progressChanged(Value<String>? value) => setState(() {
+        if (widget.onProgress != null) widget.onProgress!((message: value?.value ?? '', progress: 0.0));
+      });
+
   @override
   Widget build(BuildContext context) {
+    // Re-subscribe for refresh updates
+    Share.refreshChanged.unsubscribe(refreshChanged);
+    Share.refreshChanged.subscribe(refreshChanged);
+
+    // Re-subscribe for progress updates
+    Share.progressChanged.unsubscribe(progressChanged);
+    Share.progressChanged.subscribe(progressChanged);
+
     var navBarSliver = SliverNavigationBar(
       backgroundColor: widget.backgroundColor,
       alternativeVisibility: widget.disableAddons && !widget.keepBackgroundWatchers,
@@ -197,24 +214,20 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                         (-2 * (scrollInfo.metrics.pixels - _pixels) / (DateTime.now().millisecondsSinceEpoch - _timestamp))
                             .clamp(0.3, 1);
                   });
-                  var progress = Progress<({double? progress, String? message})>();
-                  progress.progressChanged.subscribe((args) {
-                    if (widget.onProgress != null) widget.onProgress!(args?.value);
-                  });
+
                   try {
                     HapticFeedback.mediumImpact(); // Trigger a haptic feedback
                   } catch (ex) {
                     // ignored
                   }
-                  Share.session.refreshAll(weekStart: widget.selectedDate, progress: progress).then((arg) {
+
+                  Share.session.refreshAll(weekStart: widget.selectedDate).then((arg) {
                     setState(() {
                       isRefreshing = false;
                       refreshTurns = 0;
                     });
 
                     if (widget.setState != null) widget.setState!(() {});
-                    progress.progressChanged.unsubscribeAll();
-                    if (widget.onProgress != null) widget.onProgress!(null);
                   });
                 }
                 // print(scrollInfo.metrics.pixels);

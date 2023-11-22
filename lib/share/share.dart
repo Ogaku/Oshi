@@ -51,16 +51,20 @@ class Share {
   // Shared settings data for managing sessions
   static Settings settings = Settings();
   static String buildNumber = '9.9.9.9';
+  static bool backgroundSyncActive = false;
 
   // Raised by the app to notify that the uses's just logged in
   // To subscribe: event.subscribe((args) => {})
   static events.Event<events.Value<StatefulWidget Function()>> changeBase =
       events.Event<events.Value<StatefulWidget Function()>>();
   static events.Event refreshBase = events.Event(); // Trigger a setState on the base app and everything subscribed
-  static events.Event checkUpdates = events.Event(); // Trigger an udate on the base app and everything subscribed
+  static events.Event checkUpdates = events.Event(); // Trigger an update on the base app and everything subscribed
   static events.Event<events.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>
       showErrorModal =
       events.Event<events.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>();
+
+  static events.Event<events.Value<bool>> refreshChanged = events.Event<events.Value<bool>>(); // Triggers a setState
+  static events.Event<events.Value<String>> progressChanged = events.Event<events.Value<String>>(); // Triggers an update
 
   // Navigate the grades page to the specified subject
   static events.Event<events.Value<Lesson>> gradesNavigate = events.Event<events.Value<Lesson>>();
@@ -249,14 +253,47 @@ class Session extends HiveObject {
   Future<({bool success, Exception? message})> refreshAll(
       {DateTime? weekStart, IProgress<({double? progress, String? message})>? progress, bool saveChanges = true}) async {
     Share.checkUpdates.broadcast(); // Check for updates everywhere
+    Share.refreshChanged.broadcast(events.Value(true)); // Refresh started
+
     try {
-      var result1 = await provider.refresh(weekStart: weekStart, progress: progress);
-      var result2 = await provider.refreshMessages(progress: progress);
+      var mProgress = (progress as Progress<({double? progress, String? message})>?) ??
+          Progress<({double? progress, String? message})>();
+
+      NotificationController.sendNotification(
+          title: 'Syncing everything...',
+          content: 'Please wait a while...',
+          category: NotificationCategories.other,
+          id: 9999992);
+
+      mProgress.progressChanged.subscribe((args) {
+        Share.progressChanged.broadcast(events.Value(args?.value.message ?? ''));
+        Share.refreshChanged.broadcast(events.Value(true)); // Refresh ongoing
+        NotificationController.sendNotification(
+            title: 'Syncing everything...',
+            content: (args?.value.message?.isEmpty ?? true) ? 'Please wait a while...' : args!.value.message!,
+            category: NotificationCategories.other,
+            progress: args?.value.progress ?? 0.0,
+            id: 9999992);
+      });
+
+      // Actually refresh everything
+      var result1 = await provider.refresh(weekStart: weekStart, progress: mProgress);
+      var result2 = await provider.refreshMessages(progress: mProgress);
+
+      NotificationController.sendNotification(
+          title: 'Syncing everything...',
+          content: 'Saving the downloaded data...',
+          category: NotificationCategories.other,
+          id: 9999992);
+
+      // Sync the downloaded data
       await updateData(info: result1.success, messages: result2.success, saveChanges: saveChanges);
 
       Share.currentIdleSplash = Share.translator.getRandomSplash();
       Share.currentEndingSplash = Share.translator.getRandomEndingSplash();
+      Future.delayed(const Duration(seconds: 2)).then((value) => Share.notificationsPlugin.cancel(9999992));
 
+      Share.refreshChanged.broadcast(events.Value(false));
       return (success: result1.success && result2.success, message: result1.message ?? result2.message);
     } catch (ex, stack) {
       Share.showErrorModal.broadcast(events.Value((
@@ -268,6 +305,8 @@ class Session extends HiveObject {
           'Copy Stack Trace': () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
         }
       )));
+      Share.notificationsPlugin.cancel(9999992);
+      Share.refreshChanged.broadcast(events.Value(false));
       return (success: false, message: Exception(ex));
     }
   }

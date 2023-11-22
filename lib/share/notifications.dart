@@ -90,7 +90,6 @@ class NotificationController {
           .show(id ?? Random().nextInt(999999), title, content, notificationDetails, payload: data);
     } catch (ex) {
       // ignore
-      print(ex);
     }
   }
 

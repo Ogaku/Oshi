@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:background_fetch/background_fetch.dart';
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/date_symbol_data_file.dart';
@@ -38,6 +39,9 @@ class Config with ChangeNotifier {
     bool? enableAnnouncementsNotifications,
     bool? enableMessagesNotifications,
     String? userAvatarImage,
+    bool? enableBackgroundSync,
+    bool? backgroundSyncWiFiOnly,
+    int? backgroundSyncInterval,
   })  : _customGradeValues = customGradeValues ?? {},
         _customGradeMarginValues = customGradeMarginValues ?? {},
         _customGradeModifierValues = customGradeModifierValues ?? {'+': 0.5, '-': -0.25},
@@ -58,7 +62,10 @@ class Config with ChangeNotifier {
         _enableAttendanceNotifications = enableAttendanceNotifications ?? true,
         _enableAnnouncementsNotifications = enableAnnouncementsNotifications ?? true,
         _enableMessagesNotifications = enableMessagesNotifications ?? true,
-        _userAvatarImage = userAvatarImage ?? '';
+        _userAvatarImage = userAvatarImage ?? '',
+        _enableBackgroundSync = enableBackgroundSync ?? true,
+        _backgroundSyncWiFiOnly = backgroundSyncWiFiOnly ?? false,
+        _backgroundSyncInterval = backgroundSyncInterval ?? 15;
 
   // TODO All HiveFields should be private and trigger a settings save
 
@@ -124,6 +131,15 @@ class Config with ChangeNotifier {
 
   @HiveField(21, defaultValue: '')
   String _userAvatarImage;
+
+  @HiveField(22, defaultValue: true)
+  bool _enableBackgroundSync;
+
+  @HiveField(23, defaultValue: false)
+  bool _backgroundSyncWiFiOnly;
+
+  @HiveField(24, defaultValue: 15)
+  int _backgroundSyncInterval;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   Map<String, double> get customGradeValues => _customGradeValues;
@@ -209,6 +225,15 @@ class Config with ChangeNotifier {
       return null;
     }
   }
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get enableBackgroundSync => _enableBackgroundSync;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get backgroundSyncWiFiOnly => _backgroundSyncWiFiOnly;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  int get backgroundSyncInterval => _backgroundSyncInterval;
 
   set customGradeValues(Map<String, double> customGradeValues) {
     _customGradeValues = customGradeValues;
@@ -319,6 +344,33 @@ class Config with ChangeNotifier {
     } catch (ex) {
       // ignored
     }
+  }
+
+  set enableBackgroundSync(bool value) {
+    _enableBackgroundSync = value;
+    notifyListeners();
+
+    if (_enableBackgroundSync) {
+      BackgroundFetch.start().then((int status) {
+        Share.backgroundSyncActive = true;
+      }).catchError((e) {
+        Share.backgroundSyncActive = false;
+      });
+    } else {
+      BackgroundFetch.stop().then((int status) {
+        Share.backgroundSyncActive = false;
+      });
+    }
+  }
+
+  set backgroundSyncWiFiOnly(bool value) {
+    _backgroundSyncWiFiOnly = value;
+    notifyListeners();
+  }
+
+  set backgroundSyncInterval(int value) {
+    _backgroundSyncInterval = value;
+    notifyListeners();
   }
 
   factory Config.fromJson(Map<String, dynamic> json) => _$ConfigFromJson(json);

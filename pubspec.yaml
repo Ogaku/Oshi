@@ -48,6 +48,7 @@ dependencies:
   path_provider: ^2.1.1
   open_file_plus: ^3.4.1
   background_fetch: ^1.2.1
+  connectivity_plus: ^5.0.2
 
 dev_dependencies:
   flutter_test:

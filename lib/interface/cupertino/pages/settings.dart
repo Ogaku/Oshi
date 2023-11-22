@@ -34,10 +34,37 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   final TextEditingController _callTimeController = TextEditingController();
   final TextEditingController _bellTimeController = TextEditingController();
+  final TextEditingController _syncTimeController = TextEditingController();
 
   final TextEditingController _toTitleController = TextEditingController();
   final TextEditingController _noTitleController = TextEditingController();
   final TextEditingController _noContentController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _callTimeController.text =
+        Share.settings.config.lessonCallTime == 15 ? '' : Share.settings.config.lessonCallTime.toString();
+    _bellTimeController.text = Share.settings.config.bellOffset == Duration.zero
+        ? ''
+        : prettyDuration(Share.settings.config.bellOffset,
+            tersity: DurationTersity.second,
+            upperTersity: DurationTersity.minute,
+            abbreviated: true,
+            conjunction: ', ',
+            spacer: '',
+            locale: DurationLocale.fromLanguageCode(Share.settings.config.localeCode) ?? EnglishDurationLocale());
+    _syncTimeController.text = Share.settings.config.backgroundSyncInterval == 15
+        ? ''
+        : prettyDuration(Duration(minutes: Share.settings.config.backgroundSyncInterval),
+            tersity: DurationTersity.second,
+            upperTersity: DurationTersity.minute,
+            abbreviated: true,
+            conjunction: ', ',
+            spacer: '',
+            locale: DurationLocale.fromLanguageCode(Share.settings.config.localeCode) ?? EnglishDurationLocale());
+  }
 
   @override
   Widget build(BuildContext context) => SearchableSliverNavigationBar(
@@ -432,13 +459,90 @@ class _SettingsPageState extends State<SettingsPage> {
               additionalDividerMargin: 5,
               children: [
                 CupertinoListTile(
-                    onTap: () {},
+                    onTap: () => Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) => StatefulBuilder(
+                                builder: ((context, setState) => CupertinoModalPage(title: 'Sync settings', children: [
+                                      CupertinoListSection.insetGrouped(
+                                          additionalDividerMargin: 5,
+                                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
+                                          children: [
+                                            CupertinoFormRow(
+                                                prefix: Flexible(
+                                                    flex: 3,
+                                                    child: Text('Background synchronization',
+                                                        maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                                child: CupertinoSwitch(
+                                                    value: Share.settings.config.enableBackgroundSync,
+                                                    onChanged: (s) =>
+                                                        setState(() => Share.settings.config.enableBackgroundSync = s))),
+                                          ]),
+                                      CupertinoListSection.insetGrouped(
+                                          additionalDividerMargin: 5,
+                                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                                          footer: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 20),
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Text(
+                                                      'Synchronization will only happen when you have a working internet connection and Oshi is closed.',
+                                                      style: TextStyle(fontSize: 13)))),
+                                          children: [
+                                            CupertinoFormRow(
+                                                prefix: Flexible(
+                                                    flex: 3,
+                                                    child: Text('Synchronize on Wi-Fi only',
+                                                        maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                                child: CupertinoSwitch(
+                                                    value: Share.settings.config.backgroundSyncWiFiOnly,
+                                                    onChanged: (s) =>
+                                                        setState(() => Share.settings.config.backgroundSyncWiFiOnly = s))),
+                                            CupertinoListTile(
+                                                title: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Flexible(
+                                                    child: Text('Refresh interval',
+                                                        maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                                ConstrainedBox(
+                                                    constraints: BoxConstraints(maxWidth: 100),
+                                                    child: CupertinoTextField.borderless(
+                                                        onChanged: (s) => setState(() {}),
+                                                        onSubmitted: (value) {
+                                                          var result = tryParseDuration(value);
+                                                          if (result != null &&
+                                                              (result < Duration(minutes: 15) ||
+                                                                  result > Duration(minutes: 180))) {
+                                                            result = null;
+                                                          }
+                                                          Share.settings.config.backgroundSyncInterval =
+                                                              result?.inMinutes ?? 15;
+                                                          setState(() => _syncTimeController.text = result != null
+                                                              ? prettyDuration(result,
+                                                                  tersity: DurationTersity.second,
+                                                                  upperTersity: DurationTersity.minute,
+                                                                  abbreviated: true,
+                                                                  conjunction: ', ',
+                                                                  spacer: '',
+                                                                  locale: DurationLocale.fromLanguageCode(
+                                                                          Share.settings.config.localeCode) ??
+                                                                      EnglishDurationLocale())
+                                                              : '');
+                                                        },
+                                                        controller: _syncTimeController,
+                                                        placeholder: '15 minutes',
+                                                        expands: false,
+                                                        textAlign: TextAlign.end,
+                                                        maxLength: 10,
+                                                        showCursor: _syncTimeController.text.isNotEmpty,
+                                                        maxLengthEnforcement: MaxLengthEnforcement.enforced)),
+                                              ],
+                                            )),
+                                          ])
+                                    ]))))),
                     title: Text('Sync Settings', overflow: TextOverflow.ellipsis),
-                    trailing: Row(children: [
-                      Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5), child: Opacity(opacity: 0.5, child: Text('TODO'))),
-                      CupertinoListTileChevron()
-                    ])),
+                    trailing: CupertinoListTileChevron()),
                 CupertinoListTile(
                     onTap: () => Navigator.push(
                         context,
@@ -484,7 +588,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                               child: Opacity(
                                                   opacity: 0.5,
                                                   child: Text(
-                                                      'Notifications will be sent for the selected categories once the new data is downloaded and there are any chnages.',
+                                                      'Notifications will be sent for the selected categories once the new data is downloaded and there are any changes.',
                                                       style: TextStyle(fontSize: 13)))),
                                           children: [
                                             CupertinoFormRow(
@@ -587,8 +691,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                               result < Duration(minutes: -15))) {
                                                         result = null;
                                                       }
-                                                      Share.settings.config.bellOffset =
-                                                          result ?? Share.settings.config.bellOffset;
+                                                      Share.settings.config.bellOffset = result ?? Duration.zero;
                                                       setState(() => _bellTimeController.text = result != null
                                                           ? prettyDuration(result,
                                                               tersity: DurationTersity.second,
@@ -641,8 +744,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                     onChanged: (value) {
                                                       var result = int.tryParse(value);
                                                       if (result != null && (result > 45 || result <= 0)) result = null;
-                                                      Share.settings.config.lessonCallTime =
-                                                          result ?? Share.settings.config.lessonCallTime;
+                                                      Share.settings.config.lessonCallTime = result ?? 15;
                                                       setState(() => _callTimeController.text = result?.toString() ?? '');
                                                     },
                                                     controller: _callTimeController,
