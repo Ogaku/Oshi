@@ -260,6 +260,7 @@ class Session extends HiveObject {
           Progress<({double? progress, String? message})>();
 
       NotificationController.sendNotification(
+          playSoundforce: false,
           title: 'Syncing everything...',
           content: 'Please wait a while...',
           category: NotificationCategories.other,
@@ -269,6 +270,7 @@ class Session extends HiveObject {
         Share.progressChanged.broadcast(events.Value(args?.value.message ?? ''));
         Share.refreshChanged.broadcast(events.Value(true)); // Refresh ongoing
         NotificationController.sendNotification(
+          playSoundforce: false,
             title: 'Syncing everything...',
             content: (args?.value.message?.isEmpty ?? true) ? 'Please wait a while...' : args!.value.message!,
             category: NotificationCategories.other,
@@ -281,6 +283,7 @@ class Session extends HiveObject {
       var result2 = await provider.refreshMessages(progress: mProgress);
 
       NotificationController.sendNotification(
+          playSoundforce: false,
           title: 'Syncing everything...',
           content: 'Saving the downloaded data...',
           category: NotificationCategories.other,

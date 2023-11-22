@@ -8,6 +8,7 @@ import 'package:event/event.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:open_file_plus/open_file_plus.dart';
 import 'package:oshi/share/share.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class NotificationController {
   static final StreamController<ReceivedNotification> didReceiveLocalNotificationStream =
@@ -19,6 +20,8 @@ class NotificationController {
     try {
       if (notificationResponse.payload?.startsWith('update_android') ?? false) {
         await OpenFile.open(notificationResponse.payload!.substring(notificationResponse.payload!.indexOf('\n') + 1));
+      } else if (notificationResponse.payload?.startsWith('url') ?? false) {
+        await launchUrlString(notificationResponse.payload!.substring(notificationResponse.payload!.indexOf('\n') + 1));
       }
 
       // await Navigator.push(
@@ -53,15 +56,16 @@ class NotificationController {
       NotificationCategories category = NotificationCategories.register,
       String? data,
       int? id,
-      double? progress}) async {
+      double? progress,
+      bool? playSoundforce}) async {
     if (Platform.isWindows || Platform.isFuchsia) return;
 
     try {
       AndroidNotificationDetails androidNotificationDetails =
           AndroidNotificationDetails('status_notifications', 'Status notifications',
               showProgress: progress != null,
-              playSound: progress == null,
-              enableVibration: progress == null,
+              playSound: playSoundforce ?? progress == null,
+              enableVibration: playSoundforce ?? progress == null,
               progress: (progress != null ? progress * 100 : 1).round(),
               maxProgress: progress != null ? 100 : 1,
               channelDescription: 'Notification channel for status updates',
@@ -82,9 +86,13 @@ class NotificationController {
           android: androidNotificationDetails,
           iOS: DarwinNotificationDetails(
               threadIdentifier: category.toString(),
+              interruptionLevel:
+                  (playSoundforce ?? (progress == null)) ? InterruptionLevel.active : InterruptionLevel.passive,
               categoryIdentifier: notificationCategories[NotificationCategories.other /* category */]?.identifier),
           macOS: DarwinNotificationDetails(
               threadIdentifier: category.toString(),
+              interruptionLevel:
+                  (playSoundforce ?? (progress == null)) ? InterruptionLevel.active : InterruptionLevel.passive,
               categoryIdentifier: notificationCategories[NotificationCategories.other /* category */]?.identifier));
       await Share.notificationsPlugin
           .show(id ?? Random().nextInt(999999), title, content, notificationDetails, payload: data);

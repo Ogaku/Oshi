@@ -35,42 +35,53 @@ class AppCenter {
     try {
       var result = (await fetchVersions())!;
       var ret = (result: result.version > Version.parse(Share.buildNumber), download: result.download);
-      if (!Platform.isAndroid) return ret;
-
-      // Else try to download the update and show a notification
-      NotificationController.sendNotification(
-          title: 'Downloading Oshi v${result.version}',
-          content: 'Please wait a while...',
-          category: NotificationCategories.other,
-          id: 9999991);
-
-      var progress = Progress<({double? progress, String? message})>();
-      progress.progressChanged.subscribe((args) => NotificationController.sendNotification(
-          title: 'Downloading Oshi v${result.version}',
-          content: 'Please wait a while...',
-          category: NotificationCategories.other,
-          progress: args?.value.progress ?? 0.0,
-          id: 9999991));
-
-      // Download
-      var path = '${(await getTemporaryDirectory()).path}/Oshi.apk';
-      if (await _download(result.download, path, progress)) {
-        await Future.delayed(const Duration(seconds: 3));
-        await NotificationController.sendNotification(
-            title: 'The latest Oshi is ready!',
-            content: 'Oshi v${result.version} is waiting for you...',
-            data: 'update_android\n$path',
+      if (Platform.isAndroid) {
+        // Else try to download the update and show a notification
+        NotificationController.sendNotification(
+            title: 'Downloading Oshi v${result.version}',
+            content: 'Please wait a while...',
             category: NotificationCategories.other,
             id: 9999991);
-      } else {
-        await NotificationController.sendNotification(
-            title: 'Update failed!',
-            content: 'An error occurred and Oshi couldn\'t downlaod the latest update...',
+
+        var progress = Progress<({double? progress, String? message})>();
+        progress.progressChanged.subscribe((args) => NotificationController.sendNotification(
+            title: 'Downloading Oshi v${result.version}',
+            content: 'Please wait a while...',
             category: NotificationCategories.other,
-            id: 9999991);
+            progress: args?.value.progress ?? 0.0,
+            id: 9999991));
+
+        // Download
+        var path = '${(await getTemporaryDirectory()).path}/Oshi.apk';
+        if (await _download(result.download, path, progress)) {
+          await Future.delayed(const Duration(seconds: 3));
+          await NotificationController.sendNotification(
+              title: 'The latest Oshi is ready!',
+              content: 'Oshi v${result.version} is waiting for you...',
+              data: 'update_android\n$path',
+              category: NotificationCategories.other,
+              id: 9999991);
+        } else {
+          await NotificationController.sendNotification(
+              title: 'Update failed!',
+              content: 'An error occurred and Oshi couldn\'t downlaod the latest update...',
+              category: NotificationCategories.other,
+              id: 9999991);
+        }
+
+        return (result: false, download: Uri());
+      } else if (Platform.isIOS) {
+        NotificationController.sendNotification(
+            title: 'The latest Oshi is waiting for you!',
+            content: 'Click to download Oshi v${result.version}',
+            category: NotificationCategories.other,
+            data: 'url\n${result.download}',
+            id: 9999993);
+
+        return (result: false, download: Uri());
       }
 
-      return (result: false, download: Uri());
+      return ret;
     } catch (ex) {
       return (result: false, download: Uri());
     }
