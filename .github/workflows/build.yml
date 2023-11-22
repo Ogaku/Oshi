@@ -134,4 +134,4 @@ jobs:
       - name: Upload AppCenter release
         run: |
           npm install -g appcenter-cli
-          appcenter distribute groups publish -g Public -f artifacts/android-release/Oshi.apk -a Ogaku/Oshi --token ${{ secrets.APP_CENTER_TOKEN }}
+          appcenter distribute release --app Ogaku/Oshi --group "Public" --file "artifacts/android-release/Oshi.apk" --token ${{ secrets.APP_CENTER_TOKEN }}
