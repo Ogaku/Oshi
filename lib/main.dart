@@ -157,7 +157,7 @@ class _MainAppState extends State<MainApp> {
           (await (Connectivity().checkConnectivity())) != ConnectivityResult.wifi) return;
 
       // Validate our session data
-      if (Share.settings.sessions.lastSession == null) return;
+      if (Share.settings.sessions.lastSession == null || !Share.settings.config.enableBackgroundSync) return;
 
       // Try to log in and refresh everything
       Share.session.tryLogin(); // Auto-login on restart if valid

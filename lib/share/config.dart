@@ -2,7 +2,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:background_fetch/background_fetch.dart';
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/date_symbol_data_file.dart';
@@ -349,18 +348,6 @@ class Config with ChangeNotifier {
   set enableBackgroundSync(bool value) {
     _enableBackgroundSync = value;
     notifyListeners();
-
-    if (_enableBackgroundSync) {
-      BackgroundFetch.start().then((int status) {
-        Share.backgroundSyncActive = true;
-      }).catchError((e) {
-        Share.backgroundSyncActive = false;
-      });
-    } else {
-      BackgroundFetch.stop().then((int status) {
-        Share.backgroundSyncActive = false;
-      });
-    }
   }
 
   set backgroundSyncWiFiOnly(bool value) {
