@@ -101,12 +101,11 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
         .thenBy((x) => x.date ?? x.timeTo ?? x.timeFrom)
         .toList();
 
-    // Lucky number, check ing wheter it exists is *somewhere* else
+    // Lucky number, checking wheter it exists is *somewhere* else
     var isLucky = (DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
             Share.session.data.student.account.number == Share.session.data.student.mainClass.unit.luckyNumber &&
             Share.session.data.student.mainClass.unit.luckyNumberTomorrow) ||
-        (DateTime.now().isBeforeOrSame(currentDay?.dayStart) &&
-            Share.session.data.student.account.number == Share.session.data.student.mainClass.unit.luckyNumber &&
+        (Share.session.data.student.account.number == Share.session.data.student.mainClass.unit.luckyNumber &&
             !Share.session.data.student.mainClass.unit.luckyNumberTomorrow);
 
     // Homeworks - first if any(), otherwise last
@@ -198,7 +197,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                 Row(
                                                   children: [
                                                     TextChip(
-                                                        text: DateFormat('d/M').format(x.timeTo ?? x.timeFrom),
+                                                        text: DateFormat.Md(Share.settings.config.localeCode)
+                                                            .format(x.timeTo ?? x.timeFrom),
                                                         margin: EdgeInsets.only(top: 6, bottom: 6, right: 10)),
                                                     Flexible(
                                                         child: Align(
@@ -307,7 +307,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                     Transform.scale(
                                         scale: isLucky ? 3.0 : 1.6,
                                         child: isLucky
-                                            ? Icon(CupertinoIcons.star_fill, color: CupertinoColors.systemYellow)
+                                            ? Icon(CupertinoIcons.star_fill,
+                                                color: CupertinoColors.systemYellow.withAlpha(70))
                                             : Icon(CupertinoIcons.circle_fill, color: Color(0x22777777))),
                                     Container(
                                         margin: EdgeInsets.only(),
@@ -597,7 +598,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                           Row(
                                             children: [
                                               TextChip(
-                                                  text: DateFormat('d/M').format(x.date ?? x.timeFrom),
+                                                  text: DateFormat.Md(Share.settings.config.localeCode)
+                                                      .format(x.date ?? x.timeFrom),
                                                   margin: EdgeInsets.only(top: 6, bottom: 6, right: 10)),
                                               Flexible(
                                                   child: Text(
@@ -891,19 +893,6 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                                 children: [
-                                                                  Visibility(
-                                                                      visible: !y.value.read &&
-                                                                          (y.value.receivers?.isEmpty ?? true),
-                                                                      child: Container(
-                                                                          margin: EdgeInsets.only(top: 5, right: 6),
-                                                                          child: Container(
-                                                                            height: 10,
-                                                                            width: 10,
-                                                                            decoration: BoxDecoration(
-                                                                                shape: BoxShape.circle,
-                                                                                color:
-                                                                                    CupertinoTheme.of(context).primaryColor),
-                                                                          ))),
                                                                   Expanded(
                                                                       child: Container(
                                                                           margin: EdgeInsets.only(right: 10),
@@ -1149,35 +1138,6 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                                 children: [
-                                                                  Visibility(
-                                                                      visible: () {
-                                                                        try {
-                                                                          return !(Share
-                                                                                  .session
-                                                                                  .data
-                                                                                  .student
-                                                                                  .mainClass
-                                                                                  .unit
-                                                                                  .announcements?[Share.session.data.student
-                                                                                          .mainClass.unit.announcements
-                                                                                          ?.indexOf(y.parent) ??
-                                                                                      -1]
-                                                                                  .read ??
-                                                                              true);
-                                                                        } catch (ex) {
-                                                                          return true;
-                                                                        }
-                                                                      }(),
-                                                                      child: Container(
-                                                                          margin: EdgeInsets.only(top: 5, right: 6),
-                                                                          child: Container(
-                                                                            height: 10,
-                                                                            width: 10,
-                                                                            decoration: BoxDecoration(
-                                                                                shape: BoxShape.circle,
-                                                                                color:
-                                                                                    CupertinoTheme.of(context).primaryColor),
-                                                                          ))),
                                                                   Expanded(
                                                                       child: Container(
                                                                           margin: EdgeInsets.only(right: 10),
@@ -1205,8 +1165,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                                                         y.message.readDate?.year &&
                                                                                     y.message.sendDate.day !=
                                                                                         y.message.readDate?.day
-                                                                                ? '${DateFormat('MMM d').format(y.message.sendDate)} - ${DateFormat('d').format(y.message.readDate ?? DateTime.now())}'
-                                                                                : '${DateFormat('MMM d').format(y.message.sendDate)} - ${DateFormat(y.message.sendDate.year == y.message.readDate?.year ? 'MMM d' : 'MMM d y').format(y.message.readDate ?? DateTime.now())}'),
+                                                                                ? '${DateFormat.MMMd(Share.settings.config.localeCode).format(y.message.sendDate)} - ${DateFormat.d(Share.settings.config.localeCode).format(y.message.readDate ?? DateTime.now())}'
+                                                                                : '${DateFormat.MMMd(Share.settings.config.localeCode).format(y.message.sendDate)} - ${DateFormat(y.message.sendDate.year == y.message.readDate?.year ? 'MMMd' : 'yMMMd', Share.settings.config.localeCode).format(y.message.readDate ?? DateTime.now())}'),
                                                                             overflow: TextOverflow.ellipsis,
                                                                             style: TextStyle(
                                                                                 fontSize: 16, fontWeight: FontWeight.normal),
@@ -1749,5 +1709,5 @@ extension Pretty on Duration {
       upperTersity: DurationTersity.minute,
       abbreviated: abs() < Duration(minutes: 1),
       conjunction: ', ',
-      locale: DurationLocale.fromLanguageCode(Share.settings.config.languageCode) ?? EnglishDurationLocale());
+      locale: DurationLocale.fromLanguageCode(Share.settings.config.localeCode) ?? EnglishDurationLocale());
 }

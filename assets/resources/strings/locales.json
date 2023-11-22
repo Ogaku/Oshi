@@ -1,25 +1,25 @@
 {
     "en": {
         "en": "English",
-        "jp": "Japanese",
+        "ja": "Japanese",
         "pl": "Polish",
         "uw": "Engwish"
     },
-    "jp": {
+    "ja": {
         "en": "英語",
-        "jp": "日本語",
+        "ja": "日本語",
         "pl": "ポーランド語",
         "uw": "英語？"
     },
     "pl": {
         "en": "Angielski",
-        "jp": "Japoński",
+        "ja": "Japoński",
         "pl": "Polski",
         "uw": "Angweiski"
     },
     "uw": {
         "en": "Engwish",
-        "jp": "Animish",
+        "ja": "Animish",
         "pl": "Powish",
         "uw": "Engwish"
     }

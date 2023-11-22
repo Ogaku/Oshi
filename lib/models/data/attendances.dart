@@ -5,6 +5,7 @@ import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/models/data/timetables.dart';
 
 import 'package:hive/hive.dart';
+import 'package:oshi/share/share.dart';
 part 'attendances.g.dart';
 
 @HiveType(typeId: 22)
@@ -49,7 +50,7 @@ class Attendance extends Equatable {
   List<Object> get props => [id, lessonNo, date, type];
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get addedDateString => "${teacher.name} • ${DateFormat('d.M.y').format(date)}";
+  String get addedDateString => "${teacher.name} • ${DateFormat.yMd(Share.settings.config.localeCode).format(date)}";
 
   factory Attendance.fromJson(Map<String, dynamic> json) => _$AttendanceFromJson(json);
 

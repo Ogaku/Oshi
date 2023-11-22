@@ -395,8 +395,10 @@ extension GradeBodyExtension on Grade {
                                       Flexible(
                                           child: Opacity(
                                               opacity: 0.5,
-                                              child: Text(DateFormat('EEE, d MMM y').format(addDate),
-                                                  maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                              child: Text(
+                                                  DateFormat.yMMMEd(Share.settings.config.localeCode).format(date),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis)))
                                     ],
                                   )),
                                   CupertinoListTile(
@@ -407,8 +409,10 @@ extension GradeBodyExtension on Grade {
                                       Flexible(
                                           child: Opacity(
                                               opacity: 0.5,
-                                              child: Text(DateFormat('hh:mm a, d MMM y').format(addDate),
-                                                  maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                              child: Text(
+                                                  '${DateFormat.Hm(Share.settings.config.localeCode).format(addDate)}, ${DateFormat.yMMMd(Share.settings.config.localeCode).format(addDate)}',
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis)))
                                     ],
                                   )),
                                 ]

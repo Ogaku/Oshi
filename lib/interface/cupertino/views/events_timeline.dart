@@ -36,7 +36,7 @@ class _EventsPageState extends State<EventsPage> {
             x.subtitleString.contains(RegExp(searchQuery, caseSensitive: false)) ||
             x.locationString.contains(RegExp(searchQuery, caseSensitive: false)))
         .orderBy((x) => x.date ?? x.timeFrom)
-        .groupBy((x) => DateFormat('EEEE, d MMMM y').format(x.date ?? x.timeFrom))
+        .groupBy((x) => DateFormat.yMMMMEEEEd(Share.settings.config.localeCode).format(x.date ?? x.timeFrom))
         .toList();
 
     var eventWidgets = eventsToDisplayByDate

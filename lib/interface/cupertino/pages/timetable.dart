@@ -120,7 +120,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                 ),
             child: Container(
                 margin: EdgeInsets.only(top: 5, bottom: 5),
-                child: TextChip(width: 110, text: DateFormat('d.MM.y').format(selectedDate)))),
+                child: TextChip(width: 110, text: DateFormat.yMd(Share.settings.config.localeCode).format(selectedDate)))),
         trailing: isWorking
             ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
             : PullDownButton(
@@ -207,7 +207,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                   [];
 
               var lessonsWidget = CupertinoListSection.insetGrouped(
-                header: Text(DateFormat('EEEE, d MMMM y').format(selectedDate)),
+                header: Text(DateFormat.yMMMMEEEEd(Share.settings.config.localeCode).format(selectedDate)),
                 margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
                 additionalDividerMargin: 5,
                 children: lessonsToDisplay.isEmpty
@@ -534,7 +534,8 @@ extension EventWidgetExtension on Event {
                                                           child: Opacity(
                                                               opacity: 0.5,
                                                               child: Text(
-                                                                  DateFormat('EEE, d MMM y').format(date ?? timeFrom),
+                                                                  DateFormat.yMMMMEEEEd(Share.settings.config.localeCode)
+                                                                      .format(date ?? timeFrom),
                                                                   maxLines: 1,
                                                                   overflow: TextOverflow.ellipsis)))
                                                     ],
@@ -564,8 +565,11 @@ extension EventWidgetExtension on Event {
                                                       Flexible(
                                                           child: Opacity(
                                                               opacity: 0.5,
-                                                              child: Text(DateFormat('HH:mm').format(timeFrom),
-                                                                  maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                                              child: Text(
+                                                                  DateFormat.Hm(Share.settings.config.localeCode)
+                                                                      .format(timeFrom),
+                                                                  maxLines: 1,
+                                                                  overflow: TextOverflow.ellipsis)))
                                                     ],
                                                   )),
                                                   timeFrom.hour != 0)
@@ -578,8 +582,11 @@ extension EventWidgetExtension on Event {
                                                       Flexible(
                                                           child: Opacity(
                                                               opacity: 0.5,
-                                                              child: Text(DateFormat('HH:mm').format(timeTo ?? timeFrom),
-                                                                  maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                                              child: Text(
+                                                                  DateFormat.Hm(Share.settings.config.localeCode)
+                                                                      .format(timeTo ?? timeFrom),
+                                                                  maxLines: 1,
+                                                                  overflow: TextOverflow.ellipsis)))
                                                     ],
                                                   )),
                                                   timeTo != null && timeTo?.hour != 0))
@@ -670,7 +677,7 @@ extension EventWidgetExtension on Event {
                                                   child: (timeFrom.hour != 0 && timeTo?.hour != 0) &&
                                                           (timeFrom.asDate() == timeTo?.asDate())
                                                       ? Text(
-                                                          "${DateFormat('H:mm').format(timeFrom)} - ${DateFormat('H:mm').format(timeTo ?? DateTime.now())}",
+                                                          "${DateFormat.Hm(Share.settings.config.localeCode).format(timeFrom)} - ${DateFormat.Hm(Share.settings.config.localeCode).format(timeTo ?? DateTime.now())}",
                                                           overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(
                                                               fontSize: 15,
@@ -679,10 +686,11 @@ extension EventWidgetExtension on Event {
                                                         )
                                                       : Text(
                                                           (timeFrom.month == timeTo?.month && timeFrom.day == timeTo?.day)
-                                                              ? DateFormat('d MMM').format(timeTo ?? DateTime.now())
+                                                              ? DateFormat.MMMd(Share.settings.config.localeCode)
+                                                                  .format(timeTo ?? DateTime.now())
                                                               : (timeFrom.month == timeTo?.month)
-                                                                  ? "${DateFormat('d').format(timeFrom)} - ${DateFormat('d MMM').format(timeTo ?? DateTime.now())}"
-                                                                  : "${DateFormat('d MMM').format(timeFrom)} - ${DateFormat('d MMM').format(timeTo ?? DateTime.now())}",
+                                                                  ? "${DateFormat.d(Share.settings.config.localeCode).format(timeFrom)} - ${DateFormat.MMMd(Share.settings.config.localeCode).format(timeTo ?? DateTime.now())}"
+                                                                  : "${DateFormat.MMMd(Share.settings.config.localeCode).format(timeFrom)} - ${DateFormat.MMMd(Share.settings.config.localeCode).format(timeTo ?? DateTime.now())}",
                                                           overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(
                                                               fontSize: 15,
@@ -978,7 +986,7 @@ extension LessonWidgetExtension on TimetableLesson {
                                                           child: Opacity(
                                                               opacity: 0.5,
                                                               child: Text(
-                                                                  '${DateFormat('y.M.d').format(substitutionDetails?.originalDate ?? DateTime.now().asDate())}${substitutionDetails?.originalLessonNo != null ? ', L${substitutionDetails?.originalLessonNo.toString()}' : ''}',
+                                                                  '${DateFormat.yMd(Share.settings.config.localeCode).format(substitutionDetails?.originalDate ?? DateTime.now().asDate())}${substitutionDetails?.originalLessonNo != null ? ', L${substitutionDetails?.originalLessonNo.toString()}' : ''}',
                                                                   maxLines: 3,
                                                                   textAlign: TextAlign.end))))
                                                 ],

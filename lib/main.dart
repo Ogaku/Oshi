@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' as notifications;
 import 'package:hive_flutter/adapters.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:oshi/share/config.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
@@ -119,6 +120,12 @@ class _MainAppState extends State<MainApp> {
   StatefulWidget Function() child = Share.settings.config.useCupertino
       ? () => (Share.settings.sessions.lastSession != null ? cupertinoapp.baseApp : cupertinoapp.sessionsPage)
       : () => materialapp.sessionsPage;
+
+  @override
+  void initState() {
+    super.initState();
+    initializeDateFormatting();
+  }
 
   @override
   Widget build(BuildContext context) {

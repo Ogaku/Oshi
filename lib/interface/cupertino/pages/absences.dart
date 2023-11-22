@@ -41,7 +41,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
     // Group by date, I know IT'S A DAMN STRING, but we're saving on custom controls
     var attendancesToDisplayByDate = Share.session.data.student.attendances
             ?.orderByDescending((x) => x.date)
-            .groupBy((x) => DateFormat('EEEE, d MMMM y').format(x.date))
+            .groupBy((x) => DateFormat.yMMMMEEEEd(Share.settings.config.localeCode).format(x.date))
             .toList() ??
         [];
 
@@ -290,7 +290,7 @@ extension LessonWidgetExtension on Attendance {
                                       Flexible(
                                           child: Opacity(
                                               opacity: 0.5,
-                                              child: Text(DateFormat('EEE, d MMM y').format(date),
+                                              child: Text(DateFormat.yMMMEd(Share.settings.config.localeCode).format(date),
                                                   maxLines: 1, overflow: TextOverflow.ellipsis)))
                                     ],
                                   )),
@@ -302,8 +302,10 @@ extension LessonWidgetExtension on Attendance {
                                       Flexible(
                                           child: Opacity(
                                               opacity: 0.5,
-                                              child: Text(DateFormat('hh:mm a, d MMM y').format(addDate),
-                                                  maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                              child: Text(
+                                                  '${DateFormat.Hm(Share.settings.config.localeCode).format(addDate)}, ${DateFormat.yMMMd(Share.settings.config.localeCode).format(addDate)}',
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis)))
                                     ],
                                   )),
                                 ].appendIf(

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/date_symbol_data_file.dart';
 import 'package:oshi/share/resources.dart';
 
 import 'package:hive/hive.dart';
@@ -141,6 +142,9 @@ class Config with ChangeNotifier {
   String get languageCode => Share.translator.supportedLanguages.any((x) => x.code == _languageCode)
       ? _languageCode
       : (Share.translator.supportedLanguages.firstOrDefault()?.code ?? 'en');
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  String get localeCode => availableLocalesForDateFormatting.contains(_languageCode) ? _languageCode : 'en';
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get useCupertino => _useCupertino;

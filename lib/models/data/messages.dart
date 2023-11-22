@@ -6,6 +6,7 @@ import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/models/data/teacher.dart';
 
 import 'package:hive/hive.dart';
+import 'package:oshi/share/share.dart';
 part 'messages.g.dart';
 
 @HiveType(typeId: 28)
@@ -95,9 +96,10 @@ class Message extends Equatable {
 
   String get sendDateString => sendDate.difference(DateTime.now().getDateOnly()).inDays > 0
       ? DateFormat.Hm().format(sendDate)
-      : DateFormat('d MMM').format(sendDate);
+      : DateFormat.MMMd(Share.settings.config.localeCode).format(sendDate);
 
-  String get readDateString => "Read ${DateFormat('d MMM y, HH:mm').format(readDate ?? DateTime(2000))}";
+  String get readDateString =>
+      "Read ${DateFormat.yMMMd(Share.settings.config.localeCode).format(readDate ?? DateTime(2000))} ${DateFormat.Hm(Share.settings.config.localeCode).format(readDate ?? DateTime(2000))}";
 
   String get senderInitials => (sender?.name.isEmpty ?? true)
       ? ':)' // Placeholder, but it's up to you what to display there

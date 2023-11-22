@@ -435,7 +435,8 @@ class Session extends HiveObject {
                   _ => "New"
                 }}'
                     .localized
-                    .format(DateFormat('yyyy.MM.dd').format(element.value.date), element.value.lessonNo),
+                    .format(
+                        DateFormat.yMd(Share.settings.config.localeCode).format(element.value.date), element.value.lessonNo),
                 body: (element.value.isSubstitution &&
                             (element.value.substitutionDetails?.originalSubject?.name.isNotEmpty ?? false)
                         ? '${element.value.substitutionDetails?.originalSubject?.name} → '
@@ -443,7 +444,7 @@ class Session extends HiveObject {
                     '/Notifications/Captions/Joiners/Lesson'.localized.format(
                         element.value.subject?.name ?? element.value.classroomString,
                         element.value.teacher?.name ?? '/Notifications/Placeholder/Teacher'.localized),
-                payload: 'timetables\n${DateFormat('yyyy.MM.dd').format(element.value.date)}'
+                payload: 'timetables\n${DateFormat.yMd(Share.settings.config.localeCode).format(element.value.date)}'
               )));
         }
 
@@ -474,7 +475,8 @@ class Session extends HiveObject {
                       _ => "New"
                     }}'
                         .localized
-                        .format(DateFormat('yyyy.MM.dd').format(element.value.date), element.value.lessonNo),
+                        .format(DateFormat.yMd(Share.settings.config.localeCode).format(element.value.date),
+                            element.value.lessonNo),
                     body: '/Notifications/Captions/Joiners/Lesson'.localized.format(
                         element.value.lesson.subject?.name ?? '/Notifications/Placeholder/Lesson'.localized,
                         element.value.teacher.name),
@@ -496,7 +498,9 @@ class Session extends HiveObject {
                       RegisterChangeTypes.removed => "Removed"
                     }}'
                         .localized
-                        .format(element.value.type.asString(), DateFormat('yyyy.MM.dd').format(element.value.date),
+                        .format(
+                            element.value.type.asString(),
+                            DateFormat.yMd(Share.settings.config.localeCode).format(element.value.date),
                             element.value.lessonNo),
                     body: '/Notifications/Captions/Joiners/Lesson'.localized.format(
                         element.value.lesson.subject?.name ?? '/Notifications/Placeholder/Lesson'.localized,
@@ -527,7 +531,8 @@ class Session extends HiveObject {
                       RegisterChangeTypes.removed => "Removed"
                     }}'
                         .localized
-                        .format(element.value.value, DateFormat('yyyy.MM.dd').format(element.value.date)),
+                        .format(element.value.value,
+                            DateFormat.yMd(Share.settings.config.localeCode).format(element.value.date)),
                     body: '/Notifications/Captions/Joiners/Lesson'.localized.format(
                         (element.payload is Lesson ? element.payload as Lesson : null)?.name ??
                             '/Notifications/Placeholder/Lesson'.localized,
@@ -563,16 +568,20 @@ class Session extends HiveObject {
                     }}'
                         .localized
                         .format(element.value.sender?.name ?? ''),
-                    body: (element.value.timeFrom.hour != 0 && element.value.timeTo?.hour != 0) &&
-                            (element.value.timeFrom.asDate() == element.value.timeTo?.asDate())
-                        ? "${DateFormat('HH:mm').format(element.value.timeFrom)} - ${DateFormat('HH:mm').format(element.value.timeTo ?? DateTime.now())}"
-                        : (element.value.timeFrom.month == element.value.timeTo?.month &&
-                                element.value.timeFrom.day == element.value.timeTo?.day)
-                            ? DateFormat('EEEE, MMM d').format(element.value.timeTo ?? DateTime.now())
-                            : (element.value.timeFrom.month == element.value.timeTo?.month)
-                                ? "${DateFormat('d').format(element.value.timeFrom)} - ${DateFormat('d MMM yyyy').format(element.value.timeTo ?? DateTime.now())}"
-                                : "${DateFormat('EEE, MMM d').format(element.value.timeFrom)} - ${DateFormat('EEE, MMM d').format(element.value.timeTo ?? DateTime.now())}",
-                    payload: 'timetables\n${DateFormat('yyyy.MM.dd').format(element.value.date ?? element.value.timeFrom)}'
+                    body: (element.value.timeFrom.month == element.value.timeTo?.month &&
+                            element.value.timeFrom.day == element.value.timeTo?.day)
+                        ? DateFormat.yMMMMEEEEd(Share.settings.config.localeCode)
+                                .format(element.value.timeTo ?? DateTime.now()) // Wednesday, May 10
+                            +
+                            ((element.value.timeFrom.hour != 0 && element.value.timeTo?.hour != 0) &&
+                                    (element.value.timeFrom.asDate() == element.value.timeTo?.asDate())
+                                ? "(${DateFormat.Hm(Share.settings.config.localeCode).format(element.value.timeFrom)} - ${DateFormat.Hm(Share.settings.config.localeCode).format(element.value.timeTo ?? DateTime.now())})"
+                                : '') // (10:30 - 11:25)
+                        : (element.value.timeFrom.month == element.value.timeTo?.month)
+                            ? "${DateFormat.d(Share.settings.config.localeCode).format(element.value.timeFrom)} - ${DateFormat.yMMMMEEEEd(Share.settings.config.localeCode).format(element.value.timeTo ?? DateTime.now())}" // 10 - 15 May 2023
+                            : "${DateFormat.MMMEd(Share.settings.config.localeCode).format(element.value.timeFrom)} - ${DateFormat.MMMEd(Share.settings.config.localeCode).format(element.value.timeTo ?? DateTime.now())}", // Wed, May 10 - Fri, May 15
+                    payload:
+                        'timetables\n${DateFormat.yMd(Share.settings.config.localeCode).format(element.value.date ?? element.value.timeFrom)}'
                   )));
 
           detectedChanges.eventsChanged
@@ -584,12 +593,15 @@ class Session extends HiveObject {
                       RegisterChangeTypes.removed => "Removed"
                     }}'
                         .localized
-                        .format(element.value.categoryName,
-                            DateFormat('EEEE, MMM d').format(element.value.date ?? element.value.timeFrom)),
+                        .format(
+                            element.value.categoryName,
+                            DateFormat.MMMMEEEEd(Share.settings.config.localeCode)
+                                .format(element.value.date ?? element.value.timeFrom)),
                     body: element.value.titleString.isNotEmpty
                         ? element.value.titleString
                         : (element.value.sender?.name ?? element.value.subtitleString),
-                    payload: 'timetables\n${DateFormat('yyyy.MM.dd').format(element.value.date ?? element.value.timeFrom)}'
+                    payload:
+                        'timetables\n${DateFormat.yMd(Share.settings.config.localeCode).format(element.value.date ?? element.value.timeFrom)}'
                   )));
         }
 

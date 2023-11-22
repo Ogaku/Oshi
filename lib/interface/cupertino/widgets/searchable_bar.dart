@@ -187,106 +187,107 @@ class _NavState extends State<SearchableSliverNavigationBar> {
             const CupertinoDynamicColor.withBrightness(
                 color: Color.fromARGB(255, 242, 242, 247), darkColor: Color.fromARGB(255, 0, 0, 0)),
         child: NotificationListener<ScrollNotification>(
-          onNotification: (ScrollNotification scrollInfo) {
-            if (widget.disableAddons) return true;
-            if (scrollInfo is ScrollUpdateNotification) {
-              if (scrollInfo.metrics.pixels < -130 && !isRefreshing && widget.setState != null) {
-                setState(() {
-                  isRefreshing = true;
-                  refreshTurns =
-                      (-2 * (scrollInfo.metrics.pixels - _pixels) / (DateTime.now().millisecondsSinceEpoch - _timestamp))
-                          .clamp(0.3, 1);
-                });
-                var progress = Progress<({double? progress, String? message})>();
-                progress.progressChanged.subscribe((args) {
-                  if (widget.onProgress != null) widget.onProgress!(args?.value);
-                });
-                try {
-                  HapticFeedback.mediumImpact(); // Trigger a haptic feedback
-                } catch (ex) {
-                  // ignored
-                }
-                Share.session.refreshAll(weekStart: widget.selectedDate, progress: progress).then((arg) {
+            onNotification: (ScrollNotification scrollInfo) {
+              if (widget.disableAddons) return true;
+              if (scrollInfo is ScrollUpdateNotification) {
+                if (scrollInfo.metrics.pixels < -130 && !isRefreshing && widget.setState != null) {
                   setState(() {
-                    isRefreshing = false;
-                    refreshTurns = 0;
+                    isRefreshing = true;
+                    refreshTurns =
+                        (-2 * (scrollInfo.metrics.pixels - _pixels) / (DateTime.now().millisecondsSinceEpoch - _timestamp))
+                            .clamp(0.3, 1);
                   });
+                  var progress = Progress<({double? progress, String? message})>();
+                  progress.progressChanged.subscribe((args) {
+                    if (widget.onProgress != null) widget.onProgress!(args?.value);
+                  });
+                  try {
+                    HapticFeedback.mediumImpact(); // Trigger a haptic feedback
+                  } catch (ex) {
+                    // ignored
+                  }
+                  Share.session.refreshAll(weekStart: widget.selectedDate, progress: progress).then((arg) {
+                    setState(() {
+                      isRefreshing = false;
+                      refreshTurns = 0;
+                    });
 
-                  if (widget.setState != null) widget.setState!(() {});
-                  progress.progressChanged.unsubscribeAll();
-                  if (widget.onProgress != null) widget.onProgress!(null);
+                    if (widget.setState != null) widget.setState!(() {});
+                    progress.progressChanged.unsubscribeAll();
+                    if (widget.onProgress != null) widget.onProgress!(null);
+                  });
+                }
+                // print(scrollInfo.metrics.pixels);
+                if (scrollInfo.metrics.pixels > previousScrollPosition) {
+                  if (isVisibleSearchBar > 0 && scrollInfo.metrics.pixels > 0) {
+                    setState(() {
+                      isVisibleSearchBar = widget.alwaysShowAddons
+                          ? 60
+                          : (55 - scrollInfo.metrics.pixels) >= 0
+                              ? (55 - scrollInfo.metrics.pixels)
+                              : 0;
+                    });
+                  }
+                } else if (scrollInfo.metrics.pixels <= previousScrollPosition) {
+                  if (isVisibleSearchBar < 55 /*&& scrollInfo.metrics.pixels >= 0*/ && scrollInfo.metrics.pixels <= 55) {
+                    setState(() {
+                      isVisibleSearchBar = widget.alwaysShowAddons
+                          ? 60
+                          : (55 - scrollInfo.metrics.pixels) <= 55
+                              ? (55 - scrollInfo.metrics.pixels)
+                              : 55;
+                    });
+                  }
+                }
+                setState(() {
+                  previousScrollPosition = scrollInfo.metrics.pixels;
+                  _pixels = scrollInfo.metrics.pixels;
+                  _timestamp = DateTime.now().millisecondsSinceEpoch;
+                });
+              } else if (scrollInfo is ScrollEndNotification) {
+                if (widget.disableAddons || widget.child != null) return true;
+                Future.delayed(Duration.zero, () {
+                  if (isVisibleSearchBar < 25 && isVisibleSearchBar > 10 && !widget.alwaysShowAddons) {
+                    setState(() {
+                      scrollController.animateTo(55, duration: const Duration(milliseconds: 200), curve: Curves.ease);
+                    });
+                  } else if (isVisibleSearchBar >= 25 && isVisibleSearchBar <= 55) {
+                    setState(() {
+                      scrollController.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.ease);
+                    });
+                  }
                 });
               }
-              // print(scrollInfo.metrics.pixels);
-              if (scrollInfo.metrics.pixels > previousScrollPosition) {
-                if (isVisibleSearchBar > 0 && scrollInfo.metrics.pixels > 0) {
-                  setState(() {
-                    isVisibleSearchBar = widget.alwaysShowAddons
-                        ? 60
-                        : (55 - scrollInfo.metrics.pixels) >= 0
-                            ? (55 - scrollInfo.metrics.pixels)
-                            : 0;
-                  });
-                }
-              } else if (scrollInfo.metrics.pixels <= previousScrollPosition) {
-                if (isVisibleSearchBar < 55 /*&& scrollInfo.metrics.pixels >= 0*/ && scrollInfo.metrics.pixels <= 55) {
-                  setState(() {
-                    isVisibleSearchBar = widget.alwaysShowAddons
-                        ? 60
-                        : (55 - scrollInfo.metrics.pixels) <= 55
-                            ? (55 - scrollInfo.metrics.pixels)
-                            : 55;
-                  });
-                }
-              }
-              setState(() {
-                previousScrollPosition = scrollInfo.metrics.pixels;
-                _pixels = scrollInfo.metrics.pixels;
-                _timestamp = DateTime.now().millisecondsSinceEpoch;
-              });
-            } else if (scrollInfo is ScrollEndNotification) {
-              if (widget.disableAddons || widget.child != null) return true;
-              Future.delayed(Duration.zero, () {
-                if (isVisibleSearchBar < 25 && isVisibleSearchBar > 10 && !widget.alwaysShowAddons) {
-                  setState(() {
-                    scrollController.animateTo(55, duration: const Duration(milliseconds: 200), curve: Curves.ease);
-                  });
-                } else if (isVisibleSearchBar >= 25 && isVisibleSearchBar <= 55) {
-                  setState(() {
-                    scrollController.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.ease);
-                  });
-                }
-              });
-            }
-            return true;
-          },
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            controller: scrollController,
-            anchor: widget.anchor ?? 0.077,
-            slivers: <Widget>[
-              navBarSliver,
-              widget.useSliverBox
-                  ? SliverToBoxAdapter(
-                      child: widget.child ??
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.max,
-                            children: widget.children ?? [],
-                          ))
-                  : SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: widget.child ??
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.max,
-                            children: widget.children ?? [],
-                          )),
-            ],
-          ),
-        ));
+              return true;
+            },
+            child: SafeArea(
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                controller: scrollController,
+                anchor: widget.anchor ?? 0.077,
+                slivers: <Widget>[
+                  navBarSliver,
+                  widget.useSliverBox
+                      ? SliverToBoxAdapter(
+                          child: widget.child ??
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                children: widget.children ?? [],
+                              ))
+                      : SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: widget.child ??
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                children: widget.children ?? [],
+                              )),
+                ],
+              ),
+            )));
   }
 }
 

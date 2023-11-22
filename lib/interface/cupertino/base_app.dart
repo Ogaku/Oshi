@@ -109,31 +109,30 @@ class _BaseAppState extends State<BaseApp> {
                 });
 
                 return CupertinoTabScaffold(
-                  controller: tabController,
-                  tabBar: CupertinoTabBar(
-                      backgroundColor: CupertinoTheme.of(context).barBackgroundColor.withAlpha(0xFF),
-                      items: [
-                        BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: '/Titles/Pages/Home'.localized),
-                        BottomNavigationBarItem(icon: Icon(CupertinoIcons.rosette), label: '/Titles/Pages/Grades'.localized),
-                        BottomNavigationBarItem(
-                            icon: Icon(CupertinoIcons.calendar), label: '/Titles/Pages/Schedule'.localized),
-                        BottomNavigationBarItem(
-                            icon: Icon(CupertinoIcons.envelope), label: '/Titles/Pages/Messages'.localized),
-                        BottomNavigationBarItem(
-                            icon: Icon(CupertinoIcons.person_crop_circle_badge_minus),
-                            label: '/Titles/Pages/Absences'.localized),
-                      ]),
-                  tabBuilder: (context, index) => CupertinoTabView(
-                    builder: (context) => switch (index) {
-                      0 => homePage,
-                      1 => gradesPage,
-                      2 => timetablePage,
-                      3 => messagesPage,
-                      4 => absencesPage,
-                      _ => homePage,
-                    },
-                  ),
-                );
+                    controller: tabController,
+                    tabBar: CupertinoTabBar(backgroundColor: CupertinoTheme.of(context).barBackgroundColor, items: [
+                      BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: '/Titles/Pages/Home'.localized),
+                      BottomNavigationBarItem(icon: Icon(CupertinoIcons.rosette), label: '/Titles/Pages/Grades'.localized),
+                      BottomNavigationBarItem(
+                          icon: Icon(CupertinoIcons.calendar), label: '/Titles/Pages/Schedule'.localized),
+                      BottomNavigationBarItem(
+                          icon: Icon(CupertinoIcons.envelope), label: '/Titles/Pages/Messages'.localized),
+                      BottomNavigationBarItem(
+                          icon: Icon(CupertinoIcons.person_crop_circle_badge_minus),
+                          label: '/Titles/Pages/Absences'.localized),
+                    ]),
+                    tabBuilder: (context, index) => SafeArea(
+                          child: CupertinoTabView(
+                            builder: (context) => switch (index) {
+                              0 => homePage,
+                              1 => gradesPage,
+                              2 => timetablePage,
+                              3 => messagesPage,
+                              4 => absencesPage,
+                              _ => homePage,
+                            },
+                          ),
+                        ));
               }));
         }));
   }

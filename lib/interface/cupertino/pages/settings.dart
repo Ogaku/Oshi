@@ -242,7 +242,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                   .sum((x) => 45) ??
                                                               0),
                                                       locale: DurationLocale.fromLanguageCode(
-                                                              Share.settings.config.languageCode) ??
+                                                              Share.settings.config.localeCode) ??
                                                           EnglishDurationLocale()))))),
                                       CupertinoListTile(
                                           title: Text('Gained time', overflow: TextOverflow.ellipsis),
@@ -261,7 +261,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                   .sum((x) => 45) ??
                                                               0),
                                                       locale: DurationLocale.fromLanguageCode(
-                                                              Share.settings.config.languageCode) ??
+                                                              Share.settings.config.localeCode) ??
                                                           EnglishDurationLocale()))))),
                                       CupertinoListTile(
                                           title: Text('Total presence', overflow: TextOverflow.ellipsis),
@@ -597,7 +597,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                               conjunction: ', ',
                                                               spacer: '',
                                                               locale: DurationLocale.fromLanguageCode(
-                                                                      Share.settings.config.languageCode) ??
+                                                                      Share.settings.config.localeCode) ??
                                                                   EnglishDurationLocale())
                                                           : '');
                                                     },
