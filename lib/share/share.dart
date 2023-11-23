@@ -63,9 +63,6 @@ class Share {
       showErrorModal =
       events.Event<events.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>();
 
-  static events.Event<events.Value<bool>> refreshChanged = events.Event<events.Value<bool>>(); // Triggers a setState
-  static events.Event<events.Value<String>> progressChanged = events.Event<events.Value<String>>(); // Triggers an update
-
   // Navigate the grades page to the specified subject
   static events.Event<events.Value<Lesson>> gradesNavigate = events.Event<events.Value<Lesson>>();
 
@@ -194,6 +191,9 @@ class Session extends HiveObject {
         data = ProviderData(),
         changes = changes ?? [];
 
+  // Refresh status
+  final RefreshStatus refreshStatus = RefreshStatus();
+
   // Internal 'pretty' name
   @HiveField(1)
   String sessionName;
@@ -252,8 +252,11 @@ class Session extends HiveObject {
   // For reporting 'progress' - mark 'Progress' as null for indeterminate status
   Future<({bool success, Exception? message})> refreshAll(
       {DateTime? weekStart, IProgress<({double? progress, String? message})>? progress, bool saveChanges = true}) async {
+    // Already working, skip for now
+    if (refreshStatus.isRefreshing) return (success: true, message: null);
+
     Share.checkUpdates.broadcast(); // Check for updates everywhere
-    Share.refreshChanged.broadcast(events.Value(true)); // Refresh started
+    refreshStatus.markAsStarted(); // Refresh started
 
     try {
       var mProgress = (progress as Progress<({double? progress, String? message})>?) ??
@@ -267,10 +270,9 @@ class Session extends HiveObject {
           id: 9999992);
 
       mProgress.progressChanged.subscribe((args) {
-        Share.progressChanged.broadcast(events.Value(args?.value.message ?? ''));
-        Share.refreshChanged.broadcast(events.Value(true)); // Refresh ongoing
+        refreshStatus.progressStatus = args?.value.message;
         NotificationController.sendNotification(
-          playSoundforce: false,
+            playSoundforce: false,
             title: 'Syncing everything...',
             content: (args?.value.message?.isEmpty ?? true) ? 'Please wait a while...' : args!.value.message!,
             category: NotificationCategories.other,
@@ -296,7 +298,7 @@ class Session extends HiveObject {
       Share.currentEndingSplash = Share.translator.getRandomEndingSplash();
       Future.delayed(const Duration(seconds: 2)).then((value) => Share.notificationsPlugin.cancel(9999992));
 
-      Share.refreshChanged.broadcast(events.Value(false));
+      refreshStatus.markAsDone(); // Refresh started
       return (success: result1.success && result2.success, message: result1.message ?? result2.message);
     } catch (ex, stack) {
       Share.showErrorModal.broadcast(events.Value((
@@ -309,7 +311,7 @@ class Session extends HiveObject {
         }
       )));
       Share.notificationsPlugin.cancel(9999992);
-      Share.refreshChanged.broadcast(events.Value(false));
+      refreshStatus.markAsDone(); // Refresh started
       return (success: false, message: Exception(ex));
     }
   }

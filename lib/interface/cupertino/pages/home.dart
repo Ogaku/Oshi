@@ -46,7 +46,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends VisibilityAwareState<HomePage> {
   final searchController = TextEditingController();
   Timer? _everySecond;
-  String? _progressMessage;
   HomepageSegments _segment = HomepageSegments.home;
 
   @override
@@ -1280,7 +1279,6 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       child: SearchableSliverNavigationBar(
         useSliverBox: _segment == HomepageSegments.timeline,
         alwaysShowAddons: _segment == HomepageSegments.timeline,
-        onProgress: (progress) => setState(() => _progressMessage = progress?.message),
         setState: setState,
         segments: {
           HomepageSegments.home: '/Titles/Pages/Home'.localized,
@@ -1291,19 +1289,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
         searchController: searchController,
         largeTitle:
             Text(_segment == HomepageSegments.home ? '/Titles/Pages/Home'.localized : '/Titles/Pages/Timeline'.localized),
-        middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('/Titles/Pages/Home'.localized)),
-        leading: Visibility(
-            visible: _progressMessage?.isNotEmpty ?? false,
-            child: Container(
-                margin: EdgeInsets.only(top: 7),
-                child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 150),
-                    child: Text(
-                      _progressMessage ?? '',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: CupertinoColors.inactiveGray, fontSize: 13, fontWeight: FontWeight.w300),
-                    )))),
+        middle: Text('/Titles/Pages/Home'.localized),
         trailing: PullDownButton(
           itemBuilder: (context) => [
             PullDownMenuItem(

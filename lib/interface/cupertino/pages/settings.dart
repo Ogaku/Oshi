@@ -443,14 +443,6 @@ class _SettingsPageState extends State<SettingsPage> {
                           child: Opacity(opacity: 0.5, child: Text(Share.translator.localeName))),
                       CupertinoListTileChevron()
                     ])),
-                CupertinoListTile(
-                    onTap: () {},
-                    title: Text('Commute', overflow: TextOverflow.ellipsis),
-                    trailing: Row(children: [
-                      Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5), child: Opacity(opacity: 0.5, child: Text('TODO'))),
-                      CupertinoListTileChevron()
-                    ])),
               ],
             ),
             // Settings - app settings

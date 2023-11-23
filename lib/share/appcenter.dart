@@ -21,7 +21,7 @@ class AppCenter {
           .data;
 
       return AppVersion(
-          version: Version.parse(result['short_version']),
+          version: Version.parse(result['version']),
           notes: result['release_notes'],
           download: Uri.parse(Platform.isAndroid
               ? result['download_url']
@@ -34,7 +34,7 @@ class AppCenter {
   static Future<({bool result, Uri download})> checkForUpdates() async {
     try {
       var result = (await fetchVersions())!;
-      var ret = (result: result.version > Version.parse(Share.buildNumber), download: result.download);
+      var ret = (result: result.version > Version.parse(Share.buildNumber).build, download: result.download);
       if (Platform.isAndroid) {
         // Else try to download the update and show a notification
         NotificationController.sendNotification(

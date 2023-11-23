@@ -34,11 +34,9 @@ class MessagesPage extends StatefulWidget {
 class _MessagesPageState extends State<MessagesPage> {
   final searchController = TextEditingController();
 
-  String searchQuery = '';
-  String? _progressMessage;
-
   MessageFolders folder = MessageFolders.inbox;
   bool isWorking = false;
+  String searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
@@ -331,26 +329,11 @@ class _MessagesPageState extends State<MessagesPage> {
         MessageFolders.outbox => '/Titles/Pages/Messages/Sent'.localized,
         MessageFolders.inbox || _ => '/Titles/Pages/Messages/Inbox'.localized
       }),
-      middle: Visibility(
-          visible: _progressMessage?.isEmpty ?? true,
-          child: Text(switch (folder) {
-            MessageFolders.announcements => '/Titles/Pages/Messages/Announcements'.localized,
-            MessageFolders.outbox => '/Titles/Pages/Messages/Sent'.localized,
-            MessageFolders.inbox || _ => '/Titles/Pages/Messages/Inbox'.localized
-          })),
-      onProgress: (progress) => setState(() => _progressMessage = progress?.message),
-      leading: Visibility(
-          visible: _progressMessage?.isNotEmpty ?? false,
-          child: Container(
-              margin: EdgeInsets.only(top: 7),
-              child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 150),
-                  child: Text(
-                    _progressMessage ?? '',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: CupertinoColors.inactiveGray, fontSize: 13),
-                  )))),
+      middle: Text(switch (folder) {
+        MessageFolders.announcements => '/Titles/Pages/Messages/Announcements'.localized,
+        MessageFolders.outbox => '/Titles/Pages/Messages/Sent'.localized,
+        MessageFolders.inbox || _ => '/Titles/Pages/Messages/Inbox'.localized
+      }),
       searchController: searchController,
       onChanged: (s) => setState(() => searchQuery = s),
       trailing: isWorking

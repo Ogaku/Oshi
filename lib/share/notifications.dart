@@ -5,10 +5,41 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:event/event.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:mutex/mutex.dart';
 import 'package:open_file_plus/open_file_plus.dart';
 import 'package:oshi/share/share.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+
+class RefreshStatus with ChangeNotifier {
+  bool _isRefreshing = false;
+  String? _progressStatus;
+
+  bool get isRefreshing => _isRefreshing;
+  String? get progressStatus => _progressStatus;
+  final Mutex refreshMutex = Mutex();
+
+  set isRefreshing(bool value) {
+    _isRefreshing = value;
+    notifyListeners();
+  }
+
+  set progressStatus(String? value) {
+    _progressStatus = value;
+    notifyListeners();
+  }
+
+  void markAsStarted() {
+    isRefreshing = true;
+    progressStatus = null;
+  }
+
+  void markAsDone() {
+    isRefreshing = false;
+    progressStatus = null;
+  }
+}
 
 class NotificationController {
   static final StreamController<ReceivedNotification> didReceiveLocalNotificationStream =
@@ -66,6 +97,7 @@ class NotificationController {
               showProgress: progress != null,
               playSound: playSoundforce ?? progress == null,
               enableVibration: playSoundforce ?? progress == null,
+              importance: (playSoundforce ?? (progress == null)) ? Importance.defaultImportance : Importance.low,
               progress: (progress != null ? progress * 100 : 1).round(),
               maxProgress: progress != null ? 100 : 1,
               channelDescription: 'Notification channel for status updates',

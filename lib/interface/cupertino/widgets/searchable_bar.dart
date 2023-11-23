@@ -1,6 +1,4 @@
 import 'dart:ui';
-
-import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -30,7 +28,6 @@ class SearchableSliverNavigationBar extends StatefulWidget {
   final Function(dynamic)? onSegmentChanged;
   final Function(String)? onSubmitted;
   final void Function(VoidCallback fn)? setState;
-  final Function(({double? progress, String? message})? progress)? onProgress;
   final DateTime? selectedDate;
   final bool keepBackgroundWatchers;
   final bool alwaysShowAddons;
@@ -55,7 +52,6 @@ class SearchableSliverNavigationBar extends StatefulWidget {
       this.color = Colors.white,
       this.darkColor = Colors.black,
       this.backgroundColor,
-      this.onProgress,
       this.anchor,
       bool? disableAddons,
       this.useSliverBox = false,
@@ -77,7 +73,6 @@ class _NavState extends State<SearchableSliverNavigationBar> {
   int _timestamp = 0;
 
   double previousScrollPosition = 0, isVisibleSearchBar = 0, refreshTurns = 0;
-  bool isRefreshing = false;
 
   @override
   void initState() {
@@ -87,35 +82,38 @@ class _NavState extends State<SearchableSliverNavigationBar> {
     groupSelection = widget.segments?.keys.first;
   }
 
-  void refreshChanged(Value<bool>? value) => setState(() {
-        isRefreshing = value?.value ?? false;
-        if (!isRefreshing && widget.onProgress != null) widget.onProgress!(null);
-      });
-
-  void progressChanged(Value<String>? value) => setState(() {
-        if (widget.onProgress != null) widget.onProgress!((message: value?.value ?? '', progress: 0.0));
-      });
-
   @override
   Widget build(BuildContext context) {
-    // Re-subscribe for refresh updates
-    Share.refreshChanged.unsubscribe(refreshChanged);
-    Share.refreshChanged.subscribe(refreshChanged);
-
-    // Re-subscribe for progress updates
-    Share.progressChanged.unsubscribe(progressChanged);
-    Share.progressChanged.subscribe(progressChanged);
+    if (widget.setState != null) {
+      Share.session.refreshStatus.removeListener(() => widget.setState!(() {}));
+      Share.session.refreshStatus.addListener(() => widget.setState!(() {}));
+    }
 
     var navBarSliver = SliverNavigationBar(
       backgroundColor: widget.backgroundColor,
       alternativeVisibility: widget.disableAddons && !widget.keepBackgroundWatchers,
       transitionBetweenRoutes: widget.transitionBetweenRoutes,
-      leading: widget.leading,
+      leading: (Share.session.refreshStatus.progressStatus?.isNotEmpty ?? false)
+          ? Container(
+              margin: const EdgeInsets.only(top: 7),
+              child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 150),
+                  child: Text(
+                    Share.session.refreshStatus.progressStatus ?? '',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: CupertinoColors.inactiveGray, fontSize: 13, fontWeight: FontWeight.w300),
+                  )))
+          : widget.leading,
       previousPageTitle: widget.previousPageTitle,
       threshold: ((widget.anchor != null && widget.child != null) || (widget.anchor == 0.0 && widget.keepBackgroundWatchers))
           ? 52
           : 112,
-      middle: widget.middle ?? widget.largeTitle,
+      middle: (widget.middle ?? widget.largeTitle) != null
+          ? Visibility(
+              visible: Share.session.refreshStatus.progressStatus?.isEmpty ?? true,
+              child: (widget.middle ?? widget.largeTitle)!)
+          : null,
       largeTitle: Column(
         children: [
           Align(alignment: Alignment.centerLeft, child: widget.largeTitle),
@@ -179,7 +177,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
       ),
       scrollController: scrollController,
       alwaysShowMiddle: false,
-      trailing: (previousScrollPosition >= -40 && !isRefreshing) || widget.setState == null
+      trailing: (previousScrollPosition >= -40 && !Share.session.refreshStatus.isRefreshing) || widget.setState == null
           ? widget.trailing != null
               ? Opacity(
                   opacity: (lerpDouble(2.5, 0.0, previousScrollPosition / -40.0)?.clamp(0.0, 1.0) ?? 0.0),
@@ -192,7 +190,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                   duration: const Duration(seconds: 1),
                   curve: Curves.ease,
                   child: _buildIndicatorForRefreshState(
-                      (previousScrollPosition < -130 || isRefreshing)
+                      (previousScrollPosition < -130 || Share.session.refreshStatus.isRefreshing)
                           ? RefreshIndicatorMode.refresh
                           : RefreshIndicatorMode.drag,
                       12,
@@ -207,23 +205,25 @@ class _NavState extends State<SearchableSliverNavigationBar> {
             onNotification: (ScrollNotification scrollInfo) {
               if (widget.disableAddons) return true;
               if (scrollInfo is ScrollUpdateNotification) {
-                if (scrollInfo.metrics.pixels < -130 && !isRefreshing && widget.setState != null) {
-                  setState(() {
-                    isRefreshing = true;
-                    refreshTurns =
-                        (-2 * (scrollInfo.metrics.pixels - _pixels) / (DateTime.now().millisecondsSinceEpoch - _timestamp))
-                            .clamp(0.3, 1);
-                  });
-
-                  try {
-                    HapticFeedback.mediumImpact(); // Trigger a haptic feedback
-                  } catch (ex) {
-                    // ignored
-                  }
-
-                  Share.session.refreshAll(weekStart: widget.selectedDate).then((arg) {
+                if (scrollInfo.metrics.pixels < -130 &&
+                    !Share.session.refreshStatus.isRefreshing &&
+                    widget.setState != null) {
+                  Share.session.refreshStatus.refreshMutex.protect<void>(() async {
                     setState(() {
-                      isRefreshing = false;
+                      refreshTurns =
+                          (-2 * (scrollInfo.metrics.pixels - _pixels) / (DateTime.now().millisecondsSinceEpoch - _timestamp))
+                              .clamp(0.3, 1);
+                    });
+
+                    try {
+                      HapticFeedback.mediumImpact(); // Trigger a haptic feedback
+                    } catch (ex) {
+                      // ignored
+                    }
+
+                    await Share.session.refreshAll(weekStart: widget.selectedDate);
+
+                    setState(() {
                       refreshTurns = 0;
                     });
 

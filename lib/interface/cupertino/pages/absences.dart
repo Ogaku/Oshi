@@ -32,7 +32,6 @@ class _AbsencesPageState extends State<AbsencesPage> {
   final searchController = TextEditingController();
   AbsencesPageSegments _segment = AbsencesPageSegments.date;
 
-  String? _progressMessage;
   bool showInbox = true;
   bool isWorking = false;
 
@@ -82,20 +81,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
         onSegmentChanged: (segment) =>
             setState(() => _segment = (segment is AbsencesPageSegments) ? segment : AbsencesPageSegments.date),
         largeTitle: Text('/Page/Absences/Attendance'.localized),
-        middle: Visibility(visible: _progressMessage?.isEmpty ?? true, child: Text('/Page/Absences/Attendance'.localized)),
-        onProgress: (progress) => setState(() => _progressMessage = progress?.message),
-        leading: Visibility(
-            visible: _progressMessage?.isNotEmpty ?? false,
-            child: Container(
-                margin: EdgeInsets.only(top: 7),
-                child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 150),
-                    child: Text(
-                      _progressMessage ?? '',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: CupertinoColors.inactiveGray, fontSize: 13),
-                    )))),
+        middle: Text('/Page/Absences/Attendance'.localized),
         searchController: searchController,
         trailing: isWorking
             ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
