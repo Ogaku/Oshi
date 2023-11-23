@@ -131,8 +131,8 @@ Map<String, dynamic> _$TimetableLessonToJson(TimetableLesson instance) =>
     };
 
 Link _$LinkFromJson(Map<String, dynamic> json) => Link(
-      id: json['Id'] as String,
-      url: json['Url'] as String,
+      id: json['Id'] as String?,
+      url: json['Url'] as String?,
     );
 
 Map<String, dynamic> _$LinkToJson(Link instance) => <String, dynamic>{

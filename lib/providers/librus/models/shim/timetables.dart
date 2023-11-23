@@ -153,15 +153,15 @@ class TimetableLesson {
 @JsonSerializable()
 class Link {
   Link({
-    required this.id,
-    required this.url,
+    this.id,
+    this.url,
   });
 
   @JsonKey(name: 'Id')
-  final String id;
+  final String? id;
 
   @JsonKey(name: 'Url')
-  final String url;
+  final String? url;
 
   factory Link.fromJson(Map<String, dynamic> json) => _$LinkFromJson(json);
 
