@@ -35,7 +35,7 @@ class AppCenter {
     try {
       var result = (await fetchVersions())!;
       var checkResult =
-          (result: result.version > (int.tryParse(Version.parse(Share.buildNumber).build) ?? 0), download: result.download);
+          (result: result.version > (int.tryParse(Share.buildNumber.substring(Share.buildNumber.lastIndexOf('.') + 1)) ?? 0), download: result.download);
       if (Platform.isAndroid && checkResult.result) {
         // Else try to download the update and show a notification
         NotificationController.sendNotification(
