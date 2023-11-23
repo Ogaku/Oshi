@@ -1,0 +1,11 @@
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: macos-latest
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
