@@ -21,8 +21,8 @@ class AppCenter {
           .data;
 
       return AppVersion(
-          version: Version.parse(result['version']),
-          notes: result['release_notes'],
+          version: int.tryParse(result['version']) ?? 0,
+          notes: result['release_notes'] ?? '',
           download: Uri.parse(Platform.isAndroid
               ? result['download_url']
               : 'https://github.com/Ogaku/Oshi/releases/latest/download/Oshi.ipa'));
@@ -34,8 +34,9 @@ class AppCenter {
   static Future<({bool result, Uri download})> checkForUpdates() async {
     try {
       var result = (await fetchVersions())!;
-      var ret = (result: result.version > Version.parse(Share.buildNumber).build, download: result.download);
-      if (Platform.isAndroid) {
+      var checkResult =
+          (result: result.version > (int.tryParse(Version.parse(Share.buildNumber).build) ?? 0), download: result.download);
+      if (Platform.isAndroid && checkResult.result) {
         // Else try to download the update and show a notification
         NotificationController.sendNotification(
             title: 'Downloading Oshi v${result.version}',
@@ -70,7 +71,7 @@ class AppCenter {
         }
 
         return (result: false, download: Uri());
-      } else if (Platform.isIOS) {
+      } else if (Platform.isIOS && checkResult.result) {
         NotificationController.sendNotification(
             title: 'The latest Oshi is waiting for you!',
             content: 'Click to download Oshi v${result.version}',
@@ -81,7 +82,7 @@ class AppCenter {
         return (result: false, download: Uri());
       }
 
-      return ret;
+      return checkResult;
     } catch (ex) {
       return (result: false, download: Uri());
     }
@@ -113,7 +114,7 @@ class AppCenter {
 class AppVersion {
   AppVersion({required this.version, required this.notes, required this.download});
 
-  final Version version;
+  final int version;
   final String notes;
   final Uri download;
 }
