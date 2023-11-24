@@ -101,28 +101,28 @@ class NotificationController {
     if (Platform.isWindows || Platform.isFuchsia) return;
 
     try {
-      AndroidNotificationDetails androidNotificationDetails =
-          AndroidNotificationDetails('status_notifications', 'Status notifications',
-              showProgress: progress != null,
-              playSound: playSoundforce ?? progress == null,
-              enableVibration: playSoundforce ?? progress == null,
-              importance: (playSoundforce ?? (progress == null)) ? Importance.defaultImportance : Importance.low,
-              priority: (playSoundforce ?? (progress == null)) ? Priority.defaultPriority : Priority.low,
-              progress: (progress != null ? progress * 100 : 1).round(),
-              maxProgress: progress != null ? 100 : 1,
-              channelDescription: 'Notification channel for status updates',
-              actions: switch (NotificationCategories.other /* category */) {
-                NotificationCategories.register => [
-                    AndroidNotificationAction('id_1', 'Share'),
-                    AndroidNotificationAction('id_2', 'Inquiry')
-                  ],
-                NotificationCategories.messages => [
-                    AndroidNotificationAction('id_1', 'Share'),
-                    AndroidNotificationAction('id_2', 'Forward'),
-                    AndroidNotificationAction('id_3', 'Reply')
-                  ],
-                _ => null
-              });
+      AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
+          (playSoundforce ?? (progress == null)) ? 'status_notifications' : 'silent_notifications', 'status_notifications',
+          showProgress: progress != null,
+          playSound: playSoundforce ?? progress == null,
+          enableVibration: playSoundforce ?? progress == null,
+          importance: (playSoundforce ?? (progress == null)) ? Importance.defaultImportance : Importance.low,
+          priority: (playSoundforce ?? (progress == null)) ? Priority.defaultPriority : Priority.low,
+          progress: (progress != null ? progress * 100 : 1).round(),
+          maxProgress: progress != null ? 100 : 1,
+          channelDescription: 'Notification channel for status updates',
+          actions: switch (NotificationCategories.other /* category */) {
+            NotificationCategories.register => [
+                AndroidNotificationAction('id_1', 'Share'),
+                AndroidNotificationAction('id_2', 'Inquiry')
+              ],
+            NotificationCategories.messages => [
+                AndroidNotificationAction('id_1', 'Share'),
+                AndroidNotificationAction('id_2', 'Forward'),
+                AndroidNotificationAction('id_3', 'Reply')
+              ],
+            _ => null
+          });
 
       NotificationDetails notificationDetails = NotificationDetails(
           android: androidNotificationDetails,
