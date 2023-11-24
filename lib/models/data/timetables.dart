@@ -75,7 +75,7 @@ class TimetableDay extends Equatable {
   // Today's lessons, stripped out of empty|null|canc list blocks
   @JsonKey(includeToJson: false, includeFromJson: false)
   int get lessonsNumber =>
-      lessonsStrippedCancelled.count((x) => (x?.isNotEmpty ?? false) && (x?.all((y) => !y.isCanceled) ?? false));
+      lessonsStrippedCancelled.count((x) => (x?.isNotEmpty ?? false) && (x?.any((y) => !y.isCanceled) ?? false));
 
   // Does this day have any non-cancelled lessons?
   @JsonKey(includeToJson: false, includeFromJson: false)
