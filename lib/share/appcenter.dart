@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:appcenter_sdk_flutter/appcenter_sdk_flutter.dart' as apps;
@@ -24,8 +25,10 @@ class AppCenter {
           (await Dio(BaseOptions(baseUrl: 'https://raw.githubusercontent.com')).get('/Ogaku/Toudai/main/version_data.json'))
               .data;
 
+      if (result is String) result = jsonDecode(result);
+
       return AppVersion(
-          version: Version.parse(result['version']),
+          version: Version.parse(result['version']?.toString()),
           download: Uri.parse(result[Platform.isAndroid ? 'download_apk' : 'download_ios']));
     } catch (ex) {
       return null;
@@ -124,19 +127,23 @@ class AppVersion {
 class Version {
   Version({this.major = 0, this.minor = 0, this.patch = 0, this.build = 0});
 
-  Version.parse(String versionString) {
-    if (versionString.trim().isEmpty) return;
-    List<String> parts = versionString.split(".");
+  Version.parse(String? versionString) {
+    try {
+      if (versionString?.trim().isEmpty ?? true) return;
+      List<String> parts = versionString!.split(".");
 
-    major = int.parse(parts[0]);
-    if (parts.length > 1) {
-      minor = int.parse(parts[1]);
-      if (parts.length > 2) {
-        patch = int.parse(parts[2]);
-        if (parts.length > 3) {
-          build = int.parse(parts[3]);
+      major = int.parse(parts[0]);
+      if (parts.length > 1) {
+        minor = int.parse(parts[1]);
+        if (parts.length > 2) {
+          patch = int.parse(parts[2]);
+          if (parts.length > 3) {
+            build = int.parse(parts[3]);
+          }
         }
       }
+    } catch (ex) {
+      // ignored
     }
   }
 

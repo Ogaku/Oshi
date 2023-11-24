@@ -41,24 +41,31 @@ class _NavState extends State<SliverNavigationBar> {
   bool _isCollapsed = false;
 
   @override
+  void dispose() {
+    widget.scrollController.removeListener(scrollListener);
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
+    widget.scrollController.addListener(scrollListener);
     if (widget.middle != null && widget.alternativeVisibility) {
       VisibilityDetectorController.instance.updateInterval = Duration.zero;
       return;
     }
+  }
 
-    widget.scrollController.addListener(() {
-      if (widget.scrollController.offset >= widget.threshold && !_isCollapsed) {
-        setState(() {
-          _isCollapsed = true;
-        });
-      } else if (widget.scrollController.offset < widget.threshold && _isCollapsed) {
-        setState(() {
-          _isCollapsed = false;
-        });
-      }
-    });
+  void scrollListener() {
+    if (widget.scrollController.offset >= widget.threshold && !_isCollapsed) {
+      setState(() {
+        _isCollapsed = true;
+      });
+    } else if (widget.scrollController.offset < widget.threshold && _isCollapsed) {
+      setState(() {
+        _isCollapsed = false;
+      });
+    }
   }
 
   @override

@@ -103,7 +103,10 @@ class Event extends Equatable {
   final List<Attachment>? attachments; // For homeworks
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get titleString => "${categoryName.capitalize()}${(title ?? content).isNotEmpty ? ':' : ''} ${title ?? content}";
+  String get _categoryName => categoryName.isNotEmpty ? categoryName : category.name;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  String get titleString => "${_categoryName.capitalize()}${(title ?? content).isNotEmpty ? ':' : ''} ${title ?? content}";
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get subtitleString => (title != null && title != content) ? content : '';
@@ -114,7 +117,7 @@ class Event extends Equatable {
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get locationTypeString =>
       (lessonNo != null ? 'Lesson no. $lessonNo • ' : '') +
-      categoryName +
+      _categoryName +
       (classroom != null ? ' • ${classroom!.name}' : '') +
       (sender != null ? ' • Added by ${sender!.name}' : '');
 

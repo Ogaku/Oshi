@@ -164,7 +164,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
               var selectedDay = Share.session.data.timetables.timetable[selectedDate];
 
               // Events for the selected day/date
-              var eventsToday = Share.session.data.student.mainClass.events
+              var eventsToday = Share.session.events
                   .where((x) => x.category != EventCategory.homework && x.category != EventCategory.teacher)
                   .where((x) => (x.date ?? x.timeFrom).asDate() == selectedDate)
                   .where((x) =>

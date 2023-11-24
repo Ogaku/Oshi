@@ -1,9 +1,11 @@
 // ignore_for_file: avoid_function_literals_in_foreach_calls
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:darq/darq.dart';
-import 'package:event/event.dart' as events;
+import 'package:dio/dio.dart';
+import 'package:event/event.dart' as event;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' as notifications;
@@ -55,29 +57,29 @@ class Share {
 
   // Raised by the app to notify that the uses's just logged in
   // To subscribe: event.subscribe((args) => {})
-  static events.Event<events.Value<StatefulWidget Function()>> changeBase =
-      events.Event<events.Value<StatefulWidget Function()>>();
-  static events.Event refreshBase = events.Event(); // Trigger a setState on the base app and everything subscribed
-  static events.Event checkUpdates = events.Event(); // Trigger an update on the base app and everything subscribed
-  static events.Event<events.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>
+  static event.Event<event.Value<StatefulWidget Function()>> changeBase =
+      event.Event<event.Value<StatefulWidget Function()>>();
+  static event.Event refreshBase = event.Event(); // Trigger a setState on the base app and everything subscribed
+  static event.Event checkUpdates = event.Event(); // Trigger an update on the base app and everything subscribed
+  static event.Event<event.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>
       showErrorModal =
-      events.Event<events.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>();
+      event.Event<event.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>();
 
   // Navigate the grades page to the specified subject
-  static events.Event<events.Value<Lesson>> gradesNavigate = events.Event<events.Value<Lesson>>();
+  static event.Event<event.Value<Lesson>> gradesNavigate = event.Event<event.Value<Lesson>>();
 
   // Navigate the messages page to the specified message
-  static events.Event<events.Value<Message>> messagesNavigate = events.Event<events.Value<Message>>();
+  static event.Event<event.Value<Message>> messagesNavigate = event.Event<event.Value<Message>>();
 
   // Navigate the messages page to the specified announcement
-  static events.Event<events.Value<({Message message, Announcement parent})>> messagesNavigateAnnouncement =
-      events.Event<events.Value<({Message message, Announcement parent})>>();
+  static event.Event<event.Value<({Message message, Announcement parent})>> messagesNavigateAnnouncement =
+      event.Event<event.Value<({Message message, Announcement parent})>>();
 
   // Navigate the timetable page to the specified day
-  static events.Event<events.Value<DateTime>> timetableNavigateDay = events.Event<events.Value<DateTime>>();
+  static event.Event<event.Value<DateTime>> timetableNavigateDay = event.Event<event.Value<DateTime>>();
 
   // Navigate the bottom tab bar to the specified page
-  static events.Event<events.Value<int>> tabsNavigatePage = events.Event<events.Value<int>>();
+  static event.Event<event.Value<int>> tabsNavigatePage = event.Event<event.Value<int>>();
 
   // Currently supported provider types, maps sample instances to factories
   static Map<String, ({IProvider instance, IProvider Function() factory})> providers = {
@@ -185,11 +187,13 @@ class Session extends HiveObject {
       this.providerGuid = 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER',
       Map<String, String>? credentials,
       IProvider? provider,
-      List<RegisterChanges>? changes})
+      List<RegisterChanges>? changes,
+      List<Event>? adminEvents})
       : provider = provider ?? Share.providers[providerGuid]!.factory(),
         sessionCredentials = credentials ?? {},
         data = ProviderData(),
-        changes = changes ?? [];
+        changes = changes ?? [],
+        adminEvents = adminEvents ?? [];
 
   // Refresh status
   final RefreshStatus refreshStatus = RefreshStatus();
@@ -216,6 +220,13 @@ class Session extends HiveObject {
   @JsonKey(includeToJson: false, includeFromJson: false)
   IProvider provider;
 
+  // Updates for each session (if any)
+  @HiveField(6)
+  List<Event> adminEvents;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  List<Event> get events => data.student.mainClass.events.appendAll(adminEvents).toList();
+
   // Login and reset methods for early setup - implement as async
   Future<({bool success, Exception? message})> login(
       {Map<String, String>? credentials, IProgress<({double? progress, String? message})>? progress}) async {
@@ -233,7 +244,7 @@ class Session extends HiveObject {
       return await provider.login(credentials: credentials ?? sessionCredentials, progress: progress);
     } catch (ex, stack) {
       if (showErrors) {
-        Share.showErrorModal.broadcast(events.Value((
+        Share.showErrorModal.broadcast(event.Value((
           title: 'Error logging in!',
           message:
               'An exception "$ex" occurred and the provider couldn\'t log you in to the e-register.\n\nPlease check your credentials and try again later.',
@@ -291,6 +302,33 @@ class Session extends HiveObject {
           category: NotificationCategories.other,
           id: 9999992);
 
+      // Check out admin events
+      try {
+        adminEvents = ((await () async {
+          var data = (await Dio(BaseOptions(baseUrl: 'https://raw.githubusercontent.com'))
+                  .get('/Ogaku/Toudai/main/admin_events.json'))
+              .data;
+          return data is String ? jsonDecode(data) : data;
+        }())["admin_events"] as List<dynamic>)
+            .select((element, index) => Event(
+                date: DateTime.parse(element["start"]),
+                timeFrom: DateTime.parse(element["start"]),
+                timeTo: DateTime.parse(element["end"]),
+                title: element["title"][Share.settings.config.languageCode] ?? element["title"]["en"] ?? '',
+                content: element["description"][Share.settings.config.languageCode] ?? element["description"]["en"] ?? '',
+                categoryName: 'Admin'))
+            .toList();
+      } catch (ex) {
+        // ignored
+      }
+
+      NotificationController.sendNotification(
+          playSoundforce: false,
+          title: 'Syncing everything...',
+          content: 'Saving the downloaded data...',
+          category: NotificationCategories.other,
+          id: 9999992);
+
       // Sync the downloaded data
       await updateData(info: result1.success, messages: result2.success, saveChanges: saveChanges);
 
@@ -301,7 +339,7 @@ class Session extends HiveObject {
       refreshStatus.markAsDone(); // Refresh started
       return (success: result1.success && result2.success, message: result1.message ?? result2.message);
     } catch (ex, stack) {
-      Share.showErrorModal.broadcast(events.Value((
+      Share.showErrorModal.broadcast(event.Value((
         title: 'Error refreshing data!',
         message:
             'A fatal exception "$ex" occurred and the provider couldn\'t update the e-register data.\n\nPlease try again later.\nConsider reporting this error.',

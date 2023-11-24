@@ -57,6 +57,7 @@ class SessionAdapter extends TypeAdapter<Session> {
       sessionName: fields[1] as String,
       providerGuid: fields[5] as String,
       changes: (fields[3] as List?)?.cast<RegisterChanges>(),
+      adminEvents: (fields[6] as List?)?.cast<Event>(),
     )
       ..sessionCredentials = (fields[2] as Map).cast<String, String>()
       ..data = fields[4] as ProviderData;
@@ -65,7 +66,7 @@ class SessionAdapter extends TypeAdapter<Session> {
   @override
   void write(BinaryWriter writer, Session obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(1)
       ..write(obj.sessionName)
       ..writeByte(2)
@@ -75,7 +76,9 @@ class SessionAdapter extends TypeAdapter<Session> {
       ..writeByte(4)
       ..write(obj.data)
       ..writeByte(5)
-      ..write(obj.providerGuid);
+      ..write(obj.providerGuid)
+      ..writeByte(6)
+      ..write(obj.adminEvents);
   }
 
   @override

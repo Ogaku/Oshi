@@ -28,7 +28,7 @@ class _EventsPageState extends State<EventsPage> {
   @override
   Widget build(BuildContext context) {
     // Group by date, I know IT'S A DAMN STRING, but we're saving on custom controls
-    var eventsToDisplayByDate = Share.session.data.student.mainClass.events
+    var eventsToDisplayByDate = Share.session.events
         .where((x) => (showTeachers ? true : x.category != EventCategory.teacher))
         .where((x) => (x.date ?? x.timeFrom).isAfter(DateTime.now().add(Duration(days: -1)).asDate()))
         .where((x) =>

@@ -73,7 +73,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
         ?.firstOrDefault();
 
     // Event list for the next 2 weeks (14 days), exc homeworks and teacher absences
-    var eventsWeek = Share.session.data.student.mainClass.events
+    var eventsWeek = Share.session.events
         .where((x) => x.category != EventCategory.homework && x.category != EventCategory.teacher)
         .where((x) => x.date?.isAfterOrSame(DateTime.now().asDate()) ?? false)
         .where((x) => x.date?.isBeforeOrSame(DateTime.now().add(Duration(days: 14)).asDate()) ?? false)

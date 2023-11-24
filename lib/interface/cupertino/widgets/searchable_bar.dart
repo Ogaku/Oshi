@@ -83,6 +83,12 @@ class _NavState extends State<SearchableSliverNavigationBar> {
   }
 
   @override
+  void dispose() {
+    Share.session.refreshStatus.removeListener(() => widget.setState!(() {}));
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (widget.setState != null) {
       Share.session.refreshStatus.removeListener(() => widget.setState!(() {}));
@@ -273,10 +279,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
               }
               return true;
             },
-            child: SafeArea(
-							 top: false,
-							 bottom: !(widget.disableAddons && widget.anchor == 0.0), // Settings page
-              child: CustomScrollView(
+            child:  CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 controller: scrollController,
                 anchor: widget.anchor ?? 0.077,
@@ -302,7 +305,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                               )),
                 ],
               ),
-            )));
+            ));
   }
 }
 

@@ -110,7 +110,8 @@ class _BaseAppState extends State<BaseApp> {
 
                 return CupertinoTabScaffold(
                   controller: tabController,
-                  tabBar: CupertinoTabBar(backgroundColor: CupertinoTheme.of(context).barBackgroundColor, items: [
+                  tabBar:
+                      CupertinoTabBar(backgroundColor: CupertinoTheme.of(context).barBackgroundColor.withAlpha(255), items: [
                     BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: '/Titles/Pages/Home'.localized),
                     BottomNavigationBarItem(icon: Icon(CupertinoIcons.rosette), label: '/Titles/Pages/Grades'.localized),
                     BottomNavigationBarItem(icon: Icon(CupertinoIcons.calendar), label: '/Titles/Pages/Schedule'.localized),
