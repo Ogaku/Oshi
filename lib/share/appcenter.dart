@@ -44,14 +44,14 @@ class AppCenter {
           (await (Connectivity().checkConnectivity())) == ConnectivityResult.wifi) {
         // Else try to download the update and show a notification
         NotificationController.sendNotification(
-            title: 'Downloading Oshi v${result.version}',
+            title: 'Downloading Oshi ${result.version}',
             content: 'Please wait a while...',
             category: NotificationCategories.other,
             id: 9999991);
 
         var progress = Progress<({double? progress, String? message})>();
         progress.progressChanged.subscribe((args) => NotificationController.sendNotification(
-            title: 'Downloading Oshi v${result.version}',
+            title: 'Downloading Oshi ${result.version}',
             content: 'Please wait a while...',
             category: NotificationCategories.other,
             progress: args?.value.progress ?? 0.0,
@@ -63,7 +63,7 @@ class AppCenter {
           await Future.delayed(const Duration(seconds: 3));
           await NotificationController.sendNotification(
               title: 'The latest Oshi is ready!',
-              content: 'Oshi v${result.version} is waiting for you...',
+              content: 'Oshi ${result.version} is waiting for you...',
               data: 'update_android\n$path',
               category: NotificationCategories.other,
               id: 9999991);
@@ -79,7 +79,7 @@ class AppCenter {
       } else if ((Platform.isIOS || Platform.isAndroid) && checkResult.result) {
         NotificationController.sendNotification(
             title: 'The latest Oshi is waiting for you!',
-            content: 'Click to download Oshi v${result.version}',
+            content: 'Click to download Oshi ${result.version}',
             category: NotificationCategories.other,
             data: 'url\n${result.download}',
             id: 9999993);
@@ -169,4 +169,7 @@ class Version {
 
     return 0;
   }
+
+  @override
+  String toString() => '$major.$minor.$patch.$build';
 }
