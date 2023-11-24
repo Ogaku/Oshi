@@ -2,6 +2,6 @@
 <paths>
     <external-path path="Android/data/Oshi/" name="files_root" />
     <external-path path="/data/user/0/com.ogaku.oshi/cache/" name="files_cache" />
-    <external-path name="external_files_download" path="Download" name="downloads" />
+    <external-path name="external_files_download" path="Download" name="files_downloads" />
     <external-path path="." name="external_storage_root" />
 </paths>
