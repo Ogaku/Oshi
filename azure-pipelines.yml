@@ -1,0 +1,172 @@
+trigger:
+  - main
+
+pr:
+  - main
+
+pool:
+  vmImage: "macos-latest"
+
+variables:
+  - name: solution
+    value: "**/*.sln"
+  - name: buildPlatform
+    value: "x64"
+  - name: buildConfiguration
+    value: "Release"
+  - name: publishDirectory
+    value: "Pack/Output"
+  - name: artifactDirectory
+    value: "Pack/Zip"
+  - group: AppCenter
+  - group: Protected
+
+parameters:
+  - name: "plugins"
+    type: object
+    default:
+      - "plugin_Kinect360"
+      - "plugin_KinectOne"
+      - "plugin_PSMoveService"
+      - "plugin_owoTrackVR"
+      - "plugin_OpenVR"
+      - "plugin_OSC"
+
+name: 1.0.$(Date:yyyyMMdd).$(Rev:r)
+
+stages:
+  - stage: Build
+    dependsOn: []
+    displayName: Build Oshi
+    jobs:
+      - job: Publish
+        displayName: Build for release
+        steps:
+          - checkout: self
+            submodules: true | recursive
+            persistCredentials: 'true'
+
+          - task: DownloadSecureFile@1
+            name: keyprop
+            displayName: Download key properties file
+            inputs:
+              secureFile: "keystore.properties"
+
+          - task: DownloadSecureFile@1
+            name: key
+            displayName: Download the signing key
+            inputs:
+              secureFile: "upload-keystore.jks"
+
+          - task: Bash@3
+            displayName: Copy the config files
+            inputs:
+              targetType: "inline"
+              script: |
+                cp $(keyprop.secureFilePath) $(Build.SourcesDirectory)/android/keystore.properties
+                cp $(key.secureFilePath) $(Build.SourcesDirectory)/android/app/upload-keystore.jks
+
+          - task: FlutterInstall@0
+            displayName: "Install Flutter SDK"
+            inputs:
+              mode: "auto"
+              channel: "stable"
+              version: "latest"
+
+          - bash: |
+              sed -i '' "s/9.9.9+9/1.0.$(date '+%Y%m%d')/g" ./pubspec.yaml
+              sed -i '' "s/9.9.9.9/$(Build.BuildNumber)/g" ./lib/share/share.dart
+
+              sed -i '' "s/AZ_APPCENTER_USER_TOKEN/$(APPCENTER_USER_TOKEN)/g" ./lib/share/appcenter.dart
+              sed -i '' "s/AZ_APPCENTER_APP_SECRET/$(APPCENTER_APP_SECRET)/g" ./lib/share/appcenter.dart
+              sed -i '' "s/AZ_APPCENTER_TELEMETRY_TOKEN/$(APPCENTER_TELEMETRY_TOKEN)/g" ./lib/share/appcenter.dart
+            displayName: Add version and token data to Oshi
+
+          - bash: |
+              $(FlutterToolPath)/flutter pub get
+            displayName: Sync dependencies
+
+          - bash: |
+              flutter build ios --release --no-codesign
+              cd ./build/ios/iphoneos && mkdir Payload && mv Runner.app Payload/Runner.app && zip -r Oshi.ipa Payload
+              mv Oshi.ipa '$(Build.ArtifactStagingDirectory)/Oshi.ipa'
+            displayName: Build Oshi for ios-arm64v8-release
+
+          - bash: |
+              $(FlutterToolPath)/flutter build apk --release --target-platform android-arm64
+              mv 'build/app/outputs/flutter-apk/app-release.apk' '$(Build.ArtifactStagingDirectory)/Oshi.apk'
+            displayName: Build Oshi for android-amr64-release
+
+          - publish: '$(Build.ArtifactStagingDirectory)'
+            displayName: Publish Oshi
+            artifact: pack
+
+  - stage: Stage
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
+    jobs:
+      - job: Artifacts
+        variables:
+          packageVersion: $[ stageDependencies.Build.Publish.outputs['ParseAppxManifest.PackageVersion'] ]
+        steps:
+          - checkout: self
+            submodules: true | recursive
+            persistCredentials: 'true'
+
+          - download: current
+            displayName: Download published artifacts
+            artifact: pack
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)/Oshi.apk'
+              ArtifactName: 'Oshi-Android'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)/Oshi.ipa'
+              ArtifactName: 'Oshi-iOS'
+
+  - stage: Distribute
+    dependsOn: Build
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    jobs:
+      - job: Artifacts
+        variables:
+          packageVersion: $[ stageDependencies.Build.Publish.outputs['ParseAppxManifest.PackageVersion'] ]
+        steps:
+          - checkout: self
+            submodules: true | recursive
+            persistCredentials: 'true'
+
+          - download: current
+            displayName: Download published artifacts
+            artifact: pack
+
+          - task: AppCenterDistribute@3
+            displayName: Upload packed Amethyst artifact (AppCenter)
+            inputs:
+              serverEndpoint: AppCenter
+              appSlug: Ogaku/Oshi-1
+              appFile: '$(Pipeline.Workspace)/pack/Oshi.apk'
+              releaseNotesOption: 'input'
+              releaseNotesInput: ''
+              isMandatory: true
+              destinationType: 'groups'
+              distributionGroupId: 'b695c828-5cc3-4eb9-bfd6-dd2b12797e0f'
+
+          - task: GitHubRelease@1
+            inputs:
+              gitHubConnection: GitHub
+              repositoryName: '$(Build.Repository.Name)'
+              action: 'create'
+              target: '$(Build.SourceVersion)'
+              tagSource: 'userSpecifiedTag'
+              tag: 'v$(Build.BuildNumber)'
+              assets: '$(Build.ArtifactStagingDirectory)/*'
+              changeLogCompareToRelease: 'lastFullRelease'
+              changeLogType: 'commitBased'
+
+          - bash: |
+              curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $(GitHubToken)" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/Ogaku/Toudai/actions/workflows/update.yml/dispatches -d '{"ref":"main","inputs":{}}'
+            displayName: Trigger a refresh on Toudai

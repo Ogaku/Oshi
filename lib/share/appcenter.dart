@@ -10,15 +10,20 @@ import 'package:path_provider/path_provider.dart';
 
 class AppCenter {
   static Future<void> initialize() async {
-    await apps.AppCenter.start(secret: 'fab7ea1dd329834407310d51379f5af7c99d19da');
-    await apps.AppCenter.enable();
+    try {
+      await apps.AppCenter.start(secret: 'AZ_APPCENTER_TELEMETRY_TOKEN');
+      await apps.AppCenter.enable();
+    } catch (ex) {
+      // ignored
+    }
   }
 
   static Future<AppVersion?> fetchVersions() async {
     try {
-      var result = (await Dio(BaseOptions(baseUrl: 'https://api.appcenter.ms', headers: {'X-API-Token': 'APPXTOKEN'}))
-              .get('/v0.1/sdk/apps/APPSECRET/releases/latest'))
-          .data;
+      var result =
+          (await Dio(BaseOptions(baseUrl: 'https://api.appcenter.ms', headers: {'X-API-Token': 'AZ_APPCENTER_USER_TOKEN'}))
+                  .get('/v0.1/sdk/apps/AZ_APPCENTER_APP_SECRET/releases/latest'))
+              .data;
 
       return AppVersion(
           version: int.tryParse(result['version']) ?? 0,
