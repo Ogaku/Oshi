@@ -21,16 +21,12 @@ class AppCenter {
   static Future<AppVersion?> fetchVersions() async {
     try {
       var result =
-          (await Dio(BaseOptions(baseUrl: 'https://api.appcenter.ms', headers: {'X-API-Token': 'AZ_APPCENTER_USER_TOKEN'}))
-                  .get('/v0.1/sdk/apps/AZ_APPCENTER_APP_SECRET/releases/latest'))
+          (await Dio(BaseOptions(baseUrl: 'https://raw.githubusercontent.com')).get('/Ogaku/Toudai/main/version_data.json'))
               .data;
 
       return AppVersion(
-          version: int.tryParse(result['version']) ?? 0,
-          notes: result['release_notes'] ?? '',
-          download: Uri.parse(Platform.isAndroid
-              ? result['download_url']
-              : 'https://github.com/Ogaku/Oshi/releases/latest/download/Oshi.ipa'));
+          version: Version.parse(result['version']),
+          download: Uri.parse(result[Platform.isAndroid ? 'download_apk' : 'download_ios']));
     } catch (ex) {
       return null;
     }
@@ -39,10 +35,7 @@ class AppCenter {
   static Future<({bool result, Uri download})> checkForUpdates() async {
     try {
       var result = (await fetchVersions())!;
-      var checkResult = (
-        result: result.version > (int.tryParse(Share.buildNumber.substring(Share.buildNumber.lastIndexOf('.') + 1)) ?? 0),
-        download: result.download
-      );
+      var checkResult = (result: result.version > Version.parse(Share.buildNumber), download: result.download);
       if (Platform.isAndroid &&
           checkResult.result &&
           (await (Connectivity().checkConnectivity())) == ConnectivityResult.wifi) {
@@ -121,9 +114,52 @@ class AppCenter {
 }
 
 class AppVersion {
-  AppVersion({required this.version, required this.notes, required this.download});
+  AppVersion({required this.version, this.notes = '', required this.download});
 
-  final int version;
+  final Version version;
   final String notes;
   final Uri download;
+}
+
+class Version {
+  Version({this.major = 0, this.minor = 0, this.patch = 0, this.build = 0});
+
+  Version.parse(String versionString) {
+    if (versionString.trim().isEmpty) return;
+    List<String> parts = versionString.split(".");
+
+    major = int.parse(parts[0]);
+    if (parts.length > 1) {
+      minor = int.parse(parts[1]);
+      if (parts.length > 2) {
+        patch = int.parse(parts[2]);
+        if (parts.length > 3) {
+          build = int.parse(parts[3]);
+        }
+      }
+    }
+  }
+
+  int major = 0, minor = 0, patch = 0, build = 0;
+
+  bool operator <(Version other) => _compare(other) < 0;
+  bool operator <=(Version other) => _compare(other) <= 0;
+  bool operator >(Version other) => _compare(other) > 0;
+  bool operator >=(Version other) => _compare(other) >= 0;
+
+  int _compare(Version other) {
+    if (major > other.major) return 1;
+    if (major < other.major) return -1;
+
+    if (minor > other.minor) return 1;
+    if (minor < other.minor) return -1;
+
+    if (patch > other.patch) return 1;
+    if (patch < other.patch) return -1;
+
+    if (build > other.build) return 1;
+    if (build < other.build) return -1;
+
+    return 0;
+  }
 }

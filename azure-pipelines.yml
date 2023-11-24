@@ -63,7 +63,7 @@ stages:
             inputs:
               targetType: "inline"
               script: |
-                cp $(keyprop.secureFilePath) $(Build.SourcesDirectory)/android/keystore.properties
+                cp $(keyprop.secureFilePath) $(Build.SourcesDirectory)/android/app/keystore.properties
                 cp $(key.secureFilePath) $(Build.SourcesDirectory)/android/app/upload-keystore.jks
 
           - task: FlutterInstall@0
@@ -76,9 +76,6 @@ stages:
           - bash: |
               sed -i '' "s/9.9.9+9/1.0.$(date '+%Y%m%d')/g" ./pubspec.yaml
               sed -i '' "s/9.9.9.9/$(Build.BuildNumber)/g" ./lib/share/share.dart
-
-              sed -i '' "s/AZ_APPCENTER_USER_TOKEN/$(APPCENTER_USER_TOKEN)/g" ./lib/share/appcenter.dart
-              sed -i '' "s/AZ_APPCENTER_APP_SECRET/$(APPCENTER_APP_SECRET)/g" ./lib/share/appcenter.dart
               sed -i '' "s/AZ_APPCENTER_TELEMETRY_TOKEN/$(APPCENTER_TELEMETRY_TOKEN)/g" ./lib/share/appcenter.dart
             displayName: Add version and token data to Oshi
 
@@ -143,18 +140,6 @@ stages:
             displayName: Download published artifacts
             artifact: pack
 
-          - task: AppCenterDistribute@3
-            displayName: Upload packed Amethyst artifact (AppCenter)
-            inputs:
-              serverEndpoint: AppCenter
-              appSlug: Ogaku/Oshi-1
-              appFile: '$(Pipeline.Workspace)/pack/Oshi.apk'
-              releaseNotesOption: 'input'
-              releaseNotesInput: ''
-              isMandatory: true
-              destinationType: 'groups'
-              distributionGroupId: 'b695c828-5cc3-4eb9-bfd6-dd2b12797e0f'
-
           - task: GitHubRelease@1
             inputs:
               gitHubConnection: GitHub
@@ -162,7 +147,7 @@ stages:
               action: 'create'
               target: '$(Build.SourceVersion)'
               tagSource: 'userSpecifiedTag'
-              tag: 'v$(Build.BuildNumber)'
+              tag: '$(Build.BuildNumber)'
               assets: '$(Build.ArtifactStagingDirectory)/*'
               changeLogCompareToRelease: 'lastFullRelease'
               changeLogType: 'commitBased'
