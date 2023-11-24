@@ -125,13 +125,11 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
             ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
             : PullDownButton(
                 itemBuilder: (context) => [
-                  PullDownMenuItem(
-                    title: 'New event',
-                    icon: CupertinoIcons.add,
-                    onTap: () {},
-                  ),
-                  PullDownMenuDivider.large(),
-                  PullDownMenuTitle(title: Text('/Titles/Pages/Schedule'.localized)),
+                  // PullDownMenuItem(
+                  //   title: 'New event',
+                  //   icon: CupertinoIcons.add,
+                  //   onTap: () {},
+                  // ),
                   PullDownMenuItem(
                     title: 'Today',
                     icon: CupertinoIcons.calendar_today,
@@ -143,6 +141,8 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                         duration: Duration(milliseconds: 300),
                         curve: Curves.easeInOutExpo),
                   ),
+                  PullDownMenuDivider.large(),
+                  PullDownMenuTitle(title: Text('/Titles/Pages/Schedule'.localized)),
                   PullDownMenuItem(
                     title: 'Agenda',
                     icon: CupertinoIcons.list_bullet_below_rectangle,
