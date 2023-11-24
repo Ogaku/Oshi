@@ -69,6 +69,8 @@ class _CupertinoModalPageState<T> extends State<CupertinoModalPage<T>> {
                     color: const Color.fromARGB(255, 242, 242, 247).withAlpha(254),
                     darkColor: const Color.fromARGB(255, 0, 0, 0).withAlpha(254)))),
         child:
-            SafeArea(child: SingleChildScrollView(controller: scrollController, child: Column(children: widget.children))));
+            SafeArea(
+							bottom: false,
+							child: SingleChildScrollView(controller: scrollController, child: Column(children: widget.children))));
   }
 }
