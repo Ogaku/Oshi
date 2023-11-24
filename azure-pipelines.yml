@@ -8,29 +8,8 @@ pool:
   vmImage: "macos-13"
 
 variables:
-  - name: solution
-    value: "**/*.sln"
-  - name: buildPlatform
-    value: "x64"
-  - name: buildConfiguration
-    value: "Release"
-  - name: publishDirectory
-    value: "Pack/Output"
-  - name: artifactDirectory
-    value: "Pack/Zip"
   - group: AppCenter
   - group: Protected
-
-parameters:
-  - name: "plugins"
-    type: object
-    default:
-      - "plugin_Kinect360"
-      - "plugin_KinectOne"
-      - "plugin_PSMoveService"
-      - "plugin_owoTrackVR"
-      - "plugin_OpenVR"
-      - "plugin_OSC"
 
 name: 1.0.$(Date:yyyyMMdd).$(Rev:r)
 
