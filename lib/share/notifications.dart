@@ -12,6 +12,10 @@ import 'package:open_file_plus/open_file_plus.dart';
 import 'package:oshi/share/share.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+import 'package:flutter_app_installer/flutter_app_installer.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 class RefreshStatus with ChangeNotifier {
   bool _isRefreshing = false;
   String? _progressStatus;
@@ -50,7 +54,13 @@ class NotificationController {
   static void notificationResponseReceived(NotificationResponse notificationResponse) async {
     try {
       if (notificationResponse.payload?.startsWith('update_android') ?? false) {
-        await OpenFile.open(notificationResponse.payload!.substring(notificationResponse.payload!.indexOf('\n') + 1));
+        await Permission.storage.request();
+        await Permission.requestInstallPackages.request();
+
+        await FlutterAppInstaller().installApk(
+            filePath: (await copyFileToExternalStorage(
+                    File(notificationResponse.payload!.substring(notificationResponse.payload!.indexOf('\n') + 1))))
+                .path);
       } else if (notificationResponse.payload?.startsWith('url') ?? false) {
         await launchUrlString(notificationResponse.payload!.substring(notificationResponse.payload!.indexOf('\n') + 1));
       }
@@ -98,6 +108,7 @@ class NotificationController {
               playSound: playSoundforce ?? progress == null,
               enableVibration: playSoundforce ?? progress == null,
               importance: (playSoundforce ?? (progress == null)) ? Importance.defaultImportance : Importance.low,
+              priority: (playSoundforce ?? (progress == null)) ? Priority.defaultPriority : Priority.low,
               progress: (progress != null ? progress * 100 : 1).round(),
               maxProgress: progress != null ? 100 : 1,
               channelDescription: 'Notification channel for status updates',
@@ -295,3 +306,16 @@ class ReceivedNotification {
 }
 
 enum NotificationCategories { register, messages, other }
+
+Future<File> copyFileToExternalStorage(File sourceFile) async {
+  String fileName = sourceFile.path.split('/').last; // Extract the file name
+  Directory? externalDir = await getExternalStorageDirectory(); // Get external directory
+
+  if (externalDir == null) {
+    throw Exception("External storage directory not found");
+  }
+
+  File destinationFile = File('${externalDir.path}/$fileName'); // Create new file at destination path
+  await sourceFile.copy(destinationFile.path); // Copy source file to destination
+  return destinationFile; // Return the new file object
+}

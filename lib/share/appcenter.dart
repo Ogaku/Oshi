@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:appcenter_sdk_flutter/appcenter_sdk_flutter.dart' as apps;
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/share.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:version/version.dart';
 
 class AppCenter {
   static Future<void> initialize() async {
@@ -34,9 +34,13 @@ class AppCenter {
   static Future<({bool result, Uri download})> checkForUpdates() async {
     try {
       var result = (await fetchVersions())!;
-      var checkResult =
-          (result: result.version > (int.tryParse(Share.buildNumber.substring(Share.buildNumber.lastIndexOf('.') + 1)) ?? 0), download: result.download);
-      if (Platform.isAndroid && checkResult.result) {
+      var checkResult = (
+        result: result.version > (int.tryParse(Share.buildNumber.substring(Share.buildNumber.lastIndexOf('.') + 1)) ?? 0),
+        download: result.download
+      );
+      if (Platform.isAndroid &&
+          checkResult.result &&
+          (await (Connectivity().checkConnectivity())) == ConnectivityResult.wifi) {
         // Else try to download the update and show a notification
         NotificationController.sendNotification(
             title: 'Downloading Oshi v${result.version}',
@@ -71,7 +75,7 @@ class AppCenter {
         }
 
         return (result: false, download: Uri());
-      } else if (Platform.isIOS && checkResult.result) {
+      } else if ((Platform.isIOS || Platform.isAndroid) && checkResult.result) {
         NotificationController.sendNotification(
             title: 'The latest Oshi is waiting for you!',
             content: 'Click to download Oshi v${result.version}',

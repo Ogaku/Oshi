@@ -50,6 +50,8 @@ dependencies:
   background_fetch: ^1.2.1
   connectivity_plus: ^5.0.2
   mutex: ^3.1.0
+  flutter_app_installer: ^1.0.0
+  permission_handler: ^11.1.0
 
 dev_dependencies:
   flutter_test:
