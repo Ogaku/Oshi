@@ -63,7 +63,7 @@ stages:
             inputs:
               targetType: "inline"
               script: |
-                cp $(keyprop.secureFilePath) $(Build.SourcesDirectory)/android/keystore.properties
+                cp $(keyprop.secureFilePath) $(Build.SourcesDirectory)/android/app/keystore.properties
                 cp $(key.secureFilePath) $(Build.SourcesDirectory)/android/app/upload-keystore.jks
 
           - task: FlutterInstall@0

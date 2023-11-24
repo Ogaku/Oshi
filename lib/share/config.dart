@@ -150,6 +150,11 @@ class Config with ChangeNotifier {
   Map<String, double> get customGradeModifierValues => _customGradeModifierValues;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
+  Map<double, double> get customGradeMarginValuesMap => Share.settings.config.customGradeMarginValues.entries
+      .orderByDescending((x) => double.tryParse(x.key) ?? -1)
+      .toMap((x) => MapEntry<double, double>(double.tryParse(x.key) ?? -1, x.value));
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
   ({CupertinoDynamicColor color, String name}) get cupertinoAccentColor =>
       Resources.cupertinoAccentColors[_cupertinoAccentColor] ?? Resources.cupertinoAccentColors.values.first;
 

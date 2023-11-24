@@ -345,6 +345,57 @@ class _SettingsPageState extends State<SettingsPage> {
                                                     opacity: 0.5,
                                                     child:
                                                         Text('No attendances to displasy', textAlign: TextAlign.center)))),
+                                      )),
+                                  CupertinoListSection.insetGrouped(
+                                      margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                                      additionalDividerMargin: 5,
+                                      header: Container(
+                                          margin: EdgeInsets.symmetric(horizontal: 20),
+                                          child: Opacity(
+                                              opacity: 0.5,
+                                              child: Text('AVERAGE',
+                                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
+                                      children: (Share.session.data.student.subjects
+                                              .select(
+                                                  (element, index) => (lesson: element.name, value: element.gradesAverage))
+                                              .orderBy((element) => element.lesson)
+                                              .select(
+                                                (element, index) => CupertinoListTile(
+                                                    title: Text(element.lesson, overflow: TextOverflow.ellipsis),
+                                                    trailing: Container(
+                                                        margin: EdgeInsets.symmetric(horizontal: 5),
+                                                        child: Opacity(
+                                                            opacity: element.value >= 0 ? 1.0 : 0.0,
+                                                            child: Text(
+                                                                element.value >= 0 ? element.value.toStringAsFixed(2) : '-',
+                                                                style: TextStyle(
+                                                                    color: switch (Share.settings.config
+                                                                            .customGradeMarginValuesMap.entries
+                                                                            .firstWhereOrDefault((x) =>
+                                                                                (x.value < element.value) &&
+                                                                                (x.value.floor() == element.value.floor()))
+                                                                            ?.key ??
+                                                                        (element.value - 0.25).round()) {
+                                                                  6 => CupertinoColors.systemTeal,
+                                                                  5 => CupertinoColors.systemGreen,
+                                                                  4 => Color(0xFF76FF03),
+                                                                  3 => CupertinoColors.systemOrange,
+                                                                  2 => CupertinoColors.systemRed,
+                                                                  1 => CupertinoColors.destructiveRed,
+                                                                  _ => CupertinoColors.inactiveGray
+                                                                }))))),
+                                              )
+                                              .toList())
+                                          .appendIfEmpty(
+                                        CupertinoListTile(
+                                            title: Text('', overflow: TextOverflow.ellipsis),
+                                            trailing: Container(
+                                                alignment: Alignment.center,
+                                                margin: EdgeInsets.symmetric(horizontal: 5),
+                                                child: Opacity(
+                                                    opacity: 0.5,
+                                                    child:
+                                                        Text('No attendances to displasy', textAlign: TextAlign.center)))),
                                       ))
                                 ]))),
                     trailing: CupertinoListTileChevron())
