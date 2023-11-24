@@ -274,6 +274,8 @@ class _NavState extends State<SearchableSliverNavigationBar> {
               return true;
             },
             child: SafeArea(
+							 top: false,
+							 bottom: !(widget.disableAddons && widget.anchor == 0.0), // Settings page
               child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 controller: scrollController,
