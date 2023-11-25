@@ -391,7 +391,7 @@ class _MessagesPageState extends State<MessagesPage> {
               Share.session.data.student.mainClass.unit
                       .announcements?[Share.session.data.student.mainClass.unit.announcements?.indexOf(announcement) ?? -1] =
                   Announcement.from(other: announcement, read: true);
-              Share.session.save();
+              Share.settings.save();
             });
           } catch (ex) {
             // ignored
@@ -436,7 +436,7 @@ class _MessagesPageState extends State<MessagesPage> {
                         isByMe: folder == MessageFolders.outbox,
                       )));
 
-          Share.session.save();
+          Share.settings.save();
         });
       }
     } on Exception catch (e) {

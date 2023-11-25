@@ -628,6 +628,66 @@
         {
             "id": "/Notifications/Captions/ViewDetails",
             "translation": "Naciśnij aby zobaczyć więcej detali"
+        },
+        {
+            "id": "/Enums/EventCategory/gathering",
+            "translation": "Zebranie"
+        },
+        {
+            "id": "/Enums/EventCategory/lecture",
+            "translation": "Lektura"
+        },
+        {
+            "id": "/Enums/EventCategory/test",
+            "translation": "Test"
+        },
+        {
+            "id": "/Enums/EventCategory/classWork",
+            "translation": "Praca klasowa"
+        },
+        {
+            "id": "/Enums/EventCategory/semCorrection",
+            "translation": "Poprawka"
+        },
+        {
+            "id": "/Enums/EventCategory/other",
+            "translation": "Inne"
+        },
+        {
+            "id": "/Enums/EventCategory/lessonWork",
+            "translation": "Praca na lekcji"
+        },
+        {
+            "id": "/Enums/EventCategory/shortTest",
+            "translation": "Kartkówka"
+        },
+        {
+            "id": "/Enums/EventCategory/correction",
+            "translation": "Poprawa"
+        },
+        {
+            "id": "/Enums/EventCategory/onlineLesson",
+            "translation": "Lekcja online"
+        },
+        {
+            "id": "/Enums/EventCategory/homework",
+            "translation": "Praca domowa"
+        },
+        {
+            "id": "/Enums/EventCategory/teacher",
+            "translation": "Nieobecność nauczyciela"
+        },
+        {
+            "id": "/Enums/EventCategory/freeDay",
+            "translation": "Dzień wolny"
+        },
+        {
+            "id": "/Enums/EventCategory/conference",
+            "translation": "Wywiadówka"
+        },
+        {
+            "id": "/Enums/EventCategory/admin",
+            "translation": "Admin"
         }
     ],
     "splashes": [

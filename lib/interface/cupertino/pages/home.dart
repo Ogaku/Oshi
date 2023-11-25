@@ -58,7 +58,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
   Widget build(BuildContext context) {
     if (!(_everySecond?.isActive ?? false)) {
       // Auto-refresh this view each second - it's static so it shouuuuld be safe...
-      _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) => setState(() {}));
+      _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) => _setState(() {}));
     }
 
     var currentDay = Share.session.data.timetables[DateTime.now().asDate(utc: true).asDate()];
@@ -177,7 +177,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                           color: const Color.fromARGB(255, 255, 255, 255),
                                           darkColor: const Color.fromARGB(255, 28, 28, 30)),
                                       context)),
-                              padding: EdgeInsets.only(right: 10, left: 6),
+                              padding: EdgeInsets.only(right: 5, left: 7),
                               child: ConstrainedBox(
                                   constraints: BoxConstraints(
                                       maxHeight:
@@ -261,6 +261,251 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                                       context)),
                                                             ))))
                                               ])))))))))
+              .toList(),
+    );
+
+    // Recent grades
+    var gradesWidget = CupertinoListSection.insetGrouped(
+      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+      additionalDividerMargin: 0,
+      header: Text('Recent grades'),
+      children: gradesWeek.isEmpty
+          // No grades to display
+          ? [
+              CupertinoListTile(
+                  title: Opacity(
+                      opacity: 0.5,
+                      child: Container(
+                          alignment: Alignment.center,
+                          child: Text(
+                            'No recent grades',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                          ))))
+            ]
+          // Bindable grades layout
+          : gradesWeek
+              .select((x, index) => CupertinoListTile(
+                  padding: EdgeInsets.all(0),
+                  title: CupertinoContextMenu.builder(
+                      enableHapticFeedback: true,
+                      actions: [
+                        CupertinoContextMenuAction(
+                          onPressed: () {
+                            sharing.Share.share(
+                                'I got ${x.grades.select((y, s) => y.value).join(", ")} from ${x.lesson.name} last week!');
+                            Navigator.of(context, rootNavigator: true).pop();
+                          },
+                          trailingIcon: CupertinoIcons.share,
+                          child: const Text('Share'),
+                        ),
+                        CupertinoContextMenuAction(
+                          isDestructiveAction: true,
+                          trailingIcon: CupertinoIcons.chat_bubble_2,
+                          child: const Text('Inquiry'),
+                          onPressed: () {
+                            Navigator.of(context, rootNavigator: true).pop();
+                            showCupertinoModalBottomSheet(
+                                context: context,
+                                builder: (context) => MessageComposePage(
+                                    receivers: [x.lesson.teacher],
+                                    subject:
+                                        'Pytanie o ${x.grades.length > 1 ? "oceny" : "ocenę"} ${x.grades.select((y, index) => y.value).join(', ')} z przedmiotu ${x.lesson.name}',
+                                    signature:
+                                        '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                          },
+                        ),
+                      ],
+                      builder: (BuildContext context, Animation<double> animation) => CupertinoButton(
+                          onPressed: animation.value >= CupertinoContextMenu.animationOpensAt
+                              ? null
+                              : () {
+                                  Share.tabsNavigatePage.broadcast(Value(1));
+                                  Future.delayed(Duration(milliseconds: 250))
+                                      .then((arg) => Share.gradesNavigate.broadcast(Value(x.lesson)));
+                                },
+                          padding: EdgeInsets.zero,
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                  color: CupertinoDynamicColor.resolve(
+                                      CupertinoDynamicColor.withBrightness(
+                                          color: const Color.fromARGB(255, 255, 255, 255),
+                                          darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                                      context)),
+                              padding: EdgeInsets.only(right: 5, left: 7, top: 10, bottom: 10),
+                              child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                      maxHeight:
+                                          animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
+                                      maxWidth:
+                                          animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 260),
+                                  child: Container(
+                                      margin: EdgeInsets.only(right: 10, left: 7),
+                                      alignment: Alignment.centerLeft,
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                              flex: 2,
+                                              child: Align(
+                                                  alignment: Alignment.centerLeft,
+                                                  child: Text(
+                                                    x.lesson.name,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight: FontWeight.w700,
+                                                        color: CupertinoDynamicColor.resolve(
+                                                            CupertinoDynamicColor.withBrightness(
+                                                                color: CupertinoColors.black,
+                                                                darkColor: CupertinoColors.white),
+                                                            context)),
+                                                  ))),
+                                          Expanded(
+                                              child: Align(
+                                                  alignment: Alignment.centerRight,
+                                                  child: RichText(
+                                                      overflow: TextOverflow.ellipsis,
+                                                      text: TextSpan(
+                                                          text: '',
+                                                          children: x.grades
+                                                              .select((y, index) => TextSpan(
+                                                                  text: y.value,
+                                                                  style: TextStyle(fontSize: 25, color: y.asColor())))
+                                                              .toList()
+                                                              .intersperse(TextSpan(
+                                                                  text: ', ',
+                                                                  style: TextStyle(
+                                                                      fontSize: 25,
+                                                                      fontWeight: FontWeight.w600,
+                                                                      color: CupertinoDynamicColor.resolve(
+                                                                          CupertinoDynamicColor.withBrightness(
+                                                                              color: CupertinoColors.black,
+                                                                              darkColor: CupertinoColors.white),
+                                                                          context))))
+                                                              .toList()))))
+                                        ],
+                                      ))))))))
+              .toList(),
+    );
+
+    // Upcoming events
+    var eventsWidget = CupertinoListSection.insetGrouped(
+      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+      dividerMargin: 35,
+      header: Text('Upcoming events'),
+      children: eventsWeek.isEmpty
+          // No events to display
+          ? [
+              CupertinoListTile(
+                  title: Opacity(
+                      opacity: 0.5,
+                      child: Container(
+                          alignment: Alignment.center,
+                          child: Text(
+                            'It\'s quiet, too quiet...',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                          ))))
+            ]
+          // Bindable event layout
+          : eventsWeek
+              .select((x, index) => CupertinoListTile(
+                  padding: EdgeInsets.all(0),
+                  title: CupertinoContextMenu.builder(
+                      enableHapticFeedback: true,
+                      actions: [
+                        CupertinoContextMenuAction(
+                          onPressed: () {
+                            sharing.Share.share(
+                                'There\'s a "${x.titleString}" on ${DateFormat("EEEE, MMM d, y").format(x.timeFrom)} ${(x.classroom?.name.isNotEmpty ?? false) ? ("in ${x.classroom?.name ?? ""}") : "at school"}');
+                            Navigator.of(context, rootNavigator: true).pop();
+                          },
+                          trailingIcon: CupertinoIcons.share,
+                          child: const Text('Share'),
+                        ),
+                        CupertinoContextMenuAction(
+                          isDestructiveAction: true,
+                          trailingIcon: CupertinoIcons.chat_bubble_2,
+                          child: const Text('Inquiry'),
+                          onPressed: () {
+                            Navigator.of(context, rootNavigator: true).pop();
+                            showCupertinoModalBottomSheet(
+                                context: context,
+                                builder: (context) => MessageComposePage(
+                                    receivers: x.sender != null ? [x.sender!] : [],
+                                    subject:
+                                        'Pytanie o wydarzenie w dniu ${DateFormat("y.M.d").format(x.date ?? x.timeFrom)}',
+                                    signature:
+                                        '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                          },
+                        ),
+                      ],
+                      builder: (BuildContext context, Animation<double> animation) => CupertinoButton(
+                          onPressed: animation.value >= CupertinoContextMenu.animationOpensAt
+                              ? null
+                              : () {
+                                  Share.tabsNavigatePage.broadcast(Value(2));
+                                  Future.delayed(Duration(milliseconds: 250))
+                                      .then((arg) => Share.timetableNavigateDay.broadcast(Value(x.date ?? x.timeFrom)));
+                                },
+                          padding: EdgeInsets.zero,
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                  color: CupertinoDynamicColor.resolve(
+                                      CupertinoDynamicColor.withBrightness(
+                                          color: const Color.fromARGB(255, 255, 255, 255),
+                                          darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                                      context)),
+                              padding: EdgeInsets.only(right: 5, left: 7),
+                              child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                      maxHeight:
+                                          animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
+                                      maxWidth:
+                                          animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 260),
+                                  child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            TextChip(
+                                                text: DateFormat.Md(Share.settings.config.localeCode)
+                                                    .format(x.date ?? x.timeFrom),
+                                                margin: EdgeInsets.only(top: 6, bottom: 6, right: 10)),
+                                            Flexible(
+                                                child: Text(
+                                              maxLines: 1,
+                                              (x.title ?? x.content).capitalize(),
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  color: CupertinoDynamicColor.resolve(
+                                                      CupertinoDynamicColor.withBrightness(
+                                                          color: CupertinoColors.black, darkColor: CupertinoColors.white),
+                                                      context)),
+                                            ))
+                                          ],
+                                        ),
+                                        Visibility(
+                                            visible: animation.value >= CupertinoContextMenu.animationOpensAt,
+                                            child: Flexible(
+                                                child: Container(
+                                                    margin: EdgeInsets.only(left: 5, right: 5, bottom: 7),
+                                                    child: Text(
+                                                      x.locationTypeString,
+                                                      maxLines: 2,
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                          fontSize: 15,
+                                                          fontWeight: FontWeight.w500,
+                                                          color: CupertinoDynamicColor.resolve(
+                                                              CupertinoDynamicColor.withBrightness(
+                                                                  color: CupertinoColors.black,
+                                                                  darkColor: CupertinoColors.white),
+                                                              context)),
+                                                    ))))
+                                      ])))))))
               .toList(),
     );
 
@@ -512,255 +757,17 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                   false))) ||
                       // Or >1h after the school day has ended, and there are lessons tomorrow
                       ((DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)) &&
-                          DateTime.now().difference(currentDay?.dayEnd ?? DateTime.now()).inHours > 1)))),
-      // Homeworks - first if any(), otherwise last
-      Visibility(visible: !homeworksLast, child: homeworksWidget),
-      // Upcoming events - in the middle, or top
-      CupertinoListSection.insetGrouped(
-        margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-        dividerMargin: 35,
-        header: Text('Upcoming events'),
-        children: eventsWeek.isEmpty
-            // No events to display
-            ? [
-                CupertinoListTile(
-                    title: Opacity(
-                        opacity: 0.5,
-                        child: Container(
-                            alignment: Alignment.center,
-                            child: Text(
-                              'No events to display',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                            ))))
-              ]
-            // Bindable event layout
-            : eventsWeek
-                .select((x, index) => CupertinoListTile(
-                    padding: EdgeInsets.all(0),
-                    title: CupertinoContextMenu.builder(
-                        enableHapticFeedback: true,
-                        actions: [
-                          CupertinoContextMenuAction(
-                            onPressed: () {
-                              sharing.Share.share(
-                                  'There\'s a "${x.titleString}" on ${DateFormat("EEEE, MMM d, y").format(x.timeFrom)} ${(x.classroom?.name.isNotEmpty ?? false) ? ("in ${x.classroom?.name ?? ""}") : "at school"}');
-                              Navigator.of(context, rootNavigator: true).pop();
-                            },
-                            trailingIcon: CupertinoIcons.share,
-                            child: const Text('Share'),
-                          ),
-                          CupertinoContextMenuAction(
-                            isDestructiveAction: true,
-                            trailingIcon: CupertinoIcons.chat_bubble_2,
-                            child: const Text('Inquiry'),
-                            onPressed: () {
-                              Navigator.of(context, rootNavigator: true).pop();
-                              showCupertinoModalBottomSheet(
-                                  context: context,
-                                  builder: (context) => MessageComposePage(
-                                      receivers: x.sender != null ? [x.sender!] : [],
-                                      subject:
-                                          'Pytanie o wydarzenie w dniu ${DateFormat("y.M.d").format(x.date ?? x.timeFrom)}',
-                                      signature:
-                                          '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-                            },
-                          ),
-                        ],
-                        builder: (BuildContext context, Animation<double> animation) => CupertinoButton(
-                            onPressed: animation.value >= CupertinoContextMenu.animationOpensAt
-                                ? null
-                                : () {
-                                    Share.tabsNavigatePage.broadcast(Value(2));
-                                    Future.delayed(Duration(milliseconds: 250))
-                                        .then((arg) => Share.timetableNavigateDay.broadcast(Value(x.date ?? x.timeFrom)));
-                                  },
-                            padding: EdgeInsets.zero,
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                                    color: CupertinoDynamicColor.resolve(
-                                        CupertinoDynamicColor.withBrightness(
-                                            color: const Color.fromARGB(255, 255, 255, 255),
-                                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                                        context)),
-                                padding: EdgeInsets.only(right: 10, left: 6),
-                                child: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                        maxHeight:
-                                            animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
-                                        maxWidth:
-                                            animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 260),
-                                    child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              TextChip(
-                                                  text: DateFormat.Md(Share.settings.config.localeCode)
-                                                      .format(x.date ?? x.timeFrom),
-                                                  margin: EdgeInsets.only(top: 6, bottom: 6, right: 10)),
-                                              Flexible(
-                                                  child: Text(
-                                                maxLines: 1,
-                                                (x.title ?? x.content).capitalize(),
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    color: CupertinoDynamicColor.resolve(
-                                                        CupertinoDynamicColor.withBrightness(
-                                                            color: CupertinoColors.black, darkColor: CupertinoColors.white),
-                                                        context)),
-                                              ))
-                                            ],
-                                          ),
-                                          Visibility(
-                                              visible: animation.value >= CupertinoContextMenu.animationOpensAt,
-                                              child: Flexible(
-                                                  child: Container(
-                                                      margin: EdgeInsets.only(left: 5, right: 5, bottom: 7),
-                                                      child: Text(
-                                                        x.locationTypeString,
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: TextStyle(
-                                                            fontSize: 15,
-                                                            fontWeight: FontWeight.w500,
-                                                            color: CupertinoDynamicColor.resolve(
-                                                                CupertinoDynamicColor.withBrightness(
-                                                                    color: CupertinoColors.black,
-                                                                    darkColor: CupertinoColors.white),
-                                                                context)),
-                                                      ))))
-                                        ])))))))
-                .toList(),
-      ),
-      // Recent grades - always below events
-      CupertinoListSection.insetGrouped(
-        margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-        additionalDividerMargin: 0,
-        header: Text('Recent grades'),
-        children: gradesWeek.isEmpty
-            // No grades to display
-            ? [
-                CupertinoListTile(
-                    title: Opacity(
-                        opacity: 0.5,
-                        child: Container(
-                            alignment: Alignment.center,
-                            child: Text(
-                              'No recent grades',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                            ))))
-              ]
-            // Bindable grades layout
-            : gradesWeek
-                .select((x, index) => CupertinoListTile(
-                    padding: EdgeInsets.all(0),
-                    title: CupertinoContextMenu.builder(
-                        enableHapticFeedback: true,
-                        actions: [
-                          CupertinoContextMenuAction(
-                            onPressed: () {
-                              sharing.Share.share(
-                                  'I got ${x.grades.select((y, s) => y.value).join(", ")} from ${x.lesson.name} last week!');
-                              Navigator.of(context, rootNavigator: true).pop();
-                            },
-                            trailingIcon: CupertinoIcons.share,
-                            child: const Text('Share'),
-                          ),
-                          CupertinoContextMenuAction(
-                            isDestructiveAction: true,
-                            trailingIcon: CupertinoIcons.chat_bubble_2,
-                            child: const Text('Inquiry'),
-                            onPressed: () {
-                              Navigator.of(context, rootNavigator: true).pop();
-                              showCupertinoModalBottomSheet(
-                                  context: context,
-                                  builder: (context) => MessageComposePage(
-                                      receivers: [x.lesson.teacher],
-                                      subject:
-                                          'Pytanie o ${x.grades.length > 1 ? "oceny" : "ocenę"} ${x.grades.select((y, index) => y.value).join(', ')} z przedmiotu ${x.lesson.name}',
-                                      signature:
-                                          '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-                            },
-                          ),
-                        ],
-                        builder: (BuildContext context, Animation<double> animation) => CupertinoButton(
-                            onPressed: animation.value >= CupertinoContextMenu.animationOpensAt
-                                ? null
-                                : () {
-                                    Share.tabsNavigatePage.broadcast(Value(1));
-                                    Future.delayed(Duration(milliseconds: 250))
-                                        .then((arg) => Share.gradesNavigate.broadcast(Value(x.lesson)));
-                                  },
-                            padding: EdgeInsets.zero,
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                                    color: CupertinoDynamicColor.resolve(
-                                        CupertinoDynamicColor.withBrightness(
-                                            color: const Color.fromARGB(255, 255, 255, 255),
-                                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                                        context)),
-                                padding: EdgeInsets.only(right: 10, left: 6),
-                                child: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                        maxHeight:
-                                            animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
-                                        maxWidth:
-                                            animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 260),
-                                    child: Container(
-                                        margin: EdgeInsets.only(right: 10, left: 7),
-                                        alignment: Alignment.centerLeft,
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                                flex: 2,
-                                                child: Align(
-                                                    alignment: Alignment.centerLeft,
-                                                    child: Text(
-                                                      x.lesson.name,
-                                                      overflow: TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                          fontSize: 18,
-                                                          fontWeight: FontWeight.w700,
-                                                          color: CupertinoDynamicColor.resolve(
-                                                              CupertinoDynamicColor.withBrightness(
-                                                                  color: CupertinoColors.black,
-                                                                  darkColor: CupertinoColors.white),
-                                                              context)),
-                                                    ))),
-                                            Expanded(
-                                                child: Align(
-                                                    alignment: Alignment.centerRight,
-                                                    child: RichText(
-                                                        overflow: TextOverflow.ellipsis,
-                                                        text: TextSpan(
-                                                            text: '',
-                                                            children: x.grades
-                                                                .select((y, index) => TextSpan(
-                                                                    text: y.value,
-                                                                    style: TextStyle(fontSize: 25, color: y.asColor())))
-                                                                .toList()
-                                                                .intersperse(TextSpan(
-                                                                    text: ', ',
-                                                                    style: TextStyle(
-                                                                        fontSize: 25,
-                                                                        fontWeight: FontWeight.w600,
-                                                                        color: CupertinoDynamicColor.resolve(
-                                                                            CupertinoDynamicColor.withBrightness(
-                                                                                color: CupertinoColors.black,
-                                                                                darkColor: CupertinoColors.white),
-                                                                            context))))
-                                                                .toList()))))
-                                          ],
-                                        ))))))))
-                .toList(),
-      ),
-      // Homeworks - first if any(), otherwise last
-      Visibility(visible: homeworksLast, child: homeworksWidget)
-    ];
+                          DateTime.now().difference(currentDay?.dayEnd ?? DateTime.now()).inHours > 1))))
+    ]
+        // Homeworks, Events, Grades - first if any()
+        .appendIf(homeworksWidget, !homeworksLast)
+        .appendIf(eventsWidget, eventsWeek.isNotEmpty)
+        .appendIf(gradesWidget, gradesWeek.isNotEmpty)
+        // Events, Grades, Homeworks - if empty()
+        .appendIf(eventsWidget, eventsWeek.isEmpty)
+        .appendIf(gradesWidget, gradesWeek.isEmpty)
+        .appendIf(homeworksWidget, homeworksLast)
+        .toList();
 
     // Widgets for the timeline page
     var timelineChanges = Share.session.changes.orderByDescending((x) => x.refreshDate).toList();
@@ -768,6 +775,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     var timelineChildren = [
       ListView.builder(
           shrinkWrap: true,
+          primary: false,
           physics: NeverScrollableScrollPhysics(),
           itemCount: timelineChanges.count(),
           itemBuilder: (BuildContext context, int index) {
@@ -803,7 +811,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                     .select(
                                       (y, index) => CupertinoListTile(
                                           padding: EdgeInsets.only(top: 5, bottom: 5),
-                                          title: y.value.asLessonWidget(context, null, null, setState,
+                                          title: y.value.asLessonWidget(context, null, null, _setState,
                                               markModified: y.type == RegisterChangeTypes.changed, onTap: () {
                                             Share.tabsNavigatePage.broadcast(Value(2));
                                             Future.delayed(Duration(milliseconds: 250))
@@ -832,7 +840,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                     .select(
                                       (y, index) => CupertinoListTile(
                                           padding: EdgeInsets.only(top: 5, bottom: 5),
-                                          title: y.value.asLessonWidget(context, null, null, setState, markRemoved: true)),
+                                          title: y.value.asLessonWidget(context, null, null, _setState, markRemoved: true)),
                                     )
                                     .toList())),
                         x.timetablesChanged.any((element) => element.type == RegisterChangeTypes.removed))
@@ -1228,7 +1236,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                     .select(
                                       (y, index) => CupertinoListTile(
                                           padding: EdgeInsets.only(top: 5, bottom: 5),
-                                          title: y.value.asEventWidget(context, true, null, setState,
+                                          title: y.value.asEventWidget(context, true, null, _setState,
                                               markModified: y.type == RegisterChangeTypes.changed, onTap: () {
                                             Share.tabsNavigatePage.broadcast(Value(2));
                                             Future.delayed(Duration(milliseconds: 250)).then((arg) => Share
@@ -1253,7 +1261,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                     .select(
                                       (y, index) => CupertinoListTile(
                                           padding: EdgeInsets.only(top: 5, bottom: 5),
-                                          title: y.value.asEventWidget(context, true, null, setState, markRemoved: true)),
+                                          title: y.value.asEventWidget(context, true, null, _setState, markRemoved: true)),
                                     )
                                     .toList())),
                         x.eventsChanged.any((element) => element.type == RegisterChangeTypes.removed))
@@ -1279,13 +1287,13 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       child: SearchableSliverNavigationBar(
         useSliverBox: _segment == HomepageSegments.timeline,
         alwaysShowAddons: _segment == HomepageSegments.timeline,
-        setState: setState,
+        setState: _setState,
         segments: {
           HomepageSegments.home: '/Titles/Pages/Home'.localized,
           HomepageSegments.timeline: '/Titles/Pages/Timeline'.localized
         },
         onSegmentChanged: (segment) =>
-            setState(() => _segment = (segment is HomepageSegments) ? segment : HomepageSegments.home),
+            _setState(() => _segment = (segment is HomepageSegments) ? segment : HomepageSegments.home),
         searchController: searchController,
         largeTitle:
             Text(_segment == HomepageSegments.home ? '/Titles/Pages/Home'.localized : '/Titles/Pages/Timeline'.localized),
@@ -1486,6 +1494,10 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     }
     // Default theme
     return const Icon(CupertinoIcons.ellipsis_circle);
+  }
+
+  void _setState(void Function() fn) {
+    if (mounted) setState(fn);
   }
 }
 

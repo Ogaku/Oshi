@@ -47,6 +47,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
         .where((x) => x.name.contains(RegExp(receiverController.text, caseSensitive: false)));
 
     return SearchableSliverNavigationBar(
+      anchor: 0.0,
       searchController: TextEditingController(),
       backgroundColor: CupertinoDynamicColor.withBrightness(
           color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 28, 28, 30)),

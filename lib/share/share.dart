@@ -182,18 +182,20 @@ class SessionsData extends HiveObject {
 
 @HiveType(typeId: 3)
 class Session extends HiveObject {
-  Session(
-      {this.sessionName = 'John Doe',
-      this.providerGuid = 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER',
-      Map<String, String>? credentials,
-      IProvider? provider,
-      List<RegisterChanges>? changes,
-      List<Event>? adminEvents})
-      : provider = provider ?? Share.providers[providerGuid]!.factory(),
+  Session({
+    this.sessionName = 'John Doe',
+    this.providerGuid = 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER',
+    Map<String, String>? credentials,
+    IProvider? provider,
+    List<RegisterChanges>? changes,
+    List<Event>? adminEvents,
+    List<Event>? customEvents,
+  })  : provider = provider ?? Share.providers[providerGuid]!.factory(),
         sessionCredentials = credentials ?? {},
         data = ProviderData(),
         changes = changes ?? [],
-        adminEvents = adminEvents ?? [];
+        adminEvents = adminEvents ?? [],
+        customEvents = customEvents ?? [];
 
   // Refresh status
   final RefreshStatus refreshStatus = RefreshStatus();
@@ -224,8 +226,11 @@ class Session extends HiveObject {
   @HiveField(6)
   List<Event> adminEvents;
 
+  @HiveField(7)
+  List<Event> customEvents;
+
   @JsonKey(includeToJson: false, includeFromJson: false)
-  List<Event> get events => data.student.mainClass.events.appendAll(adminEvents).toList();
+  List<Event> get events => data.student.mainClass.events.appendAll(adminEvents).appendAll(customEvents).toList();
 
   // Login and reset methods for early setup - implement as async
   Future<({bool success, Exception? message})> login(
@@ -262,7 +267,10 @@ class Session extends HiveObject {
   // For null 'weekStart' - get (only) the current week's data
   // For reporting 'progress' - mark 'Progress' as null for indeterminate status
   Future<({bool success, Exception? message})> refreshAll(
-      {DateTime? weekStart, IProgress<({double? progress, String? message})>? progress, bool saveChanges = true}) async {
+      {DateTime? weekStart,
+      IProgress<({double? progress, String? message})>? progress,
+      bool saveChanges = true,
+      bool showErrors = true}) async {
     // Already working, skip for now
     if (refreshStatus.isRefreshing) return (success: true, message: null);
 
@@ -316,7 +324,7 @@ class Session extends HiveObject {
                 timeTo: DateTime.parse(element["end"]),
                 title: element["title"][Share.settings.config.languageCode] ?? element["title"]["en"] ?? '',
                 content: element["description"][Share.settings.config.languageCode] ?? element["description"]["en"] ?? '',
-                categoryName: 'Admin'))
+                category: EventCategory.admin))
             .toList();
       } catch (ex) {
         // ignored
@@ -339,15 +347,17 @@ class Session extends HiveObject {
       refreshStatus.markAsDone(); // Refresh started
       return (success: result1.success && result2.success, message: result1.message ?? result2.message);
     } catch (ex, stack) {
-      Share.showErrorModal.broadcast(event.Value((
-        title: 'Error refreshing data!',
-        message:
-            'A fatal exception "$ex" occurred and the provider couldn\'t update the e-register data.\n\nPlease try again later.\nConsider reporting this error.',
-        actions: {
-          'Copy Exception': () async => await Clipboard.setData(ClipboardData(text: ex.toString())),
-          'Copy Stack Trace': () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
-        }
-      )));
+      if (showErrors) {
+        Share.showErrorModal.broadcast(event.Value((
+          title: 'Error refreshing data!',
+          message:
+              'A fatal exception "$ex" occurred and the provider couldn\'t update the e-register data.\n\nPlease try again later.\nConsider reporting this error.',
+          actions: {
+            'Copy Exception': () async => await Clipboard.setData(ClipboardData(text: ex.toString())),
+            'Copy Stack Trace': () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
+          }
+        )));
+      }
       Share.notificationsPlugin.cancel(9999992);
       refreshStatus.markAsDone(); // Refresh started
       return (success: false, message: Exception(ex));

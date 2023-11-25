@@ -31,13 +31,14 @@ class EventAdapter extends TypeAdapter<Event> {
       sender: fields[11] as Teacher?,
       attachments: (fields[13] as List?)?.cast<Attachment>(),
       classroom: fields[12] as Classroom?,
+      isOwnEvent: fields[14] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Event obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -65,7 +66,9 @@ class EventAdapter extends TypeAdapter<Event> {
       ..writeByte(12)
       ..write(obj.classroom)
       ..writeByte(13)
-      ..write(obj.attachments);
+      ..write(obj.attachments)
+      ..writeByte(14)
+      ..write(obj.isOwnEvent);
   }
 
   @override
@@ -114,6 +117,8 @@ class EventCategoryAdapter extends TypeAdapter<EventCategory> {
         return EventCategory.freeDay;
       case 13:
         return EventCategory.conference;
+      case 14:
+        return EventCategory.admin;
       default:
         return EventCategory.gathering;
     }
@@ -164,6 +169,9 @@ class EventCategoryAdapter extends TypeAdapter<EventCategory> {
       case EventCategory.conference:
         writer.writeByte(13);
         break;
+      case EventCategory.admin:
+        writer.writeByte(14);
+        break;
     }
   }
 
@@ -211,6 +219,7 @@ Event _$EventFromJson(Map<String, dynamic> json) => Event(
       classroom: json['classroom'] == null
           ? null
           : Classroom.fromJson(json['classroom'] as Map<String, dynamic>),
+      isOwnEvent: json['isOwnEvent'] as bool?,
     );
 
 Map<String, dynamic> _$EventToJson(Event instance) {
@@ -237,6 +246,7 @@ Map<String, dynamic> _$EventToJson(Event instance) {
   writeNotNull('sender', instance.sender);
   writeNotNull('classroom', instance.classroom);
   writeNotNull('attachments', instance.attachments);
+  val['isOwnEvent'] = instance.isOwnEvent;
   return val;
 }
 
@@ -255,4 +265,5 @@ const _$EventCategoryEnumMap = {
   EventCategory.teacher: 'teacher',
   EventCategory.freeDay: 'freeDay',
   EventCategory.conference: 'conference',
+  EventCategory.admin: 'admin',
 };

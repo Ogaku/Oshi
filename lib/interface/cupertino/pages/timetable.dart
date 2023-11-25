@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
+import 'package:oshi/interface/cupertino/views/new_event.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/interface/cupertino/widgets/text_chip.dart';
 import 'package:oshi/models/data/attendances.dart';
@@ -125,11 +126,16 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
             ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
             : PullDownButton(
                 itemBuilder: (context) => [
-                  // PullDownMenuItem(
-                  //   title: 'New event',
-                  //   icon: CupertinoIcons.add,
-                  //   onTap: () {},
-                  // ),
+                  PullDownMenuItem(
+                    title: 'New event',
+                    icon: CupertinoIcons.add,
+                    onTap: () {
+                      showCupertinoModalBottomSheet(context: context, builder: (context) => EventComposePage())
+                          .then((value) => setState(() {}));
+                    },
+                  ),
+                  PullDownMenuDivider.large(),
+                  PullDownMenuTitle(title: Text('/Titles/Pages/Schedule'.localized)),
                   PullDownMenuItem(
                     title: 'Today',
                     icon: CupertinoIcons.calendar_today,
@@ -141,8 +147,6 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                         duration: Duration(milliseconds: 300),
                         curve: Curves.easeInOutExpo),
                   ),
-                  PullDownMenuDivider.large(),
-                  PullDownMenuTitle(title: Text('/Titles/Pages/Schedule'.localized)),
                   PullDownMenuItem(
                     title: 'Agenda',
                     icon: CupertinoIcons.list_bullet_below_rectangle,
@@ -391,7 +395,18 @@ extension EventWidgetExtension on Event {
                             '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
               },
             ),
-          ],
+          ].appendIf(
+              CupertinoContextMenuAction(
+                isDestructiveAction: true,
+                trailingIcon: CupertinoIcons.delete,
+                child: const Text('Delete'),
+                onPressed: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  setState(() => Share.session.customEvents.remove(this));
+                  Share.settings.save();
+                },
+              ),
+              isOwnEvent),
           builder: (BuildContext context, Animation<double> animation) => eventBody(isNotEmpty, day, context,
               animation: animation, markRemoved: markRemoved, markModified: markModified, onTap: onTap));
 
@@ -1196,7 +1211,8 @@ extension EventColors on Event {
         EventCategory.homework => CupertinoColors.systemYellow, // Praca domowa (horror)
         EventCategory.teacher => CupertinoColors.inactiveGray, // Nieobecnosc nauczyciela
         EventCategory.freeDay => CupertinoColors.inactiveGray, // Dzien wolny (opis)
-        EventCategory.conference => CupertinoColors.systemTeal // Wywiadowka
+        EventCategory.conference => CupertinoColors.systemTeal, // Wywiadowka
+        EventCategory.admin => CupertinoColors.systemMint // Admin
       };
 
   double get cardHeight {

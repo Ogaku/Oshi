@@ -84,15 +84,21 @@ class _NavState extends State<SearchableSliverNavigationBar> {
 
   @override
   void dispose() {
-    Share.session.refreshStatus.removeListener(() => widget.setState!(() {}));
+    Share.session.refreshStatus.removeListener(setStateListener);
     super.dispose();
+  }
+
+  void setStateListener() {
+    if (mounted) {
+      widget.setState!(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.setState != null) {
-      Share.session.refreshStatus.removeListener(() => widget.setState!(() {}));
-      Share.session.refreshStatus.addListener(() => widget.setState!(() {}));
+      Share.session.refreshStatus.removeListener(setStateListener);
+      Share.session.refreshStatus.addListener(setStateListener);
     }
 
     var navBarSliver = SliverNavigationBar(
@@ -208,104 +214,102 @@ class _NavState extends State<SearchableSliverNavigationBar> {
             const CupertinoDynamicColor.withBrightness(
                 color: Color.fromARGB(255, 242, 242, 247), darkColor: Color.fromARGB(255, 0, 0, 0)),
         child: NotificationListener<ScrollNotification>(
-            onNotification: (ScrollNotification scrollInfo) {
-              if (widget.disableAddons) return true;
-              if (scrollInfo is ScrollUpdateNotification) {
-                if (scrollInfo.metrics.pixels < -130 &&
-                    !Share.session.refreshStatus.isRefreshing &&
-                    widget.setState != null) {
-                  Share.session.refreshStatus.refreshMutex.protect<void>(() async {
-                    setState(() {
-                      refreshTurns =
-                          (-2 * (scrollInfo.metrics.pixels - _pixels) / (DateTime.now().millisecondsSinceEpoch - _timestamp))
-                              .clamp(0.3, 1);
-                    });
-
-                    try {
-                      HapticFeedback.mediumImpact(); // Trigger a haptic feedback
-                    } catch (ex) {
-                      // ignored
-                    }
-
-                    await Share.session.refreshAll(weekStart: widget.selectedDate);
-
-                    setState(() {
-                      refreshTurns = 0;
-                    });
-
-                    if (widget.setState != null) widget.setState!(() {});
+          onNotification: (ScrollNotification scrollInfo) {
+            if (widget.disableAddons) return true;
+            if (scrollInfo is ScrollUpdateNotification) {
+              if (scrollInfo.metrics.pixels < -130 && !Share.session.refreshStatus.isRefreshing && widget.setState != null) {
+                Share.session.refreshStatus.refreshMutex.protect<void>(() async {
+                  setState(() {
+                    refreshTurns =
+                        (-2 * (scrollInfo.metrics.pixels - _pixels) / (DateTime.now().millisecondsSinceEpoch - _timestamp))
+                            .clamp(0.3, 1);
                   });
-                }
-                // print(scrollInfo.metrics.pixels);
-                if (scrollInfo.metrics.pixels > previousScrollPosition) {
-                  if (isVisibleSearchBar > 0 && scrollInfo.metrics.pixels > 0) {
-                    setState(() {
-                      isVisibleSearchBar = widget.alwaysShowAddons
-                          ? 60
-                          : (55 - scrollInfo.metrics.pixels) >= 0
-                              ? (55 - scrollInfo.metrics.pixels)
-                              : 0;
-                    });
+
+                  try {
+                    HapticFeedback.mediumImpact(); // Trigger a haptic feedback
+                  } catch (ex) {
+                    // ignored
                   }
-                } else if (scrollInfo.metrics.pixels <= previousScrollPosition) {
-                  if (isVisibleSearchBar < 55 /*&& scrollInfo.metrics.pixels >= 0*/ && scrollInfo.metrics.pixels <= 55) {
-                    setState(() {
-                      isVisibleSearchBar = widget.alwaysShowAddons
-                          ? 60
-                          : (55 - scrollInfo.metrics.pixels) <= 55
-                              ? (55 - scrollInfo.metrics.pixels)
-                              : 55;
-                    });
-                  }
-                }
-                setState(() {
-                  previousScrollPosition = scrollInfo.metrics.pixels;
-                  _pixels = scrollInfo.metrics.pixels;
-                  _timestamp = DateTime.now().millisecondsSinceEpoch;
-                });
-              } else if (scrollInfo is ScrollEndNotification) {
-                if (widget.disableAddons || widget.child != null) return true;
-                Future.delayed(Duration.zero, () {
-                  if (isVisibleSearchBar < 25 && isVisibleSearchBar > 10 && !widget.alwaysShowAddons) {
-                    setState(() {
-                      scrollController.animateTo(55, duration: const Duration(milliseconds: 200), curve: Curves.ease);
-                    });
-                  } else if (isVisibleSearchBar >= 25 && isVisibleSearchBar <= 55) {
-                    setState(() {
-                      scrollController.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.ease);
-                    });
-                  }
+
+                  await Share.session.refreshAll(weekStart: widget.selectedDate);
+
+                  setState(() {
+                    refreshTurns = 0;
+                  });
+
+                  if (widget.setState != null) widget.setState!(() {});
                 });
               }
-              return true;
-            },
-            child:  CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                controller: scrollController,
-                anchor: widget.anchor ?? 0.077,
-                slivers: <Widget>[
-                  navBarSliver,
-                  widget.useSliverBox
-                      ? SliverToBoxAdapter(
-                          child: widget.child ??
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.max,
-                                children: widget.children ?? [],
-                              ))
-                      : SliverFillRemaining(
-                          hasScrollBody: false,
-                          child: widget.child ??
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.max,
-                                children: widget.children ?? [],
-                              )),
-                ],
-              ),
-            ));
+              // print(scrollInfo.metrics.pixels);
+              if (scrollInfo.metrics.pixels > previousScrollPosition) {
+                if (isVisibleSearchBar > 0 && scrollInfo.metrics.pixels > 0) {
+                  setState(() {
+                    isVisibleSearchBar = widget.alwaysShowAddons
+                        ? 60
+                        : (55 - scrollInfo.metrics.pixels) >= 0
+                            ? (55 - scrollInfo.metrics.pixels)
+                            : 0;
+                  });
+                }
+              } else if (scrollInfo.metrics.pixels <= previousScrollPosition) {
+                if (isVisibleSearchBar < 55 /*&& scrollInfo.metrics.pixels >= 0*/ && scrollInfo.metrics.pixels <= 55) {
+                  setState(() {
+                    isVisibleSearchBar = widget.alwaysShowAddons
+                        ? 60
+                        : (55 - scrollInfo.metrics.pixels) <= 55
+                            ? (55 - scrollInfo.metrics.pixels)
+                            : 55;
+                  });
+                }
+              }
+              setState(() {
+                previousScrollPosition = scrollInfo.metrics.pixels;
+                _pixels = scrollInfo.metrics.pixels;
+                _timestamp = DateTime.now().millisecondsSinceEpoch;
+              });
+            } else if (scrollInfo is ScrollEndNotification) {
+              if (widget.disableAddons || widget.child != null) return true;
+              Future.delayed(Duration.zero, () {
+                if (isVisibleSearchBar < 25 && isVisibleSearchBar > 10 && !widget.alwaysShowAddons) {
+                  setState(() {
+                    scrollController.animateTo(55, duration: const Duration(milliseconds: 200), curve: Curves.ease);
+                  });
+                } else if (isVisibleSearchBar >= 25 && isVisibleSearchBar <= 55) {
+                  setState(() {
+                    scrollController.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.ease);
+                  });
+                }
+              });
+            }
+            return true;
+          },
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            controller: scrollController,
+            anchor: widget.anchor ?? 0.077,
+            slivers: <Widget>[
+              navBarSliver,
+              widget.useSliverBox
+                  ? SliverToBoxAdapter(
+                      child: widget.child ??
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            children: widget.children ?? [],
+                          ))
+                  : SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: widget.child ??
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            children: widget.children ?? [],
+                          )),
+            ],
+          ),
+        ));
   }
 }
 

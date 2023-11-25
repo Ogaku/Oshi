@@ -632,6 +632,66 @@
         {
             "id": "/Notifications/Captions/ViewDetails",
             "translation": "Click to see more details"
+        },
+        {
+            "id": "/Enums/EventCategory/gathering",
+            "translation": "Gathering"
+        },
+        {
+            "id": "/Enums/EventCategory/lecture",
+            "translation": "Lecture"
+        },
+        {
+            "id": "/Enums/EventCategory/test",
+            "translation": "Test"
+        },
+        {
+            "id": "/Enums/EventCategory/classWork",
+            "translation": "Class work"
+        },
+        {
+            "id": "/Enums/EventCategory/semCorrection",
+            "translation": "Final correction"
+        },
+        {
+            "id": "/Enums/EventCategory/other",
+            "translation": "Other"
+        },
+        {
+            "id": "/Enums/EventCategory/lessonWork",
+            "translation": "Lesson work"
+        },
+        {
+            "id": "/Enums/EventCategory/shortTest",
+            "translation": "Quiz"
+        },
+        {
+            "id": "/Enums/EventCategory/correction",
+            "translation": "Correction"
+        },
+        {
+            "id": "/Enums/EventCategory/onlineLesson",
+            "translation": "Online lesson"
+        },
+        {
+            "id": "/Enums/EventCategory/homework",
+            "translation": "Homework"
+        },
+        {
+            "id": "/Enums/EventCategory/teacher",
+            "translation": "Teacher vacancy"
+        },
+        {
+            "id": "/Enums/EventCategory/freeDay",
+            "translation": "Free day"
+        },
+        {
+            "id": "/Enums/EventCategory/conference",
+            "translation": "Conference"
+        },
+        {
+            "id": "/Enums/EventCategory/admin",
+            "translation": "Admin"
         }
     ],
     "splashes": [

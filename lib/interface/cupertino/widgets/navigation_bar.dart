@@ -57,6 +57,7 @@ class _NavState extends State<SliverNavigationBar> {
   }
 
   void scrollListener() {
+    if (!mounted) return;
     if (widget.scrollController.offset >= widget.threshold && !_isCollapsed) {
       setState(() {
         _isCollapsed = true;

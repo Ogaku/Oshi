@@ -71,7 +71,37 @@ class _SessionsPageState extends State<SessionsPage> {
                             color: CupertinoDynamicColor.withBrightness(
                                 color: const Color.fromARGB(255, 255, 255, 255),
                                 darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                            padding: EdgeInsets.only(left: 20),
+                            padding: EdgeInsets.zero,
+                            onPressed: animation.value < CupertinoContextMenu.animationOpensAt
+                                ? () async {
+                                    if (isWorking) return; // Already handling something, give up
+                                    setState(() {
+                                      // Mark as working, the 1st refresh is gonna take a while
+                                      isWorking = true;
+                                    });
+
+                                    var progress = Progress<({double? progress, String? message})>();
+                                    progress.progressChanged
+                                        .subscribe((args) => setState(() => _progressMessage = args?.value.message));
+
+                                    // showCupertinoModalBottomSheet(context: context, builder: (context) => LoginPage(provider: x));
+                                    Share.settings.sessions.lastSessionId = x; // Update
+                                    Share.session = Share.settings.sessions.lastSession!;
+                                    await Share.settings.save(); // Save our settings now
+                                    
+                                    // Suppress all errors, we must have already logged in at least once
+                                    await Share.session.tryLogin(progress: progress, showErrors: false);
+                                    await Share.session.refreshAll(progress: progress, showErrors: false);
+
+                                    // Reset the animation in case we go back somehow
+                                    setState(() => isWorking = false);
+                                    progress.progressChanged.unsubscribeAll();
+                                    _progressMessage = null; // Reset the message
+
+                                    // Change the main page to the base application
+                                    Share.changeBase.broadcast(Value(() => baseApp));
+                                  }
+                                : null,
                             child: Container(
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -80,7 +110,7 @@ class _SessionsPageState extends State<SessionsPage> {
                                             color: const Color.fromARGB(255, 255, 255, 255),
                                             darkColor: const Color.fromARGB(255, 28, 28, 30)),
                                         context)),
-                                padding: EdgeInsets.only(right: 10, left: 6),
+                                padding: EdgeInsets.only(right: 10, left: 22),
                                 child: ConstrainedBox(
                                     constraints: BoxConstraints(
                                         maxHeight:
@@ -126,55 +156,6 @@ class _SessionsPageState extends State<SessionsPage> {
                                                         context)),
                                               )))
                                     ]))),
-                            onPressed: () async {
-                              if (isWorking) return; // Already handling something, give up
-                              setState(() {
-                                // Mark as working, the 1st refresh is gonna take a while
-                                isWorking = true;
-                              });
-
-                              var progress = Progress<({double? progress, String? message})>();
-                              progress.progressChanged
-                                  .subscribe((args) => setState(() => _progressMessage = args?.value.message));
-
-                              // showCupertinoModalBottomSheet(context: context, builder: (context) => LoginPage(provider: x));
-                              Share.settings.sessions.lastSessionId = x; // Update
-                              Share.session = Share.settings.sessions.lastSession!;
-                              var result = await Share.session.tryLogin(progress: progress, showErrors: true); // Log in now
-
-                              if (!result.success) {
-                                setState(() {
-                                  // Reset the animation in case the login method hasn't finished
-                                  isWorking = false;
-
-                                  progress.progressChanged.unsubscribeAll();
-                                  _progressMessage = null; // Reset the message
-                                });
-                                return; // Give up, not this time
-                              }
-
-                              await Share.settings.save(); // Save our settings now
-                              result = await Share.session.refreshAll(progress: progress); // Refresh everything
-
-                              if (!result.success) {
-                                setState(() {
-                                  // Reset the animation in case the login method hasn't finished
-                                  isWorking = false;
-
-                                  progress.progressChanged.unsubscribeAll();
-                                  _progressMessage = null; // Reset the message
-                                });
-                                return; // Give up, not this time
-                              }
-
-                              // Reset the animation in case we go back somehow
-                              setState(() => isWorking = false);
-                              progress.progressChanged.unsubscribeAll();
-                              _progressMessage = null; // Reset the message
-
-                              // Change the main page to the base application
-                              Share.changeBase.broadcast(Value(() => baseApp));
-                            },
                           ))))),
         )
         .toList();

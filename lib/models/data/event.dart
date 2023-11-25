@@ -6,6 +6,8 @@ import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/models/data/teacher.dart';
 
 import 'package:hive/hive.dart';
+import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 part 'event.g.dart';
 
 @HiveType(typeId: 25)
@@ -25,8 +27,10 @@ class Event extends Equatable {
       this.done = false,
       this.sender,
       this.attachments,
-      this.classroom})
-      : timeFrom = timeFrom ?? DateTime(2000);
+      this.classroom,
+      bool? isOwnEvent})
+      : timeFrom = timeFrom ?? DateTime(2000),
+        isOwnEvent = isOwnEvent ?? false;
 
   Event.from(
       {Event? other,
@@ -41,6 +45,7 @@ class Event extends Equatable {
       String? categoryName,
       EventCategory? category,
       bool? done,
+      bool? isOwnEvent,
       Teacher? sender,
       Classroom? classroom,
       List<Attachment>? attachments})
@@ -57,7 +62,8 @@ class Event extends Equatable {
         done = done ?? other?.done ?? false,
         sender = sender ?? other?.sender,
         attachments = attachments ?? other?.attachments,
-        classroom = classroom ?? other?.classroom;
+        classroom = classroom ?? other?.classroom,
+        isOwnEvent = isOwnEvent ?? other?.isOwnEvent ?? false;
 
   @HiveField(0)
   final int id;
@@ -102,8 +108,11 @@ class Event extends Equatable {
   @HiveField(13)
   final List<Attachment>? attachments; // For homeworks
 
+  @HiveField(14)
+  final bool isOwnEvent;
+
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get _categoryName => categoryName.isNotEmpty ? categoryName : category.name;
+  String get _categoryName => categoryName.isNotEmpty ? categoryName : category.asString();
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get titleString => "${_categoryName.capitalize()}${(title ?? content).isNotEmpty ? ':' : ''} ${title ?? content}";
@@ -112,7 +121,9 @@ class Event extends Equatable {
   String get subtitleString => (title != null && title != content) ? content : '';
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get locationString => (lessonNo != null ? 'Lesson no. $lessonNo • ' : '') + (sender?.name ?? '');
+  String get locationString =>
+      (lessonNo != null ? 'Lesson no. $lessonNo • ' : '') +
+      (isOwnEvent ? Share.session.data.student.account.name : (sender?.name ?? ''));
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get locationTypeString =>
@@ -161,5 +172,11 @@ enum EventCategory {
   @HiveField(12)
   freeDay, // Dzien wolny (opis)
   @HiveField(13)
-  conference // Wywiadowka
+  conference, // Wywiadowka
+  @HiveField(14)
+  admin // Admin events
+}
+
+extension EventCategoryExtension on EventCategory {
+  String asString() => '/Enums/EventCategory/$name'.localized;
 }

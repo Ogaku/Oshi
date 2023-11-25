@@ -353,10 +353,12 @@ class LibrusDataReader implements models.IProvider {
                 timeTo: x.timeTo.asTime(x.date),
                 content: x.content,
                 category: x.category?.asEvent() ?? models.EventCategory.other,
-                categoryName: eventCategoriesShim.categories!
-                        .firstWhereOrDefault((y) => y.id == x.category?.id, defaultValue: null)
-                        ?.name ??
-                    'Other',
+                categoryName: x.category?.asEvent() == null
+                    ? eventCategoriesShim.categories!
+                            .firstWhereOrDefault((y) => y.id == x.category?.id, defaultValue: null)
+                            ?.name ??
+                        ''
+                    : '',
                 sender:
                     teachersShim.users!.firstWhereOrDefault((y) => y.id == x.createdBy?.id, defaultValue: null)?.asTeacher(),
                 classroom: classroomsShim.classrooms!
@@ -376,7 +378,6 @@ class LibrusDataReader implements models.IProvider {
                     timeFrom: x.time.asTime(x.date),
                     content: x.topic,
                     category: models.EventCategory.conference,
-                    categoryName: 'Zebranie z rodzicami',
                     sender: teachersShim.users!
                         .firstWhereOrDefault((y) => y.id == x.teacher?.id, defaultValue: null)
                         ?.asTeacher(),
@@ -400,7 +401,6 @@ class LibrusDataReader implements models.IProvider {
                     timeTo: x.dateTo?.withTime(x.timeTo?.asTime()) ?? DateTime.now(),
                     category: models.EventCategory.teacher,
                     content: '',
-                    categoryName: 'Nieobecność nauczyciela',
                     sender: teachersShim.users!.firstWhereOrDefault((y) => y.id == x.teacher?.id)?.asTeacher()))
                 .toList() ??
             []);
@@ -428,7 +428,7 @@ class LibrusDataReader implements models.IProvider {
                         categoryName: homeworkCatgShim.categories!
                                 .firstWhereOrDefault((y) => y.id == x.category?.id, defaultValue: null)
                                 ?.categoryName ??
-                            'Homework',
+                            '',
                         sender: teachersShim.users!.firstWhereOrDefault((y) => y.id == x.teacher?.id)?.asTeacher(),
                         attachments: (await x.homeworkAssigmentFiles?.select((y, index) async {
                               var url = (await data!.librusApi!
@@ -463,8 +463,7 @@ class LibrusDataReader implements models.IProvider {
                 timeFrom: x.dateFrom ?? DateTime.now(),
                 timeTo: x.dateTo,
                 content: x.name,
-                category: models.EventCategory.freeDay,
-                categoryName: x.name));
+                category: models.EventCategory.freeDay));
       });
     });
 
@@ -491,8 +490,7 @@ class LibrusDataReader implements models.IProvider {
                 content: freeDayCategoriesShim.types?.firstWhereOrDefault((element) => element.id == x.type?.id)?.name ??
                     'Lekcja odwołana',
                 categoryName:
-                    freeDayCategoriesShim.types?.firstWhereOrDefault((element) => element.id == x.type?.id)?.name ??
-                        'Dzień wolny'));
+                    freeDayCategoriesShim.types?.firstWhereOrDefault((element) => element.id == x.type?.id)?.name ?? ''));
       });
     });
 

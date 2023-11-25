@@ -111,7 +111,7 @@ Future<void> setupBaseApplication() async {
 
   await Share.settings.load(); // Load all settings from hive, make sure nothing is missing
   Share.session = Share.settings.sessions.lastSession ?? Session(providerGuid: 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER');
-  if (Share.settings.sessions.lastSession != null) Share.session.tryLogin(); // Auto-login on restart if valid
+  if (Share.settings.sessions.lastSession != null) await Share.session.tryLogin(showErrors: false); // Auto-login
 
   // Load localization resources, generate placeholder splashes
   await Share.translator.loadResources(Share.settings.config.languageCode);

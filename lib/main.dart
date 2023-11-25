@@ -70,8 +70,8 @@ class _MainAppState extends State<MainApp> {
       if (Share.settings.sessions.lastSession == null || !Share.settings.config.enableBackgroundSync) return;
 
       // Try to log in and refresh everything
-      Share.session.tryLogin(); // Auto-login on restart if valid
-      Share.session.refreshAll(); // Refresh everything
+      await Share.session.tryLogin(); // Auto-login on restart if valid
+      await Share.session.refreshAll(); // Refresh everything
 
       // IMPORTANT:  You must signal completion of your task
       // or the OS can punish your app for taking too long

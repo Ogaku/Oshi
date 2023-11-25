@@ -28,6 +28,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
   @override
   Widget build(BuildContext context) {
     var providersList = Share.providers.keys
+        .where((x) => x != 'SESSIONS-SHIM-SMPL-FAKE-DATAPROVIDER')
         .select(
           (x, index) => CupertinoListTile(
               padding: EdgeInsets.all(0),

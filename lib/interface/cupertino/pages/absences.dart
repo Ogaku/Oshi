@@ -90,6 +90,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
         children: [
           ListView.builder(
             shrinkWrap: true,
+            primary: false,
             physics: NeverScrollableScrollPhysics(),
             itemCount: attendances.count(),
             itemBuilder: (BuildContext context, int index) => CupertinoListSection.insetGrouped(
