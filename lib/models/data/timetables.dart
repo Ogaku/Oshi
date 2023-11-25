@@ -93,6 +93,9 @@ class TimetableDay extends Equatable {
     return TimetableDay(lessons: lessons, calendarDay: day);
   }
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get hasUnread => lessons.any((x) => x?.any((y) => y.unseen) ?? false);
+
   @override
   List<Object> get props => [lessons];
 
@@ -214,6 +217,10 @@ class TimetableLesson extends Equatable {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get teacherString => 'With ${teacher?.name}';
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get unseen => Share.session.unreadChanges.timetables.contains(hashCode);
+  set unseen(bool value) => Share.settings.save(() => Share.session.unreadChanges.timetables.remove(hashCode));
 
   @override
   List<Object> get props => [url, lessonNo, isCanceled, modifiedSchedule, date];

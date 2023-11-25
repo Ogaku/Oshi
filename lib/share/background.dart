@@ -98,6 +98,7 @@ Future<void> setupBaseApplication() async {
     ..registerAdapter(ConfigAdapter())
     ..registerAdapter(SessionConfigAdapter())
     ..registerAdapter(DurationAdapter())
+    ..registerAdapter(UnreadChangesAdapter())
     ..registerAdapter(RegisterChangesAdapter())
     ..registerAdapter(RegisterChangeTypesAdapter())
     ..registerAdapter(RegisterChangeAdapter<TimetableLesson>(id: 51))

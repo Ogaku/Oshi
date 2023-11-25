@@ -74,6 +74,9 @@ class Lesson {
       .toList()
       .gadesAverage(weighted: Share.session.settings.weightedAverage, adapt: Share.session.settings.autoArithmeticAverage);
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get hasUnseen => grades.any((x) => x.unseen);
+
   factory Lesson.fromJson(Map<String, dynamic> json) => _$LessonFromJson(json);
 
   Map<String, dynamic> toJson() => _$LessonToJson(this);

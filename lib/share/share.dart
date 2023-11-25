@@ -117,7 +117,13 @@ class Settings {
   }
 
   // Save all received data to storage, called automatically
-  Future<({bool success, Exception? message})> save() async {
+  Future<({bool success, Exception? message})> save([void Function()? inline]) async {
+    try {
+      if (inline != null) inline();
+    } catch (ex) {
+      // ignore
+    }
+
     try {
       await Share.settingsMutex.protect<void>(() async {
         // Remove everything, as Hive's append-only
@@ -189,14 +195,16 @@ class Session extends HiveObject {
       List<RegisterChanges>? changes,
       List<Event>? adminEvents,
       List<Event>? customEvents,
-      SessionConfig? settings})
+      SessionConfig? settings,
+      UnreadChanges? unreadChanges})
       : provider = provider ?? Share.providers[providerGuid]!.factory(),
         sessionCredentials = credentials ?? {},
         data = ProviderData(),
         changes = changes ?? [],
         adminEvents = adminEvents ?? [],
         customEvents = customEvents ?? [],
-        settings = settings ?? SessionConfig();
+        settings = settings ?? SessionConfig(),
+        unreadChanges = unreadChanges ?? UnreadChanges();
 
   // Refresh status
   final RefreshStatus refreshStatus = RefreshStatus();
@@ -232,6 +240,9 @@ class Session extends HiveObject {
 
   @HiveField(7)
   List<Event> customEvents;
+
+  @HiveField(9)
+  UnreadChanges unreadChanges;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   List<Event> get events => data.student.mainClass.events.appendAll(adminEvents).appendAll(customEvents).toList();
@@ -519,6 +530,12 @@ class Session extends HiveObject {
       if (saveChanges && detectedChanges.any) {
         changes.add(detectedChanges);
 
+        // Compose unread badges
+        unreadChanges.timetables.addAll(detectedChanges.timetablesChanged.select((x, index) => x.value.hashCode));
+        unreadChanges.grades.addAll(detectedChanges.gradesChanged.select((x, index) => x.value.hashCode));
+        unreadChanges.events.addAll(detectedChanges.eventsChanged.select((x, index) => x.value.hashCode));
+        unreadChanges.attendances.addAll(detectedChanges.attendancesChanged.select((x, index) => x.value.hashCode));
+
         var notifications = <({String title, String body, String payload})>[];
         var messageNotifications = <({String title, String body, String payload})>[];
 
@@ -724,6 +741,27 @@ class Session extends HiveObject {
     }
     await Share.settings.save();
   }
+}
+
+@HiveType(typeId: 58)
+class UnreadChanges {
+  UnreadChanges({List<int>? timetables, List<int>? grades, List<int>? events, List<int>? attendances})
+      : timetables = timetables ?? [],
+        grades = grades ?? [],
+        events = events ?? [],
+        attendances = attendances ?? [];
+
+  @HiveField(1)
+  List<int> timetables;
+
+  @HiveField(2)
+  List<int> grades;
+
+  @HiveField(3)
+  List<int> events;
+
+  @HiveField(4)
+  List<int> attendances;
 }
 
 @HiveType(typeId: 59)

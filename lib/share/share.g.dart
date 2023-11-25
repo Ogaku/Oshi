@@ -60,6 +60,7 @@ class SessionAdapter extends TypeAdapter<Session> {
       adminEvents: (fields[6] as List?)?.cast<Event>(),
       customEvents: (fields[7] as List?)?.cast<Event>(),
       settings: fields[8] as SessionConfig?,
+      unreadChanges: fields[9] as UnreadChanges?,
     )
       ..sessionCredentials = (fields[2] as Map).cast<String, String>()
       ..data = fields[4] as ProviderData;
@@ -68,7 +69,7 @@ class SessionAdapter extends TypeAdapter<Session> {
   @override
   void write(BinaryWriter writer, Session obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(1)
       ..write(obj.sessionName)
       ..writeByte(2)
@@ -84,7 +85,9 @@ class SessionAdapter extends TypeAdapter<Session> {
       ..writeByte(6)
       ..write(obj.adminEvents)
       ..writeByte(7)
-      ..write(obj.customEvents);
+      ..write(obj.customEvents)
+      ..writeByte(9)
+      ..write(obj.unreadChanges);
   }
 
   @override
@@ -94,6 +97,49 @@ class SessionAdapter extends TypeAdapter<Session> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is SessionAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class UnreadChangesAdapter extends TypeAdapter<UnreadChanges> {
+  @override
+  final int typeId = 58;
+
+  @override
+  UnreadChanges read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return UnreadChanges(
+      timetables: (fields[1] as List?)?.cast<int>(),
+      grades: (fields[2] as List?)?.cast<int>(),
+      events: (fields[3] as List?)?.cast<int>(),
+      attendances: (fields[4] as List?)?.cast<int>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, UnreadChanges obj) {
+    writer
+      ..writeByte(4)
+      ..writeByte(1)
+      ..write(obj.timetables)
+      ..writeByte(2)
+      ..write(obj.grades)
+      ..writeByte(3)
+      ..write(obj.events)
+      ..writeByte(4)
+      ..write(obj.attendances);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UnreadChangesAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

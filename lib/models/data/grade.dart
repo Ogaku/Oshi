@@ -109,6 +109,10 @@ class Grade extends Equatable {
   String get commentsString => comments.select((x, index) => x.replaceAll('\n', ' ').replaceAll('  ', ' ')).join(' • ');
 
   @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get unseen => Share.session.unreadChanges.grades.contains(hashCode);
+  set unseen(bool value) => Share.settings.save(() => Share.session.unreadChanges.grades.remove(hashCode));
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
   double get asValue {
     double val = switch (value.isNotEmpty ? value[0] : value) {
           _ when (Share.session.settings.customGradeValues.containsKey(value)) =>
