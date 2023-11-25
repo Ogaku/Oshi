@@ -121,7 +121,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                 ),
             child: Container(
                 margin: EdgeInsets.only(top: 5, bottom: 5),
-                child: TextChip(width: 110, text: DateFormat.yMd(Share.settings.config.localeCode).format(selectedDate)))),
+                child: TextChip(width: 110, text: DateFormat.yMd(Share.settings.appSettings.localeCode).format(selectedDate)))),
         trailing: isWorking
             ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
             : PullDownButton(
@@ -211,7 +211,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                   [];
 
               var lessonsWidget = CupertinoListSection.insetGrouped(
-                header: Text(DateFormat.yMMMMEEEEd(Share.settings.config.localeCode).format(selectedDate)),
+                header: Text(DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(selectedDate)),
                 margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
                 additionalDividerMargin: 5,
                 children: lessonsToDisplay.isEmpty
@@ -549,7 +549,7 @@ extension EventWidgetExtension on Event {
                                                           child: Opacity(
                                                               opacity: 0.5,
                                                               child: Text(
-                                                                  DateFormat.yMMMMEEEEd(Share.settings.config.localeCode)
+                                                                  DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode)
                                                                       .format(date ?? timeFrom),
                                                                   maxLines: 1,
                                                                   overflow: TextOverflow.ellipsis)))
@@ -581,7 +581,7 @@ extension EventWidgetExtension on Event {
                                                           child: Opacity(
                                                               opacity: 0.5,
                                                               child: Text(
-                                                                  DateFormat.Hm(Share.settings.config.localeCode)
+                                                                  DateFormat.Hm(Share.settings.appSettings.localeCode)
                                                                       .format(timeFrom),
                                                                   maxLines: 1,
                                                                   overflow: TextOverflow.ellipsis)))
@@ -598,7 +598,7 @@ extension EventWidgetExtension on Event {
                                                           child: Opacity(
                                                               opacity: 0.5,
                                                               child: Text(
-                                                                  DateFormat.Hm(Share.settings.config.localeCode)
+                                                                  DateFormat.Hm(Share.settings.appSettings.localeCode)
                                                                       .format(timeTo ?? timeFrom),
                                                                   maxLines: 1,
                                                                   overflow: TextOverflow.ellipsis)))
@@ -692,7 +692,7 @@ extension EventWidgetExtension on Event {
                                                   child: (timeFrom.hour != 0 && timeTo?.hour != 0) &&
                                                           (timeFrom.asDate() == timeTo?.asDate())
                                                       ? Text(
-                                                          "${DateFormat.Hm(Share.settings.config.localeCode).format(timeFrom)} - ${DateFormat.Hm(Share.settings.config.localeCode).format(timeTo ?? DateTime.now())}",
+                                                          "${DateFormat.Hm(Share.settings.appSettings.localeCode).format(timeFrom)} - ${DateFormat.Hm(Share.settings.appSettings.localeCode).format(timeTo ?? DateTime.now())}",
                                                           overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(
                                                               fontSize: 15,
@@ -701,11 +701,11 @@ extension EventWidgetExtension on Event {
                                                         )
                                                       : Text(
                                                           (timeFrom.month == timeTo?.month && timeFrom.day == timeTo?.day)
-                                                              ? DateFormat.MMMd(Share.settings.config.localeCode)
+                                                              ? DateFormat.MMMd(Share.settings.appSettings.localeCode)
                                                                   .format(timeTo ?? DateTime.now())
                                                               : (timeFrom.month == timeTo?.month)
-                                                                  ? "${DateFormat.d(Share.settings.config.localeCode).format(timeFrom)} - ${DateFormat.MMMd(Share.settings.config.localeCode).format(timeTo ?? DateTime.now())}"
-                                                                  : "${DateFormat.MMMd(Share.settings.config.localeCode).format(timeFrom)} - ${DateFormat.MMMd(Share.settings.config.localeCode).format(timeTo ?? DateTime.now())}",
+                                                                  ? "${DateFormat.d(Share.settings.appSettings.localeCode).format(timeFrom)} - ${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(timeTo ?? DateTime.now())}"
+                                                                  : "${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(timeFrom)} - ${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(timeTo ?? DateTime.now())}",
                                                           overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(
                                                               fontSize: 15,
@@ -753,16 +753,16 @@ extension LessonWidgetExtension on TimetableLesson {
   Widget asLessonWidget(
       BuildContext context, DateTime? selectedDate, TimetableDay? selectedDay, void Function(VoidCallback fn) setState,
       {bool markRemoved = false, bool markModified = false, Function()? onTap}) {
-    var lessonCallButtonString = switch (Share.settings.config.lessonCallType) {
-      LessonCallTypes.countFromEnd => 'last ${Share.settings.config.lessonCallTime} min',
-      LessonCallTypes.countFromStart => 'first ${Share.settings.config.lessonCallTime} min',
+    var lessonCallButtonString = switch (Share.session.settings.lessonCallType) {
+      LessonCallTypes.countFromEnd => 'last ${Share.session.settings.lessonCallTime} min',
+      LessonCallTypes.countFromStart => 'first ${Share.session.settings.lessonCallTime} min',
       LessonCallTypes.halfLesson => 'half the lesson',
       LessonCallTypes.wholeLesson => 'whole lesson'
     };
 
-    var lessonCallMessageString = switch (Share.settings.config.lessonCallType) {
-      LessonCallTypes.countFromEnd => 'ostatnich ${Share.settings.config.lessonCallTime} minut lekcji',
-      LessonCallTypes.countFromStart => 'pierwszych ${Share.settings.config.lessonCallTime} minut lekcji',
+    var lessonCallMessageString = switch (Share.session.settings.lessonCallType) {
+      LessonCallTypes.countFromEnd => 'ostatnich ${Share.session.settings.lessonCallTime} minut lekcji',
+      LessonCallTypes.countFromStart => 'pierwszych ${Share.session.settings.lessonCallTime} minut lekcji',
       LessonCallTypes.halfLesson => 'połowy',
       LessonCallTypes.wholeLesson => 'całej'
     };
@@ -1001,7 +1001,7 @@ extension LessonWidgetExtension on TimetableLesson {
                                                           child: Opacity(
                                                               opacity: 0.5,
                                                               child: Text(
-                                                                  '${DateFormat.yMd(Share.settings.config.localeCode).format(substitutionDetails?.originalDate ?? DateTime.now().asDate())}${substitutionDetails?.originalLessonNo != null ? ', L${substitutionDetails?.originalLessonNo.toString()}' : ''}',
+                                                                  '${DateFormat.yMd(Share.settings.appSettings.localeCode).format(substitutionDetails?.originalDate ?? DateTime.now().asDate())}${substitutionDetails?.originalLessonNo != null ? ', L${substitutionDetails?.originalLessonNo.toString()}' : ''}',
                                                                   maxLines: 3,
                                                                   textAlign: TextAlign.end))))
                                                 ],

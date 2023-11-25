@@ -50,7 +50,7 @@ class Attendance extends Equatable {
   List<Object> get props => [id, lessonNo, date, type];
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get addedDateString => "${teacher.name} • ${DateFormat.yMd(Share.settings.config.localeCode).format(date)}";
+  String get addedDateString => "${teacher.name} • ${DateFormat.yMd(Share.settings.appSettings.localeCode).format(date)}";
 
   factory Attendance.fromJson(Map<String, dynamic> json) => _$AttendanceFromJson(json);
 

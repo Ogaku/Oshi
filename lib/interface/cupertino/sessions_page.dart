@@ -344,6 +344,6 @@ class _SessionsPageState extends State<SessionsPage> {
       return CupertinoThemeData(primaryColor: CupertinoColors.systemRed);
     }
     // Default colors - should be changeable through settings
-    return CupertinoThemeData(primaryColor: Share.settings.config.cupertinoAccentColor.color);
+    return CupertinoThemeData(primaryColor: const Color(0xFFbe72e1));
   }
 }

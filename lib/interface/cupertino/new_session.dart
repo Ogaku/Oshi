@@ -23,12 +23,12 @@ class NewSessionPage extends StatefulWidget {
 
 class _NewSessionPageState extends State<NewSessionPage> {
   final scrollController = ScrollController();
-  bool subscribed = false;
+  bool subscribed = false, enableFake = false;
 
   @override
   Widget build(BuildContext context) {
     var providersList = Share.providers.keys
-        .where((x) => x != 'SESSIONS-SHIM-SMPL-FAKE-DATAPROVIDER')
+        .where((x) => enableFake || x != 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER')
         .select(
           (x, index) => CupertinoListTile(
               padding: EdgeInsets.all(0),
@@ -132,10 +132,12 @@ class _NewSessionPageState extends State<NewSessionPage> {
                                     ))))),
                     Opacity(
                         opacity: 0.25,
-                        child: Text(
-                          Share.buildNumber,
-                          style: TextStyle(fontSize: 12),
-                        )),
+                        child: GestureDetector(
+                            onDoubleTap: () => setState(() => enableFake = true),
+                            child: Text(
+                              Share.buildNumber,
+                              style: TextStyle(fontSize: 12),
+                            ))),
                   ]),
             ),
           )

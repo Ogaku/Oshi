@@ -45,25 +45,25 @@ class _SettingsPageState extends State<SettingsPage> {
     super.initState();
 
     _callTimeController.text =
-        Share.settings.config.lessonCallTime == 15 ? '' : Share.settings.config.lessonCallTime.toString();
-    _bellTimeController.text = Share.settings.config.bellOffset == Duration.zero
+        Share.session.settings.lessonCallTime == 15 ? '' : Share.session.settings.lessonCallTime.toString();
+    _bellTimeController.text = Share.session.settings.bellOffset == Duration.zero
         ? ''
-        : prettyDuration(Share.settings.config.bellOffset,
+        : prettyDuration(Share.session.settings.bellOffset,
             tersity: DurationTersity.second,
             upperTersity: DurationTersity.minute,
             abbreviated: true,
             conjunction: ', ',
             spacer: '',
-            locale: DurationLocale.fromLanguageCode(Share.settings.config.localeCode) ?? EnglishDurationLocale());
-    _syncTimeController.text = Share.settings.config.backgroundSyncInterval == 15
+            locale: DurationLocale.fromLanguageCode(Share.settings.appSettings.localeCode) ?? EnglishDurationLocale());
+    _syncTimeController.text = Share.session.settings.backgroundSyncInterval == 15
         ? ''
-        : prettyDuration(Duration(minutes: Share.settings.config.backgroundSyncInterval),
+        : prettyDuration(Duration(minutes: Share.session.settings.backgroundSyncInterval),
             tersity: DurationTersity.second,
             upperTersity: DurationTersity.minute,
             abbreviated: true,
             conjunction: ', ',
             spacer: '',
-            locale: DurationLocale.fromLanguageCode(Share.settings.config.localeCode) ?? EnglishDurationLocale());
+            locale: DurationLocale.fromLanguageCode(Share.settings.appSettings.localeCode) ?? EnglishDurationLocale());
   }
 
   @override
@@ -86,17 +86,21 @@ class _SettingsPageState extends State<SettingsPage> {
                           margin: EdgeInsets.all(15),
                           child: GestureDetector(
                               onTap: (Platform.isAndroid || Platform.isIOS)
-                                  ? () => ImagePicker().pickImage(source: ImageSource.gallery).then((value) => value
-                                      ?.readAsBytes()
-                                      .then((result) => setState(() => Share.settings.config.userAvatar = result)))
+                                  ? () => ImagePicker().pickImage(source: ImageSource.gallery).then((value) {
+                                        if (value == null) return;
+                                        File(value.path).readAsBytes().then((result) =>
+                                            Share.session.settings.setUserAvatar(result).then((value) => setState(() {})));
+                                      })
                                   : null,
-                              child: Share.settings.config.userAvatarImage != null
-                                  ? CircleAvatar(
-                                      radius: 25,
-                                      foregroundImage: Share.settings.config.userAvatarImage?.image,
-                                      backgroundColor: Colors.transparent,
-                                    )
-                                  : Icon(CupertinoIcons.person_circle_fill, size: 50))),
+                              child: FutureBuilder(
+                                  future: Share.session.settings.userAvatarImage,
+                                  builder: (context, snapshot) => snapshot.hasData
+                                      ? CircleAvatar(
+                                          radius: 25,
+                                          foregroundImage: snapshot.data?.image,
+                                          backgroundColor: Colors.transparent,
+                                        )
+                                      : Icon(CupertinoIcons.person_circle_fill, size: 50)))),
                       Expanded(
                           child: Column(
                         mainAxisSize: MainAxisSize.max,
@@ -269,7 +273,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                   .sum((x) => 45) ??
                                                               0),
                                                       locale: DurationLocale.fromLanguageCode(
-                                                              Share.settings.config.localeCode) ??
+                                                              Share.settings.appSettings.localeCode) ??
                                                           EnglishDurationLocale()))))),
                                       CupertinoListTile(
                                           title: Text('Gained time', overflow: TextOverflow.ellipsis),
@@ -288,7 +292,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                   .sum((x) => 45) ??
                                                               0),
                                                       locale: DurationLocale.fromLanguageCode(
-                                                              Share.settings.config.localeCode) ??
+                                                              Share.settings.appSettings.localeCode) ??
                                                           EnglishDurationLocale()))))),
                                       CupertinoListTile(
                                           title: Text('Total presence', overflow: TextOverflow.ellipsis),
@@ -369,7 +373,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                             child: Text(
                                                                 element.value >= 0 ? element.value.toStringAsFixed(2) : '-',
                                                                 style: TextStyle(
-                                                                    color: switch (Share.settings.config
+                                                                    color: switch (Share.session.settings
                                                                             .customGradeMarginValuesMap.entries
                                                                             .firstWhereOrDefault((x) =>
                                                                                 (x.value < element.value) &&
@@ -412,7 +416,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         CupertinoPageRoute(
                             builder: (context) => CupertinoModalPage(title: 'App Style', children: [
                                   OptionsForm(
-                                      selection: Share.settings.config.useCupertino,
+                                      selection: Share.settings.appSettings.useCupertino,
                                       description:
                                           'Note, there is no ETA for the Material interface style. Likely, the Cupertino one has to be finished first, as there is only one developer.',
                                       options: [
@@ -436,7 +440,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   OptionsForm(
                                       selection: Resources.cupertinoAccentColors.entries
                                               .firstWhereOrDefault((value) =>
-                                                  value.value.color == Share.settings.config.cupertinoAccentColor.color)
+                                                  value.value.color == Share.session.settings.cupertinoAccentColor.color)
                                               ?.key ??
                                           0,
                                       description:
@@ -454,7 +458,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                   ))))
                                           .toList(),
                                       update: <T>(v) {
-                                        Share.settings.config.cupertinoAccentColor = Resources.cupertinoAccentColors[v] ??
+                                        Share.session.settings.cupertinoAccentColor = Resources.cupertinoAccentColors[v] ??
                                             Resources.cupertinoAccentColors.values.first; // Set
                                         Share.refreshBase.broadcast(); // Refresh
                                       })
@@ -463,7 +467,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     trailing: Row(children: [
                       Container(
                           margin: EdgeInsets.symmetric(horizontal: 5),
-                          child: Opacity(opacity: 0.5, child: Text(Share.settings.config.cupertinoAccentColor.name))),
+                          child: Opacity(opacity: 0.5, child: Text(Share.session.settings.cupertinoAccentColor.name))),
                       CupertinoListTileChevron()
                     ])),
                 CupertinoListTile(
@@ -472,15 +476,17 @@ class _SettingsPageState extends State<SettingsPage> {
                         CupertinoPageRoute(
                             builder: (context) => CupertinoModalPage(title: 'Language', children: [
                                   OptionsForm(
-                                      selection: Share.settings.config.languageCode,
+                                      selection: Share.settings.appSettings.languageCode,
                                       description:
                                           'The selected language will only be reflected in the app interface. Grade, event, lesson descriptions and generated messages will not be affected.',
                                       options: Share.translator.supportedLanguages
                                           .select((x, index) => OptionEntry(name: x.name, value: x.code))
                                           .toList(),
                                       update: <T>(v) {
-                                        Share.settings.config.languageCode = v; // Set
-                                        Share.translator.loadResources(Share.settings.config.languageCode).then((value) {
+                                        Share.settings.appSettings.languageCode = v; // Set
+                                        Share.translator
+                                            .loadResources(Share.settings.appSettings.languageCode)
+                                            .then((value) {
                                           Share.currentIdleSplash = Share.translator.getRandomSplash();
                                           Share.currentEndingSplash = Share.translator.getRandomEndingSplash();
                                           Share.refreshBase.broadcast(); // Refresh everything
@@ -517,9 +523,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                                     child: Text('Background synchronization',
                                                         maxLines: 1, overflow: TextOverflow.ellipsis)),
                                                 child: CupertinoSwitch(
-                                                    value: Share.settings.config.enableBackgroundSync,
+                                                    value: Share.session.settings.enableBackgroundSync,
                                                     onChanged: (s) =>
-                                                        setState(() => Share.settings.config.enableBackgroundSync = s))),
+                                                        setState(() => Share.session.settings.enableBackgroundSync = s))),
                                           ]),
                                       CupertinoListSection.insetGrouped(
                                           additionalDividerMargin: 5,
@@ -538,9 +544,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                                     child: Text('Synchronize on Wi-Fi only',
                                                         maxLines: 1, overflow: TextOverflow.ellipsis)),
                                                 child: CupertinoSwitch(
-                                                    value: Share.settings.config.backgroundSyncWiFiOnly,
+                                                    value: Share.session.settings.backgroundSyncWiFiOnly,
                                                     onChanged: (s) =>
-                                                        setState(() => Share.settings.config.backgroundSyncWiFiOnly = s))),
+                                                        setState(() => Share.session.settings.backgroundSyncWiFiOnly = s))),
                                             CupertinoListTile(
                                                 title: Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -559,7 +565,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                   result > Duration(minutes: 180))) {
                                                             result = null;
                                                           }
-                                                          Share.settings.config.backgroundSyncInterval =
+                                                          Share.session.settings.backgroundSyncInterval =
                                                               result?.inMinutes ?? 15;
                                                           setState(() => _syncTimeController.text = result != null
                                                               ? prettyDuration(result,
@@ -569,7 +575,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                   conjunction: ', ',
                                                                   spacer: '',
                                                                   locale: DurationLocale.fromLanguageCode(
-                                                                          Share.settings.config.localeCode) ??
+                                                                          Share.settings.appSettings.localeCode) ??
                                                                       EnglishDurationLocale())
                                                               : '');
                                                         },
@@ -639,50 +645,50 @@ class _SettingsPageState extends State<SettingsPage> {
                                                     flex: 2,
                                                     child: Text('Timetables', maxLines: 1, overflow: TextOverflow.ellipsis)),
                                                 child: CupertinoSwitch(
-                                                    value: Share.settings.config.enableTimetableNotifications,
+                                                    value: Share.session.settings.enableTimetableNotifications,
                                                     onChanged: (s) => setState(
-                                                        () => Share.settings.config.enableTimetableNotifications = s))),
+                                                        () => Share.session.settings.enableTimetableNotifications = s))),
                                             CupertinoFormRow(
                                                 prefix: Flexible(
                                                     flex: 2,
                                                     child: Text('Grades', maxLines: 1, overflow: TextOverflow.ellipsis)),
                                                 child: CupertinoSwitch(
-                                                    value: Share.settings.config.enableGradesNotifications,
+                                                    value: Share.session.settings.enableGradesNotifications,
                                                     onChanged: (s) => setState(
-                                                        () => Share.settings.config.enableGradesNotifications = s))),
+                                                        () => Share.session.settings.enableGradesNotifications = s))),
                                             CupertinoFormRow(
                                                 prefix: Flexible(
                                                     flex: 2,
                                                     child: Text('Events', maxLines: 1, overflow: TextOverflow.ellipsis)),
                                                 child: CupertinoSwitch(
-                                                    value: Share.settings.config.enableEventsNotifications,
+                                                    value: Share.session.settings.enableEventsNotifications,
                                                     onChanged: (s) => setState(
-                                                        () => Share.settings.config.enableEventsNotifications = s))),
+                                                        () => Share.session.settings.enableEventsNotifications = s))),
                                             CupertinoFormRow(
                                                 prefix: Flexible(
                                                     flex: 2,
                                                     child: Text('Attendance', maxLines: 1, overflow: TextOverflow.ellipsis)),
                                                 child: CupertinoSwitch(
-                                                    value: Share.settings.config.enableAttendanceNotifications,
+                                                    value: Share.session.settings.enableAttendanceNotifications,
                                                     onChanged: (s) => setState(
-                                                        () => Share.settings.config.enableAttendanceNotifications = s))),
+                                                        () => Share.session.settings.enableAttendanceNotifications = s))),
                                             CupertinoFormRow(
                                                 prefix: Flexible(
                                                     flex: 2,
                                                     child:
                                                         Text('Announcements', maxLines: 1, overflow: TextOverflow.ellipsis)),
                                                 child: CupertinoSwitch(
-                                                    value: Share.settings.config.enableAnnouncementsNotifications,
+                                                    value: Share.session.settings.enableAnnouncementsNotifications,
                                                     onChanged: (s) => setState(
-                                                        () => Share.settings.config.enableAnnouncementsNotifications = s))),
+                                                        () => Share.session.settings.enableAnnouncementsNotifications = s))),
                                             CupertinoFormRow(
                                                 prefix: Flexible(
                                                     flex: 2,
                                                     child: Text('Messages', maxLines: 1, overflow: TextOverflow.ellipsis)),
                                                 child: CupertinoSwitch(
-                                                    value: Share.settings.config.enableMessagesNotifications,
+                                                    value: Share.session.settings.enableMessagesNotifications,
                                                     onChanged: (s) => setState(
-                                                        () => Share.settings.config.enableMessagesNotifications = s))),
+                                                        () => Share.session.settings.enableMessagesNotifications = s))),
                                           ])
                                     ]))))),
                     title: Text('Notifications', overflow: TextOverflow.ellipsis),
@@ -734,7 +740,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                               result < Duration(minutes: -15))) {
                                                         result = null;
                                                       }
-                                                      Share.settings.config.bellOffset = result ?? Duration.zero;
+                                                      Share.session.settings.bellOffset = result ?? Duration.zero;
                                                       setState(() => _bellTimeController.text = result != null
                                                           ? prettyDuration(result,
                                                               tersity: DurationTersity.second,
@@ -743,7 +749,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                               conjunction: ', ',
                                                               spacer: '',
                                                               locale: DurationLocale.fromLanguageCode(
-                                                                      Share.settings.config.localeCode) ??
+                                                                      Share.settings.appSettings.localeCode) ??
                                                                   EnglishDurationLocale())
                                                           : '');
                                                     },
@@ -787,7 +793,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                     onChanged: (value) {
                                                       var result = int.tryParse(value);
                                                       if (result != null && (result > 45 || result <= 0)) result = null;
-                                                      Share.settings.config.lessonCallTime = result ?? 15;
+                                                      Share.session.settings.lessonCallTime = result ?? 15;
                                                       setState(() => _callTimeController.text = result?.toString() ?? '');
                                                     },
                                                     controller: _callTimeController,
@@ -803,14 +809,14 @@ class _SettingsPageState extends State<SettingsPage> {
                                   OptionsForm(
                                       pop: false,
                                       header: 'CALL SETTINGS',
-                                      selection: Share.settings.config.lessonCallType,
+                                      selection: Share.session.settings.lessonCallType,
                                       description:
                                           'Note, this is used only for auto-generating preset messages, which may not always be accurate.',
                                       options: LessonCallTypes.values
                                           .select((x, index) => OptionEntry(name: x.name, value: x))
                                           .toList(),
                                       update: <T>(v) {
-                                        Share.settings.config.lessonCallType = v; // Set
+                                        Share.session.settings.lessonCallType = v; // Set
                                         Share.refreshBase.broadcast(); // Refresh
                                       })
                                 ]))),
@@ -849,30 +855,30 @@ class _SettingsPageState extends State<SettingsPage> {
                                                     child: Text('Use weighted average',
                                                         maxLines: 1, overflow: TextOverflow.ellipsis)),
                                                 child: CupertinoSwitch(
-                                                    value: Share.settings.config.weightedAverage,
+                                                    value: Share.session.settings.weightedAverage,
                                                     onChanged: (s) =>
-                                                        setState(() => Share.settings.config.weightedAverage = s))),
+                                                        setState(() => Share.session.settings.weightedAverage = s))),
                                             CupertinoFormRow(
                                                 prefix: Flexible(
                                                     flex: 2,
                                                     child: Text('Auto-adapt to grades',
                                                         maxLines: 1, overflow: TextOverflow.ellipsis)),
                                                 child: CupertinoSwitch(
-                                                    value: Share.settings.config.autoArithmeticAverage,
+                                                    value: Share.session.settings.autoArithmeticAverage,
                                                     onChanged: (s) =>
-                                                        setState(() => Share.settings.config.autoArithmeticAverage = s)))
+                                                        setState(() => Share.session.settings.autoArithmeticAverage = s)))
                                           ]),
                                       OptionsForm(
                                           pop: false,
                                           header: 'YEARLY AVERAGE',
-                                          selection: Share.settings.config.yearlyAverageMethod,
+                                          selection: Share.session.settings.yearlyAverageMethod,
                                           description:
                                               'Note, the average displayed by the app is calculated locally, and may not be respected by every school.',
                                           options: YearlyAverageMethods.values
                                               .select((x, index) => OptionEntry(name: x.name, value: x))
                                               .toList(),
                                           update: <T>(v) {
-                                            Share.settings.config.yearlyAverageMethod = v; // Set
+                                            Share.session.settings.yearlyAverageMethod = v; // Set
                                             Share.refreshBase.broadcast(); // Refresh
                                           })
                                     ]))))),
@@ -890,8 +896,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                           'These values will overwite all default grade modifiers for the specified entries, e.g. count \'-\' as \'-0.25\', etc.',
                                       placeholder: 'Value',
                                       maxKeyLength: 1,
-                                      update: <T>([v]) => (Share.settings.config.customGradeModifierValues =
-                                              v?.cast() ?? Share.settings.config.customGradeModifierValues)
+                                      update: <T>([v]) => (Share.session.settings.customGradeModifierValues =
+                                              v?.cast() ?? Share.session.settings.customGradeModifierValues)
                                           .cast(),
                                       validate: (v) => double.tryParse(v)),
                                   // Custom grade values
@@ -900,8 +906,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                       description:
                                           'These values will overwite the default grade margins, e.g. make values such as \'4.75\' count as \'5\', etc.',
                                       placeholder: 'Value',
-                                      update: <T>([v]) => (Share.settings.config.customGradeMarginValues =
-                                              v?.cast() ?? Share.settings.config.customGradeMarginValues)
+                                      update: <T>([v]) => (Share.session.settings.customGradeMarginValues =
+                                              v?.cast() ?? Share.session.settings.customGradeMarginValues)
                                           .cast(),
                                       validate: (v) => double.tryParse(v)),
                                   // Custom grade values
@@ -910,8 +916,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                       description:
                                           'These values will overwite all default grade values for the specified entries, e.g. from \'nb\' to \'1\', etc.',
                                       placeholder: 'Value',
-                                      update: <T>([v]) => (Share.settings.config.customGradeValues =
-                                              v?.cast() ?? Share.settings.config.customGradeValues)
+                                      update: <T>([v]) => (Share.session.settings.customGradeValues =
+                                              v?.cast() ?? Share.session.settings.customGradeValues)
                                           .cast(),
                                       validate: (v) => double.tryParse(v))
                                 ]))),
@@ -971,10 +977,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                                       maxLines: 1,
                                                                                       overflow: TextOverflow.ellipsis)),
                                                                               child: CupertinoSwitch(
-                                                                                  value: Share.settings.config.devMode,
+                                                                                  value: Share.session.settings.devMode,
                                                                                   onChanged: (s) {
                                                                                     setState(() =>
-                                                                                        Share.settings.config.devMode = s);
+                                                                                        Share.session.settings.devMode = s);
                                                                                     Share.refreshBase
                                                                                         .broadcast(); // Refresh everything
                                                                                   }))

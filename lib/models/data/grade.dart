@@ -12,7 +12,7 @@ import 'package:oshi/share/share.dart';
 part 'grade.g.dart';
 
 Map<String, double> get _customGradeModifierValues {
-  var values = {...Share.settings.config.customGradeModifierValues};
+  var values = {...Share.session.settings.customGradeModifierValues};
   values.update('+', (value) => value, ifAbsent: () => 0.5);
   values.update('-', (value) => value, ifAbsent: () => -0.25);
   return values;
@@ -100,10 +100,10 @@ class Grade extends Equatable {
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get detailsDateString =>
       (countsToAverage ? '${weight.toString()} • ' : '') +
-      DateFormat.yMMMMEEEEd(Share.settings.config.localeCode).format(date);
+      DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(date);
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get addedDateString => "${addedBy.name} • ${DateFormat.yMd(Share.settings.config.localeCode).format(date)}";
+  String get addedDateString => "${addedBy.name} • ${DateFormat.yMd(Share.settings.appSettings.localeCode).format(date)}";
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get commentsString => comments.select((x, index) => x.replaceAll('\n', ' ').replaceAll('  ', ' ')).join(' • ');
@@ -111,8 +111,8 @@ class Grade extends Equatable {
   @JsonKey(includeToJson: false, includeFromJson: false)
   double get asValue {
     double val = switch (value.isNotEmpty ? value[0] : value) {
-          _ when (Share.settings.config.customGradeValues.containsKey(value)) =>
-            Share.settings.config.customGradeValues[value],
+          _ when (Share.session.settings.customGradeValues.containsKey(value)) =>
+            Share.session.settings.customGradeValues[value],
           '1' => 1,
           '2' => 2,
           '3' => 3,
@@ -126,7 +126,7 @@ class Grade extends Equatable {
     try {
       // Handle all 6+, 1-, 5+ grade string values
       if ((_customGradeModifierValues.containsKey(value[value.length - 1])) &&
-          !(Share.settings.config.customGradeValues.containsKey(value)))
+          !(Share.session.settings.customGradeValues.containsKey(value)))
         val += (_customGradeModifierValues[value[value.length - 1]] ?? 0);
     } catch (ex) {
       // ignored

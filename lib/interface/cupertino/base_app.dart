@@ -41,8 +41,8 @@ class _BaseAppState extends State<BaseApp> {
 
     // Set up a filesystem watcher
     if (kDebugMode && Platform.isWindows) {
-      File(path.join(Directory.current.path, 'assets/resources/strings')).watch().listen(
-          (event) => Share.translator.loadResources(Share.settings.config.languageCode).then((value) => setState(() {})));
+      File(path.join(Directory.current.path, 'assets/resources/strings')).watch().listen((event) =>
+          Share.translator.loadResources(Share.settings.appSettings.languageCode).then((value) => setState(() {})));
     }
 
     // Set up other stuff after the app's launched
@@ -75,8 +75,8 @@ class _BaseAppState extends State<BaseApp> {
 
           return ShowFPS(
               alignment: Alignment.topLeft,
-              visible: Share.settings.config.devMode,
-              showChart: Share.settings.config.devMode,
+              visible: Share.session.settings.devMode,
+              showChart: Share.session.settings.devMode,
               borderRadius: BorderRadius.all(Radius.circular(11)),
               child: Builder(builder: (context) {
                 // Re-subscribe to all events - modals
@@ -179,6 +179,6 @@ class _BaseAppState extends State<BaseApp> {
       return CupertinoThemeData(primaryColor: CupertinoColors.systemRed);
     }
     // Default colors - should be changeable through settings
-    return CupertinoThemeData(primaryColor: Share.settings.config.cupertinoAccentColor.color);
+    return CupertinoThemeData(primaryColor: Share.session.settings.cupertinoAccentColor.color);
   }
 }

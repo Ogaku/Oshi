@@ -198,7 +198,7 @@ class TimetableLesson extends Equatable {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get detailsTimeTeacherString =>
-      "${DateFormat.Hm(Share.settings.config.localeCode).format(hourFrom ?? DateTime.now())} - ${DateFormat.Hm(Share.settings.config.localeCode).format(hourTo ?? DateTime.now())} • ${teacher?.name}";
+      "${DateFormat.Hm(Share.settings.appSettings.localeCode).format(hourFrom ?? DateTime.now())} - ${DateFormat.Hm(Share.settings.appSettings.localeCode).format(hourTo ?? DateTime.now())} • ${teacher?.name}";
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get substitutionDetailsString => isSubstitution

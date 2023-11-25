@@ -205,7 +205,7 @@ class NotificationController {
           ?.areNotificationsEnabled()
           .then((value) {
         try {
-          if (!Share.settings.config.notificationsAskedOnce && !(value ?? true)) {
+          if (!Share.session.settings.notificationsAskedOnce && !(value ?? true)) {
             Share.showErrorModal.broadcast(Value((
               title: 'Allow Oshi to send you notifications?',
               message:
@@ -214,9 +214,9 @@ class NotificationController {
                 'Allow': () async => Share.notificationsPlugin
                     .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
                     ?.requestNotificationsPermission()
-                    .then((value) => Share.settings.config.notificationsAskedOnce = true),
+                    .then((value) => Share.session.settings.notificationsAskedOnce = true),
                 'Later': () async {},
-                'Never': () async => Share.settings.config.notificationsAskedOnce = true
+                'Never': () async => Share.session.settings.notificationsAskedOnce = true
               }
             )));
           }
@@ -235,7 +235,7 @@ class NotificationController {
           ?.requestPermissions(alert: true, badge: true, sound: true)
           .then((value) {
         try {
-          if (!Share.settings.config.notificationsAskedOnce && !(value ?? true)) {
+          if (!Share.session.settings.notificationsAskedOnce && !(value ?? true)) {
             Share.showErrorModal.broadcast(Value((
               title: 'Allow Oshi to send you notifications?',
               message:
@@ -244,9 +244,9 @@ class NotificationController {
                 'Allow': () async => Share.notificationsPlugin
                     .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
                     ?.requestNotificationsPermission()
-                    .then((value) => Share.settings.config.notificationsAskedOnce = true),
+                    .then((value) => Share.session.settings.notificationsAskedOnce = true),
                 'Later': () async {},
-                'Never': () async => Share.settings.config.notificationsAskedOnce = true
+                'Never': () async => Share.session.settings.notificationsAskedOnce = true
               }
             )));
           }
@@ -265,7 +265,7 @@ class NotificationController {
           ?.requestPermissions(alert: true, badge: true, sound: true)
           .then((value) {
         try {
-          if (!Share.settings.config.notificationsAskedOnce && !(value ?? true)) {
+          if (!Share.session.settings.notificationsAskedOnce && !(value ?? true)) {
             Share.showErrorModal.broadcast(Value((
               title: 'Allow Oshi to send you notifications?',
               message:
@@ -274,9 +274,9 @@ class NotificationController {
                 'Allow': () async => Share.notificationsPlugin
                     .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
                     ?.requestNotificationsPermission()
-                    .then((value) => Share.settings.config.notificationsAskedOnce = true),
+                    .then((value) => Share.session.settings.notificationsAskedOnce = true),
                 'Later': () async {},
-                'Never': () async => Share.settings.config.notificationsAskedOnce = true
+                'Never': () async => Share.session.settings.notificationsAskedOnce = true
               }
             )));
           }

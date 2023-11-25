@@ -72,7 +72,7 @@ class Lesson {
   double get gradesAverage => grades
       .where((x) => x.countsToAverage && x.asValue >= 0)
       .toList()
-      .gadesAverage(weighted: Share.settings.config.weightedAverage, adapt: Share.settings.config.autoArithmeticAverage);
+      .gadesAverage(weighted: Share.session.settings.weightedAverage, adapt: Share.session.settings.autoArithmeticAverage);
 
   factory Lesson.fromJson(Map<String, dynamic> json) => _$LessonFromJson(json);
 
@@ -120,7 +120,7 @@ extension AverageExtension on List<Grade> {
     }
 
     /* Return the average, depending on the selected configuration */
-    return switch (Share.settings.config.yearlyAverageMethod) {
+    return switch (Share.session.settings.yearlyAverageMethod) {
       YearlyAverageMethods.allGradesAverage => average(weighted, adapt),
       YearlyAverageMethods.averagesAverage =>
         (average(weighted, adapt, secondSemester: false) + average(weighted, adapt, firstSemester: false)) / 2.0,

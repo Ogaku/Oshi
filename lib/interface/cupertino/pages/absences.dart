@@ -40,7 +40,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
     // Group by date, I know IT'S A DAMN STRING, but we're saving on custom controls
     var attendancesToDisplayByDate = Share.session.data.student.attendances
             ?.orderByDescending((x) => x.date)
-            .groupBy((x) => DateFormat.yMMMMEEEEd(Share.settings.config.localeCode).format(x.date))
+            .groupBy((x) => DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(x.date))
             .toList() ??
         [];
 
@@ -277,7 +277,7 @@ extension LessonWidgetExtension on Attendance {
                                       Flexible(
                                           child: Opacity(
                                               opacity: 0.5,
-                                              child: Text(DateFormat.yMMMEd(Share.settings.config.localeCode).format(date),
+                                              child: Text(DateFormat.yMMMEd(Share.settings.appSettings.localeCode).format(date),
                                                   maxLines: 1, overflow: TextOverflow.ellipsis)))
                                     ],
                                   )),
@@ -290,7 +290,7 @@ extension LessonWidgetExtension on Attendance {
                                           child: Opacity(
                                               opacity: 0.5,
                                               child: Text(
-                                                  '${DateFormat.Hm(Share.settings.config.localeCode).format(addDate)}, ${DateFormat.yMMMd(Share.settings.config.localeCode).format(addDate)}',
+                                                  '${DateFormat.Hm(Share.settings.appSettings.localeCode).format(addDate)}, ${DateFormat.yMMMd(Share.settings.appSettings.localeCode).format(addDate)}',
                                                   maxLines: 1,
                                                   overflow: TextOverflow.ellipsis)))
                                     ],

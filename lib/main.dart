@@ -34,7 +34,7 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  StatefulWidget Function() child = Share.settings.config.useCupertino
+  StatefulWidget Function() child = Share.settings.appSettings.useCupertino
       ? () => (Share.settings.sessions.lastSession != null ? cupertinoapp.baseApp : cupertinoapp.sessionsPage)
       : () => materialapp.sessionsPage;
 
@@ -51,7 +51,7 @@ class _MainAppState extends State<MainApp> {
     Share.backgroundSyncActive = false;
     await BackgroundFetch.configure(
         BackgroundFetchConfig(
-            minimumFetchInterval: Share.settings.config.backgroundSyncInterval,
+            minimumFetchInterval: Share.session.settings.backgroundSyncInterval,
             stopOnTerminate: false,
             enableHeadless: true,
             requiresBatteryNotLow: false,
@@ -63,11 +63,11 @@ class _MainAppState extends State<MainApp> {
       // This is the fetch-event callback
 
       // Validate our internet connection
-      if (Share.settings.config.backgroundSyncWiFiOnly &&
+      if (Share.session.settings.backgroundSyncWiFiOnly &&
           (await (Connectivity().checkConnectivity())) != ConnectivityResult.wifi) return;
 
       // Validate our session data
-      if (Share.settings.sessions.lastSession == null || !Share.settings.config.enableBackgroundSync) return;
+      if (Share.settings.sessions.lastSession == null || !Share.session.settings.enableBackgroundSync) return;
 
       // Try to log in and refresh everything
       await Share.session.tryLogin(); // Auto-login on restart if valid

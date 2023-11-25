@@ -290,8 +290,8 @@ class _MessagesPageState extends State<MessagesPage> {
                                                                         x.message.sendDate.year ==
                                                                             x.message.readDate?.year &&
                                                                         x.message.sendDate.day != x.message.readDate?.day
-                                                                    ? '${DateFormat.MMMd(Share.settings.config.localeCode).format(x.message.sendDate)} - ${DateFormat.d(Share.settings.config.localeCode).format(x.message.readDate ?? DateTime.now())}'
-                                                                    : '${DateFormat.MMMd(Share.settings.config.localeCode).format(x.message.sendDate)} - ${DateFormat(x.message.sendDate.year == x.message.readDate?.year ? 'MMMd' : 'yMMMd', Share.settings.config.localeCode).format(x.message.readDate ?? DateTime.now())}')
+                                                                    ? '${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(x.message.sendDate)} - ${DateFormat.d(Share.settings.appSettings.localeCode).format(x.message.readDate ?? DateTime.now())}'
+                                                                    : '${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(x.message.sendDate)} - ${DateFormat(x.message.sendDate.year == x.message.readDate?.year ? 'MMMd' : 'yMMMd', Share.settings.appSettings.localeCode).format(x.message.readDate ?? DateTime.now())}')
                                                                 : x.message.sendDateString,
                                                             overflow: TextOverflow.ellipsis,
                                                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),

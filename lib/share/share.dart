@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' as notifications;
 import 'package:format/format.dart';
 import 'package:intl/intl.dart';
+import 'package:mutex/mutex.dart';
 import 'package:oshi/interface/cupertino/pages/absences.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/models/data/announcement.dart';
@@ -49,6 +50,7 @@ class Share {
   // The provider and register data for the current session
   // MUST be initialized before switching to the base app
   static late Session session;
+  static final Mutex settingsMutex = Mutex();
 
   // Shared settings data for managing sessions
   static Settings settings = Settings();
@@ -95,21 +97,17 @@ class Settings {
   SessionsData sessions = SessionsData();
 
   // The application configuration
-  Config config = Config();
+  Config appSettings = Config();
 
   // Load all the data from storage, called manually
   Future<({bool success, Exception? message})> load() async {
     try {
-      // Remove all change listeners
-      config.removeListener(save);
-
-      // Load saved settings
-      sessions = (await Hive.openBox('sessions')).get('sessions', defaultValue: SessionsData());
-      config = (await Hive.openBox('config'))
-          .get('config', defaultValue: Config(languageCode: Platform.localeName.substring(0, 2)));
-
-      // Re-setup change listeners
-      config.addListener(save);
+      await Share.settingsMutex.protect<void>(() async {
+        // Load saved settings
+        sessions = (await Hive.openBox('sessions')).get('sessions', defaultValue: SessionsData());
+        appSettings = (await Hive.openBox('config'))
+            .get('config', defaultValue: Config(languageCode: Platform.localeName.substring(0, 2)));
+      });
     } on Exception catch (ex) {
       return (success: false, message: ex);
     } catch (ex) {
@@ -121,13 +119,15 @@ class Settings {
   // Save all received data to storage, called automatically
   Future<({bool success, Exception? message})> save() async {
     try {
-      // Remove everything, as Hive's append-only
-      (await Hive.openBox('sessions')).clear();
-      (await Hive.openBox('config')).clear();
+      await Share.settingsMutex.protect<void>(() async {
+        // Remove everything, as Hive's append-only
+        (await Hive.openBox('sessions')).clear();
+        (await Hive.openBox('config')).clear();
 
-      // Put the new data in, thank the dev for being an idiot
-      (await Hive.openBox('sessions')).put('sessions', sessions);
-      (await Hive.openBox('config')).put('config', config);
+        // Put the new data in, thank the dev for being an idiot
+        (await Hive.openBox('sessions')).put('sessions', sessions);
+        (await Hive.openBox('config')).put('config', appSettings);
+      });
     } on Exception catch (ex) {
       return (success: false, message: ex);
     } catch (ex) {
@@ -139,16 +139,15 @@ class Settings {
   // Clear provider settings - login data, other custom settings
   Future<({bool success, Exception? message})> clear() async {
     try {
-      // Remove all change listeners
-      config.removeListener(save);
-
-      // Clear internal settings
-      (await Hive.openBox('sessions')).clear();
-      (await Hive.openBox('config')).clear();
+      await Share.settingsMutex.protect<void>(() async {
+        // Clear internal settings
+        (await Hive.openBox('sessions')).clear();
+        (await Hive.openBox('config')).clear();
+      });
 
       // Re-generate settings
       sessions = SessionsData();
-      config = Config();
+      appSettings = Config();
     } on Exception catch (ex) {
       return (success: false, message: ex);
     } catch (ex) {
@@ -182,20 +181,22 @@ class SessionsData extends HiveObject {
 
 @HiveType(typeId: 3)
 class Session extends HiveObject {
-  Session({
-    this.sessionName = 'John Doe',
-    this.providerGuid = 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER',
-    Map<String, String>? credentials,
-    IProvider? provider,
-    List<RegisterChanges>? changes,
-    List<Event>? adminEvents,
-    List<Event>? customEvents,
-  })  : provider = provider ?? Share.providers[providerGuid]!.factory(),
+  Session(
+      {this.sessionName = 'John Doe',
+      this.providerGuid = 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER',
+      Map<String, String>? credentials,
+      IProvider? provider,
+      List<RegisterChanges>? changes,
+      List<Event>? adminEvents,
+      List<Event>? customEvents,
+      SessionConfig? settings})
+      : provider = provider ?? Share.providers[providerGuid]!.factory(),
         sessionCredentials = credentials ?? {},
         data = ProviderData(),
         changes = changes ?? [],
         adminEvents = adminEvents ?? [],
-        customEvents = customEvents ?? [];
+        customEvents = customEvents ?? [],
+        settings = settings ?? SessionConfig();
 
   // Refresh status
   final RefreshStatus refreshStatus = RefreshStatus();
@@ -218,6 +219,9 @@ class Session extends HiveObject {
 
   @HiveField(5)
   String providerGuid;
+
+  @HiveField(8)
+  SessionConfig settings = SessionConfig();
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   IProvider provider;
@@ -322,8 +326,9 @@ class Session extends HiveObject {
                 date: DateTime.parse(element["start"]),
                 timeFrom: DateTime.parse(element["start"]),
                 timeTo: DateTime.parse(element["end"]),
-                title: element["title"][Share.settings.config.languageCode] ?? element["title"]["en"] ?? '',
-                content: element["description"][Share.settings.config.languageCode] ?? element["description"]["en"] ?? '',
+                title: element["title"][Share.settings.appSettings.languageCode] ?? element["title"]["en"] ?? '',
+                content:
+                    element["description"][Share.settings.appSettings.languageCode] ?? element["description"]["en"] ?? '',
                 category: EventCategory.admin))
             .toList();
       } catch (ex) {
@@ -518,7 +523,7 @@ class Session extends HiveObject {
         var messageNotifications = <({String title, String body, String payload})>[];
 
         // Compose timetable notifications
-        if (Share.settings.config.enableTimetableNotifications) {
+        if (settings.enableTimetableNotifications) {
           detectedChanges.timetablesChanged.forEach((element) => notifications.add((
                 title: '/Notifications/Categories/Timetable/${switch (element.type) {
                   RegisterChangeTypes.removed => "Cancelled",
@@ -527,8 +532,8 @@ class Session extends HiveObject {
                   _ => "New"
                 }}'
                     .localized
-                    .format(
-                        DateFormat.yMd(Share.settings.config.localeCode).format(element.value.date), element.value.lessonNo),
+                    .format(DateFormat.yMd(Share.settings.appSettings.localeCode).format(element.value.date),
+                        element.value.lessonNo),
                 body: (element.value.isSubstitution &&
                             (element.value.substitutionDetails?.originalSubject?.name.isNotEmpty ?? false)
                         ? '${element.value.substitutionDetails?.originalSubject?.name} → '
@@ -536,12 +541,12 @@ class Session extends HiveObject {
                     '/Notifications/Captions/Joiners/Lesson'.localized.format(
                         element.value.subject?.name ?? element.value.classroomString,
                         element.value.teacher?.name ?? '/Notifications/Placeholder/Teacher'.localized),
-                payload: 'timetables\n${DateFormat.yMd(Share.settings.config.localeCode).format(element.value.date)}'
+                payload: 'timetables\n${DateFormat.yMd(Share.settings.appSettings.localeCode).format(element.value.date)}'
               )));
         }
 
         // Compose message notifications
-        if (Share.settings.config.enableMessagesNotifications) {
+        if (settings.enableMessagesNotifications) {
           detectedChanges.messagesChanged
               .where((element) => element.type == RegisterChangeTypes.added)
               .forEach((element) => messageNotifications.add((
@@ -552,7 +557,7 @@ class Session extends HiveObject {
         }
 
         // Compose attendance notifications
-        if (Share.settings.config.enableAttendanceNotifications) {
+        if (settings.enableAttendanceNotifications) {
           detectedChanges.attendancesChanged
               .where((element) =>
                   element.type == RegisterChangeTypes.added &&
@@ -567,7 +572,7 @@ class Session extends HiveObject {
                       _ => "New"
                     }}'
                         .localized
-                        .format(DateFormat.yMd(Share.settings.config.localeCode).format(element.value.date),
+                        .format(DateFormat.yMd(Share.settings.appSettings.localeCode).format(element.value.date),
                             element.value.lessonNo),
                     body: '/Notifications/Captions/Joiners/Lesson'.localized.format(
                         element.value.lesson.subject?.name ?? '/Notifications/Placeholder/Lesson'.localized,
@@ -592,7 +597,7 @@ class Session extends HiveObject {
                         .localized
                         .format(
                             element.value.type.asString(),
-                            DateFormat.yMd(Share.settings.config.localeCode).format(element.value.date),
+                            DateFormat.yMd(Share.settings.appSettings.localeCode).format(element.value.date),
                             element.value.lessonNo),
                     body: '/Notifications/Captions/Joiners/Lesson'.localized.format(
                         element.value.lesson.subject?.name ?? '/Notifications/Placeholder/Lesson'.localized,
@@ -602,7 +607,7 @@ class Session extends HiveObject {
         }
 
         // Compose grade notifications
-        if (Share.settings.config.enableGradesNotifications) {
+        if (settings.enableGradesNotifications) {
           detectedChanges.gradesChanged
               .where((element) => element.type == RegisterChangeTypes.added)
               .forEach((element) => notifications.add((
@@ -624,7 +629,7 @@ class Session extends HiveObject {
                     }}'
                         .localized
                         .format(element.value.value,
-                            DateFormat.yMd(Share.settings.config.localeCode).format(element.value.date)),
+                            DateFormat.yMd(Share.settings.appSettings.localeCode).format(element.value.date)),
                     body: '/Notifications/Captions/Joiners/Lesson'.localized.format(
                         (element.payload is Lesson ? element.payload as Lesson : null)?.name ??
                             '/Notifications/Placeholder/Lesson'.localized,
@@ -635,7 +640,7 @@ class Session extends HiveObject {
         }
 
         // Compose announcement notifications
-        if (Share.settings.config.enableAnnouncementsNotifications) {
+        if (settings.enableAnnouncementsNotifications) {
           detectedChanges.announcementsChanged.forEach((element) => notifications.add((
                 title: '/Notifications/Categories/Announcement/${switch (element.type) {
                   RegisterChangeTypes.changed => "Changed",
@@ -649,7 +654,7 @@ class Session extends HiveObject {
         }
 
         // Compose event notifications
-        if (Share.settings.config.enableEventsNotifications) {
+        if (settings.enableEventsNotifications) {
           detectedChanges.eventsChanged
               .where((element) => element.value.category == EventCategory.teacher)
               .forEach((element) => notifications.add((
@@ -662,18 +667,18 @@ class Session extends HiveObject {
                         .format(element.value.sender?.name ?? ''),
                     body: (element.value.timeFrom.month == element.value.timeTo?.month &&
                             element.value.timeFrom.day == element.value.timeTo?.day)
-                        ? DateFormat.yMMMMEEEEd(Share.settings.config.localeCode)
+                        ? DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode)
                                 .format(element.value.timeTo ?? DateTime.now()) // Wednesday, May 10
                             +
                             ((element.value.timeFrom.hour != 0 && element.value.timeTo?.hour != 0) &&
                                     (element.value.timeFrom.asDate() == element.value.timeTo?.asDate())
-                                ? "(${DateFormat.Hm(Share.settings.config.localeCode).format(element.value.timeFrom)} - ${DateFormat.Hm(Share.settings.config.localeCode).format(element.value.timeTo ?? DateTime.now())})"
+                                ? "(${DateFormat.Hm(Share.settings.appSettings.localeCode).format(element.value.timeFrom)} - ${DateFormat.Hm(Share.settings.appSettings.localeCode).format(element.value.timeTo ?? DateTime.now())})"
                                 : '') // (10:30 - 11:25)
                         : (element.value.timeFrom.month == element.value.timeTo?.month)
-                            ? "${DateFormat.d(Share.settings.config.localeCode).format(element.value.timeFrom)} - ${DateFormat.yMMMMEEEEd(Share.settings.config.localeCode).format(element.value.timeTo ?? DateTime.now())}" // 10 - 15 May 2023
-                            : "${DateFormat.MMMEd(Share.settings.config.localeCode).format(element.value.timeFrom)} - ${DateFormat.MMMEd(Share.settings.config.localeCode).format(element.value.timeTo ?? DateTime.now())}", // Wed, May 10 - Fri, May 15
+                            ? "${DateFormat.d(Share.settings.appSettings.localeCode).format(element.value.timeFrom)} - ${DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(element.value.timeTo ?? DateTime.now())}" // 10 - 15 May 2023
+                            : "${DateFormat.MMMEd(Share.settings.appSettings.localeCode).format(element.value.timeFrom)} - ${DateFormat.MMMEd(Share.settings.appSettings.localeCode).format(element.value.timeTo ?? DateTime.now())}", // Wed, May 10 - Fri, May 15
                     payload:
-                        'timetables\n${DateFormat.yMd(Share.settings.config.localeCode).format(element.value.date ?? element.value.timeFrom)}'
+                        'timetables\n${DateFormat.yMd(Share.settings.appSettings.localeCode).format(element.value.date ?? element.value.timeFrom)}'
                   )));
 
           detectedChanges.eventsChanged
@@ -687,13 +692,13 @@ class Session extends HiveObject {
                         .localized
                         .format(
                             element.value.categoryName,
-                            DateFormat.MMMMEEEEd(Share.settings.config.localeCode)
+                            DateFormat.MMMMEEEEd(Share.settings.appSettings.localeCode)
                                 .format(element.value.date ?? element.value.timeFrom)),
                     body: element.value.titleString.isNotEmpty
                         ? element.value.titleString
                         : (element.value.sender?.name ?? element.value.subtitleString),
                     payload:
-                        'timetables\n${DateFormat.yMd(Share.settings.config.localeCode).format(element.value.date ?? element.value.timeFrom)}'
+                        'timetables\n${DateFormat.yMd(Share.settings.appSettings.localeCode).format(element.value.date ?? element.value.timeFrom)}'
                   )));
         }
 

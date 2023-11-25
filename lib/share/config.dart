@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_final_fields
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:darq/darq.dart';
@@ -10,6 +11,7 @@ import 'package:oshi/share/resources.dart';
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/share/share.dart';
+import 'package:path_provider/path_provider.dart';
 
 part 'config.g.dart';
 
@@ -17,12 +19,55 @@ part 'config.g.dart';
 @JsonSerializable(includeIfNull: false)
 class Config with ChangeNotifier {
   Config({
+    bool? useCupertino,
+    String? languageCode,
+  })  : _useCupertino = useCupertino ?? true,
+        _languageCode = languageCode ?? 'en';
+
+  // TODO All HiveFields should be private and trigger a settings save
+
+  @HiveField(1, defaultValue: true)
+  bool _useCupertino;
+
+  @HiveField(2, defaultValue: 'en')
+  String _languageCode;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  String get languageCode => Share.translator.supportedLanguages.any((x) => x.code == _languageCode)
+      ? _languageCode
+      : (Share.translator.supportedLanguages.firstOrDefault()?.code ?? 'en');
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  String get localeCode => availableLocalesForDateFormatting.contains(_languageCode) ? _languageCode : 'en';
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get useCupertino => _useCupertino;
+
+  set languageCode(String code) {
+    _languageCode = code;
+    notifyListeners();
+    Share.settings.save();
+  }
+
+  set useCupertino(bool value) {
+    _useCupertino = value;
+    notifyListeners();
+    Share.settings.save();
+  }
+
+  factory Config.fromJson(Map<String, dynamic> json) => _$ConfigFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ConfigToJson(this);
+}
+
+@HiveType(typeId: 8)
+@JsonSerializable(includeIfNull: false)
+class SessionConfig with ChangeNotifier {
+  SessionConfig({
     Map<String, double>? customGradeValues,
     Map<String, double>? customGradeMarginValues,
     Map<String, double>? customGradeModifierValues,
     int? cupertinoAccentColor,
-    bool? useCupertino,
-    String? languageCode,
     bool? weightedAverage,
     bool? autoArithmeticAverage,
     YearlyAverageMethods? yearlyAverageMethod,
@@ -45,8 +90,6 @@ class Config with ChangeNotifier {
         _customGradeMarginValues = customGradeMarginValues ?? {},
         _customGradeModifierValues = customGradeModifierValues ?? {'+': 0.5, '-': -0.25},
         _cupertinoAccentColor = cupertinoAccentColor ?? Resources.cupertinoAccentColors.keys.first,
-        _useCupertino = useCupertino ?? true,
-        _languageCode = languageCode ?? 'en',
         _weightedAverage = weightedAverage ?? true,
         _autoArithmeticAverage = autoArithmeticAverage ?? false,
         _yearlyAverageMethod = yearlyAverageMethod ?? YearlyAverageMethods.allGradesAverage,
@@ -81,63 +124,57 @@ class Config with ChangeNotifier {
   int _cupertinoAccentColor;
 
   @HiveField(5, defaultValue: true)
-  bool _useCupertino;
-
-  @HiveField(6, defaultValue: 'en')
-  String _languageCode;
-
-  @HiveField(7, defaultValue: true)
   bool _weightedAverage;
 
-  @HiveField(8, defaultValue: false)
+  @HiveField(6, defaultValue: false)
   bool _autoArithmeticAverage;
 
-  @HiveField(9, defaultValue: YearlyAverageMethods.allGradesAverage)
+  @HiveField(7, defaultValue: YearlyAverageMethods.allGradesAverage)
   YearlyAverageMethods _yearlyAverageMethod;
 
-  @HiveField(10, defaultValue: 15)
+  @HiveField(8, defaultValue: 15)
   int _lessonCallTime;
 
-  @HiveField(11, defaultValue: LessonCallTypes.countFromEnd)
+  @HiveField(9, defaultValue: LessonCallTypes.countFromEnd)
   LessonCallTypes _lessonCallType;
 
-  @HiveField(12, defaultValue: Duration.zero)
+  @HiveField(10, defaultValue: Duration.zero)
   Duration _bellOffset;
 
-  @HiveField(13, defaultValue: false)
+  @HiveField(11, defaultValue: false)
   bool _devMode;
 
-  @HiveField(14, defaultValue: false)
+  @HiveField(12, defaultValue: false)
   bool _notificationsAskedOnce;
 
-  @HiveField(15, defaultValue: true)
+  @HiveField(13, defaultValue: true)
   bool _enableTimetableNotifications;
 
-  @HiveField(16, defaultValue: true)
+  @HiveField(14, defaultValue: true)
   bool _enableGradesNotifications;
 
-  @HiveField(17, defaultValue: true)
+  @HiveField(15, defaultValue: true)
   bool _enableEventsNotifications;
 
-  @HiveField(18, defaultValue: true)
+  @HiveField(16, defaultValue: true)
   bool _enableAttendanceNotifications;
 
-  @HiveField(19, defaultValue: true)
+  @HiveField(17, defaultValue: true)
   bool _enableAnnouncementsNotifications;
 
-  @HiveField(20, defaultValue: true)
+  @HiveField(18, defaultValue: true)
   bool _enableMessagesNotifications;
 
-  @HiveField(21, defaultValue: '')
+  @HiveField(19, defaultValue: '')
   String _userAvatarImage;
 
-  @HiveField(22, defaultValue: true)
+  @HiveField(20, defaultValue: true)
   bool _enableBackgroundSync;
 
-  @HiveField(23, defaultValue: false)
+  @HiveField(21, defaultValue: false)
   bool _backgroundSyncWiFiOnly;
 
-  @HiveField(24, defaultValue: 15)
+  @HiveField(22, defaultValue: 15)
   int _backgroundSyncInterval;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
@@ -150,24 +187,13 @@ class Config with ChangeNotifier {
   Map<String, double> get customGradeModifierValues => _customGradeModifierValues;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  Map<double, double> get customGradeMarginValuesMap => Share.settings.config.customGradeMarginValues.entries
+  Map<double, double> get customGradeMarginValuesMap => customGradeMarginValues.entries
       .orderByDescending((x) => double.tryParse(x.key) ?? -1)
       .toMap((x) => MapEntry<double, double>(double.tryParse(x.key) ?? -1, x.value));
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   ({CupertinoDynamicColor color, String name}) get cupertinoAccentColor =>
       Resources.cupertinoAccentColors[_cupertinoAccentColor] ?? Resources.cupertinoAccentColors.values.first;
-
-  @JsonKey(includeToJson: false, includeFromJson: false)
-  String get languageCode => Share.translator.supportedLanguages.any((x) => x.code == _languageCode)
-      ? _languageCode
-      : (Share.translator.supportedLanguages.firstOrDefault()?.code ?? 'en');
-
-  @JsonKey(includeToJson: false, includeFromJson: false)
-  String get localeCode => availableLocalesForDateFormatting.contains(_languageCode) ? _languageCode : 'en';
-
-  @JsonKey(includeToJson: false, includeFromJson: false)
-  bool get useCupertino => _useCupertino;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get weightedAverage => _weightedAverage;
@@ -221,10 +247,13 @@ class Config with ChangeNotifier {
   }
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  Image? get userAvatarImage {
+  Future<Image?> get userAvatarImage async {
     try {
       if (userAvatar?.isEmpty ?? true) return null;
-      return Image.memory(userAvatar!);
+
+      return Image.file((await File(
+              '${(await getApplicationDocumentsDirectory()).path}/useravatar.${_getBase64FileExtension(_userAvatarImage)}')
+          .writeAsBytes(List.from(userAvatar!))));
     } catch (ex) {
       return null;
     }
@@ -242,16 +271,19 @@ class Config with ChangeNotifier {
   set customGradeValues(Map<String, double> customGradeValues) {
     _customGradeValues = customGradeValues;
     notifyListeners();
+    Share.settings.save();
   }
 
   set customGradeMarginValues(Map<String, double> customGradeMarginValues) {
     _customGradeMarginValues = customGradeMarginValues;
     notifyListeners();
+    Share.settings.save();
   }
 
   set customGradeModifierValues(Map<String, double> customGradeModifierValues) {
     _customGradeModifierValues = customGradeModifierValues;
     notifyListeners();
+    Share.settings.save();
   }
 
   set cupertinoAccentColor(({CupertinoDynamicColor color, String name}) cupertinoAccentColor) {
@@ -259,92 +291,101 @@ class Config with ChangeNotifier {
         Resources.cupertinoAccentColors.entries.firstWhereOrDefault((value) => value.value == cupertinoAccentColor)?.key ??
             0;
     notifyListeners();
-  }
-
-  set languageCode(String code) {
-    _languageCode = code;
-    notifyListeners();
-  }
-
-  set useCupertino(bool value) {
-    _useCupertino = value;
-    notifyListeners();
+    Share.settings.save();
   }
 
   set weightedAverage(bool value) {
     _weightedAverage = value;
     notifyListeners();
+    Share.settings.save();
   }
 
   set autoArithmeticAverage(bool value) {
     _autoArithmeticAverage = value;
     notifyListeners();
+    Share.settings.save();
   }
 
   set yearlyAverageMethod(YearlyAverageMethods value) {
     _yearlyAverageMethod = value;
     notifyListeners();
+    Share.settings.save();
   }
 
   set lessonCallTime(int value) {
     _lessonCallTime = value;
     notifyListeners();
+    Share.settings.save();
   }
 
   set lessonCallType(LessonCallTypes value) {
     _lessonCallType = value;
     notifyListeners();
+    Share.settings.save();
   }
 
   set bellOffset(Duration value) {
     _bellOffset = value;
     notifyListeners();
+    Share.settings.save();
   }
 
   set devMode(bool value) {
     _devMode = value;
     notifyListeners();
+    Share.settings.save();
   }
 
   set notificationsAskedOnce(bool value) {
     _notificationsAskedOnce = value;
     notifyListeners();
+    Share.settings.save();
   }
 
   set enableTimetableNotifications(bool value) {
     _enableTimetableNotifications = value;
     notifyListeners();
+    Share.settings.save();
   }
 
   set enableGradesNotifications(bool value) {
     _enableGradesNotifications = value;
     notifyListeners();
+    Share.settings.save();
   }
 
   set enableEventsNotifications(bool value) {
     _enableEventsNotifications = value;
     notifyListeners();
+    Share.settings.save();
   }
 
   set enableAttendanceNotifications(bool value) {
     _enableAttendanceNotifications = value;
     notifyListeners();
+    Share.settings.save();
   }
 
   set enableAnnouncementsNotifications(bool value) {
     _enableAnnouncementsNotifications = value;
     notifyListeners();
+    Share.settings.save();
   }
 
   set enableMessagesNotifications(bool value) {
     _enableMessagesNotifications = value;
     notifyListeners();
+    Share.settings.save();
   }
 
-  set userAvatar(Uint8List? value) {
+  Future<void> setUserAvatar(Uint8List? value) async {
     try {
       _userAvatarImage = value != null ? base64Encode(value) : '';
+      await File(
+              '${(await getApplicationDocumentsDirectory()).path}/useravatar.${_getBase64FileExtension(_userAvatarImage)}')
+          .writeAsBytes(List.from(userAvatar!));
       notifyListeners();
+      Share.settings.save();
     } catch (ex) {
       // ignored
     }
@@ -353,19 +394,39 @@ class Config with ChangeNotifier {
   set enableBackgroundSync(bool value) {
     _enableBackgroundSync = value;
     notifyListeners();
+    Share.settings.save();
   }
 
   set backgroundSyncWiFiOnly(bool value) {
     _backgroundSyncWiFiOnly = value;
     notifyListeners();
+    Share.settings.save();
   }
 
   set backgroundSyncInterval(int value) {
     _backgroundSyncInterval = value;
     notifyListeners();
+    Share.settings.save();
   }
 
-  factory Config.fromJson(Map<String, dynamic> json) => _$ConfigFromJson(json);
+  String _getBase64FileExtension(String base64String) {
+    switch (base64String.characters.first) {
+      case '/':
+        return 'jpeg';
+      case 'i':
+        return 'png';
+      case 'R':
+        return 'gif';
+      case 'U':
+        return 'webp';
+      case 'J':
+        return 'pdf';
+      default:
+        return 'unknown';
+    }
+  }
 
-  Map<String, dynamic> toJson() => _$ConfigToJson(this);
+  factory SessionConfig.fromJson(Map<String, dynamic> json) => _$SessionConfigFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SessionConfigToJson(this);
 }

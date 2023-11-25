@@ -96,10 +96,10 @@ class Message extends Equatable {
 
   String get sendDateString => sendDate.difference(DateTime.now().getDateOnly()).inDays > 0
       ? DateFormat.Hm().format(sendDate)
-      : DateFormat.MMMd(Share.settings.config.localeCode).format(sendDate);
+      : DateFormat.MMMd(Share.settings.appSettings.localeCode).format(sendDate);
 
   String get readDateString =>
-      "Read ${DateFormat.yMMMd(Share.settings.config.localeCode).format(readDate ?? DateTime(2000))} ${DateFormat.Hm(Share.settings.config.localeCode).format(readDate ?? DateTime(2000))}";
+      "Read ${DateFormat.yMMMd(Share.settings.appSettings.localeCode).format(readDate ?? DateTime(2000))} ${DateFormat.Hm(Share.settings.appSettings.localeCode).format(readDate ?? DateTime(2000))}";
 
   String get senderInitials => (sender?.name.isEmpty ?? true)
       ? ':)' // Placeholder, but it's up to you what to display there

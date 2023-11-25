@@ -1,9 +1,11 @@
 import 'package:event/src/event.dart';
 import 'package:event/src/eventargs.dart';
 import 'package:oshi/models/data/announcement.dart';
+import 'package:oshi/models/data/class.dart';
 import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/models/data/student.dart';
 import 'package:oshi/models/data/teacher.dart';
+import 'package:oshi/models/data/unit.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/models/provider.dart';
 import 'package:oshi/models/data/event.dart' as models;
@@ -47,7 +49,10 @@ class FakeDataReader implements IProvider {
   String get providerName => 'Sample Provider';
 
   @override
-  ProviderData? get registerData => ProviderData(student: Student(account: Account(firstName: 'John', lastName: 'Doe')));
+  ProviderData? get registerData => ProviderData(
+      student: Student(
+          account: Account(firstName: 'Harry', lastName: 'Garncarz'),
+          mainClass: Class(symbol: 'Gryffindor', unit: Unit(name: 'Hogwarts School of Witchcraft and Wizardry'))));
 
   @override
   Map<String, ({String name, bool obscure})> get credentialsConfig => {};

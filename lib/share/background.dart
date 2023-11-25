@@ -47,11 +47,11 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
   await setupBaseApplication();
 
   // Validate our internet connection
-  if (Share.settings.config.backgroundSyncWiFiOnly &&
+  if (Share.session.settings.backgroundSyncWiFiOnly &&
       (await (Connectivity().checkConnectivity())) != ConnectivityResult.wifi) return;
 
   // Validate our session data
-  if (Share.settings.sessions.lastSession == null || !Share.settings.config.enableBackgroundSync) return;
+  if (Share.settings.sessions.lastSession == null || !Share.session.settings.enableBackgroundSync) return;
 
   // Refresh everything
   await Share.session.refreshAll();
@@ -96,6 +96,7 @@ Future<void> setupBaseApplication() async {
     ..registerAdapter(YearlyAverageMethodsAdapter())
     ..registerAdapter(LessonCallTypesAdapter())
     ..registerAdapter(ConfigAdapter())
+    ..registerAdapter(SessionConfigAdapter())
     ..registerAdapter(DurationAdapter())
     ..registerAdapter(RegisterChangesAdapter())
     ..registerAdapter(RegisterChangeTypesAdapter())
@@ -114,7 +115,7 @@ Future<void> setupBaseApplication() async {
   if (Share.settings.sessions.lastSession != null) await Share.session.tryLogin(showErrors: false); // Auto-login
 
   // Load localization resources, generate placeholder splashes
-  await Share.translator.loadResources(Share.settings.config.languageCode);
+  await Share.translator.loadResources(Share.settings.appSettings.languageCode);
   Share.currentIdleSplash = Share.translator.getRandomSplash();
   Share.currentEndingSplash = Share.translator.getRandomEndingSplash();
 

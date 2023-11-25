@@ -127,7 +127,7 @@ class _EventComposePageState extends State<EventComposePage> {
                                     ),
                                 child: Container(
                                     margin: EdgeInsets.only(top: 5, bottom: 5),
-                                    child: Text(DateFormat.yMd(Share.settings.config.localeCode).format(date),
+                                    child: Text(DateFormat.yMd(Share.settings.appSettings.localeCode).format(date),
                                         style: TextStyle(color: CupertinoTheme.of(context).primaryColor)))),
                           )
                         ]),
@@ -277,7 +277,7 @@ class _EventComposePageState extends State<EventComposePage> {
                                                                   child: Text(
                                                                       startTime == null
                                                                           ? 'not specified'
-                                                                          : DateFormat.Hm(Share.settings.config.localeCode)
+                                                                          : DateFormat.Hm(Share.settings.appSettings.localeCode)
                                                                               .format(startTime!),
                                                                       style: TextStyle(
                                                                           color: CupertinoTheme.of(context).primaryColor)))),
@@ -322,7 +322,7 @@ class _EventComposePageState extends State<EventComposePage> {
                                                                   child: Text(
                                                                       endTime == null
                                                                           ? 'not specified'
-                                                                          : DateFormat.Hm(Share.settings.config.localeCode)
+                                                                          : DateFormat.Hm(Share.settings.appSettings.localeCode)
                                                                               .format(endTime!),
                                                                       style: TextStyle(
                                                                           color: CupertinoTheme.of(context).primaryColor)))),

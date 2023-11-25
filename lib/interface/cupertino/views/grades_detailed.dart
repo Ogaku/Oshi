@@ -396,7 +396,7 @@ extension GradeBodyExtension on Grade {
                                           child: Opacity(
                                               opacity: 0.5,
                                               child: Text(
-                                                  DateFormat.yMMMEd(Share.settings.config.localeCode).format(date),
+                                                  DateFormat.yMMMEd(Share.settings.appSettings.localeCode).format(date),
                                                   maxLines: 1,
                                                   overflow: TextOverflow.ellipsis)))
                                     ],
@@ -410,7 +410,7 @@ extension GradeBodyExtension on Grade {
                                           child: Opacity(
                                               opacity: 0.5,
                                               child: Text(
-                                                  '${DateFormat.Hm(Share.settings.config.localeCode).format(addDate)}, ${DateFormat.yMMMd(Share.settings.config.localeCode).format(addDate)}',
+                                                  '${DateFormat.Hm(Share.settings.appSettings.localeCode).format(addDate)}, ${DateFormat.yMMMd(Share.settings.appSettings.localeCode).format(addDate)}',
                                                   maxLines: 1,
                                                   overflow: TextOverflow.ellipsis)))
                                     ],

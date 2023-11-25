@@ -53,7 +53,7 @@ class TimetableDayAdapter extends TypeAdapter<TimetableDay> {
     return TimetableDay(
       lessons: (fields[1] as List?)
           ?.map((dynamic e) => (e as List?)?.cast<TimetableLesson>())
-          ?.toList(),
+          .toList(),
     );
   }
 

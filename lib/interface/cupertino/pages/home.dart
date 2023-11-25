@@ -196,7 +196,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                 Row(
                                                   children: [
                                                     TextChip(
-                                                        text: DateFormat.Md(Share.settings.config.localeCode)
+                                                        text: DateFormat.Md(Share.settings.appSettings.localeCode)
                                                             .format(x.timeTo ?? x.timeFrom),
                                                         margin: EdgeInsets.only(top: 6, bottom: 6, right: 10)),
                                                     Flexible(
@@ -470,7 +470,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                         Row(
                                           children: [
                                             TextChip(
-                                                text: DateFormat.Md(Share.settings.config.localeCode)
+                                                text: DateFormat.Md(Share.settings.appSettings.localeCode)
                                                     .format(x.date ?? x.timeFrom),
                                                 margin: EdgeInsets.only(top: 6, bottom: 6, right: 10)),
                                             Flexible(
@@ -1172,8 +1172,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                                                         y.message.readDate?.year &&
                                                                                     y.message.sendDate.day !=
                                                                                         y.message.readDate?.day
-                                                                                ? '${DateFormat.MMMd(Share.settings.config.localeCode).format(y.message.sendDate)} - ${DateFormat.d(Share.settings.config.localeCode).format(y.message.readDate ?? DateTime.now())}'
-                                                                                : '${DateFormat.MMMd(Share.settings.config.localeCode).format(y.message.sendDate)} - ${DateFormat(y.message.sendDate.year == y.message.readDate?.year ? 'MMMd' : 'yMMMd', Share.settings.config.localeCode).format(y.message.readDate ?? DateTime.now())}'),
+                                                                                ? '${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(y.message.sendDate)} - ${DateFormat.d(Share.settings.appSettings.localeCode).format(y.message.readDate ?? DateTime.now())}'
+                                                                                : '${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(y.message.sendDate)} - ${DateFormat(y.message.sendDate.year == y.message.readDate?.year ? 'MMMd' : 'yMMMd', Share.settings.appSettings.localeCode).format(y.message.readDate ?? DateTime.now())}'),
                                                                             overflow: TextOverflow.ellipsis,
                                                                             style: TextStyle(
                                                                                 fontSize: 16, fontWeight: FontWeight.normal),
@@ -1350,7 +1350,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
         flexible: nextLesson.subject?.name ?? 'The next lesson',
         standard: DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inMinutes.abs() < 20
             ? 'starts in ${DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).prettyBellString}'
-            : 'starts at ${DateFormat("HH:mm").format((nextLesson.timeFrom ?? DateTime.now()).add(Share.settings.config.bellOffset))}'
+            : 'starts at ${DateFormat("HH:mm").format((nextLesson.timeFrom ?? DateTime.now()).add(Share.session.settings.bellOffset))}'
       );
     }
 
@@ -1702,10 +1702,10 @@ extension LessonNumber on int {
 }
 
 extension Pretty on Duration {
-  String get prettyBellString => prettyDuration(abs() + Share.settings.config.bellOffset,
+  String get prettyBellString => prettyDuration(abs() + Share.session.settings.bellOffset,
       tersity: abs() < Duration(minutes: 1) ? DurationTersity.second : DurationTersity.minute,
       upperTersity: DurationTersity.minute,
       abbreviated: abs() < Duration(minutes: 1),
       conjunction: ', ',
-      locale: DurationLocale.fromLanguageCode(Share.settings.config.localeCode) ?? EnglishDurationLocale());
+      locale: DurationLocale.fromLanguageCode(Share.settings.appSettings.localeCode) ?? EnglishDurationLocale());
 }
