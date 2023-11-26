@@ -11,8 +11,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
+import 'package:oshi/interface/cupertino/pages/timetable.dart';
+import 'package:oshi/interface/cupertino/views/new_event.dart';
 import 'package:oshi/interface/cupertino/widgets/entries_form.dart';
 import 'package:oshi/interface/cupertino/widgets/modal_page.dart';
 import 'package:oshi/interface/cupertino/widgets/options_form.dart';
@@ -21,6 +25,7 @@ import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:duration/duration.dart';
 
@@ -823,7 +828,70 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: Text('Timetable Settings', overflow: TextOverflow.ellipsis),
                     trailing: CupertinoListTileChevron()),
                 CupertinoListTile(
-                    onTap: () {},
+                    onTap: () => Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) => StatefulBuilder(
+                                builder: ((context, setState) => CupertinoModalPage(
+                                    title: 'Custom Events',
+                                    trailing: PullDownButton(
+                                      itemBuilder: (context) => [
+                                        PullDownMenuItem(
+                                          title: 'New event',
+                                          icon: CupertinoIcons.add,
+                                          onTap: () => showCupertinoModalBottomSheet(
+                                              context: context,
+                                              builder: (context) => EventComposePage()).then((value) => setState(() {})),
+                                        )
+                                      ],
+                                      buttonBuilder: (context, showMenu) => GestureDetector(
+                                        onTap: showMenu,
+                                        child: const Icon(CupertinoIcons.ellipsis_circle),
+                                      ),
+                                    ),
+                                    children: Share.session.customEvents
+                                        .where((x) =>
+                                            (x.date ?? x.timeFrom).isAfter(DateTime.now().add(Duration(days: -1)).asDate()))
+                                        .orderBy((x) => x.date ?? x.timeFrom)
+                                        .groupBy((x) => DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode)
+                                            .format(x.date ?? x.timeFrom))
+                                        .select((element, index) => CupertinoListSection.insetGrouped(
+                                            margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                                            header: Text(element.key),
+                                            additionalDividerMargin: 5,
+                                            children: element.isEmpty
+                                                // No messages to display
+                                                ? [
+                                                    CupertinoListTile(
+                                                        title: Opacity(
+                                                            opacity: 0.5,
+                                                            child: Container(
+                                                                alignment: Alignment.center,
+                                                                child: Text(
+                                                                  'No events to display',
+                                                                  style:
+                                                                      TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                                                                ))))
+                                                  ]
+                                                // Bindable messages layout
+                                                : element
+                                                    .toList()
+                                                    .asEventWidgets(null, '', 'No events matching the query', setState)))
+                                        .appendIfEmpty(CupertinoListSection.insetGrouped(
+                                            margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                                            additionalDividerMargin: 5,
+                                            children: [
+                                              CupertinoListTile(
+                                                  title: Opacity(
+                                                      opacity: 0.5,
+                                                      child: Container(
+                                                          alignment: Alignment.center,
+                                                          child: Text(
+                                                            'No events to display',
+                                                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                                                          ))))
+                                            ]))
+                                        .toList()))))),
                     title: Text('Custom Events', overflow: TextOverflow.ellipsis),
                     trailing: CupertinoListTileChevron()),
                 CupertinoListTile(

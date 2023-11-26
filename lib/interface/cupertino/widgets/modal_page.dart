@@ -2,11 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CupertinoModalPage<T> extends StatefulWidget {
-  const CupertinoModalPage({super.key, required this.children, required this.title, this.previousPageTitle});
+  const CupertinoModalPage({super.key, required this.children, required this.title, this.previousPageTitle, this.trailing});
 
   final String title;
   final String? previousPageTitle;
   final List<Widget> children;
+  final Widget? trailing;
 
   @override
   State<CupertinoModalPage> createState() => _CupertinoModalPageState();
@@ -55,6 +56,7 @@ class _CupertinoModalPageState<T> extends State<CupertinoModalPage<T>> {
             automaticallyImplyLeading: true,
             previousPageTitle: widget.previousPageTitle ?? 'Settings',
             middle: Text(widget.title),
+            trailing: widget.trailing,
             border: Border(
               bottom: BorderSide(
                 color: _isCollapsed ? const Color(0x4D000000) : const Color(0x00000000),
@@ -68,9 +70,8 @@ class _CupertinoModalPageState<T> extends State<CupertinoModalPage<T>> {
                 : CupertinoDynamicColor.withBrightness(
                     color: const Color.fromARGB(255, 242, 242, 247).withAlpha(254),
                     darkColor: const Color.fromARGB(255, 0, 0, 0).withAlpha(254)))),
-        child:
-            SafeArea(
-							bottom: false,
-							child: SingleChildScrollView(controller: scrollController, child: Column(children: widget.children))));
+        child: SafeArea(
+            bottom: false,
+            child: SingleChildScrollView(controller: scrollController, child: Column(children: widget.children))));
   }
 }

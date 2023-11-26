@@ -14,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:mutex/mutex.dart';
 import 'package:oshi/interface/cupertino/pages/absences.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
+import 'package:oshi/interface/cupertino/pages/timetable.dart';
 import 'package:oshi/models/data/announcement.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/models/data/grade.dart';
@@ -427,6 +428,7 @@ class Session extends HiveObject {
                       .except(data.timetables.timetable[x.key]!.lessons.elementAtOrNull(index) ?? []))
                   .selectMany((w, index) => w?.toList() ?? <TimetableLesson>[]))
           .selectMany((w, index) => w)
+          .where((x) => x.date.asDate().isAfterOrSame(DateTime.now().asDate()))
           .select((lesson, index) => RegisterChange<TimetableLesson>(
               type: lesson.isCanceled ? RegisterChangeTypes.removed : RegisterChangeTypes.changed, value: lesson))
           .toList();

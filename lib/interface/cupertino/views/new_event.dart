@@ -43,8 +43,9 @@ class _EventComposePageState extends State<EventComposePage> {
 
   @override
   Widget build(BuildContext context) {
-    var categoriesToDisplay =
-        EventCategory.values.where((x) => x.asString().contains(RegExp(categoryController.text, caseSensitive: false)));
+    var categoriesToDisplay = EventCategory.values
+        .where((x) => x != EventCategory.admin)
+        .where((x) => x.asString().contains(RegExp(categoryController.text, caseSensitive: false)));
 
     return SearchableSliverNavigationBar(
       anchor: 0.0,
@@ -277,7 +278,8 @@ class _EventComposePageState extends State<EventComposePage> {
                                                                   child: Text(
                                                                       startTime == null
                                                                           ? 'not specified'
-                                                                          : DateFormat.Hm(Share.settings.appSettings.localeCode)
+                                                                          : DateFormat.Hm(
+                                                                                  Share.settings.appSettings.localeCode)
                                                                               .format(startTime!),
                                                                       style: TextStyle(
                                                                           color: CupertinoTheme.of(context).primaryColor)))),
@@ -322,7 +324,8 @@ class _EventComposePageState extends State<EventComposePage> {
                                                                   child: Text(
                                                                       endTime == null
                                                                           ? 'not specified'
-                                                                          : DateFormat.Hm(Share.settings.appSettings.localeCode)
+                                                                          : DateFormat.Hm(
+                                                                                  Share.settings.appSettings.localeCode)
                                                                               .format(endTime!),
                                                                       style: TextStyle(
                                                                           color: CupertinoTheme.of(context).primaryColor)))),
