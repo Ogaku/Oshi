@@ -22,7 +22,9 @@ import 'package:oshi/interface/cupertino/widgets/entries_form.dart';
 import 'package:oshi/interface/cupertino/widgets/modal_page.dart';
 import 'package:oshi/interface/cupertino/widgets/options_form.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
+import 'package:oshi/models/data/announcement.dart';
 import 'package:oshi/models/data/attendances.dart';
+import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
@@ -1168,22 +1170,20 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                                       CupertinoButton(
                                                                                           onPressed: () {
                                                                                             try {
-                                                                                              NotificationController.sendNotification(
-                                                                                                  title: _noTitleController
-                                                                                                      .text,
-                                                                                                  content:
-                                                                                                      _noContentController
-                                                                                                          .text,
-                                                                                                  category:
-                                                                                                      NotificationCategories
-                                                                                                          .register,
-                                                                                                  data: jsonEncode(TimelineNotification(
-                                                                                                          sessionGuid: Share
-                                                                                                                  .settings
-                                                                                                                  .sessions
-                                                                                                                  .lastSessionId ??
-                                                                                                              '')
-                                                                                                      .toJson()));
+                                                                                              NotificationController
+                                                                                                  .sendNotification(
+                                                                                                      title:
+                                                                                                          _noTitleController
+                                                                                                              .text,
+                                                                                                      content:
+                                                                                                          _noContentController
+                                                                                                              .text,
+                                                                                                      category:
+                                                                                                          NotificationCategories
+                                                                                                              .register,
+                                                                                                      data: jsonEncode(
+                                                                                                          TimelineNotification()
+                                                                                                              .toJson()));
                                                                                             } catch (ex) {
                                                                                               // ignored
                                                                                             }
@@ -1207,14 +1207,20 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                                                       NotificationCategories
                                                                                                           .messages,
                                                                                                   data: jsonEncode(TimelineNotification(
-                                                                                                          sessionGuid: Share
-                                                                                                                  .settings
-                                                                                                                  .sessions
-                                                                                                                  .lastSessionId ??
-                                                                                                              '',
-                                                                                                          type:
-                                                                                                              TimelineNotificationType
-                                                                                                                  .message)
+                                                                                                          data: Announcement(
+                                                                                                              subject:
+                                                                                                                  _noTitleController
+                                                                                                                      .text,
+                                                                                                              content:
+                                                                                                                  _noContentController
+                                                                                                                      .text,
+                                                                                                              contact: Teacher(
+                                                                                                                  firstName:
+                                                                                                                      _noTitleController
+                                                                                                                          .text,
+                                                                                                                  lastName:
+                                                                                                                      _noContentController
+                                                                                                                          .text)))
                                                                                                       .toJson()));
                                                                                             } catch (ex) {
                                                                                               // ignored
@@ -1222,7 +1228,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                                           },
                                                                                           padding: EdgeInsets.zero,
                                                                                           child: Text(
-                                                                                              'Messages notification',
+                                                                                              'Mess/Ann notification',
                                                                                               maxLines: 1,
                                                                                               overflow:
                                                                                                   TextOverflow.ellipsis)),

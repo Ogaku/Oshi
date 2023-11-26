@@ -25,6 +25,7 @@ import 'package:oshi/models/data/messages.dart' as models;
 import 'package:oshi/models/data/announcement.dart' as models;
 import 'package:oshi/models/data/teacher.dart' as models;
 import 'package:oshi/models/data/event.dart' as models;
+import 'package:oshi/models/data/attendances.dart' as models;
 
 part 'notifications.g.dart';
 
@@ -124,17 +125,23 @@ class NotificationController {
           })); // Go to the page described by the type
 
           // Perform additional actions for each supported (as of now) type
-          if (payload.type == TimelineNotificationType.grade && payload.data is models.Lesson) {
-            Share.gradesNavigate.broadcast(Value(payload.data as models.Lesson)); // Navigate grades
-          } else if (payload.type == TimelineNotificationType.timetable && payload.data is models.TimetableLesson) {
-            Share.timetableNavigateDay.broadcast(Value((payload.data as models.TimetableLesson).date.asDate()));
-          } else if (payload.type == TimelineNotificationType.event && payload.data is models.Event) {
+          if (payload.type == TimelineNotificationType.grade && tryParse(payload.data, models.Lesson.fromJson) != null) {
+            Share.gradesNavigate.broadcast(Value(tryParse(payload.data, models.Lesson.fromJson)!)); // Navigate grades
+          } else if (payload.type == TimelineNotificationType.timetable &&
+              tryParse(payload.data, models.TimetableLesson.fromJson) != null) {
             Share.timetableNavigateDay
-                .broadcast(Value(((payload.data as models.Event).date ?? (payload.data as models.Event).timeFrom).asDate()));
-          } else if (payload.type == TimelineNotificationType.message && payload.data is models.Message) {
-            Share.messagesNavigate.broadcast(Value(payload.data as models.Message));
-          } else if (payload.type == TimelineNotificationType.message && payload.data is models.Announcement) {
-            var x = payload.data as models.Announcement;
+                .broadcast(Value((tryParse(payload.data, models.TimetableLesson.fromJson))!.date.asDate()));
+          } else if (payload.type == TimelineNotificationType.event &&
+              tryParse(payload.data, models.Event.fromJson) != null) {
+            Share.timetableNavigateDay.broadcast(Value(((tryParse(payload.data, models.Event.fromJson))!.date ??
+                    (tryParse(payload.data, models.Event.fromJson))!.timeFrom)
+                .asDate()));
+          } else if (payload.type == TimelineNotificationType.message &&
+              tryParse(payload.data, models.Message.fromJson) != null) {
+            Share.messagesNavigate.broadcast(Value(tryParse(payload.data, models.Message.fromJson)!));
+          } else if (payload.type == TimelineNotificationType.announcement &&
+              tryParse(payload.data, models.Announcement.fromJson) != null) {
+            var x = tryParse(payload.data, models.Announcement.fromJson)!;
             Share.messagesNavigateAnnouncement.broadcast(Value((
               message: models.Message(
                   id: x.read ? 1 : 0,
@@ -396,8 +403,18 @@ Future<File> copyFileToExternalStorage(File sourceFile) async {
 
 @JsonSerializable(includeIfNull: false)
 class TimelineNotification {
-  TimelineNotification({this.data, String? sessionGuid, this.type})
-      : sessionGuid = sessionGuid ?? Share.settings.sessions.lastSessionId ?? '';
+  TimelineNotification({this.data, String? sessionGuid, TimelineNotificationType? type})
+      : sessionGuid = sessionGuid ?? Share.settings.sessions.lastSessionId ?? '',
+        type = type ??
+            switch (data.runtimeType) {
+              models.Lesson => TimelineNotificationType.grade,
+              models.TimetableLesson => TimelineNotificationType.timetable,
+              models.Event => TimelineNotificationType.event,
+              models.Message => TimelineNotificationType.message,
+              models.Attendance => TimelineNotificationType.attendance,
+              models.Announcement => TimelineNotificationType.announcement,
+              _ => null
+            };
 
   final TimelineNotificationType? type;
   final String sessionGuid;
@@ -417,4 +434,12 @@ enum TimelineNotificationType {
   message, // New message
   attendance, // Attendance
   announcement // Messages^
+}
+
+T? tryParse<T>(Map<String, dynamic> input, T Function(Map<String, dynamic> json) parser) {
+  try {
+    return parser(input);
+  } catch (ex) {
+    return null;
+  }
 }

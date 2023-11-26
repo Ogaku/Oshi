@@ -561,7 +561,7 @@ class Session extends HiveObject {
                     '/Notifications/Captions/Joiners/Lesson'.localized.format(
                         element.value.subject?.name ?? element.value.classroomString,
                         element.value.teacher?.name ?? '/Notifications/Placeholder/Teacher'.localized),
-                payload: TimelineNotification(type: TimelineNotificationType.timetable, data: element.value)
+                payload: TimelineNotification(data: element.value)
               )));
         }
 
@@ -572,7 +572,7 @@ class Session extends HiveObject {
               .forEach((element) => messageNotifications.add((
                     title: '/Notifications/Categories/Messages/New'.localized.format(element.value.senderName),
                     body: element.value.topic,
-                    payload: TimelineNotification(type: TimelineNotificationType.message, data: element.value)
+                    payload: TimelineNotification(data: element.value)
                   )));
         }
 
@@ -597,7 +597,7 @@ class Session extends HiveObject {
                     body: '/Notifications/Captions/Joiners/Lesson'.localized.format(
                         element.value.lesson.subject?.name ?? '/Notifications/Placeholder/Lesson'.localized,
                         element.value.teacher.name),
-                    payload: TimelineNotification(type: TimelineNotificationType.attendance, data: element.value)
+                    payload: TimelineNotification(data: element.value)
                   )));
 
           detectedChanges.attendancesChanged
@@ -622,7 +622,7 @@ class Session extends HiveObject {
                     body: '/Notifications/Captions/Joiners/Lesson'.localized.format(
                         element.value.lesson.subject?.name ?? '/Notifications/Placeholder/Lesson'.localized,
                         element.value.teacher.name),
-                    payload: TimelineNotification(type: TimelineNotificationType.attendance, data: element.value)
+                    payload: TimelineNotification(data: element.value)
                   )));
         }
 
@@ -636,7 +636,7 @@ class Session extends HiveObject {
                         (element.payload is Lesson ? element.payload as Lesson : null)?.name ??
                             '/Notifications/Placeholder/Lesson'.localized.toLowerCase()),
                     body: element.value.name,
-                    payload: TimelineNotification(type: TimelineNotificationType.timetable, data: element.payload)
+                    payload: TimelineNotification(data: element.payload)
                   )));
 
           detectedChanges.gradesChanged
@@ -655,7 +655,7 @@ class Session extends HiveObject {
                             '/Notifications/Placeholder/Lesson'.localized,
                         (element.payload is Lesson ? element.payload as Lesson : null)?.teacher.name ??
                             '/Notifications/Placeholder/Teacher'.localized),
-                    payload: TimelineNotification(type: TimelineNotificationType.timetable, data: element.payload)
+                    payload: TimelineNotification(data: element.payload)
                   )));
         }
 
@@ -669,7 +669,7 @@ class Session extends HiveObject {
                     .localized
                     .format(element.value.contact?.name ?? '/Notifications/Placeholder/Teacher'.localized),
                 body: element.value.subject,
-                payload: TimelineNotification(type: TimelineNotificationType.timetable, data: element.value)
+                payload: TimelineNotification(data: element.value)
               )));
         }
 
@@ -697,7 +697,7 @@ class Session extends HiveObject {
                         : (element.value.timeFrom.month == element.value.timeTo?.month)
                             ? "${DateFormat.d(Share.settings.appSettings.localeCode).format(element.value.timeFrom)} - ${DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(element.value.timeTo ?? DateTime.now())}" // 10 - 15 May 2023
                             : "${DateFormat.MMMEd(Share.settings.appSettings.localeCode).format(element.value.timeFrom)} - ${DateFormat.MMMEd(Share.settings.appSettings.localeCode).format(element.value.timeTo ?? DateTime.now())}", // Wed, May 10 - Fri, May 15
-                    payload: TimelineNotification(type: TimelineNotificationType.event, data: element.value)
+                    payload: TimelineNotification(data: element.value)
                   )));
 
           detectedChanges.eventsChanged
@@ -716,7 +716,7 @@ class Session extends HiveObject {
                     body: element.value.titleString.isNotEmpty
                         ? element.value.titleString
                         : (element.value.sender?.name ?? element.value.subtitleString),
-                    payload: TimelineNotification(type: TimelineNotificationType.event, data: element.value)
+                    payload: TimelineNotification(data: element.value)
                   )));
         }
 
