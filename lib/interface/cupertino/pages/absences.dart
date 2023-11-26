@@ -30,7 +30,7 @@ class AbsencesPage extends StatefulWidget {
 
 class _AbsencesPageState extends State<AbsencesPage> {
   final searchController = TextEditingController();
-  AbsencesPageSegments _segment = AbsencesPageSegments.date;
+  SegmentController segmentController = SegmentController(segment: AbsencesPageSegments.date);
 
   bool showInbox = true;
   bool isWorking = false;
@@ -65,10 +65,10 @@ class _AbsencesPageState extends State<AbsencesPage> {
         [];
 
     // This is gonna be a veeery long list, as there are no expanders in cupertino
-    var attendances = (switch (_segment) {
-      AbsencesPageSegments.date => attendancesToDisplayByDate,
+    var attendances = (switch (segmentController.segment) {
       AbsencesPageSegments.lesson => attendancesToDisplayByLesson,
-      AbsencesPageSegments.type => attendancesToDisplayByType
+      AbsencesPageSegments.type => attendancesToDisplayByType,
+      AbsencesPageSegments.date || _ => attendancesToDisplayByDate
     });
 
     return SearchableSliverNavigationBar(
@@ -78,11 +78,10 @@ class _AbsencesPageState extends State<AbsencesPage> {
           AbsencesPageSegments.lesson: 'By lesson',
           AbsencesPageSegments.type: 'By type'
         },
-        onSegmentChanged: (segment) =>
-            setState(() => _segment = (segment is AbsencesPageSegments) ? segment : AbsencesPageSegments.date),
         largeTitle: Text('/Page/Absences/Attendance'.localized),
         middle: Text('/Page/Absences/Attendance'.localized),
         searchController: searchController,
+        segmentController: segmentController,
         trailing: isWorking
             ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
             : null,
@@ -277,8 +276,10 @@ extension LessonWidgetExtension on Attendance {
                                       Flexible(
                                           child: Opacity(
                                               opacity: 0.5,
-                                              child: Text(DateFormat.yMMMEd(Share.settings.appSettings.localeCode).format(date),
-                                                  maxLines: 1, overflow: TextOverflow.ellipsis)))
+                                              child: Text(
+                                                  DateFormat.yMMMEd(Share.settings.appSettings.localeCode).format(date),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis)))
                                     ],
                                   )),
                                   CupertinoListTile(

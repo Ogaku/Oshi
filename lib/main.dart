@@ -6,6 +6,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:oshi/share/background.dart';
+import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/share.dart';
 
 import 'package:oshi/interface/material/sessions_page.dart' as materialapp show sessionsPage;
@@ -44,6 +45,14 @@ class _MainAppState extends State<MainApp> {
     initializeDateFormatting();
 
     if (Platform.isAndroid || Platform.isIOS) initPlatformState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      // Check whether the app was launched by a notification, parse the payload
+      Share.notificationsPlugin.getNotificationAppLaunchDetails().then((value) {
+        if (value?.didNotificationLaunchApp ?? false) {
+          NotificationController.handleJsonNotificationPayload(value?.notificationResponse);
+        }
+      });
+    });
   }
 
   Future<void> initPlatformState() async {

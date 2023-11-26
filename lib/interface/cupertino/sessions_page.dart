@@ -5,10 +5,12 @@ import 'dart:io';
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:event/event.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:format/format.dart';
 import 'package:oshi/interface/cupertino/new_session.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/share/appcenter.dart';
+import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:oshi/interface/cupertino/base_app.dart';
@@ -32,6 +34,17 @@ class _SessionsPageState extends State<SessionsPage> {
   final scrollController = ScrollController();
   bool isWorking = false; // Logging in right now?
   String? _progressMessage;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Set up other stuff after the app's launched
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Share.checkUpdates.broadcast(); // Check for updates
+      NotificationController.requestNotificationAccess();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +101,7 @@ class _SessionsPageState extends State<SessionsPage> {
                                     Share.settings.sessions.lastSessionId = x; // Update
                                     Share.session = Share.settings.sessions.lastSession!;
                                     await Share.settings.save(); // Save our settings now
-                                    
+
                                     // Suppress all errors, we must have already logged in at least once
                                     await Share.session.tryLogin(progress: progress, showErrors: false);
                                     await Share.session.refreshAll(progress: progress, showErrors: false);

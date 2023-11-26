@@ -1,19 +1,32 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:event/event.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:mutex/mutex.dart';
+import 'package:oshi/interface/cupertino/base_app.dart';
+import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/share/share.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import 'package:flutter_app_installer/flutter_app_installer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import 'package:oshi/models/data/lesson.dart' as models;
+import 'package:oshi/models/data/timetables.dart' as models;
+import 'package:oshi/models/data/messages.dart' as models;
+import 'package:oshi/models/data/announcement.dart' as models;
+import 'package:oshi/models/data/teacher.dart' as models;
+import 'package:oshi/models/data/event.dart' as models;
+
+part 'notifications.g.dart';
 
 class RefreshStatus with ChangeNotifier {
   bool _isRefreshing = false;
@@ -62,12 +75,10 @@ class NotificationController {
                 .path);
       } else if (notificationResponse.payload?.startsWith('url') ?? false) {
         await launchUrlString(notificationResponse.payload!.substring(notificationResponse.payload!.indexOf('\n') + 1));
+      } else if (notificationResponse.payload?.isNotEmpty ?? false) {
+        // Assume the notification is a json payload of [TimelineNotification]
+        await handleJsonNotificationPayload(notificationResponse);
       }
-
-      // await Navigator.push(
-      //   context,
-      //   MaterialPageRoute<void>(builder: (context) => SecondScreen(payload)),
-      // );
     } catch (ex) {
       // ignored
     }
@@ -76,6 +87,70 @@ class NotificationController {
   @pragma('vm:entry-point')
   static void notificationTapBackground(NotificationResponse notificationResponse) {
     // TODO handle action
+  }
+
+  static Future<void> handleJsonNotificationPayload(NotificationResponse? notificationResponse) async {
+    if (notificationResponse != null && (notificationResponse.payload?.isNotEmpty ?? false)) {
+      // Assume the notification is a json payload of [TimelineNotification]
+      try {
+        var payload = TimelineNotification.fromJson(jsonDecode(notificationResponse.payload!));
+        if (!payload.isValid && !Share.settings.sessions.sessions.containsKey(payload.sessionGuid)) return;
+
+        // If the notification was sent from another session, log into it now
+        if (Share.settings.sessions.lastSessionId != payload.sessionGuid) {
+          Share.settings.sessions.lastSessionId = payload.sessionGuid;
+          Share.session = Share.settings.sessions.lastSession!;
+          await Share.settings.save(); // Save our settings now
+
+          // Change the main page to the base application
+          await Share.session.tryLogin(showErrors: false);
+          Share.changeBase.broadcast(Value(() => baseApp));
+        }
+
+        // The notification payload is invalid, but contains a session GUID
+        // Open the timeline for the session it was sent from (may be many)
+        if (!payload.isValid && payload.type == null) {
+          Share.tabsNavigatePage.broadcast(Value(0)); // Go home now!
+          Share.openTimeline.broadcast(); // Should be enough for now
+        }
+        // The notification payload is valid, and contains a session GUID
+        // Open the according page for each payload object, try to navigate
+        else {
+          Share.tabsNavigatePage.broadcast(Value(switch (payload.type!) {
+            TimelineNotificationType.grade => 1,
+            TimelineNotificationType.timetable || TimelineNotificationType.event => 2,
+            TimelineNotificationType.message || TimelineNotificationType.announcement => 3,
+            TimelineNotificationType.attendance => 4,
+          })); // Go to the page described by the type
+
+          // Perform additional actions for each supported (as of now) type
+          if (payload.type == TimelineNotificationType.grade && payload.data is models.Lesson) {
+            Share.gradesNavigate.broadcast(Value(payload.data as models.Lesson)); // Navigate grades
+          } else if (payload.type == TimelineNotificationType.timetable && payload.data is models.TimetableLesson) {
+            Share.timetableNavigateDay.broadcast(Value((payload.data as models.TimetableLesson).date.asDate()));
+          } else if (payload.type == TimelineNotificationType.event && payload.data is models.Event) {
+            Share.timetableNavigateDay
+                .broadcast(Value(((payload.data as models.Event).date ?? (payload.data as models.Event).timeFrom).asDate()));
+          } else if (payload.type == TimelineNotificationType.message && payload.data is models.Message) {
+            Share.messagesNavigate.broadcast(Value(payload.data as models.Message));
+          } else if (payload.type == TimelineNotificationType.message && payload.data is models.Announcement) {
+            var x = payload.data as models.Announcement;
+            Share.messagesNavigateAnnouncement.broadcast(Value((
+              message: models.Message(
+                  id: x.read ? 1 : 0,
+                  topic: x.subject,
+                  content: x.content,
+                  sender: x.contact ?? models.Teacher(firstName: Share.session.data.student.mainClass.unit.name),
+                  sendDate: x.startDate,
+                  readDate: x.endDate),
+              parent: x
+            )));
+          }
+        }
+      } catch (ex) {
+        // ignored
+      }
+    }
   }
 
   @pragma('vm:entry-point')
@@ -317,4 +392,29 @@ Future<File> copyFileToExternalStorage(File sourceFile) async {
   File destinationFile = File('${externalDir.path}/$fileName'); // Create new file at destination path
   await sourceFile.copy(destinationFile.path); // Copy source file to destination
   return destinationFile; // Return the new file object
+}
+
+@JsonSerializable(includeIfNull: false)
+class TimelineNotification {
+  TimelineNotification({this.data, String? sessionGuid, this.type})
+      : sessionGuid = sessionGuid ?? Share.settings.sessions.lastSessionId ?? '';
+
+  final TimelineNotificationType? type;
+  final String sessionGuid;
+  final dynamic data;
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  bool get isValid => type != null && data != null && sessionGuid.isNotEmpty;
+
+  factory TimelineNotification.fromJson(Map<String, dynamic> json) => _$TimelineNotificationFromJson(json);
+  Map<String, dynamic> toJson() => _$TimelineNotificationToJson(this);
+}
+
+enum TimelineNotificationType {
+  grade, // Subject/lesson
+  timetable, // Substitutions
+  event, // Agenda/timetables
+  message, // New message
+  attendance, // Attendance
+  announcement // Messages^
 }

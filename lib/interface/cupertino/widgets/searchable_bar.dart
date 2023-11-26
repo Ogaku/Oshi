@@ -6,6 +6,18 @@ import 'package:flutter/services.dart';
 import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart';
 import 'package:oshi/share/share.dart';
 
+class SegmentController with ChangeNotifier {
+  SegmentController({dynamic segment}) : _segment = segment;
+  dynamic _segment;
+
+  get segment => _segment;
+
+  set segment(value) {
+    _segment = value;
+    notifyListeners();
+  }
+}
+
 class SearchableSliverNavigationBar extends StatefulWidget {
   final Widget? largeTitle;
   final Widget? leading;
@@ -21,11 +33,11 @@ class SearchableSliverNavigationBar extends StatefulWidget {
   final bool disableAddons;
   final bool useSliverBox;
   final TextEditingController searchController;
+  final SegmentController? segmentController;
   final List<Widget>? children;
   final Widget? child;
   final Map<dynamic, String>? segments;
   final Function(String)? onChanged;
-  final Function(dynamic)? onSegmentChanged;
   final Function(String)? onSubmitted;
   final void Function(VoidCallback fn)? setState;
   final DateTime? selectedDate;
@@ -37,7 +49,6 @@ class SearchableSliverNavigationBar extends StatefulWidget {
       TextEditingController? searchController,
       this.children,
       this.onChanged,
-      this.onSegmentChanged,
       this.onSubmitted,
       this.transitionBetweenRoutes,
       this.largeTitle,
@@ -57,7 +68,8 @@ class SearchableSliverNavigationBar extends StatefulWidget {
       this.useSliverBox = false,
       this.selectedDate,
       this.keepBackgroundWatchers = false,
-      this.alwaysShowAddons = false})
+      this.alwaysShowAddons = false,
+      this.segmentController})
       : searchController = searchController ?? TextEditingController(),
         disableAddons = disableAddons ?? (child != null);
 
@@ -67,7 +79,7 @@ class SearchableSliverNavigationBar extends StatefulWidget {
 
 class _NavState extends State<SearchableSliverNavigationBar> {
   late ScrollController scrollController;
-  late dynamic groupSelection;
+  late SegmentController segmentController;
 
   double _pixels = 0;
   int _timestamp = 0;
@@ -78,13 +90,15 @@ class _NavState extends State<SearchableSliverNavigationBar> {
   void initState() {
     super.initState();
     scrollController = ScrollController(initialScrollOffset: (widget.disableAddons || widget.alwaysShowAddons) ? 0 : 55);
+    segmentController = widget.segmentController ?? SegmentController(segment: widget.segments?.keys.first);
     isVisibleSearchBar = widget.alwaysShowAddons ? 60 : 0;
-    groupSelection = widget.segments?.keys.first;
+    segmentController.addListener(setStateListener);
   }
 
   @override
   void dispose() {
     Share.session.refreshStatus.removeListener(setStateListener);
+    segmentController.removeListener(setStateListener);
     super.dispose();
   }
 
@@ -140,7 +154,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                       ? Opacity(
                           opacity: ((isVisibleSearchBar - 45) / 5).clamp(0.0, 1.0),
                           child: CupertinoSlidingSegmentedControl(
-                            groupValue: groupSelection,
+                            groupValue: segmentController.segment,
                             children: widget.segments!.map((key, value) => MapEntry(
                                 key,
                                 Container(
@@ -159,8 +173,8 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                                                 context)))))),
                             onValueChanged: (value) {
                               if (value == null) return;
-                              setState(() => groupSelection = value);
-                              if (widget.onSegmentChanged != null) widget.onSegmentChanged!(value);
+                              setState(() => segmentController.segment = value);
+                              if (widget.setState != null) widget.setState!(() {});
                             },
                           ))
                       : CupertinoSearchTextField(

@@ -48,7 +48,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends VisibilityAwareState<HomePage> {
   final searchController = TextEditingController();
   Timer? _everySecond;
-  HomepageSegments _segment = HomepageSegments.home;
+  SegmentController segmentController = SegmentController(segment: HomepageSegments.home);
 
   @override
   void dispose() {
@@ -58,6 +58,12 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Re-subscribe to all events
+    Share.openTimeline.unsubscribeAll();
+    Share.openTimeline.subscribe((args) {
+      setState(() => segmentController.segment = HomepageSegments.timeline);
+    });
+
     if (!(_everySecond?.isActive ?? false)) {
       // Auto-refresh this view each second - it's static so it shouuuuld be safe...
       _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) => _setState(() {}));
@@ -395,13 +401,14 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                                     textAlign: TextAlign.center,
                                                                     style: TextStyle(
                                                                         fontSize: 17,
-                                                                        color: (y.isFinalProposition || y.isSemesterProposition)
-                                                                            ? CupertinoDynamicColor.resolve(
-                                                                                CupertinoDynamicColor.withBrightness(
-                                                                                    color: CupertinoColors.black,
-                                                                                    darkColor: CupertinoColors.white),
-                                                                                context)
-                                                                            : CupertinoColors.black)),
+                                                                        color:
+                                                                            (y.isFinalProposition || y.isSemesterProposition)
+                                                                                ? CupertinoDynamicColor.resolve(
+                                                                                    CupertinoDynamicColor.withBrightness(
+                                                                                        color: CupertinoColors.black,
+                                                                                        darkColor: CupertinoColors.white),
+                                                                                    context)
+                                                                                : CupertinoColors.black)),
                                                               ))
                                                           .toList())))
                                         ],
@@ -1306,18 +1313,18 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       backgroundColor: CupertinoDynamicColor.withBrightness(
           color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 0, 0, 0)),
       child: SearchableSliverNavigationBar(
-        useSliverBox: _segment == HomepageSegments.timeline,
-        alwaysShowAddons: _segment == HomepageSegments.timeline,
+        useSliverBox: segmentController.segment == HomepageSegments.timeline,
+        alwaysShowAddons: segmentController.segment == HomepageSegments.timeline,
         setState: _setState,
         segments: {
           HomepageSegments.home: '/Titles/Pages/Home'.localized,
           HomepageSegments.timeline: '/Titles/Pages/Timeline'.localized
         },
-        onSegmentChanged: (segment) =>
-            _setState(() => _segment = (segment is HomepageSegments) ? segment : HomepageSegments.home),
         searchController: searchController,
-        largeTitle:
-            Text(_segment == HomepageSegments.home ? '/Titles/Pages/Home'.localized : '/Titles/Pages/Timeline'.localized),
+        segmentController: segmentController,
+        largeTitle: Text(segmentController.segment == HomepageSegments.home
+            ? '/Titles/Pages/Home'.localized
+            : '/Titles/Pages/Timeline'.localized),
         middle: Text('/Titles/Pages/Home'.localized),
         trailing: PullDownButton(
           itemBuilder: (context) => [
@@ -1339,7 +1346,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
             child: _eventfulMenuButton,
           ),
         ),
-        children: _segment == HomepageSegments.home ? homePageChildren : timelineChildren,
+        children: segmentController.segment == HomepageSegments.home ? homePageChildren : timelineChildren,
       ),
     );
   }

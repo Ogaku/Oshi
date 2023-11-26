@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:darq/darq.dart';
@@ -1167,17 +1168,22 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                                       CupertinoButton(
                                                                                           onPressed: () {
                                                                                             try {
-                                                                                              NotificationController
-                                                                                                  .sendNotification(
-                                                                                                      title:
-                                                                                                          _noTitleController
-                                                                                                              .text,
-                                                                                                      content:
-                                                                                                          _noContentController
-                                                                                                              .text,
-                                                                                                      category:
-                                                                                                          NotificationCategories
-                                                                                                              .register);
+                                                                                              NotificationController.sendNotification(
+                                                                                                  title: _noTitleController
+                                                                                                      .text,
+                                                                                                  content:
+                                                                                                      _noContentController
+                                                                                                          .text,
+                                                                                                  category:
+                                                                                                      NotificationCategories
+                                                                                                          .register,
+                                                                                                  data: jsonEncode(TimelineNotification(
+                                                                                                          sessionGuid: Share
+                                                                                                                  .settings
+                                                                                                                  .sessions
+                                                                                                                  .lastSessionId ??
+                                                                                                              '')
+                                                                                                      .toJson()));
                                                                                             } catch (ex) {
                                                                                               // ignored
                                                                                             }
@@ -1191,17 +1197,25 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                                       CupertinoButton(
                                                                                           onPressed: () {
                                                                                             try {
-                                                                                              NotificationController
-                                                                                                  .sendNotification(
-                                                                                                      title:
-                                                                                                          _noTitleController
-                                                                                                              .text,
-                                                                                                      content:
-                                                                                                          _noContentController
-                                                                                                              .text,
-                                                                                                      category:
-                                                                                                          NotificationCategories
-                                                                                                              .messages);
+                                                                                              NotificationController.sendNotification(
+                                                                                                  title: _noTitleController
+                                                                                                      .text,
+                                                                                                  content:
+                                                                                                      _noContentController
+                                                                                                          .text,
+                                                                                                  category:
+                                                                                                      NotificationCategories
+                                                                                                          .messages,
+                                                                                                  data: jsonEncode(TimelineNotification(
+                                                                                                          sessionGuid: Share
+                                                                                                                  .settings
+                                                                                                                  .sessions
+                                                                                                                  .lastSessionId ??
+                                                                                                              '',
+                                                                                                          type:
+                                                                                                              TimelineNotificationType
+                                                                                                                  .message)
+                                                                                                      .toJson()));
                                                                                             } catch (ex) {
                                                                                               // ignored
                                                                                             }

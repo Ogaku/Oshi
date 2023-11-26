@@ -64,6 +64,7 @@ class Share {
       event.Event<event.Value<StatefulWidget Function()>>();
   static event.Event refreshBase = event.Event(); // Trigger a setState on the base app and everything subscribed
   static event.Event checkUpdates = event.Event(); // Trigger an update on the base app and everything subscribed
+  static event.Event openTimeline = event.Event(); // Trigger an event on the home page and everything subscribed
   static event.Event<event.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>
       showErrorModal =
       event.Event<event.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>();
@@ -452,14 +453,14 @@ class Session extends HiveObject {
                   ? RegisterChangeTypes.changed
                   : RegisterChangeTypes.added,
               value: x.grade,
-              payload: x.subject))
+              payload: 'subjects\n${x.subject.name}'))
           .appendAll(allGradesSaved.except(allGradesDownloaded, (element) => element.grade).select((x, index) =>
               RegisterChange<Grade>(
                   type: allGradesDownloaded.any((y) => y.grade.id == x.grade.id && y.grade.id > 0 && x.grade.id > 0)
                       ? RegisterChangeTypes.changed
                       : RegisterChangeTypes.removed,
                   value: x.grade,
-                  payload: x.subject)))
+                  payload: 'subjects\n${x.subject.name}')))
           .toList();
 
       /* Events */
@@ -538,8 +539,8 @@ class Session extends HiveObject {
         unreadChanges.events.addAll(detectedChanges.eventsChanged.select((x, index) => x.value.hashCode));
         unreadChanges.attendances.addAll(detectedChanges.attendancesChanged.select((x, index) => x.value.hashCode));
 
-        var notifications = <({String title, String body, String payload})>[];
-        var messageNotifications = <({String title, String body, String payload})>[];
+        var notifications = <({String title, String body, TimelineNotification payload})>[];
+        var messageNotifications = <({String title, String body, TimelineNotification payload})>[];
 
         // Compose timetable notifications
         if (settings.enableTimetableNotifications) {
@@ -560,7 +561,7 @@ class Session extends HiveObject {
                     '/Notifications/Captions/Joiners/Lesson'.localized.format(
                         element.value.subject?.name ?? element.value.classroomString,
                         element.value.teacher?.name ?? '/Notifications/Placeholder/Teacher'.localized),
-                payload: 'timetables\n${DateFormat.yMd(Share.settings.appSettings.localeCode).format(element.value.date)}'
+                payload: TimelineNotification(type: TimelineNotificationType.timetable, data: element.value)
               )));
         }
 
@@ -571,7 +572,7 @@ class Session extends HiveObject {
               .forEach((element) => messageNotifications.add((
                     title: '/Notifications/Categories/Messages/New'.localized.format(element.value.senderName),
                     body: element.value.topic,
-                    payload: 'messages\n${element.value.topic}\n${element.value.senderName}'
+                    payload: TimelineNotification(type: TimelineNotificationType.message, data: element.value)
                   )));
         }
 
@@ -596,7 +597,7 @@ class Session extends HiveObject {
                     body: '/Notifications/Captions/Joiners/Lesson'.localized.format(
                         element.value.lesson.subject?.name ?? '/Notifications/Placeholder/Lesson'.localized,
                         element.value.teacher.name),
-                    payload: 'attendances'
+                    payload: TimelineNotification(type: TimelineNotificationType.attendance, data: element.value)
                   )));
 
           detectedChanges.attendancesChanged
@@ -621,7 +622,7 @@ class Session extends HiveObject {
                     body: '/Notifications/Captions/Joiners/Lesson'.localized.format(
                         element.value.lesson.subject?.name ?? '/Notifications/Placeholder/Lesson'.localized,
                         element.value.teacher.name),
-                    payload: 'attendances'
+                    payload: TimelineNotification(type: TimelineNotificationType.attendance, data: element.value)
                   )));
         }
 
@@ -635,7 +636,7 @@ class Session extends HiveObject {
                         (element.payload is Lesson ? element.payload as Lesson : null)?.name ??
                             '/Notifications/Placeholder/Lesson'.localized.toLowerCase()),
                     body: element.value.name,
-                    payload: 'grades\n${(element.payload is Lesson ? element.payload as Lesson : null)?.name}'
+                    payload: TimelineNotification(type: TimelineNotificationType.timetable, data: element.payload)
                   )));
 
           detectedChanges.gradesChanged
@@ -654,7 +655,7 @@ class Session extends HiveObject {
                             '/Notifications/Placeholder/Lesson'.localized,
                         (element.payload is Lesson ? element.payload as Lesson : null)?.teacher.name ??
                             '/Notifications/Placeholder/Teacher'.localized),
-                    payload: 'grades\n${(element.payload is Lesson ? element.payload as Lesson : null)?.name}'
+                    payload: TimelineNotification(type: TimelineNotificationType.timetable, data: element.payload)
                   )));
         }
 
@@ -668,7 +669,7 @@ class Session extends HiveObject {
                     .localized
                     .format(element.value.contact?.name ?? '/Notifications/Placeholder/Teacher'.localized),
                 body: element.value.subject,
-                payload: 'announcements\n${element.value.subject}\n${element.value.contact?.name}'
+                payload: TimelineNotification(type: TimelineNotificationType.timetable, data: element.value)
               )));
         }
 
@@ -696,8 +697,7 @@ class Session extends HiveObject {
                         : (element.value.timeFrom.month == element.value.timeTo?.month)
                             ? "${DateFormat.d(Share.settings.appSettings.localeCode).format(element.value.timeFrom)} - ${DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(element.value.timeTo ?? DateTime.now())}" // 10 - 15 May 2023
                             : "${DateFormat.MMMEd(Share.settings.appSettings.localeCode).format(element.value.timeFrom)} - ${DateFormat.MMMEd(Share.settings.appSettings.localeCode).format(element.value.timeTo ?? DateTime.now())}", // Wed, May 10 - Fri, May 15
-                    payload:
-                        'timetables\n${DateFormat.yMd(Share.settings.appSettings.localeCode).format(element.value.date ?? element.value.timeFrom)}'
+                    payload: TimelineNotification(type: TimelineNotificationType.event, data: element.value)
                   )));
 
           detectedChanges.eventsChanged
@@ -716,16 +716,18 @@ class Session extends HiveObject {
                     body: element.value.titleString.isNotEmpty
                         ? element.value.titleString
                         : (element.value.sender?.name ?? element.value.subtitleString),
-                    payload:
-                        'timetables\n${DateFormat.yMd(Share.settings.appSettings.localeCode).format(element.value.date ?? element.value.timeFrom)}'
+                    payload: TimelineNotification(type: TimelineNotificationType.event, data: element.value)
                   )));
         }
 
         // Send all composed notifications
-        notifications.forEach((element) =>
-            NotificationController.sendNotification(title: element.title, content: element.body, data: element.payload));
+        notifications.forEach((element) => NotificationController.sendNotification(
+            title: element.title, content: element.body, data: jsonEncode(element.payload.toJson())));
         messageNotifications.forEach((element) => NotificationController.sendNotification(
-            title: element.title, content: element.body, category: NotificationCategories.messages, data: element.payload));
+            title: element.title,
+            content: element.body,
+            category: NotificationCategories.messages,
+            data: jsonEncode(element.payload.toJson())));
       }
     } catch (ex) {
       // ignored
