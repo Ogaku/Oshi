@@ -100,7 +100,7 @@ class _GradesPageState extends State<GradesPage> {
                                               child: Text(
                                                 x.name,
                                                 overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                                               ))),
                                     ]),
                                 Row(
@@ -111,7 +111,7 @@ class _GradesPageState extends State<GradesPage> {
                                           visible: x.grades.isNotEmpty,
                                           child: Expanded(
                                               child: Container(
-                                                  margin: EdgeInsets.only(top: 5),
+                                                  margin: EdgeInsets.only(top: 8),
                                                   child: ExtendedWrap(
                                                       maxLines: 1,
                                                       overflowWidget: Text('...'),

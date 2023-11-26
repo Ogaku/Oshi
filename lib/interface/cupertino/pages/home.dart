@@ -340,7 +340,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                           color: const Color.fromARGB(255, 255, 255, 255),
                                           darkColor: const Color.fromARGB(255, 28, 28, 30)),
                                       context)),
-                              padding: EdgeInsets.only(right: 5, left: 7, top: 10, bottom: 10),
+                              padding: EdgeInsets.only(right: 5, left: 7, top: 13, bottom: 13),
                               child: ConstrainedBox(
                                   constraints: BoxConstraints(
                                       maxHeight:
