@@ -2,11 +2,13 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:darq/darq.dart';
 import 'package:duration/duration.dart';
 import 'package:duration/locale.dart';
 import 'package:event/event.dart';
+import 'package:extended_wrap/extended_wrap.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:format/format.dart';
@@ -363,26 +365,45 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                           Expanded(
                                               child: Align(
                                                   alignment: Alignment.centerRight,
-                                                  child: RichText(
-                                                      overflow: TextOverflow.ellipsis,
-                                                      text: TextSpan(
-                                                          text: '',
-                                                          children: x.grades
-                                                              .select((y, index) => TextSpan(
-                                                                  text: y.value,
-                                                                  style: TextStyle(fontSize: 25, color: y.asColor())))
-                                                              .toList()
-                                                              .intersperse(TextSpan(
-                                                                  text: ', ',
-                                                                  style: TextStyle(
-                                                                      fontSize: 25,
-                                                                      fontWeight: FontWeight.w600,
-                                                                      color: CupertinoDynamicColor.resolve(
-                                                                          CupertinoDynamicColor.withBrightness(
-                                                                              color: CupertinoColors.black,
-                                                                              darkColor: CupertinoColors.white),
-                                                                          context))))
-                                                              .toList()))))
+                                                  child: ExtendedWrap(
+                                                      maxLines: 1,
+                                                      textDirection: ui.TextDirection.rtl,
+                                                      overflowWidget: Text('...',
+                                                          style: TextStyle(
+                                                              color: CupertinoDynamicColor.resolve(
+                                                                  CupertinoDynamicColor.withBrightness(
+                                                                      color: CupertinoColors.black,
+                                                                      darkColor: CupertinoColors.white),
+                                                                  context))),
+                                                      spacing: 6,
+                                                      children: x.grades
+                                                          .orderByDescending((y) => y.addDate)
+                                                          .select((y, index) => Container(
+                                                                padding: EdgeInsets.symmetric(horizontal: 6),
+                                                                decoration: BoxDecoration(
+                                                                    color: y.major
+                                                                        ? (y.isFinal || y.isSemester)
+                                                                            ? y.asColor()
+                                                                            : null
+                                                                        : y.asColor(),
+                                                                    border: Border.all(
+                                                                        color: y.asColor(),
+                                                                        width: 2,
+                                                                        strokeAlign: BorderSide.strokeAlignInside),
+                                                                    borderRadius: BorderRadius.all(Radius.circular(6))),
+                                                                child: Text(y.value,
+                                                                    textAlign: TextAlign.center,
+                                                                    style: TextStyle(
+                                                                        fontSize: 17,
+                                                                        color: (y.isFinalProposition || y.isSemesterProposition)
+                                                                            ? CupertinoDynamicColor.resolve(
+                                                                                CupertinoDynamicColor.withBrightness(
+                                                                                    color: CupertinoColors.black,
+                                                                                    darkColor: CupertinoColors.white),
+                                                                                context)
+                                                                            : CupertinoColors.black)),
+                                                              ))
+                                                          .toList())))
                                         ],
                                       ))))))))
               .toList(),
@@ -1519,8 +1540,8 @@ extension ColorsExtension on Grade {
       };
 }
 
-extension ListExtension on List<TextSpan> {
-  Iterable<TextSpan> intersperse(TextSpan element) sync* {
+extension ListExtension<T> on List<T> {
+  Iterable<T> intersperse(T element) sync* {
     for (int i = 0; i < length; i++) {
       yield this[i];
       if (length != i + 1) yield element;

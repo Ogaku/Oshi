@@ -30,6 +30,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
   @override
   Widget build(BuildContext context) {
     var gradesToDisplay = widget.lesson.grades
+        .where((x) => !x.major)
         .where((x) =>
             x.name.contains(RegExp(searchQuery, caseSensitive: false)) ||
             x.detailsDateString.contains(RegExp(searchQuery, caseSensitive: false)) ||
