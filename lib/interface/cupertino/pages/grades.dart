@@ -103,80 +103,84 @@ class _GradesPageState extends State<GradesPage> {
                                                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                                               ))),
                                     ]),
-                                Visibility(
-                                    visible: x.grades.isNotEmpty,
-                                    child: ConstrainedBox(
-                                        constraints: BoxConstraints(maxWidth: 300),
-                                        child: Container(
-                                            margin: EdgeInsets.only(top: 5),
-                                            child: Expanded(
-                                                child: ExtendedWrap(
-                                                    maxLines: 1,
-                                                    overflowWidget: Text('...'),
-                                                    spacing: 5,
-                                                    children: x.grades
-                                                        .where((y) => !y.major)
-                                                        .orderByDescending((y) => y.addDate)
-                                                        .select((y, index) => Container(
-                                                              padding: EdgeInsets.symmetric(vertical: 1, horizontal: 6),
-                                                              decoration: BoxDecoration(
-                                                                  color: y.major
-                                                                      ? (y.isFinal || y.isSemester)
-                                                                          ? y.asColor()
-                                                                          : null
-                                                                      : y.asColor(),
-                                                                  border: Border.all(
-                                                                      color: y.asColor(),
-                                                                      width: 1,
-                                                                      strokeAlign: BorderSide.strokeAlignInside),
-                                                                  borderRadius: BorderRadius.all(Radius.circular(6))),
-                                                              child: Text(y.value,
-                                                                  textAlign: TextAlign.center,
-                                                                  style: TextStyle(
-                                                                      fontSize: 13,
-                                                                      color:
-                                                                          (y.isFinalProposition || y.isSemesterProposition)
-                                                                              ? CupertinoDynamicColor.resolve(
-                                                                                  CupertinoDynamicColor.withBrightness(
-                                                                                      color: CupertinoColors.black,
-                                                                                      darkColor: CupertinoColors.white),
-                                                                                  context)
-                                                                              : CupertinoColors.black)),
-                                                            ))
-                                                        .prependIf(Container(width: 7), x.grades.any((y) => y.major))
-                                                        .prependAll(x.grades
-                                                            .where((y) => y.major)
-                                                            .orderByDescending((y) => y.isFinal ? 1 : 0)
-                                                            .orderByDescending((y) => y.isSemester ? 1 : 0)
-                                                            .thenByDescending((y) => y.addDate)
-                                                            .take(1)
-                                                            .select((y, index) => Container(
-                                                                  padding: EdgeInsets.symmetric(vertical: 1, horizontal: 6),
-                                                                  decoration: BoxDecoration(
-                                                                      color: y.major
-                                                                          ? (y.isFinal || y.isSemester)
-                                                                              ? y.asColor()
-                                                                              : null
-                                                                          : y.asColor(),
-                                                                      border: Border.all(
-                                                                          color: y.asColor(),
-                                                                          width: 1,
-                                                                          strokeAlign: BorderSide.strokeAlignInside),
-                                                                      borderRadius: BorderRadius.all(Radius.circular(6))),
-                                                                  child: Text(y.value,
-                                                                      textAlign: TextAlign.center,
-                                                                      style: TextStyle(
-                                                                          fontSize: 13,
-                                                                          color: (y.isFinalProposition ||
-                                                                                  y.isSemesterProposition)
-                                                                              ? CupertinoDynamicColor.resolve(
-                                                                                  CupertinoDynamicColor.withBrightness(
-                                                                                      color: CupertinoColors.black,
-                                                                                      darkColor: CupertinoColors.white),
-                                                                                  context)
-                                                                              : CupertinoColors.black)),
-                                                                )))
-                                                        .toList()))))),
+                                Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Visibility(
+                                          visible: x.grades.isNotEmpty,
+                                          child: Expanded(
+                                              child: Container(
+                                                  margin: EdgeInsets.only(top: 5),
+                                                  child: ExtendedWrap(
+                                                      maxLines: 1,
+                                                      overflowWidget: Text('...'),
+                                                      spacing: 5,
+                                                      children: x.grades
+                                                          .where((y) => !y.major)
+                                                          .orderByDescending((y) => y.addDate)
+                                                          .select((y, index) => Container(
+                                                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                                                decoration: BoxDecoration(
+                                                                    color: y.major
+                                                                        ? (y.isFinal || y.isSemester)
+                                                                            ? y.asColor()
+                                                                            : null
+                                                                        : y.asColor(),
+                                                                    border: Border.all(
+                                                                        color: y.asColor(),
+                                                                        width: 1,
+                                                                        strokeAlign: BorderSide.strokeAlignInside),
+                                                                    borderRadius: BorderRadius.all(Radius.circular(6))),
+                                                                child: Text(y.value,
+                                                                    textAlign: TextAlign.center,
+                                                                    style: TextStyle(
+                                                                        fontSize: 13,
+                                                                        color:
+                                                                            (y.isFinalProposition || y.isSemesterProposition)
+                                                                                ? CupertinoDynamicColor.resolve(
+                                                                                    CupertinoDynamicColor.withBrightness(
+                                                                                        color: CupertinoColors.black,
+                                                                                        darkColor: CupertinoColors.white),
+                                                                                    context)
+                                                                                : CupertinoColors.black)),
+                                                              ))
+                                                          .prependIf(Container(width: 7), x.grades.any((y) => y.major))
+                                                          .prependAll(x.grades
+                                                              .where((y) => y.major)
+                                                              .orderByDescending((y) => y.isFinal ? 1 : 0)
+                                                              .orderByDescending((y) => y.isSemester ? 1 : 0)
+                                                              .thenByDescending((y) => y.addDate)
+                                                              .take(1)
+                                                              .select((y, index) => Container(
+                                                                    padding:
+                                                                        EdgeInsets.symmetric(vertical: 1, horizontal: 6),
+                                                                    decoration: BoxDecoration(
+                                                                        color: y.major
+                                                                            ? (y.isFinal || y.isSemester)
+                                                                                ? y.asColor()
+                                                                                : null
+                                                                            : y.asColor(),
+                                                                        border: Border.all(
+                                                                            color: y.asColor(),
+                                                                            width: 1,
+                                                                            strokeAlign: BorderSide.strokeAlignInside),
+                                                                        borderRadius: BorderRadius.all(Radius.circular(6))),
+                                                                    child: Text(y.value,
+                                                                        textAlign: TextAlign.center,
+                                                                        style: TextStyle(
+                                                                            fontSize: 13,
+                                                                            color: (y.isFinalProposition ||
+                                                                                    y.isSemesterProposition)
+                                                                                ? CupertinoDynamicColor.resolve(
+                                                                                    CupertinoDynamicColor.withBrightness(
+                                                                                        color: CupertinoColors.black,
+                                                                                        darkColor: CupertinoColors.white),
+                                                                                    context)
+                                                                                : CupertinoColors.black)),
+                                                                  )))
+                                                          .toList()))))
+                                    ]),
                                 Visibility(
                                     visible: x.grades.isEmpty,
                                     child: Opacity(

@@ -379,7 +379,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                       children: x.grades
                                                           .orderByDescending((y) => y.addDate)
                                                           .select((y, index) => Container(
-                                                                padding: EdgeInsets.symmetric(horizontal: 6),
+                                                                padding: EdgeInsets.symmetric(horizontal: 5),
                                                                 decoration: BoxDecoration(
                                                                     color: y.major
                                                                         ? (y.isFinal || y.isSemester)
