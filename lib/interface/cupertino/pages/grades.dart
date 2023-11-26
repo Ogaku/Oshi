@@ -120,7 +120,7 @@ class _GradesPageState extends State<GradesPage> {
                                                           .where((y) => !y.major)
                                                           .orderByDescending((y) => y.addDate)
                                                           .select((y, index) => Container(
-                                                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                                                padding: EdgeInsets.symmetric(horizontal: 4),
                                                                 decoration: BoxDecoration(
                                                                     color: y.major
                                                                         ? (y.isFinal || y.isSemester)
@@ -131,7 +131,7 @@ class _GradesPageState extends State<GradesPage> {
                                                                         color: y.asColor(),
                                                                         width: 1,
                                                                         strokeAlign: BorderSide.strokeAlignInside),
-                                                                    borderRadius: BorderRadius.all(Radius.circular(6))),
+                                                                    borderRadius: BorderRadius.all(Radius.circular(4))),
                                                                 child: Text(y.value,
                                                                     textAlign: TextAlign.center,
                                                                     style: TextStyle(
@@ -145,7 +145,7 @@ class _GradesPageState extends State<GradesPage> {
                                                                                     context)
                                                                                 : CupertinoColors.black)),
                                                               ))
-                                                          .prependIf(Container(width: 7), x.grades.any((y) => y.major))
+                                                          .prependIf(Container(width: 3), x.grades.any((y) => y.major))
                                                           .prependAll(x.grades
                                                               .where((y) => y.major)
                                                               .orderByDescending((y) => y.isFinal ? 1 : 0)
@@ -154,7 +154,7 @@ class _GradesPageState extends State<GradesPage> {
                                                               .take(1)
                                                               .select((y, index) => Container(
                                                                     padding:
-                                                                        EdgeInsets.symmetric(vertical: 1, horizontal: 6),
+                                                                        EdgeInsets.symmetric(horizontal: 4),
                                                                     decoration: BoxDecoration(
                                                                         color: y.major
                                                                             ? (y.isFinal || y.isSemester)
@@ -165,7 +165,7 @@ class _GradesPageState extends State<GradesPage> {
                                                                             color: y.asColor(),
                                                                             width: 1,
                                                                             strokeAlign: BorderSide.strokeAlignInside),
-                                                                        borderRadius: BorderRadius.all(Radius.circular(6))),
+                                                                        borderRadius: BorderRadius.all(Radius.circular(4))),
                                                                     child: Text(y.value,
                                                                         textAlign: TextAlign.center,
                                                                         style: TextStyle(
