@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart';
 import 'package:oshi/share/share.dart';
 
@@ -43,34 +44,36 @@ class SearchableSliverNavigationBar extends StatefulWidget {
   final DateTime? selectedDate;
   final bool keepBackgroundWatchers;
   final bool alwaysShowAddons;
+  final bool appendBottom;
 
-  SearchableSliverNavigationBar(
-      {super.key,
-      TextEditingController? searchController,
-      this.children,
-      this.onChanged,
-      this.onSubmitted,
-      this.transitionBetweenRoutes,
-      this.largeTitle,
-      this.leading,
-      this.alwaysShowMiddle = false,
-      this.previousPageTitle,
-      this.middle,
-      this.trailing,
-      this.child,
-      this.segments,
-      this.setState,
-      this.color = Colors.white,
-      this.darkColor = Colors.black,
-      this.backgroundColor,
-      this.anchor,
-      bool? disableAddons,
-      this.useSliverBox = false,
-      this.selectedDate,
-      this.keepBackgroundWatchers = false,
-      this.alwaysShowAddons = false,
-      this.segmentController})
-      : searchController = searchController ?? TextEditingController(),
+  SearchableSliverNavigationBar({
+    super.key,
+    TextEditingController? searchController,
+    this.children,
+    this.onChanged,
+    this.onSubmitted,
+    this.transitionBetweenRoutes,
+    this.largeTitle,
+    this.leading,
+    this.alwaysShowMiddle = false,
+    this.previousPageTitle,
+    this.middle,
+    this.trailing,
+    this.child,
+    this.segments,
+    this.setState,
+    this.color = Colors.white,
+    this.darkColor = Colors.black,
+    this.backgroundColor,
+    this.anchor,
+    bool? disableAddons,
+    this.useSliverBox = false,
+    this.selectedDate,
+    this.keepBackgroundWatchers = false,
+    this.alwaysShowAddons = false,
+    this.segmentController,
+    this.appendBottom = true,
+  })  : searchController = searchController ?? TextEditingController(),
         disableAddons = disableAddons ?? (child != null);
 
   @override
@@ -310,7 +313,8 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisSize: MainAxisSize.max,
-                            children: widget.children ?? [],
+                            children:
+                                (widget.children ?? []).appendIf(const SizedBox(height: 100), widget.appendBottom).toList(),
                           ))
                   : SliverFillRemaining(
                       hasScrollBody: false,
@@ -319,7 +323,8 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisSize: MainAxisSize.max,
-                            children: widget.children ?? [],
+                            children:
+                                (widget.children ?? []).appendIf(const SizedBox(height: 60), widget.appendBottom).toList(),
                           )),
             ],
           ),

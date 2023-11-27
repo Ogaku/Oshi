@@ -453,14 +453,14 @@ class Session extends HiveObject {
                   ? RegisterChangeTypes.changed
                   : RegisterChangeTypes.added,
               value: x.grade,
-              payload: 'subjects\n${x.subject.name}'))
+              payload: x.subject))
           .appendAll(allGradesSaved.except(allGradesDownloaded, (element) => element.grade).select((x, index) =>
               RegisterChange<Grade>(
                   type: allGradesDownloaded.any((y) => y.grade.id == x.grade.id && y.grade.id > 0 && x.grade.id > 0)
                       ? RegisterChangeTypes.changed
                       : RegisterChangeTypes.removed,
                   value: x.grade,
-                  payload: 'subjects\n${x.subject.name}')))
+                  payload: x.subject)))
           .toList();
 
       /* Events */
@@ -731,6 +731,7 @@ class Session extends HiveObject {
       }
     } catch (ex) {
       // ignored
+      print(ex);
     }
 
     if (messages) data.messages = provider.registerData!.messages;

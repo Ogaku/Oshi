@@ -577,7 +577,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                   visible: Share.session.data.student.mainClass.unit.luckyNumber != null,
                                   child: Stack(alignment: Alignment.center, children: [
                                     Transform.scale(
-                                        scale: isLucky ? 3.0 : 1.6,
+                                        scale: isLucky ? 3.0 : 1.4,
                                         child: isLucky
                                             ? Icon(CupertinoIcons.star_fill,
                                                 color: CupertinoColors.systemYellow.withAlpha(70))

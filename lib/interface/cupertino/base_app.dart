@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:format/format.dart';
 import 'package:oshi/share/appcenter.dart';
@@ -109,28 +110,43 @@ class _BaseAppState extends State<BaseApp> {
                 });
 
                 return CupertinoTabScaffold(
-                  controller: tabController,
-                  tabBar:
-                      CupertinoTabBar(backgroundColor: CupertinoTheme.of(context).barBackgroundColor.withAlpha(255), items: [
-                    BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: '/Titles/Pages/Home'.localized),
-                    BottomNavigationBarItem(icon: Icon(CupertinoIcons.rosette), label: '/Titles/Pages/Grades'.localized),
-                    BottomNavigationBarItem(icon: Icon(CupertinoIcons.calendar), label: '/Titles/Pages/Schedule'.localized),
-                    BottomNavigationBarItem(icon: Icon(CupertinoIcons.envelope), label: '/Titles/Pages/Messages'.localized),
-                    BottomNavigationBarItem(
-                        icon: Icon(CupertinoIcons.person_crop_circle_badge_minus),
-                        label: '/Titles/Pages/Absences'.localized),
-                  ]),
-                  tabBuilder: (context, index) => CupertinoTabView(
-                    builder: (context) => switch (index) {
-                      0 => homePage,
-                      1 => gradesPage,
-                      2 => timetablePage,
-                      3 => messagesPage,
-                      4 => absencesPage,
-                      _ => homePage,
-                    },
-                  ),
-                );
+                    controller: tabController,
+                    tabBar: CupertinoTabBar(
+                        backgroundColor: CupertinoDynamicColor.resolve(
+                            CupertinoDynamicColor.withBrightness(
+                                color: Colors.white.withOpacity(0.5), darkColor: const Color.fromRGBO(45, 45, 45, 0.5)),
+                            context),
+                        border: Border(
+                          bottom: BorderSide(
+                            color: CupertinoDynamicColor.resolve(
+                                CupertinoDynamicColor.withBrightness(
+                                    color: const Color(0xFFBCBBC0), darkColor: const Color(0xFF262626)),
+                                context),
+                            width: 0.0,
+                          ),
+                        ),
+                        items: [
+                          BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: '/Titles/Pages/Home'.localized),
+                          BottomNavigationBarItem(
+                              icon: Icon(CupertinoIcons.rosette), label: '/Titles/Pages/Grades'.localized),
+                          BottomNavigationBarItem(
+                              icon: Icon(CupertinoIcons.calendar), label: '/Titles/Pages/Schedule'.localized),
+                          BottomNavigationBarItem(
+                              icon: Icon(CupertinoIcons.envelope), label: '/Titles/Pages/Messages'.localized),
+                          BottomNavigationBarItem(
+                              icon: Icon(CupertinoIcons.person_crop_circle_badge_minus),
+                              label: '/Titles/Pages/Absences'.localized),
+                        ]),
+                    tabBuilder: (context, index) => CupertinoTabView(
+                          builder: (context) => switch (index) {
+                            0 => homePage,
+                            1 => gradesPage,
+                            2 => timetablePage,
+                            3 => messagesPage,
+                            4 => absencesPage,
+                            _ => homePage,
+                          },
+                        ));
               }));
         }));
   }

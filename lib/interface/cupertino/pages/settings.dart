@@ -76,6 +76,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) => SearchableSliverNavigationBar(
+          appendBottom: false,
           setState: setState,
           largeTitle: Text('Settings'),
           previousPageTitle: 'Home',
