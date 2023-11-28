@@ -8,6 +8,7 @@ import 'package:dio/dio.dart';
 import 'package:event/event.dart' as event;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' as notifications;
 import 'package:format/format.dart';
 import 'package:intl/intl.dart';
@@ -553,7 +554,7 @@ class Session extends HiveObject {
             .select((x, index) => x.value.hashCode));
 
         var notifications = <({String title, String body, TimelineNotification payload})>[];
-        var messageNotifications = <({String title, String body, TimelineNotification payload})>[];
+        // var messageNotifications = <({String title, String body, TimelineNotification payload})>[];
 
         // Compose timetable notifications
         if (settings.enableTimetableNotifications) {
@@ -582,7 +583,7 @@ class Session extends HiveObject {
         if (settings.enableMessagesNotifications) {
           detectedChanges.messagesChanged
               .where((element) => element.type == RegisterChangeTypes.added)
-              .forEach((element) => messageNotifications.add((
+              .forEach((element) => notifications.add((
                     title: '/Notifications/Categories/Messages/New'.localized.format(element.value.senderName),
                     body: element.value.topic,
                     payload: TimelineNotification(data: element.value)
@@ -735,12 +736,20 @@ class Session extends HiveObject {
 
         // Send all composed notifications
         notifications.forEach((element) => NotificationController.sendNotification(
-            title: element.title, content: element.body, data: jsonEncode(element.payload.toJson())));
-        messageNotifications.forEach((element) => NotificationController.sendNotification(
+            playSoundforce: notifications.first == element ? null : false,
             title: element.title,
             content: element.body,
-            category: NotificationCategories.messages,
             data: jsonEncode(element.payload.toJson())));
+
+        // messageNotifications.forEach((element) => NotificationController.sendNotification(
+        //     playSoundforce: messageNotifications.first == element ? null : false,
+        //     title: element.title,
+        //     content: element.body,
+        //     category: NotificationCategories.messages,
+        //     data: jsonEncode(element.payload.toJson())));
+
+        // Prepare the badges
+        unreadChanges.setBadge();
       }
     } catch (ex) {
       // ignored
@@ -788,9 +797,31 @@ class UnreadChanges {
     grades.clear();
     events.clear();
     attendances.clear();
+    resetBadge();
+
     Share.settings.save();
     Share.refreshBase.broadcast();
     Share.dotRefresh.broadcast();
+  }
+
+  int count() {
+    return timetables.length + grades.length + events.length + attendances.length;
+  }
+
+  void setBadge() {
+    try {
+      FlutterAppBadger.updateBadgeCount(count());
+    } catch (ex) {
+      // ignored
+    }
+  }
+
+  void resetBadge() {
+    try {
+      FlutterAppBadger.removeBadge();
+    } catch (ex) {
+      // ignored
+    }
   }
 }
 
