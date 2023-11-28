@@ -314,7 +314,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisSize: MainAxisSize.max,
                             children:
-                                (widget.children ?? []).appendIf(const SizedBox(height: 100), widget.appendBottom).toList(),
+                                (widget.children ?? []).appendIf(const SizedBox(height: 60), widget.appendBottom).toList(),
                           ))
                   : SliverFillRemaining(
                       hasScrollBody: false,
