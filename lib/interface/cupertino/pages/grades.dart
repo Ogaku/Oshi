@@ -4,6 +4,7 @@
 import 'package:darq/darq.dart';
 import 'package:extended_wrap/extended_wrap.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/views/grades_detailed.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
@@ -82,18 +83,9 @@ class _GradesPageState extends State<GradesPage> {
                               children: [
                                 Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      Visibility(
-                                          visible: x.hasUnseen,
-                                          child: Container(
-                                              margin: EdgeInsets.only(top: 5, right: 6),
-                                              child: Container(
-                                                height: 10,
-                                                width: 10,
-                                                decoration: BoxDecoration(
-                                                    shape: BoxShape.circle, color: CupertinoTheme.of(context).primaryColor),
-                                              ))),
+                                      UnreadDot(unseen: () => x.hasUnseen, margin: EdgeInsets.only(right: 6)),
                                       Expanded(
                                           child: Container(
                                               margin: EdgeInsets.only(right: 10),
@@ -153,8 +145,7 @@ class _GradesPageState extends State<GradesPage> {
                                                               .thenByDescending((y) => y.addDate)
                                                               .take(1)
                                                               .select((y, index) => Container(
-                                                                    padding:
-                                                                        EdgeInsets.symmetric(horizontal: 4),
+                                                                    padding: EdgeInsets.symmetric(horizontal: 4),
                                                                     decoration: BoxDecoration(
                                                                         color: y.major
                                                                             ? (y.isFinal || y.isSemester)

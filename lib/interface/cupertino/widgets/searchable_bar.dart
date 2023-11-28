@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart';
 import 'package:oshi/share/share.dart';
 
@@ -44,7 +43,6 @@ class SearchableSliverNavigationBar extends StatefulWidget {
   final DateTime? selectedDate;
   final bool keepBackgroundWatchers;
   final bool alwaysShowAddons;
-  final bool appendBottom;
 
   SearchableSliverNavigationBar({
     super.key,
@@ -72,7 +70,6 @@ class SearchableSliverNavigationBar extends StatefulWidget {
     this.keepBackgroundWatchers = false,
     this.alwaysShowAddons = false,
     this.segmentController,
-    this.appendBottom = true,
   })  : searchController = searchController ?? TextEditingController(),
         disableAddons = disableAddons ?? (child != null);
 
@@ -313,8 +310,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisSize: MainAxisSize.max,
-                            children:
-                                (widget.children ?? []).appendIf(const SizedBox(height: 60), widget.appendBottom).toList(),
+                            children: widget.children ?? [],
                           ))
                   : SliverFillRemaining(
                       hasScrollBody: false,
@@ -323,8 +319,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisSize: MainAxisSize.max,
-                            children:
-                                (widget.children ?? []).appendIf(const SizedBox(height: 60), widget.appendBottom).toList(),
+                            children: widget.children ?? [],
                           )),
             ],
           ),

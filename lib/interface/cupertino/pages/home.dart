@@ -2,6 +2,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:darq/darq.dart';
@@ -11,6 +12,7 @@ import 'package:event/event.dart';
 import 'package:extended_wrap/extended_wrap.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -1322,9 +1324,17 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
         },
         searchController: searchController,
         segmentController: segmentController,
-        largeTitle: Text(segmentController.segment == HomepageSegments.home
-            ? '/Titles/Pages/Home'.localized
-            : '/Titles/Pages/Timeline'.localized),
+        largeTitle: GestureDetector(
+            onDoubleTap: () {
+              if (!Platform.isWindows) return;
+              Share.session.refreshStatus.refreshMutex.protect<void>(() async {
+                await Share.session.refreshAll();
+                setState(() {});
+              });
+            },
+            child: Text(segmentController.segment == HomepageSegments.home
+                ? '/Titles/Pages/Home'.localized
+                : '/Titles/Pages/Timeline'.localized)),
         middle: Text('/Titles/Pages/Home'.localized),
         trailing: PullDownButton(
           itemBuilder: (context) => [
@@ -1339,7 +1349,12 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
               title: 'Sessions',
               icon: CupertinoIcons.rectangle_stack_person_crop,
               onTap: () => Share.changeBase.broadcast(Value(() => sessionsPage)),
-            )
+            ),
+            PullDownMenuItem(
+              title: 'Mark as read',
+              icon: CupertinoIcons.checkmark_circle,
+              onTap: () => Share.session.unreadChanges.markAsRead(),
+            ),
           ],
           buttonBuilder: (context, showMenu) => GestureDetector(
             onTap: showMenu,

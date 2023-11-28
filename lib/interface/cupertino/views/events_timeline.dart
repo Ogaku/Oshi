@@ -8,6 +8,7 @@ import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/pages/timetable.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/event.dart';
+import 'package:oshi/models/data/timetables.dart';
 import 'package:oshi/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
@@ -28,18 +29,31 @@ class _EventsPageState extends State<EventsPage> {
   @override
   Widget build(BuildContext context) {
     // Group by date, I know IT'S A DAMN STRING, but we're saving on custom controls
-    var eventsToDisplayByDate = Share.session.events
+    var thingsToDisplayByDate = Share.session.events
         .where((x) => (showTeachers ? true : x.category != EventCategory.teacher))
         .where((x) => (x.date ?? x.timeFrom).isAfter(DateTime.now().add(Duration(days: -1)).asDate()))
         .where((x) =>
             x.titleString.contains(RegExp(searchQuery, caseSensitive: false)) ||
             x.subtitleString.contains(RegExp(searchQuery, caseSensitive: false)) ||
             x.locationString.contains(RegExp(searchQuery, caseSensitive: false)))
-        .orderBy((x) => x.date ?? x.timeFrom)
-        .groupBy((x) => DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(x.date ?? x.timeFrom))
+        .select((x, index) => AgendaEvent(event: x))
+        .appendAll(Share.session.data.timetables.timetable.entries
+            .select((x, index) => x.value.lessons
+                .select((y, index) => y?.where((z) => z.modifiedSchedule || z.isCanceled))
+                .selectMany((w, index) => w?.toList() ?? <TimetableLesson>[]))
+            .selectMany((w, index) => w)
+            .where((x) => x.date.asDate().isAfterOrSame(DateTime.now().asDate()))
+            .where((x) =>
+                (x.subject?.name.contains(RegExp(searchQuery, caseSensitive: false)) ?? false) ||
+                (x.teacher?.name.contains(RegExp(searchQuery, caseSensitive: false)) ?? false) ||
+                x.classroomString.contains(RegExp(searchQuery, caseSensitive: false)))
+            .select((x, index) => AgendaEvent(lesson: x))
+            .toList())
+        .orderBy((x) => x.date)
+        .groupBy((x) => DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(x.date))
         .toList();
 
-    var eventWidgets = eventsToDisplayByDate
+    var eventWidgets = thingsToDisplayByDate
         .select((element, index) => CupertinoListSection.insetGrouped(
             margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
             header: Text(element.key),
@@ -87,4 +101,13 @@ class _EventsPageState extends State<EventsPage> {
         onChanged: (s) => setState(() => searchQuery = s),
         children: [SingleChildScrollView(child: Column(children: eventWidgets))]);
   }
+}
+
+class AgendaEvent {
+  final Event? event;
+  final TimetableLesson? lesson;
+
+  DateTime get date => ((event?.date ?? event?.timeFrom) ?? (lesson?.date ?? lesson?.timeFrom))?.asDate() ?? DateTime.now();
+
+  AgendaEvent({this.event, this.lesson});
 }

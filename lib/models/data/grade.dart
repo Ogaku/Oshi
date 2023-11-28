@@ -110,7 +110,7 @@ class Grade extends Equatable {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get unseen => Share.session.unreadChanges.grades.contains(hashCode);
-  set unseen(bool value) => Share.settings.save(() => Share.session.unreadChanges.grades.remove(hashCode));
+  void markAsSeen() => Share.settings.save(() => Share.session.unreadChanges.grades.remove(hashCode));
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get major => isFinal || isFinalProposition || isSemester || isSemesterProposition;

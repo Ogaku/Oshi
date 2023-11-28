@@ -65,6 +65,7 @@ class Share {
   static event.Event refreshBase = event.Event(); // Trigger a setState on the base app and everything subscribed
   static event.Event checkUpdates = event.Event(); // Trigger an update on the base app and everything subscribed
   static event.Event openTimeline = event.Event(); // Trigger an event on the home page and everything subscribed
+  static event.Event dotRefresh = event.Event(); // Trigger an event on every "unread" widget (unseen) subscribed
   static event.Event<event.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>
       showErrorModal =
       event.Event<event.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>();
@@ -119,11 +120,21 @@ class Settings {
   }
 
   // Save all received data to storage, called automatically
+  bool _settingsSaveActive = false;
   Future<({bool success, Exception? message})> save([void Function()? inline]) async {
-    try {
-      if (inline != null) inline();
-    } catch (ex) {
-      // ignore
+    if (inline != null) {
+      try {
+        inline(); // Execute th einline function passed
+        if (_settingsSaveActive) return (success: true, message: null);
+        _settingsSaveActive = true; // Mark as waiting for grouped saves
+        await Future.delayed(const Duration(seconds: 5)); // Wait for more
+        await save(); // Save settings and unlock the inline controller
+        _settingsSaveActive = false; // Mark as available, back to normal
+        return (success: true, message: null);
+      } catch (ex) {
+        _settingsSaveActive = false; // Mark as not working
+        return (success: false, message: Exception(ex));
+      }
     }
 
     try {
@@ -731,7 +742,6 @@ class Session extends HiveObject {
       }
     } catch (ex) {
       // ignored
-      print(ex);
     }
 
     if (messages) data.messages = provider.registerData!.messages;
@@ -744,7 +754,10 @@ class Session extends HiveObject {
             ifAbsent: () => value,
           ));
     }
+
     await Share.settings.save();
+    Share.refreshBase.broadcast();
+    Share.dotRefresh.broadcast();
   }
 }
 
@@ -767,6 +780,16 @@ class UnreadChanges {
 
   @HiveField(4)
   List<int> attendances;
+
+  void markAsRead() {
+    timetables.clear();
+    grades.clear();
+    events.clear();
+    attendances.clear();
+    Share.settings.save();
+    Share.refreshBase.broadcast();
+    Share.dotRefresh.broadcast();
+  }
 }
 
 @HiveType(typeId: 59)

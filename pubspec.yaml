@@ -21,7 +21,7 @@ dependencies:
   json_annotation: ^4.8.1
   shared_preferences: ^2.2.1
   transparent_image: ^2.0.1
-  uuid: ^4.1.0
+  uuid: ^3.0.6
   modal_bottom_sheet: ^3.0.0-pre
   url_launcher: ^6.1.14
   hive_generator: ^2.0.1

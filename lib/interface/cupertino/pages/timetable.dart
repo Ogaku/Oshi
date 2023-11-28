@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
 import 'package:oshi/interface/cupertino/views/new_event.dart';
@@ -20,9 +21,9 @@ import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:pull_down_button/pull_down_button.dart';
-import 'package:oshi/interface/cupertino/views/events_timeline.dart' show EventsPage;
+import 'package:oshi/interface/cupertino/views/events_timeline.dart' show AgendaEvent, EventsPage;
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:uuid/v4.dart';
+import 'package:uuid/uuid.dart';
 import 'package:visibility_aware_state/visibility_aware_state.dart';
 import 'package:add_2_calendar/add_2_calendar.dart' as calendar;
 import 'package:share_plus/share_plus.dart' as sharing;
@@ -121,7 +122,8 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                 ),
             child: Container(
                 margin: EdgeInsets.only(top: 5, bottom: 5),
-                child: TextChip(width: 110, text: DateFormat.yMd(Share.settings.appSettings.localeCode).format(selectedDate)))),
+                child:
+                    TextChip(width: 110, text: DateFormat.yMd(Share.settings.appSettings.localeCode).format(selectedDate)))),
         trailing: isWorking
             ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
             : PullDownButton(
@@ -416,7 +418,7 @@ extension EventWidgetExtension on Event {
       bool markModified = false,
       bool useOnTap = false,
       Function()? onTap}) {
-    var tag = UuidV4().generate();
+    var tag = Uuid().v4();
     var body = GestureDetector(
         onTap: (useOnTap && onTap != null)
             ? onTap
@@ -549,7 +551,8 @@ extension EventWidgetExtension on Event {
                                                           child: Opacity(
                                                               opacity: 0.5,
                                                               child: Text(
-                                                                  DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode)
+                                                                  DateFormat.yMMMMEEEEd(
+                                                                          Share.settings.appSettings.localeCode)
                                                                       .format(date ?? timeFrom),
                                                                   maxLines: 1,
                                                                   overflow: TextOverflow.ellipsis)))
@@ -848,7 +851,7 @@ extension LessonWidgetExtension on TimetableLesson {
             ]))
         .toList();
 
-    var tag = UuidV4().generate();
+    var tag = Uuid().v4();
     var body = GestureDetector(
         onTap: (useOnTap && onTap != null)
             ? onTap
@@ -1076,6 +1079,10 @@ extension LessonWidgetExtension on TimetableLesson {
                                           .toList() +
                                       // The lesson block
                                       [
+                                        UnreadDot(
+                                            unseen: () => unseen,
+                                            markAsSeen: markAsSeen,
+                                            margin: EdgeInsets.only(top: 5, right: 6)),
                                         // Lesson name
                                         Expanded(
                                             flex: 2,
@@ -1227,4 +1234,32 @@ extension EventColors on Event {
 
     return height;
   }
+}
+
+extension TimelineWidgetsExtension on Iterable<AgendaEvent> {
+  List<Widget> asEventWidgets(
+          TimetableDay? day, String searchQuery, String placeholder, void Function(VoidCallback fn) setState) =>
+      isEmpty && searchQuery.isNotEmpty
+          ? [
+              CupertinoListTile(
+                  title: Opacity(
+                      opacity: 0.5,
+                      child: Container(
+                          alignment: Alignment.center,
+                          child: Text(
+                            placeholder,
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                          ))))
+            ]
+          : this
+              .select((x, index) => Visibility(
+                  visible: isNotEmpty,
+                  child: CupertinoListTile(
+                      padding: EdgeInsets.all(0),
+                      title: Builder(
+                          builder: (context) =>
+                              x.event?.asEventWidget(context, isNotEmpty, day, setState) ??
+                              x.lesson?.asLessonWidget(context, null, day, setState) ??
+                              Text('')))))
+              .toList();
 }

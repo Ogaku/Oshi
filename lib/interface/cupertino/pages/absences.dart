@@ -7,6 +7,7 @@ import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:format/format.dart';
 import 'package:intl/intl.dart';
+import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/attendances.dart';
@@ -15,8 +16,8 @@ import 'package:oshi/share/translator.dart';
 
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
-import 'package:uuid/v4.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
+import 'package:uuid/uuid.dart';
 
 // Boiler: returned to the app tab builder
 StatefulWidget get absencesPage => AbsencesPage();
@@ -214,7 +215,7 @@ extension LessonWidgetExtension on Attendance {
       bool markModified = false,
       bool useOnTap = false,
       Function()? onTap}) {
-    var tag = UuidV4().generate();
+    var tag = Uuid().v4();
     var body = GestureDetector(
         onTap: (useOnTap && onTap != null)
             ? onTap
@@ -328,65 +329,70 @@ extension LessonWidgetExtension on Attendance {
                             color: const Color.fromARGB(255, 255, 255, 255),
                             darkColor: const Color.fromARGB(255, 28, 28, 30)),
                         context)),
-            padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
+            padding: EdgeInsets.only(top: 10, bottom: 15, right: 15, left: 10),
             child: ConstrainedBox(
                 constraints: BoxConstraints(
                     maxHeight: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 150,
                     maxWidth: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                          padding: EdgeInsets.only(bottom: 5),
-                          child: Text(
-                            type.asString(),
-                            style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.w600,
-                                color: type.asColor(),
-                                fontStyle: markModified ? FontStyle.italic : null,
-                                decoration: markRemoved ? TextDecoration.lineThrough : null),
-                          )),
-                      Expanded(
-                          flex: 2,
-                          child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Visibility(
-                                    visible: (lesson.subject?.name.isNotEmpty ?? false),
-                                    child: Opacity(
-                                        opacity: 0.5,
-                                        child: Container(
-                                            margin: EdgeInsets.only(left: 35, top: 4),
-                                            child: Text(
-                                              lesson.subject?.name ?? 'Unknown lesson',
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 2,
-                                              textAlign: TextAlign.end,
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontStyle: markModified ? FontStyle.italic : null,
-                                                  decoration: markRemoved ? TextDecoration.lineThrough : null),
-                                            )))),
-                                Opacity(
-                                    opacity: 0.5,
-                                    child: Container(
-                                        margin: EdgeInsets.only(top: 4),
-                                        child: Text(
-                                          addedDateString,
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                          textAlign: TextAlign.end,
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontStyle: markModified ? FontStyle.italic : null,
-                                              decoration: markRemoved ? TextDecoration.lineThrough : null),
-                                        )))
-                              ]))
-                    ]))));
+                child: Stack(alignment: Alignment.topLeft, children: [
+                  UnreadDot(unseen: () => unseen, markAsSeen: markAsSeen),
+                  Container(
+                      padding: EdgeInsets.only(top: 5, left: 10),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                                padding: EdgeInsets.only(bottom: 5),
+                                child: Text(
+                                  type.asString(),
+                                  style: TextStyle(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.w600,
+                                      color: type.asColor(),
+                                      fontStyle: markModified ? FontStyle.italic : null,
+                                      decoration: markRemoved ? TextDecoration.lineThrough : null),
+                                )),
+                            Expanded(
+                                flex: 2,
+                                child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      Visibility(
+                                          visible: (lesson.subject?.name.isNotEmpty ?? false),
+                                          child: Opacity(
+                                              opacity: 0.5,
+                                              child: Container(
+                                                  margin: EdgeInsets.only(left: 35, top: 4),
+                                                  child: Text(
+                                                    lesson.subject?.name ?? 'Unknown lesson',
+                                                    overflow: TextOverflow.ellipsis,
+                                                    maxLines: 2,
+                                                    textAlign: TextAlign.end,
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontStyle: markModified ? FontStyle.italic : null,
+                                                        decoration: markRemoved ? TextDecoration.lineThrough : null),
+                                                  )))),
+                                      Opacity(
+                                          opacity: 0.5,
+                                          child: Container(
+                                              margin: EdgeInsets.only(top: 4),
+                                              child: Text(
+                                                addedDateString,
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
+                                                textAlign: TextAlign.end,
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontStyle: markModified ? FontStyle.italic : null,
+                                                    decoration: markRemoved ? TextDecoration.lineThrough : null),
+                                              )))
+                                    ]))
+                          ]))
+                ]))));
 
     return animation == null ? body : Hero(tag: tag, child: body);
   }

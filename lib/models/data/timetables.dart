@@ -220,7 +220,7 @@ class TimetableLesson extends Equatable {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get unseen => Share.session.unreadChanges.timetables.contains(hashCode);
-  set unseen(bool value) => Share.settings.save(() => Share.session.unreadChanges.timetables.remove(hashCode));
+  void markAsSeen() => Share.settings.save(() => Share.session.unreadChanges.timetables.remove(hashCode));
 
   @override
   List<Object> get props => [url, lessonNo, isCanceled, modifiedSchedule, date];

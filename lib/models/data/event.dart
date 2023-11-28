@@ -137,7 +137,7 @@ class Event extends Equatable {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get unseen => Share.session.unreadChanges.events.contains(hashCode);
-  set unseen(bool value) => Share.settings.save(() => Share.session.unreadChanges.events.remove(hashCode));
+  void markAsSeen() => Share.settings.save(() => Share.session.unreadChanges.events.remove(hashCode));
 
   @override
   List<Object> get props => [id, timeFrom, content, categoryName, done, category];

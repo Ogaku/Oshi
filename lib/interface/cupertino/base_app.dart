@@ -14,14 +14,15 @@ import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:path/path.dart' as path;
 
-import 'package:oshi/interface/cupertino/pages/home.dart' show homePage;
+import 'package:oshi/interface/cupertino/pages/home.dart' show DateTimeExtension, homePage;
 import 'package:oshi/interface/cupertino/pages/grades.dart' show gradesPage;
-import 'package:oshi/interface/cupertino/pages/timetable.dart' show timetablePage;
+import 'package:oshi/interface/cupertino/pages/timetable.dart' show DateTimeExtension, timetablePage;
 import 'package:oshi/interface/cupertino/pages/messages.dart' show messagesPage;
 import 'package:oshi/interface/cupertino/pages/absences.dart' show absencesPage;
 import 'package:oshi/share/share.dart';
 import 'package:show_fps/show_fps.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 // Boiler: returned to the main application
 StatefulWidget get baseApp => BaseApp();
@@ -112,10 +113,7 @@ class _BaseAppState extends State<BaseApp> {
                 return CupertinoTabScaffold(
                     controller: tabController,
                     tabBar: CupertinoTabBar(
-                        backgroundColor: CupertinoDynamicColor.resolve(
-                            CupertinoDynamicColor.withBrightness(
-                                color: Colors.white.withOpacity(0.5), darkColor: const Color.fromRGBO(45, 45, 45, 0.5)),
-                            context),
+                        backgroundColor: CupertinoTheme.of(context).barBackgroundColor.withAlpha(255),
                         border: Border(
                           bottom: BorderSide(
                             color: CupertinoDynamicColor.resolve(
@@ -126,15 +124,94 @@ class _BaseAppState extends State<BaseApp> {
                           ),
                         ),
                         items: [
-                          BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: '/Titles/Pages/Home'.localized),
                           BottomNavigationBarItem(
-                              icon: Icon(CupertinoIcons.rosette), label: '/Titles/Pages/Grades'.localized),
+                              icon: Stack(alignment: Alignment.bottomRight, children: [
+                                Container(
+                                    padding: EdgeInsets.only(bottom: 3, right: 3),
+                                    margin: EdgeInsets.only(top: 3, left: 3),
+                                    child: Icon(CupertinoIcons.home))
+                              ]),
+                              label: '/Titles/Pages/Home'.localized),
                           BottomNavigationBarItem(
-                              icon: Icon(CupertinoIcons.calendar), label: '/Titles/Pages/Schedule'.localized),
+                              icon: Stack(alignment: Alignment.bottomRight, children: [
+                                Container(
+                                    padding: EdgeInsets.only(bottom: 3, right: 3),
+                                    margin: EdgeInsets.only(top: 3, left: 3),
+                                    child: Icon(CupertinoIcons.rosette)),
+                                AnimatedOpacity(
+                                    duration: const Duration(milliseconds: 500),
+                                    opacity: (Share.session.data.student.subjects.any((x) => x.hasUnseen)) ? 1.0 : 0.0,
+                                    child: Container(
+                                        margin: EdgeInsets.only(),
+                                        child: Container(
+                                          height: 10,
+                                          width: 10,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle, color: CupertinoTheme.of(context).primaryColor),
+                                        )))
+                              ]),
+                              label: '/Titles/Pages/Grades'.localized),
                           BottomNavigationBarItem(
-                              icon: Icon(CupertinoIcons.envelope), label: '/Titles/Pages/Messages'.localized),
+                              icon: Stack(alignment: Alignment.bottomRight, children: [
+                                Container(
+                                    padding: EdgeInsets.only(bottom: 3, right: 3),
+                                    margin: EdgeInsets.only(top: 3, left: 3),
+                                    child: Icon(CupertinoIcons.calendar)),
+                                AnimatedOpacity(
+                                    duration: const Duration(milliseconds: 500),
+                                    opacity: (Share.session.data.timetables.timetable.entries
+                                            .where((x) => x.key.asDate().isAfterOrSame(DateTime.now().asDate()))
+                                            .any((x) => x.value.hasUnread))
+                                        ? 1.0
+                                        : 0.0,
+                                    child: Container(
+                                        margin: EdgeInsets.only(),
+                                        child: Container(
+                                          height: 10,
+                                          width: 10,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle, color: CupertinoTheme.of(context).primaryColor),
+                                        )))
+                              ]),
+                              label: '/Titles/Pages/Schedule'.localized),
                           BottomNavigationBarItem(
-                              icon: Icon(CupertinoIcons.person_crop_circle_badge_minus),
+                              icon: Stack(alignment: Alignment.bottomRight, children: [
+                                Container(
+                                    padding: EdgeInsets.only(bottom: 3, right: 3),
+                                    margin: EdgeInsets.only(top: 3, left: 3),
+                                    child: Icon(CupertinoIcons.envelope)),
+                                AnimatedOpacity(
+                                    duration: const Duration(milliseconds: 500),
+                                    opacity: (Share.session.data.messages.received.any((x) => !x.read)) ? 1.0 : 0.0,
+                                    child: Container(
+                                        margin: EdgeInsets.only(),
+                                        child: Container(
+                                          height: 10,
+                                          width: 10,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle, color: CupertinoTheme.of(context).primaryColor),
+                                        )))
+                              ]),
+                              label: '/Titles/Pages/Messages'.localized),
+                          BottomNavigationBarItem(
+                              icon: Stack(alignment: Alignment.bottomRight, children: [
+                                Container(
+                                    padding: EdgeInsets.only(bottom: 3, right: 3),
+                                    margin: EdgeInsets.only(top: 3, left: 3),
+                                    child: Icon(CupertinoIcons.person_crop_circle_badge_minus)),
+                                AnimatedOpacity(
+                                    duration: const Duration(milliseconds: 500),
+                                    opacity:
+                                        (Share.session.data.student.attendances?.any((x) => x.unseen) ?? false) ? 1.0 : 0.0,
+                                    child: Container(
+                                        margin: EdgeInsets.only(),
+                                        child: Container(
+                                          height: 10,
+                                          width: 10,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle, color: CupertinoTheme.of(context).primaryColor),
+                                        )))
+                              ]),
                               label: '/Titles/Pages/Absences'.localized),
                         ]),
                     tabBuilder: (context, index) => CupertinoTabView(
@@ -198,3 +275,83 @@ class _BaseAppState extends State<BaseApp> {
     return CupertinoThemeData(primaryColor: Share.session.settings.cupertinoAccentColor.color);
   }
 }
+
+class UnreadDot extends StatefulWidget {
+  const UnreadDot({super.key, required this.unseen, this.markAsSeen, this.margin = EdgeInsets.zero});
+
+  final EdgeInsets margin;
+  final bool Function() unseen;
+  final void Function()? markAsSeen;
+
+  @override
+  State<UnreadDot> createState() => _UnreadDotState();
+}
+
+class _UnreadDotState extends State<UnreadDot> {
+  late bool unseen;
+
+  @override
+  void initState() {
+    super.initState();
+    unseen = widget.unseen();
+  }
+
+  @override
+  void dispose() {
+    Share.dotRefresh.unsubscribe(refresh);
+    super.dispose();
+  }
+
+  void refresh(args) => setState(() => unseen = widget.unseen());
+
+  @override
+  Widget build(BuildContext context) {
+    Share.dotRefresh.unsubscribe(refresh);
+    Share.dotRefresh.subscribe(refresh);
+
+    return AnimatedSwitcher(
+        duration: const Duration(milliseconds: 500),
+        child: unseen
+            ? VisibilityDetector(
+                key: UniqueKey(),
+                onVisibilityChanged: (s) => Future.delayed(Duration(seconds: 1)).then((value) {
+                      if (s.visibleFraction >= 1 && widget.markAsSeen != null) {
+                        setState(() {
+                          widget.markAsSeen!();
+                          unseen = widget.unseen();
+                          Share.refreshBase.broadcast();
+                          Share.dotRefresh.broadcast();
+                        });
+                      }
+                    }),
+                child: Container(
+                    margin: widget.margin,
+                    child: Container(
+                      height: 10,
+                      width: 10,
+                      decoration: BoxDecoration(shape: BoxShape.circle, color: CupertinoTheme.of(context).primaryColor),
+                    )))
+            : null);
+  }
+}
+
+/* 
+
+        child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 500),
+            child: opacity
+                ? VisibilityDetector(
+                    key: UniqueKey(),
+                    onVisibilityChanged: (s) {},
+                    child: Container(
+                        margin: widget.margin,
+                        child: Container(
+                          height: 10,
+                          width: 10,
+                          decoration: BoxDecoration(shape: BoxShape.circle, color: CupertinoTheme.of(context).primaryColor),
+                        )))
+                : null));
+  }
+
+
+ */

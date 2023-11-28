@@ -5,13 +5,14 @@ import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/grade.dart';
 import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/share/share.dart';
-import 'package:uuid/v4.dart';
+import 'package:uuid/uuid.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
 
 class GradesDetailedPage extends StatefulWidget {
@@ -178,22 +179,30 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Container(
-                                  padding: EdgeInsets.only(bottom: 5),
-                                  child: Text(
-                                    'Proposed grade',
-                                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                  )),
-                              Container(
-                                  padding: EdgeInsets.only(bottom: 5),
-                                  child: Text(
-                                    widget.lesson.grades
-                                            .firstWhereOrDefault((x) => x.isFinalProposition || x.isSemesterProposition)
-                                            ?.value
-                                            .toString() ??
-                                        'Unknown',
-                                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                  )),
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    UnreadDot(
+                                        unseen: () => widget.lesson.grades
+                                            .any((x) => (x.isFinalProposition || x.isSemesterProposition) && x.unseen),
+                                        markAsSeen: () => widget.lesson.grades
+                                            .where((x) => x.isFinalProposition || x.isSemesterProposition)
+                                            .forEach((x) => x.markAsSeen()),
+                                        margin: EdgeInsets.only(right: 8)),
+                                    Text(
+                                      'Proposed grade',
+                                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                    ),
+                                  ]),
+                              Text(
+                                widget.lesson.grades
+                                        .firstWhereOrDefault((x) => x.isFinalProposition || x.isSemesterProposition)
+                                        ?.value
+                                        .toString() ??
+                                    'Unknown',
+                                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                              ),
                             ])));
               })));
     }
@@ -248,22 +257,30 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Container(
-                                  padding: EdgeInsets.only(bottom: 5),
-                                  child: Text(
-                                    'Final grade',
-                                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                  )),
-                              Container(
-                                  padding: EdgeInsets.only(bottom: 5),
-                                  child: Text(
-                                    widget.lesson.grades
-                                            .firstWhereOrDefault((x) => x.isFinal || x.isSemester)
-                                            ?.value
-                                            .toString() ??
-                                        'Unknown',
-                                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                  )),
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    UnreadDot(
+                                        unseen: () =>
+                                            widget.lesson.grades.any((x) => (x.isFinal || x.isSemester) && x.unseen),
+                                        markAsSeen: () => widget.lesson.grades
+                                            .where((x) => x.isFinal || x.isSemester)
+                                            .forEach((x) => x.markAsSeen()),
+                                        margin: EdgeInsets.only(right: 8)),
+                                    Text(
+                                      'Final grade',
+                                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                    ),
+                                  ]),
+                              Text(
+                                widget.lesson.grades
+                                        .firstWhereOrDefault((x) => x.isFinal || x.isSemester)
+                                        ?.value
+                                        .toString() ??
+                                    'Unknown',
+                                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                              ),
                             ])));
               })));
     }
@@ -334,7 +351,7 @@ extension GradeBodyExtension on Grade {
       bool markModified = false,
       bool useOnTap = false,
       Function()? onTap}) {
-    var tag = UuidV4().generate();
+    var tag = Uuid().v4();
     var body = GestureDetector(
         onTap: (useOnTap && onTap != null)
             ? onTap
@@ -504,17 +521,25 @@ extension GradeBodyExtension on Grade {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               mainAxisSize: MainAxisSize.max,
                               children: [
-                                Opacity(
-                                    opacity: name.isNotEmpty ? 1.0 : 0.5,
-                                    child: Text(
-                                      name.isNotEmpty ? name.capitalize() : 'No description',
-                                      textAlign: TextAlign.end,
-                                      style: TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w600,
-                                          fontStyle: markModified ? FontStyle.italic : null,
-                                          decoration: markRemoved ? TextDecoration.lineThrough : null),
-                                    )),
+                                Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                          child: Opacity(
+                                              opacity: name.isNotEmpty ? 1.0 : 0.5,
+                                              child: Text(
+                                                name.isNotEmpty ? name.capitalize() : 'No description',
+                                                textAlign: TextAlign.end,
+                                                style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontStyle: markModified ? FontStyle.italic : null,
+                                                    decoration: markRemoved ? TextDecoration.lineThrough : null),
+                                              ))),
+                                      UnreadDot(
+                                          unseen: () => unseen, markAsSeen: markAsSeen, margin: EdgeInsets.only(left: 8)),
+                                    ]),
                                 Visibility(
                                     visible: commentsString.isNotEmpty,
                                     child: Opacity(

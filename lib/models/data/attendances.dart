@@ -54,7 +54,7 @@ class Attendance extends Equatable {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get unseen => Share.session.unreadChanges.attendances.contains(hashCode);
-  set unseen(bool value) => Share.settings.save(() => Share.session.unreadChanges.attendances.remove(hashCode));
+  void markAsSeen() => Share.settings.save(() => Share.session.unreadChanges.attendances.remove(hashCode));
 
   factory Attendance.fromJson(Map<String, dynamic> json) => _$AttendanceFromJson(json);
 
