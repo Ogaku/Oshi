@@ -174,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
 
         progress?.report((progress: 0.2, message: '/Session/Login/Splash/Settings'.localized));
         await Share.settings.save(); // Save our settings now
-        var result = await Share.session.refreshAll(progress: progress, saveChanges: true); // TODO
+        var result = await Share.session.refreshAll(progress: progress, saveChanges: false);
         if (!result.success && result.message != null) return false; // Didn't work, uh
 
         // Change the main page to the base application
