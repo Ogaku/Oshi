@@ -547,8 +547,10 @@ class Session extends HiveObject {
         // Compose unread badges
         unreadChanges.timetables.addAll(detectedChanges.timetablesChanged.select((x, index) => x.value.hashCode));
         unreadChanges.grades.addAll(detectedChanges.gradesChanged.select((x, index) => x.value.hashCode));
-        unreadChanges.events.addAll(detectedChanges.eventsChanged.select((x, index) => x.value.hashCode));
         unreadChanges.attendances.addAll(detectedChanges.attendancesChanged.select((x, index) => x.value.hashCode));
+        unreadChanges.events.addAll(detectedChanges.eventsChanged
+            .where((x) => x.value.category != EventCategory.teacher)
+            .select((x, index) => x.value.hashCode));
 
         var notifications = <({String title, String body, TimelineNotification payload})>[];
         var messageNotifications = <({String title, String body, TimelineNotification payload})>[];
