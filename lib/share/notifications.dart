@@ -106,12 +106,14 @@ class NotificationController {
           // Change the main page to the base application
           await Share.session.tryLogin(showErrors: false);
           Share.changeBase.broadcast(Value(() => baseApp));
+          await Future.delayed(const Duration(milliseconds: 500));
         }
 
         // The notification payload is invalid, but contains a session GUID
         // Open the timeline for the session it was sent from (may be many)
         if (!payload.isValid && payload.type == null) {
           Share.tabsNavigatePage.broadcast(Value(0)); // Go home now!
+          await Future.delayed(const Duration(milliseconds: 500));
           Share.openTimeline.broadcast(); // Should be enough for now
         }
         // The notification payload is valid, and contains a session GUID
@@ -122,7 +124,8 @@ class NotificationController {
             TimelineNotificationType.timetable || TimelineNotificationType.event => 2,
             TimelineNotificationType.message || TimelineNotificationType.announcement => 3,
             TimelineNotificationType.attendance => 4,
-          })); // Go to the page described by the type
+          })); // Go to the page described by the type, wait a bit...
+          await Future.delayed(const Duration(milliseconds: 500));
 
           // Perform additional actions for each supported (as of now) type
           if (payload.type == TimelineNotificationType.grade && tryParse(payload.data, models.Lesson.fromJson) != null) {

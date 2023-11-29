@@ -182,7 +182,11 @@ class _BaseAppState extends State<BaseApp> {
                                     child: Icon(CupertinoIcons.envelope)),
                                 AnimatedOpacity(
                                     duration: const Duration(milliseconds: 500),
-                                    opacity: (Share.session.data.messages.received.any((x) => !x.read)) ? 1.0 : 0.0,
+                                    opacity: (Share.session.data.messages.received.any((x) => !x.read) ||
+                                            ((Share.session.data.student.mainClass.unit.announcements?.any((x) => !x.read) ??
+                                                false)))
+                                        ? 1.0
+                                        : 0.0,
                                     child: Container(
                                         margin: EdgeInsets.only(),
                                         child: Container(

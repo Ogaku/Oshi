@@ -1375,7 +1375,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 CupertinoListTile(
                     onTap: () {
                       try {
-                        launchUrlString('https://youtu.be/dQw4w9WgXcQ');
+                        launchUrlString('https://discord.gg/7EzU9M3W5H');
                       } catch (ex) {
                         // ignored
                       }

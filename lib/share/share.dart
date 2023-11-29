@@ -138,6 +138,9 @@ class Settings {
       }
     }
 
+    // Update the badges
+    Share.session.unreadChanges.updateBadge();
+
     try {
       await Share.settingsMutex.protect<void>(() async {
         // Remove everything, as Hive's append-only
@@ -747,9 +750,6 @@ class Session extends HiveObject {
         //     content: element.body,
         //     category: NotificationCategories.messages,
         //     data: jsonEncode(element.payload.toJson())));
-
-        // Prepare the badges
-        unreadChanges.setBadge();
       }
     } catch (ex) {
       // ignored
@@ -767,8 +767,13 @@ class Session extends HiveObject {
     }
 
     await Share.settings.save();
-    Share.refreshBase.broadcast();
-    Share.dotRefresh.broadcast();
+
+    try {
+      Share.refreshBase.broadcast();
+      Share.dotRefresh.broadcast();
+    } catch (ex) {
+      // ignored
+    }
   }
 }
 
@@ -797,7 +802,7 @@ class UnreadChanges {
     grades.clear();
     events.clear();
     attendances.clear();
-    resetBadge();
+    updateBadge();
 
     Share.settings.save();
     Share.refreshBase.broadcast();
@@ -805,18 +810,37 @@ class UnreadChanges {
   }
 
   int count() {
-    return timetables.length + grades.length + events.length + attendances.length;
+    return Share.session.data.student.subjects.count((x) => x.hasUnseen) +
+        Share.session.data.timetables.timetable.entries
+            .where((x) => x.key.asDate().isAfterOrSame(DateTime.now().asDate()))
+            .count((x) => x.value.hasUnread) +
+        Share.session.data.messages.received.count((x) => !x.read) +
+        (Share.session.data.student.mainClass.unit.announcements?.count((x) => !x.read) ?? 0) +
+        (Share.session.data.student.attendances?.count((x) => x.unseen) ?? 0);
   }
 
-  void setBadge() {
+  void updateBadge() {
     try {
-      FlutterAppBadger.updateBadgeCount(count());
+      var unreads = count();
+      if (unreads > 0) {
+        _setBadge();
+      } else {
+        _resetBadge();
+      }
     } catch (ex) {
       // ignored
     }
   }
 
-  void resetBadge() {
+  void _setBadge([int? cnt]) {
+    try {
+      FlutterAppBadger.updateBadgeCount(cnt ?? count());
+    } catch (ex) {
+      // ignored
+    }
+  }
+
+  void _resetBadge() {
     try {
       FlutterAppBadger.removeBadge();
     } catch (ex) {
