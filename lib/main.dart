@@ -11,6 +11,7 @@ import 'package:oshi/share/share.dart';
 
 import 'package:oshi/interface/material/sessions_page.dart' as materialapp show sessionsPage;
 import 'package:oshi/interface/cupertino/sessions_page.dart' as cupertinoapp show sessionsPage;
+import 'package:oshi/interface/cupertino/new_session.dart' as cupertinoapp show newSessionPage;
 import 'package:oshi/interface/cupertino/base_app.dart' as cupertinoapp show baseApp;
 
 Future<void> main() async {
@@ -36,7 +37,9 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   StatefulWidget Function() child = Share.settings.appSettings.useCupertino
-      ? () => (Share.settings.sessions.lastSession != null ? cupertinoapp.baseApp : cupertinoapp.sessionsPage)
+      ? () => (Share.settings.sessions.lastSession != null
+          ? cupertinoapp.baseApp
+          : (Share.settings.sessions.sessions.isEmpty ? cupertinoapp.newSessionPage : cupertinoapp.sessionsPage))
       : () => materialapp.sessionsPage;
 
   @override

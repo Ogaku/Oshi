@@ -1,21 +1,28 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:io';
+
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:format/format.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/share/appcenter.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:oshi/share/share.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import 'package:oshi/interface/cupertino/session_login.dart' show LoginPage;
 import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart' show SliverNavigationBar;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 // Boiler: returned to the main application
-StatefulWidget get newSessionPage => NewSessionPage();
+StatefulWidget get newSessionPage => NewSessionPage(asApp: true);
 
 class NewSessionPage extends StatefulWidget {
-  const NewSessionPage({super.key});
+  const NewSessionPage({super.key, this.asApp = false});
+
+  final bool asApp;
 
   @override
   State<NewSessionPage> createState() => _NewSessionPageState();
@@ -75,7 +82,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
         )
         .toList();
 
-    return CupertinoPageScaffold(
+    var result = CupertinoPageScaffold(
         backgroundColor: CupertinoDynamicColor.withBrightness(
             color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 0, 0, 0)),
         child: CustomScrollView(controller: scrollController, slivers: [
@@ -142,5 +149,88 @@ class _NewSessionPageState extends State<NewSessionPage> {
             ),
           )
         ]));
+
+    return !widget.asApp
+        ? result
+        : CupertinoApp(
+            theme: _eventfulColorTheme,
+            debugShowCheckedModeBanner: false,
+            home: Builder(builder: (context) {
+              // Re-subscribe to all events - modals
+              Share.showErrorModal.unsubscribeAll();
+              Share.showErrorModal.subscribe((args) async {
+                if (args?.value == null) return;
+                await showCupertinoModalPopup(
+                    context: context,
+                    useRootNavigator: true,
+                    builder: (s) => CupertinoActionSheet(
+                        title: Text(args!.value.title),
+                        message: Text(args.value.message),
+                        actions: args.value.actions.isEmpty
+                            ? null
+                            : args.value.actions.entries
+                                .select(
+                                  (x, index) => CupertinoActionSheetAction(
+                                    child: Text(x.key),
+                                    onPressed: () {
+                                      try {
+                                        x.value();
+                                      } catch (ex) {
+                                        // ignored
+                                      }
+                                      Navigator.of(context, rootNavigator: true).pop();
+                                    },
+                                  ),
+                                )
+                                .toList()));
+              });
+
+              AppCenter.checkForUpdates().then((value) {
+                if (value.result) _showAlertDialog(context, value.download);
+              }).catchError((ex) {});
+
+              return result;
+            }));
+  }
+
+  void _showAlertDialog(BuildContext context, Uri url) {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: Text('/BaseApp/Update/AlertHeader'.localized),
+        content: Text('/BaseApp/Update/Alert'.localized.format(Platform.isAndroid ? 'Android' : 'iOS')),
+        actions: <CupertinoDialogAction>[
+          CupertinoDialogAction(
+            onPressed: () async {
+              Navigator.pop(context);
+              try {
+                await launchUrl(url);
+              } catch (ex) {
+                // ignored
+              }
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  CupertinoThemeData get _eventfulColorTheme {
+    // Halloween colors
+    if (DateTime.now().month == DateTime.october && DateTime.now().day == 31) {
+      return CupertinoThemeData(primaryColor: CupertinoColors.systemOrange);
+    }
+    // St. Peter day colors
+    if (DateTime.now().month == DateTime.july && DateTime.now().day == 12) {
+      return CupertinoThemeData(primaryColor: CupertinoColors.systemGreen);
+    }
+    // Christmas colors
+    if (DateTime.now().month == DateTime.december &&
+        (DateTime.now().day == 24 || DateTime.now().day == 25 || DateTime.now().day == 26)) {
+      return CupertinoThemeData(primaryColor: CupertinoColors.systemRed);
+    }
+    // Default colors - should be changeable through settings
+    return CupertinoThemeData(primaryColor: const Color(0xFFbe72e1));
   }
 }
