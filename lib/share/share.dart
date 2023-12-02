@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:appcenter_sdk_flutter/appcenter_sdk_flutter.dart';
 import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
 import 'package:event/event.dart' as event;
@@ -290,6 +291,11 @@ class Session extends HiveObject {
             'Copy Stack Trace': () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
           }
         )));
+      }
+      try {
+        await AppCenterCrashes.trackException(message: ex.toString(), stackTrace: stack, properties: {'where': 'refresh'});
+      } catch (e) {
+        // ignored
       }
       return (success: false, message: Exception(ex));
     }

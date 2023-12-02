@@ -10,10 +10,18 @@ import 'package:oshi/share/share.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AppCenter {
+  static bool _initializedOnce = false;
   static Future<void> initialize() async {
+    if (_initializedOnce || !(Platform.isAndroid || Platform.isIOS)) return;
     try {
       await apps.AppCenter.start(secret: 'AZ_APPCENTER_TELEMETRY_TOKEN');
+      _initializedOnce = true;
+
       await apps.AppCenter.enable();
+      await apps.AppCenterAnalytics.enable();
+      await apps.AppCenterCrashes.enable();
+
+      await apps.AppCenterAnalytics.trackEvent(name: 'Telemetry session started');
     } catch (ex) {
       // ignored
     }
@@ -37,6 +45,7 @@ class AppCenter {
 
   static Future<({bool result, Uri download})> checkForUpdates() async {
     try {
+      initialize(); // Initialize AppCenter
       var result = (await fetchVersions())!;
       var checkResult = (result: result.version > Version.parse(Share.buildNumber), download: result.download);
       if (Platform.isAndroid &&
