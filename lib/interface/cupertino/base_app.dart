@@ -55,8 +55,21 @@ class _BaseAppState extends State<BaseApp> {
   }
 
   @override
+  void dispose() {
+    Share.refreshAll.unsubscribe(refresh);
+    super.dispose();
+  }
+
+  void refresh(args) {
+    if (mounted) setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Re-subscribe to all events - navigation
+    Share.refreshAll.unsubscribe(refresh);
+    Share.refreshAll.subscribe(refresh);
+    
     Share.tabsNavigatePage.unsubscribeAll();
     Share.tabsNavigatePage.subscribe((args) {
       if (args?.value == null) return;
@@ -302,7 +315,7 @@ class _UnreadDotState extends State<UnreadDot> {
 
   @override
   void dispose() {
-    Share.dotRefresh.unsubscribe(refresh);
+    Share.refreshAll.unsubscribe(refresh);
     super.dispose();
   }
 
@@ -310,8 +323,8 @@ class _UnreadDotState extends State<UnreadDot> {
 
   @override
   Widget build(BuildContext context) {
-    Share.dotRefresh.unsubscribe(refresh);
-    Share.dotRefresh.subscribe(refresh);
+    Share.refreshAll.unsubscribe(refresh);
+    Share.refreshAll.subscribe(refresh);
 
     return AnimatedSwitcher(
         duration: const Duration(milliseconds: 500),
@@ -324,7 +337,7 @@ class _UnreadDotState extends State<UnreadDot> {
                           widget.markAsSeen!();
                           unseen = widget.unseen();
                           Share.refreshBase.broadcast();
-                          Share.dotRefresh.broadcast();
+                          Share.refreshAll.broadcast();
                         });
                       }
                     }),

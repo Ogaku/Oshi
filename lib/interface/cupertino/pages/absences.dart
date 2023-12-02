@@ -37,7 +37,21 @@ class _AbsencesPageState extends State<AbsencesPage> {
   bool isWorking = false;
 
   @override
+  void dispose() {
+    Share.refreshAll.unsubscribe(refresh);
+    super.dispose();
+  }
+
+  void refresh(args) {
+    if (mounted) setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Re-subscribe to all events
+    Share.refreshAll.unsubscribe(refresh);
+    Share.refreshAll.subscribe(refresh);
+
     // Group by date, I know IT'S A DAMN STRING, but we're saving on custom controls
     var attendancesToDisplayByDate = Share.session.data.student.attendances
             ?.orderByDescending((x) => x.date)
@@ -74,6 +88,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
 
     return SearchableSliverNavigationBar(
         setState: setState,
+        alwaysShowAddons: true,
         segments: {
           AbsencesPageSegments.date: 'By date',
           AbsencesPageSegments.lesson: 'By lesson',

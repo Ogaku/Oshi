@@ -26,8 +26,21 @@ class _GradesPageState extends State<GradesPage> {
   String searchQuery = '';
 
   @override
+  void dispose() {
+    Share.refreshAll.unsubscribe(refresh);
+    super.dispose();
+  }
+
+  void refresh(args) {
+    if (mounted) setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Re-subscribe to all events
+    Share.refreshAll.unsubscribe(refresh);
+    Share.refreshAll.subscribe(refresh);
+
     Share.gradesNavigate.unsubscribeAll();
     Share.gradesNavigate.subscribe((args) {
       if (args?.value == null) return;

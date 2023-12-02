@@ -54,13 +54,21 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
 
   @override
   void dispose() {
+    Share.refreshAll.unsubscribe(refresh);
     _everySecond?.cancel();
     super.dispose();
+  }
+
+  void refresh(args) {
+    if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     // Re-subscribe to all events
+    Share.refreshAll.unsubscribe(refresh);
+    Share.refreshAll.subscribe(refresh);
+    
     Share.openTimeline.unsubscribeAll();
     Share.openTimeline.subscribe((args) {
       setState(() => segmentController.segment = HomepageSegments.timeline);

@@ -39,8 +39,21 @@ class _MessagesPageState extends State<MessagesPage> {
   String searchQuery = '';
 
   @override
+  void dispose() {
+    Share.refreshAll.unsubscribe(refresh);
+    super.dispose();
+  }
+
+  void refresh(args) {
+    if (mounted) setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Re-subscribe to all events
+    Share.refreshAll.unsubscribe(refresh);
+    Share.refreshAll.subscribe(refresh);
+
     Share.messagesNavigate.unsubscribeAll();
     Share.messagesNavigate.subscribe((args) {
       setState(() => folder = ((args?.value.receivers?.isNotEmpty ?? false) ? MessageFolders.outbox : MessageFolders.inbox));
@@ -338,42 +351,63 @@ class _MessagesPageState extends State<MessagesPage> {
       onChanged: (s) => setState(() => searchQuery = s),
       trailing: isWorking
           ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
-          : PullDownButton(
-              itemBuilder: (context) => [
-                PullDownMenuItem(
-                  title: 'New',
-                  icon: CupertinoIcons.add,
-                  onTap: () {
-                    showCupertinoModalBottomSheet(
-                        context: context,
-                        builder: (context) => MessageComposePage(
-                            signature:
-                                '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-                  },
+          : Stack(alignment: Alignment.bottomRight, children: [
+              PullDownButton(
+                itemBuilder: (context) => [
+                  PullDownMenuItem(
+                    title: 'New',
+                    icon: CupertinoIcons.add,
+                    onTap: () {
+                      showCupertinoModalBottomSheet(
+                          context: context,
+                          builder: (context) => MessageComposePage(
+                              signature:
+                                  '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                    },
+                  ),
+                  PullDownMenuDivider.large(),
+                  PullDownMenuTitle(title: Text('Folders')),
+                  PullDownMenuItem(
+                    title: '/Titles/Pages/Messages/Inbox'.localized +
+                        (Share.session.data.messages.received.any((x) => !x.read)
+                            ? ' (${Share.session.data.messages.received.count((x) => !x.read)})'
+                            : ''),
+                    icon: folder == MessageFolders.inbox ? CupertinoIcons.tray_fill : CupertinoIcons.tray,
+                    onTap: () => setState(() => folder = MessageFolders.inbox),
+                  ),
+                  PullDownMenuItem(
+                    title: '/Titles/Pages/Messages/Sent'.localized,
+                    icon: folder == MessageFolders.outbox ? CupertinoIcons.paperplane_fill : CupertinoIcons.paperplane,
+                    onTap: () => setState(() => folder = MessageFolders.outbox),
+                  ),
+                  PullDownMenuItem(
+                    title: '/Titles/Pages/Messages/Announcements'.localized +
+                        ((Share.session.data.student.mainClass.unit.announcements?.any((x) => !x.read) ?? false)
+                            ? ' (${(Share.session.data.student.mainClass.unit.announcements?.count((x) => !x.read) ?? 1)})'
+                            : ''),
+                    icon: folder == MessageFolders.announcements ? CupertinoIcons.bell_fill : CupertinoIcons.bell,
+                    onTap: () => setState(() => folder = MessageFolders.announcements),
+                  )
+                ],
+                buttonBuilder: (context, showMenu) => GestureDetector(
+                  onTap: showMenu,
+                  child: const Icon(CupertinoIcons.ellipsis_circle),
                 ),
-                PullDownMenuDivider.large(),
-                PullDownMenuTitle(title: Text('Folders')),
-                PullDownMenuItem(
-                  title: '/Titles/Pages/Messages/Inbox'.localized,
-                  icon: folder == MessageFolders.inbox ? CupertinoIcons.tray_fill : CupertinoIcons.tray,
-                  onTap: () => setState(() => folder = MessageFolders.inbox),
-                ),
-                PullDownMenuItem(
-                  title: '/Titles/Pages/Messages/Sent'.localized,
-                  icon: folder == MessageFolders.outbox ? CupertinoIcons.paperplane_fill : CupertinoIcons.paperplane,
-                  onTap: () => setState(() => folder = MessageFolders.outbox),
-                ),
-                PullDownMenuItem(
-                  title: '/Titles/Pages/Messages/Announcements'.localized,
-                  icon: folder == MessageFolders.announcements ? CupertinoIcons.bell_fill : CupertinoIcons.bell,
-                  onTap: () => setState(() => folder = MessageFolders.announcements),
-                )
-              ],
-              buttonBuilder: (context, showMenu) => GestureDetector(
-                onTap: showMenu,
-                child: const Icon(CupertinoIcons.ellipsis_circle),
               ),
-            ),
+              AnimatedOpacity(
+                  duration: const Duration(milliseconds: 500),
+                  opacity: (Share.session.data.messages.received.any((x) => !x.read) ||
+                          ((Share.session.data.student.mainClass.unit.announcements?.any((x) => !x.read) ?? false)))
+                      ? 1.0
+                      : 0.0,
+                  child: Container(
+                      margin: EdgeInsets.only(),
+                      child: Container(
+                        height: 10,
+                        width: 10,
+                        decoration: BoxDecoration(shape: BoxShape.circle, color: CupertinoTheme.of(context).primaryColor),
+                      )))
+            ]),
       children: [messagesWidget],
     );
   }

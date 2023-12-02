@@ -66,7 +66,7 @@ class Share {
   static event.Event refreshBase = event.Event(); // Trigger a setState on the base app and everything subscribed
   static event.Event checkUpdates = event.Event(); // Trigger an update on the base app and everything subscribed
   static event.Event openTimeline = event.Event(); // Trigger an event on the home page and everything subscribed
-  static event.Event dotRefresh = event.Event(); // Trigger an event on every "unread" widget (unseen) subscribed
+  static event.Event refreshAll = event.Event(); // Trigger an event on every "unread" widget (unseen) subscribed
   static event.Event<event.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>
       showErrorModal =
       event.Event<event.Value<({String title, String message, Map<String, Future<void> Function()> actions})>>();
@@ -770,7 +770,7 @@ class Session extends HiveObject {
 
     try {
       Share.refreshBase.broadcast();
-      Share.dotRefresh.broadcast();
+      Share.refreshAll.broadcast();
     } catch (ex) {
       // ignored
     }
@@ -806,7 +806,7 @@ class UnreadChanges {
 
     Share.settings.save();
     Share.refreshBase.broadcast();
-    Share.dotRefresh.broadcast();
+    Share.refreshAll.broadcast();
   }
 
   int count() {
