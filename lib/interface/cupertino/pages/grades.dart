@@ -8,6 +8,7 @@ import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/views/grades_detailed.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
+import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/share/translator.dart';
 
@@ -124,6 +125,8 @@ class _GradesPageState extends State<GradesPage> {
                                                       children: x.grades
                                                           .where((y) => !y.major)
                                                           .orderByDescending((y) => y.addDate)
+                                                          .distinct((x) =>
+                                                              mapPropsToHashCode([x.resitPart ? 0 : UniqueKey(), x.name]))
                                                           .select((y, index) => Container(
                                                                 padding: EdgeInsets.symmetric(horizontal: 4),
                                                                 decoration: BoxDecoration(
@@ -205,7 +208,24 @@ class _GradesPageState extends State<GradesPage> {
       middle: Text('/Grades'.localized),
       searchController: searchController,
       onChanged: (s) => setState(() => searchQuery = s),
-      children: [subjectsWidget],
+      children: [subjectsWidget].appendIf(
+          CupertinoListSection.insetGrouped(
+            margin: EdgeInsets.only(left: 15, right: 15, top: 5),
+            additionalDividerMargin: 5,
+            children: [
+              CupertinoListTile(
+                  title: Text('Average', overflow: TextOverflow.ellipsis),
+                  trailing: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 5),
+                      child: Opacity(
+                          opacity: 0.5,
+                          child: Text(Share.session.data.student.subjects
+                              .where((x) => x.gradesAverage > 0)
+                              .average((x) => x.gradesAverage)
+                              .toStringAsFixed(2)))))
+            ],
+          ),
+          Share.session.data.student.subjects.any((x) => x.gradesAverage > 0)),
     );
   }
 }

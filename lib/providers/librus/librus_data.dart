@@ -500,8 +500,16 @@ class LibrusDataReader implements models.IProvider {
 
 //#region Free Days
 
+    var gradesResult = Grades.fromJson(await data!.librusApi!.request('Grades')).grades;
+    var resits = (gradesResult
+        ?.where((x) => (x.resit is Map<String, dynamic> && x.resit["Id"] is int))
+        .selectMany((x, index) => [x.id, x.resit["Id"] as int]))?.appendAll(gradesResult
+            ?.where((x) => (x.improvement is Map<String, dynamic> && x.improvement["Id"] is int))
+            .selectMany((x, index) => [x.id, x.improvement["Id"] as int]) ??
+        []);
+
     // Push all grades to their respective subjects within our student object
-    Grades.fromJson(await data!.librusApi!.request('Grades')).grades?.forEach((x) {
+    gradesResult?.forEach((x) {
       var category = gradeCategoriesShim.categories?.firstWhereOrDefault((y) => y.id == x.category?.id);
       var subject = student.subjects.firstWhereOrDefault((y) => y.id == x.subject?.id, defaultValue: null);
       subject?.grades.add(models.Grade(
@@ -520,6 +528,7 @@ class LibrusDataReader implements models.IProvider {
           date: x.date ?? DateTime.now(),
           addDate: x.addDate ?? DateTime.now(),
           addedBy: teachersShim.users!.firstWhereOrDefault((y) => y.id == x.addedBy?.id)?.asTeacher(),
+          resitPart: resits?.contains(x.id) ?? false,
           semester: x.semester,
           isConstituent: x.isConstituent,
           isSemester: x.isSemester,

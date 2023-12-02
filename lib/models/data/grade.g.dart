@@ -33,13 +33,14 @@ class GradeAdapter extends TypeAdapter<Grade> {
       isSemesterProposition: fields[13] as bool,
       isFinal: fields[14] as bool,
       isFinalProposition: fields[15] as bool,
+      resitPart: fields[16] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, Grade obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -71,7 +72,9 @@ class GradeAdapter extends TypeAdapter<Grade> {
       ..writeByte(14)
       ..write(obj.isFinal)
       ..writeByte(15)
-      ..write(obj.isFinalProposition);
+      ..write(obj.isFinalProposition)
+      ..writeByte(16)
+      ..write(obj.resitPart);
   }
 
   @override
@@ -113,6 +116,7 @@ Grade _$GradeFromJson(Map<String, dynamic> json) => Grade(
       isSemesterProposition: json['isSemesterProposition'] as bool? ?? false,
       isFinal: json['isFinal'] as bool? ?? false,
       isFinalProposition: json['isFinalProposition'] as bool? ?? false,
+      resitPart: json['resitPart'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$GradeToJson(Grade instance) => <String, dynamic>{
@@ -132,4 +136,5 @@ Map<String, dynamic> _$GradeToJson(Grade instance) => <String, dynamic>{
       'isSemesterProposition': instance.isSemesterProposition,
       'isFinal': instance.isFinal,
       'isFinalProposition': instance.isFinalProposition,
+      'resitPart': instance.resitPart,
     };

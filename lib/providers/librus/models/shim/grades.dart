@@ -35,6 +35,8 @@ class Grade {
     required this.isFinal,
     required this.isFinalProposition,
     this.comments,
+    this.resit,
+    this.improvement,
   });
 
   @JsonKey(name: 'Id')
@@ -84,6 +86,12 @@ class Grade {
 
   @JsonKey(name: 'Comments')
   final List<Link>? comments;
+
+  @JsonKey(name: 'Resit')
+  final dynamic resit;
+
+  @JsonKey(name: 'Improvement')
+  final dynamic improvement;
 
   factory Grade.fromJson(Map<String, dynamic> json) => _$GradeFromJson(json);
 

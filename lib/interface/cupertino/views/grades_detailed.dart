@@ -11,6 +11,7 @@ import 'package:oshi/interface/cupertino/views/message_compose.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/grade.dart';
 import 'package:oshi/models/data/lesson.dart';
+import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
 import 'package:uuid/uuid.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
@@ -38,6 +39,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
             x.commentsString.contains(RegExp(searchQuery, caseSensitive: false)) ||
             x.addedByString.contains(RegExp(searchQuery, caseSensitive: false)))
         .orderByDescending((x) => x.addDate)
+        .distinct((x) => mapPropsToHashCode([x.resitPart ? 0 : UniqueKey(), x.name]))
         .toList();
 
     var gradesWidget = CupertinoListSection.insetGrouped(
@@ -58,7 +60,12 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
             ]
           // Bindable messages layout
           : gradesToDisplay.select((x, index) {
-              return CupertinoListTile(padding: EdgeInsets.all(0), title: x.asGrade(context));
+              return CupertinoListTile(
+                  padding: EdgeInsets.all(0),
+                  title: x.asGrade(context,
+                      corrected: widget.lesson.grades.firstWhereOrDefault(
+                          (y) => x.resitPart && y.resitPart && y.name == x.name && x != y,
+                          defaultValue: null)));
             }).toList(),
     );
 
@@ -314,7 +321,8 @@ extension StringExtension on String {
 }
 
 extension GradeBodyExtension on Grade {
-  Widget asGrade(BuildContext context, {bool markRemoved = false, bool markModified = false, Function()? onTap}) =>
+  Widget asGrade(BuildContext context,
+          {bool markRemoved = false, bool markModified = false, Function()? onTap, Grade? corrected}) =>
       CupertinoContextMenu.builder(
           enableHapticFeedback: true,
           actions: [
@@ -342,15 +350,22 @@ extension GradeBodyExtension on Grade {
               },
             ),
           ],
-          builder: (BuildContext context, Animation<double> animation) =>
-              gradeBody(context, animation: animation, markRemoved: markRemoved, markModified: markModified, onTap: onTap));
+          builder: (BuildContext context, Animation<double> animation) => Column(
+                  children: [
+                gradeBody(context, animation: animation, markRemoved: markRemoved, markModified: markModified, onTap: onTap)
+              ].appendIf(
+                      Container(
+                          padding: EdgeInsets.only(left: 20, right: 10, top: 5, bottom: 10),
+                          child: corrected?.asGrade(context, markRemoved: true, markModified: true) ?? SizedBox()),
+                      corrected != null)));
 
   Widget gradeBody(BuildContext context,
       {Animation<double>? animation,
       bool markRemoved = false,
       bool markModified = false,
       bool useOnTap = false,
-      Function()? onTap}) {
+      Function()? onTap,
+      Grade? corrected}) {
     var tag = Uuid().v4();
     var body = GestureDetector(
         onTap: (useOnTap && onTap != null)

@@ -48,6 +48,8 @@ Grade _$GradeFromJson(Map<String, dynamic> json) => Grade(
       comments: (json['Comments'] as List<dynamic>?)
           ?.map((e) => Link.fromJson(e as Map<String, dynamic>))
           .toList(),
+      resit: json['Resit'],
+      improvement: json['Improvement'],
     );
 
 Map<String, dynamic> _$GradeToJson(Grade instance) {
@@ -76,6 +78,8 @@ Map<String, dynamic> _$GradeToJson(Grade instance) {
   val['IsFinal'] = instance.isFinal;
   val['IsFinalProposition'] = instance.isFinalProposition;
   writeNotNull('Comments', instance.comments);
+  writeNotNull('Resit', instance.resit);
+  writeNotNull('Improvement', instance.improvement);
   return val;
 }
 

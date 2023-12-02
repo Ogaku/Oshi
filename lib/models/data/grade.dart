@@ -38,6 +38,7 @@ class Grade extends Equatable {
     this.isSemesterProposition = false,
     this.isFinal = false,
     this.isFinalProposition = false,
+    this.resitPart = false,
   })  : comments = comments ?? [],
         date = date ?? DateTime(2000),
         addDate = addDate ?? DateTime(2000),
@@ -90,6 +91,9 @@ class Grade extends Equatable {
 
   @HiveField(15)
   final bool isFinalProposition;
+
+  @HiveField(16)
+  final bool resitPart;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get nameWithWeight => '$name, weight $weight';
