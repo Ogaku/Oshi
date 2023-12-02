@@ -225,7 +225,7 @@ class _GradesPageState extends State<GradesPage> {
                               .toStringAsFixed(2)))))
             ],
           ),
-          Share.session.data.student.subjects.any((x) => x.gradesAverage > 0)),
+          searchQuery.isNotEmpty && Share.session.data.student.subjects.any((x) => x.gradesAverage > 0)),
     );
   }
 }

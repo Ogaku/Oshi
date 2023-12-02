@@ -1,9 +1,11 @@
 import 'dart:math';
 import 'dart:ui';
+import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart';
 import 'package:oshi/share/share.dart';
 
@@ -241,7 +243,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                   });
                 } else if (isVisibleSearchBar >= 25 && isVisibleSearchBar <= 55) {
                   setState(() {
-                    scrollController.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.ease);
+                    scrollController.animateTo(1, duration: const Duration(milliseconds: 200), curve: Curves.ease);
                   });
                 }
               });
@@ -249,132 +251,143 @@ class _NavState extends State<SearchableSliverNavigationBar> {
             return true;
           },
           child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            controller: scrollController,
-            anchor: widget.anchor ?? lerpDouble(0.07, 0, (isVisibleSearchBar / 55).clamp(0.0, 1.0)) ?? 0.0,
-            slivers: <Widget>[
-              navBarSliver,
-              SliverPadding(
-                  padding: const EdgeInsets.only(bottom: 15.0),
-                  sliver: SliverPersistentHeader(
-                      pinned: widget.alwaysShowAddons,
-                      delegate: _SliverAppBarDelegate(
-                          minHeight: (1 + isVisibleSearchBar).clamp(0.0, 65.0),
-                          maxHeight: (1 + isVisibleSearchBar).clamp(0.0, 65.0),
-                          child: Container(
-                              decoration: BoxDecoration(
-                                  color: (widget.alwaysShowAddons
-                                          ? (collapsedController.collapsed
-                                              ? widget.alwaysShowAddons
-                                                  ? CupertinoTheme.of(context).barBackgroundColor.withAlpha(255)
-                                                  : collapsedController.isDark
-                                                      ? const Color.fromRGBO(45, 45, 45, 0.5)
-                                                      : Colors.white.withOpacity(0.5)
-                                              : CupertinoDynamicColor.resolve(
-                                                  const CupertinoDynamicColor.withBrightness(
-                                                      color: Color.fromARGB(255, 242, 242, 247),
-                                                      darkColor: Color.fromARGB(255, 0, 0, 0)),
-                                                  context))
-                                          : widget.backgroundColor) ??
-                                      Colors.transparent,
-                                  border: (widget.alwaysShowAddons && collapsedController.collapsed)
-                                      ? Border(
-                                          bottom: BorderSide(
-                                            color: (collapsedController.isDark
-                                                ? CupertinoDynamicColor.resolve(
-                                                    const CupertinoDynamicColor.withBrightness(
-                                                        color: Color(0xFFBCBBC0), darkColor: Color(0xFF262626)),
-                                                    context)
-                                                : const Color(0x00000000)),
-                                            width: 0.0,
-                                          ),
-                                        )
-                                      : null),
-                              child: Padding(
-                                  padding: const EdgeInsets.only(left: 15),
-                                  child: Visibility(
-                                      visible: !widget.disableAddons && widget.child == null,
-                                      child: Container(
-                                          margin: const EdgeInsets.only(top: 5),
-                                          height: lerpDouble(0, 55, isVisibleSearchBar.clamp(0.0, 55.0) / 55.0),
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(left: 0, right: 15, top: 3, bottom: 15),
-                                            child: widget.segments != null
-                                                ? Opacity(
-                                                    opacity: ((isVisibleSearchBar - 45) / 5).clamp(0.0, 1.0),
-                                                    child: CupertinoSlidingSegmentedControl(
-                                                      groupValue: segmentController.segment,
-                                                      children: widget.segments!.map((key, value) => MapEntry(
-                                                          key,
-                                                          Container(
-                                                              width: double.maxFinite,
-                                                              alignment: Alignment.center,
-                                                              child: Text(value,
-                                                                  textAlign: TextAlign.center,
-                                                                  style: TextStyle(
-                                                                      fontSize: lerpDouble(13, 15,
-                                                                          ((isVisibleSearchBar - 30) / 10).clamp(0.0, 1.0)),
-                                                                      color: CupertinoDynamicColor.resolve(
-                                                                          CupertinoDynamicColor.withBrightness(
-                                                                              color: CupertinoColors.black.withAlpha(
-                                                                                  (((isVisibleSearchBar - 45) / 10)
-                                                                                              .clamp(0.0, 1.0) *
-                                                                                          153)
-                                                                                      .round()),
-                                                                              darkColor: CupertinoColors.white.withAlpha(
-                                                                                  (((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0) * 153).round())),
-                                                                          context)))))),
-                                                      onValueChanged: (value) {
-                                                        if (value == null) return;
-                                                        setState(() => segmentController.segment = value);
-                                                        if (widget.setState != null) widget.setState!(() {});
-                                                      },
-                                                    ))
-                                                : CupertinoSearchTextField(
-                                                    onChanged: widget.onChanged,
-                                                    placeholderStyle: TextStyle(
-                                                        fontSize: lerpDouble(
-                                                            13, 17, ((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0)),
-                                                        color: CupertinoDynamicColor.withBrightness(
-                                                            color: const Color.fromARGB(153, 60, 60, 67).withAlpha(
-                                                                (((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0) * 153)
-                                                                    .round()),
-                                                            darkColor: const Color.fromARGB(153, 235, 235, 245).withAlpha(
-                                                                (((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0) * 153)
-                                                                    .round()))),
-                                                    prefixIcon: Opacity(
-                                                      opacity: ((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0),
-                                                      child: Transform.scale(
-                                                          scale: lerpDouble(
-                                                              0.7, 1.1, ((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0)),
-                                                          child: Container(
-                                                              margin: const EdgeInsets.only(top: 2, left: 2),
-                                                              child: const Icon(CupertinoIcons.search))),
-                                                    ),
-                                                    controller: widget.searchController,
-                                                    onSubmitted: widget.onSubmitted,
+              physics: const AlwaysScrollableScrollPhysics(),
+              controller: scrollController,
+              anchor: widget.anchor ??
+                  lerpDouble(((60000.0 / (MediaQuery.of(context).size.height - 35.0)) - 5.0) / 1000.0, 0,
+                      ((isVisibleSearchBar + 1) / 55).clamp(0.0, 1.0)) ??
+                  0.0,
+              slivers: <Widget>[
+                navBarSliver,
+              ]
+                  .appendIf(
+                      SliverPadding(
+                          padding: const EdgeInsets.only(bottom: 15.0),
+                          sliver: SliverPersistentHeader(
+                              pinned: widget.alwaysShowAddons,
+                              delegate: _SliverAppBarDelegate(
+                                  minHeight: (6 + isVisibleSearchBar).clamp(0.0, 65.0),
+                                  maxHeight: (6 + isVisibleSearchBar).clamp(0.0, 65.0),
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          color: (widget.alwaysShowAddons
+                                                  ? (collapsedController.collapsed
+                                                      ? widget.alwaysShowAddons
+                                                          ? CupertinoTheme.of(context).barBackgroundColor.withAlpha(255)
+                                                          : collapsedController.isDark
+                                                              ? const Color.fromRGBO(45, 45, 45, 0.5)
+                                                              : Colors.white.withOpacity(0.5)
+                                                      : CupertinoDynamicColor.resolve(
+                                                          const CupertinoDynamicColor.withBrightness(
+                                                              color: Color.fromARGB(255, 242, 242, 247),
+                                                              darkColor: Color.fromARGB(255, 0, 0, 0)),
+                                                          context))
+                                                  : widget.backgroundColor) ??
+                                              Colors.transparent,
+                                          border: (widget.alwaysShowAddons && collapsedController.collapsed)
+                                              ? Border(
+                                                  bottom: BorderSide(
+                                                    color: (collapsedController.isDark
+                                                        ? CupertinoDynamicColor.resolve(
+                                                            const CupertinoDynamicColor.withBrightness(
+                                                                color: Color(0xFFBCBBC0), darkColor: Color(0xFF262626)),
+                                                            context)
+                                                        : const Color(0x00000000)),
+                                                    width: 0.0,
                                                   ),
-                                          )))))))),
-              widget.useSliverBox
-                  ? SliverToBoxAdapter(
-                      child: widget.child ??
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.max,
-                            children: widget.children ?? [],
-                          ))
-                  : SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: widget.child ??
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.max,
-                            children: widget.children ?? [],
-                          )),
-            ],
-          ),
+                                                )
+                                              : null),
+                                      child: Padding(
+                                          padding: const EdgeInsets.only(left: 15),
+                                          child: Visibility(
+                                              visible: !widget.disableAddons && widget.child == null,
+                                              child: Container(
+                                                  margin: const EdgeInsets.only(top: 5),
+                                                  height: lerpDouble(0, 55, isVisibleSearchBar.clamp(0.0, 55.0) / 55.0),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.only(left: 0, right: 15, top: 3, bottom: 15),
+                                                    child: widget.segments != null
+                                                        ? Opacity(
+                                                            opacity: ((isVisibleSearchBar - 45) / 5).clamp(0.0, 1.0),
+                                                            child: CupertinoSlidingSegmentedControl(
+                                                              groupValue: segmentController.segment,
+                                                              children: widget.segments!.map((key, value) => MapEntry(
+                                                                  key,
+                                                                  Container(
+                                                                      width: double.maxFinite,
+                                                                      alignment: Alignment.center,
+                                                                      child: Text(value,
+                                                                          textAlign: TextAlign.center,
+                                                                          style: TextStyle(
+                                                                              fontSize: lerpDouble(
+                                                                                  13,
+                                                                                  15,
+                                                                                  ((isVisibleSearchBar - 30) / 10)
+                                                                                      .clamp(0.0, 1.0)),
+                                                                              color: CupertinoDynamicColor.resolve(
+                                                                                  CupertinoDynamicColor.withBrightness(
+                                                                                      color: CupertinoColors.black.withAlpha(
+                                                                                          (((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0) * 153)
+                                                                                              .round()),
+                                                                                      darkColor: CupertinoColors.white.withAlpha(
+                                                                                          (((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0) * 153).round())),
+                                                                                  context)))))),
+                                                              onValueChanged: (value) {
+                                                                if (value == null) return;
+                                                                setState(() => segmentController.segment = value);
+                                                                if (widget.setState != null) widget.setState!(() {});
+                                                              },
+                                                            ))
+                                                        : CupertinoSearchTextField(
+                                                            onChanged: widget.onChanged,
+                                                            placeholderStyle: TextStyle(
+                                                                fontSize: lerpDouble(13, 17,
+                                                                    ((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0)),
+                                                                color: CupertinoDynamicColor.withBrightness(
+                                                                    color: const Color.fromARGB(153, 60, 60, 67).withAlpha(
+                                                                        (((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0) *
+                                                                                153)
+                                                                            .round()),
+                                                                    darkColor: const Color.fromARGB(153, 235, 235, 245)
+                                                                        .withAlpha((((isVisibleSearchBar - 45) / 10)
+                                                                                    .clamp(0.0, 1.0) *
+                                                                                153)
+                                                                            .round()))),
+                                                            prefixIcon: Opacity(
+                                                              opacity: ((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0),
+                                                              child: Transform.scale(
+                                                                  scale: lerpDouble(0.7, 1.1,
+                                                                      ((isVisibleSearchBar - 45) / 10).clamp(0.0, 1.0)),
+                                                                  child: Container(
+                                                                      margin: const EdgeInsets.only(top: 2, left: 2),
+                                                                      child: const Icon(CupertinoIcons.search))),
+                                                            ),
+                                                            controller: widget.searchController,
+                                                            onSubmitted: widget.onSubmitted,
+                                                          ),
+                                                  )))))))),
+                      !widget.disableAddons && widget.child == null)
+                  .append(
+                    widget.useSliverBox
+                        ? SliverToBoxAdapter(
+                            child: widget.child ??
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: widget.children ?? [],
+                                ))
+                        : SliverFillRemaining(
+                            hasScrollBody: false,
+                            child: widget.child ??
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: widget.children ?? [],
+                                )),
+                  )
+                  .toList()),
         ));
   }
 }
