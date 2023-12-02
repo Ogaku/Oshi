@@ -24,14 +24,8 @@ Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
           ? null
           : Color.fromJson(json['Color'] as Map<String, dynamic>),
       name: json['Name'] as String,
-      adultsExtramural: json['AdultsExtramural'] as bool,
-      adultsDaily: json['AdultsDaily'] as bool,
-      standard: json['Standard'] as bool,
-      isReadOnly: json['IsReadOnly'] as String,
       countToTheAverage: json['CountToTheAverage'] as bool,
       weight: json['Weight'] as int?,
-      blockAnyGrades: json['BlockAnyGrades'] as bool,
-      obligationToPerform: json['ObligationToPerform'] as bool,
     );
 
 Map<String, dynamic> _$CategoryToJson(Category instance) {
@@ -47,14 +41,8 @@ Map<String, dynamic> _$CategoryToJson(Category instance) {
 
   writeNotNull('Color', instance.color);
   val['Name'] = instance.name;
-  val['AdultsExtramural'] = instance.adultsExtramural;
-  val['AdultsDaily'] = instance.adultsDaily;
-  val['Standard'] = instance.standard;
-  val['IsReadOnly'] = instance.isReadOnly;
   val['CountToTheAverage'] = instance.countToTheAverage;
   writeNotNull('Weight', instance.weight);
-  val['BlockAnyGrades'] = instance.blockAnyGrades;
-  val['ObligationToPerform'] = instance.obligationToPerform;
   return val;
 }
 
