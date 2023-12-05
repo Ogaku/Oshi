@@ -39,17 +39,17 @@ class Message extends Equatable {
       DateTime? readDate,
       List<Attachment>? attachments,
       List<Teacher>? receivers})
-      : id = other?.id ?? id ?? -1,
-        url = other?.url ?? url ?? 'https://g.co',
-        topic = other?.topic ?? topic ?? '',
-        content = other?.content ?? content,
-        preview = other?.preview ?? preview,
-        hasAttachments = other?.hasAttachments ?? hasAttachments ?? false,
-        sender = other?.sender ?? sender,
-        sendDate = other?.sendDate ?? sendDate ?? DateTime(2000),
-        readDate = other?.readDate ?? readDate,
-        attachments = other?.attachments ?? attachments,
-        receivers = other?.receivers ?? receivers;
+      : id = id ?? other?.id ?? -1,
+        url = url ?? other?.url ?? 'https://g.co',
+        topic = topic ?? other?.topic ?? '',
+        content = content ?? other?.content,
+        preview = preview ?? other?.preview,
+        hasAttachments = hasAttachments ?? other?.hasAttachments ?? false,
+        sender = sender ?? other?.sender,
+        sendDate = sendDate ?? other?.sendDate ?? DateTime(2000),
+        readDate = readDate ?? other?.readDate,
+        attachments = attachments ?? other?.attachments,
+        receivers = receivers ?? other?.receivers;
 
   @HiveField(1)
   final int id;
@@ -86,7 +86,8 @@ class Message extends Equatable {
   @HiveField(11)
   final List<Teacher>? receivers;
 
-  bool get read => receivers != null || (readDate != null && readDate!.isBefore(DateTime.now()));
+  bool get read =>
+      receivers != null || (readDate != null && readDate!.isBefore(DateTime.now()) && readDate != DateTime(2000));
 
   String get senderName =>
       sender?.name ??

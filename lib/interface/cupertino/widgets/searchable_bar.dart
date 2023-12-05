@@ -241,7 +241,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                   setState(() {
                     scrollController.animateTo(55, duration: const Duration(milliseconds: 200), curve: Curves.ease);
                   });
-                } else if (isVisibleSearchBar >= 25 && isVisibleSearchBar <= 55) {
+                } else if (isVisibleSearchBar >= 25 && isVisibleSearchBar < 54) {
                   setState(() {
                     scrollController.animateTo(1, duration: const Duration(milliseconds: 200), curve: Curves.ease);
                   });

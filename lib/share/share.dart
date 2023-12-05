@@ -139,8 +139,14 @@ class Settings {
       }
     }
 
-    // Update the badges
-    Share.session.unreadChanges.updateBadge();
+    try {
+      // Update the badges
+      Share.session.unreadChanges.updateBadge();
+      Share.refreshBase.broadcast();
+      Share.refreshAll.broadcast();
+    } catch (ex) {
+      // ignored
+    }
 
     try {
       await Share.settingsMutex.protect<void>(() async {
@@ -733,7 +739,7 @@ class Session extends HiveObject {
                     }}'
                         .localized
                         .format(
-                            element.value.categoryName,
+                            element.value.category.asString(),
                             DateFormat.MMMMEEEEd(Share.settings.appSettings.localeCode)
                                 .format(element.value.date ?? element.value.timeFrom)),
                     body: element.value.titleString.isNotEmpty
@@ -773,13 +779,6 @@ class Session extends HiveObject {
     }
 
     await Share.settings.save();
-
-    try {
-      Share.refreshBase.broadcast();
-      Share.refreshAll.broadcast();
-    } catch (ex) {
-      // ignored
-    }
   }
 }
 

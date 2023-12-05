@@ -603,7 +603,7 @@
         },
         {
             "id": "/Notifications/Categories/Event/Removed",
-            "translation": "\"{}\" on {} was removed"
+            "translation": "\"{}\" on {} was updated"
         },
         {
             "id": "/Notifications/Categories/Event/Teacher/New",

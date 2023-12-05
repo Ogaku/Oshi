@@ -1343,7 +1343,9 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
             child: Text(segmentController.segment == HomepageSegments.home
                 ? '/Titles/Pages/Home'.localized
                 : '/Titles/Pages/Timeline'.localized)),
-        middle: Text('/Titles/Pages/Home'.localized),
+        middle: Text(segmentController.segment == HomepageSegments.home
+                ? '/Titles/Pages/Home'.localized
+                : '/Titles/Pages/Timeline'.localized),
         trailing: PullDownButton(
           itemBuilder: (context) => [
             PullDownMenuItem(

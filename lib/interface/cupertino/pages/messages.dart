@@ -77,6 +77,7 @@ class _MessagesPageState extends State<MessagesPage> {
             x.previewString.contains(RegExp(searchQuery, caseSensitive: false)) ||
             (x.content?.contains(RegExp(searchQuery, caseSensitive: false)) ?? false) ||
             x.senderName.contains(RegExp(searchQuery, caseSensitive: false)))
+        .orderByDescending((element) => element.sendDate)
         .toList()
         .select((element, index) => (message: element, announcement: null as Announcement?));
 
@@ -235,6 +236,34 @@ class _MessagesPageState extends State<MessagesPage> {
                                     },
                                   ),
                                   folder != MessageFolders.announcements)
+                              .appendIf(
+                                  CupertinoContextMenuAction(
+                                    isDestructiveAction: true,
+                                    trailingIcon: CupertinoIcons.news,
+                                    child: const Text('Mark as unread'),
+                                    onPressed: () {
+                                      try {
+                                        setState(() {
+                                          Share.session.data.messages.received.remove(x.message);
+                                          Share.session.data.messages.received
+                                              .add(Message.from(other: x.message, readDate: DateTime(2000)));
+                                        });
+                                        Share.refreshAll.broadcast();
+                                      } on Exception catch (e) {
+                                        if (Platform.isAndroid || Platform.isIOS) {
+                                          Fluttertoast.showToast(
+                                            msg: '$e',
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.CENTER,
+                                            timeInSecForIosWeb: 1,
+                                          );
+                                        }
+                                      }
+                                      // Close the current page
+                                      Navigator.of(context, rootNavigator: true).pop();
+                                    },
+                                  ),
+                                  Share.session.settings.devMode && folder == MessageFolders.inbox)
                               .toList(),
                           builder: (BuildContext swipeContext, Animation<double> animation) => GestureDetector(
                               onTap: animation.value < CupertinoContextMenu.animationOpensAt

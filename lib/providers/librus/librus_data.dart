@@ -725,6 +725,7 @@ class LibrusDataReader implements models.IProvider {
                 models.Teacher(
                     firstName: message.data?.senderFirstName ?? 'Unknown',
                     lastName: message.data?.senderLastName ?? 'sender'),
+            hasAttachments: message.data?.attachments?.isNotEmpty ?? false,
             attachments: (await message.data?.attachments?.select((y, index) async {
               var url = (await data!.librusApi!.messagesRequest('attachments/${y.id}/messages/${parent.id}'))['data']
                       ?['downloadLink']
