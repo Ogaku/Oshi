@@ -90,9 +90,9 @@ class _AbsencesPageState extends State<AbsencesPage> {
         setState: setState,
         alwaysShowAddons: true,
         segments: {
-          AbsencesPageSegments.date: 'By date',
-          AbsencesPageSegments.lesson: 'By lesson',
-          AbsencesPageSegments.type: 'By type'
+          AbsencesPageSegments.date: '/ByDate'.localized,
+          AbsencesPageSegments.lesson: '/ByLesson'.localized,
+          AbsencesPageSegments.type: '/ByType'.localized
         },
         largeTitle: Text('/Page/Absences/Attendance'.localized),
         middle: Text('/Page/Absences/Attendance'.localized),

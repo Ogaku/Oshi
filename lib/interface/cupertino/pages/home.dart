@@ -248,7 +248,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                         child: Container(
                                                             margin: EdgeInsets.only(left: 5, right: 5),
                                                             child: Text(
-                                                              'Notes: ${x.content}',
+                                                              '/Notes'.localized.format(x.content),
                                                               maxLines: 2,
                                                               overflow: TextOverflow.ellipsis,
                                                               style: TextStyle(

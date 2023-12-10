@@ -2,6 +2,18 @@
     "language": "en",
     "messages": [
         {
+            "id": "/ByDate",
+            "translation": "By date"
+        },
+        {
+            "id": "/ByLesson",
+            "translation": "By lesson"
+        },
+        {
+            "id": "/ByType",
+            "translation": "By type"
+        },
+        {
             "id": "/Titles/Pages/Home",
             "translation": "Home"
         },
@@ -692,6 +704,14 @@
         {
             "id": "/Enums/EventCategory/admin",
             "translation": "Admin"
+        },
+        {
+            "id": "/Average",
+            "translation":"Average"
+        },
+        {
+            "id": "/Notes",
+            "translation": "Notes: {}"
         }
     ],
     "splashes": [

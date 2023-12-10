@@ -214,7 +214,7 @@ class _GradesPageState extends State<GradesPage> {
             additionalDividerMargin: 5,
             children: [
               CupertinoListTile(
-                  title: Text('Average', overflow: TextOverflow.ellipsis),
+                  title: Text('/Average'.localized, overflow: TextOverflow.ellipsis),
                   trailing: Container(
                       margin: EdgeInsets.symmetric(horizontal: 5),
                       child: Opacity(
