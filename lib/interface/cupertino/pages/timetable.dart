@@ -134,40 +134,57 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                     TextChip(width: 110, text: DateFormat.yMd(Share.settings.appSettings.localeCode).format(selectedDate)))),
         trailing: isWorking
             ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
-            : PullDownButton(
-                itemBuilder: (context) => [
-                  PullDownMenuItem(
-                    title: 'New event',
-                    icon: CupertinoIcons.add,
-                    onTap: () {
-                      showCupertinoModalBottomSheet(context: context, builder: (context) => EventComposePage())
-                          .then((value) => setState(() {}));
-                    },
+            : Stack(alignment: Alignment.bottomRight, children: [
+                PullDownButton(
+                  itemBuilder: (context) => [
+                    PullDownMenuItem(
+                      title: 'New event',
+                      icon: CupertinoIcons.add,
+                      onTap: () {
+                        showCupertinoModalBottomSheet(context: context, builder: (context) => EventComposePage())
+                            .then((value) => setState(() {}));
+                      },
+                    ),
+                    PullDownMenuDivider.large(),
+                    PullDownMenuTitle(title: Text('/Titles/Pages/Schedule'.localized)),
+                    PullDownMenuItem(
+                      title: 'Today',
+                      icon: CupertinoIcons.calendar_today,
+                      onTap: () => pageController.animateToPage(
+                          DateTime.now()
+                              .asDate()
+                              .difference(Share.session.data.student.mainClass.beginSchoolYear.asDate())
+                              .inDays,
+                          duration: Duration(milliseconds: 300),
+                          curve: Curves.easeInOutExpo),
+                    ),
+                    PullDownMenuItem(
+                      title:
+                          'Agenda${((Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount > 0) ? ' (${(Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount)})' : '')}',
+                      icon: CupertinoIcons.list_bullet_below_rectangle,
+                      onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (context) => EventsPage())),
+                    ),
+                  ],
+                  buttonBuilder: (context, showMenu) => GestureDetector(
+                    onTap: showMenu,
+                    child: const Icon(CupertinoIcons.ellipsis_circle),
                   ),
-                  PullDownMenuDivider.large(),
-                  PullDownMenuTitle(title: Text('/Titles/Pages/Schedule'.localized)),
-                  PullDownMenuItem(
-                    title: 'Today',
-                    icon: CupertinoIcons.calendar_today,
-                    onTap: () => pageController.animateToPage(
-                        DateTime.now()
-                            .asDate()
-                            .difference(Share.session.data.student.mainClass.beginSchoolYear.asDate())
-                            .inDays,
-                        duration: Duration(milliseconds: 300),
-                        curve: Curves.easeInOutExpo),
-                  ),
-                  PullDownMenuItem(
-                    title: 'Agenda',
-                    icon: CupertinoIcons.list_bullet_below_rectangle,
-                    onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (context) => EventsPage())),
-                  ),
-                ],
-                buttonBuilder: (context, showMenu) => GestureDetector(
-                  onTap: showMenu,
-                  child: const Icon(CupertinoIcons.ellipsis_circle),
                 ),
-              ),
+                AnimatedOpacity(
+                    duration: const Duration(milliseconds: 500),
+                    opacity: (Share.session.data.timetables.timetable.entries
+                            .where((x) => x.key.asDate().isAfterOrSame(DateTime.now().asDate()))
+                            .any((x) => x.value.hasUnread))
+                        ? 1.0
+                        : 0.0,
+                    child: Container(
+                        margin: EdgeInsets.only(),
+                        child: Container(
+                          height: 10,
+                          width: 10,
+                          decoration: BoxDecoration(shape: BoxShape.circle, color: CupertinoTheme.of(context).primaryColor),
+                        )))
+              ]),
         searchController: searchController,
         onChanged: (s) => setState(() => searchQuery = s),
         largeTitle: Text('/Titles/Pages/Schedule'.localized),
@@ -188,7 +205,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                   .asEventWidgets(selectedDay, searchQuery, 'No events matching the query', setState);
 
               // Homeworks for the selected day/date
-              var homeworksToday = Share.session.data.student.mainClass.events
+              var homeworksToday = Share.session.events
                   .where((x) => x.category == EventCategory.homework)
                   .where((x) => x.timeTo?.asDate() == selectedDate)
                   .where((x) =>
@@ -199,7 +216,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                   .asEventWidgets(selectedDay, searchQuery, 'No homeworks matching the query', setState);
 
               // Teacher absences for the selected day/date
-              var teachersAbsentToday = Share.session.data.student.mainClass.events
+              var teachersAbsentToday = Share.session.events
                   .where((x) => x.category == EventCategory.teacher)
                   .orderBy((x) => x.sender?.name ?? '')
                   .where((x) =>
@@ -356,17 +373,27 @@ extension EventWidgetExtension on Event {
                 // Homework - mark as done
                 ? CupertinoContextMenuAction(
                     onPressed: () {
-                      Share.session.provider.markEventAsDone(parent: this).then((s) {
-                        try {
-                          if (s.success) {
-                            setState(() => Share.session.data.student.mainClass
-                                    .events[Share.session.data.student.mainClass.events.indexOf(this)] =
-                                Event.from(other: this, done: true));
+                      if (Share.session.data.student.mainClass.events.contains(this)) {
+                        Share.session.provider.markEventAsDone(parent: this).then((s) {
+                          try {
+                            if (s.success) {
+                              setState(() => Share.session.data.student.mainClass
+                                      .events[Share.session.data.student.mainClass.events.indexOf(this)] =
+                                  Event.from(other: this, done: true));
+                            }
+                          } catch (ex) {
+                            // ignored
                           }
+                        });
+                      } else {
+                        // Must be a custom event
+                        try {
+                          setState(() => Share.session.customEvents[Share.session.customEvents.indexOf(this)] =
+                              Event.from(other: this, done: true));
                         } catch (ex) {
                           // ignored
                         }
-                      });
+                      }
                       Navigator.of(context, rootNavigator: true).pop();
                     },
                     trailingIcon: CupertinoIcons.check_mark,
@@ -511,7 +538,7 @@ extension EventWidgetExtension on Event {
                                                           child: Opacity(
                                                               opacity: 0.5,
                                                               child: Text(titleString,
-                                                                  maxLines: 10, textAlign: TextAlign.end))))
+                                                                  maxLines: 15, textAlign: TextAlign.end))))
                                                 ],
                                               ),
                                             ),
@@ -528,7 +555,7 @@ extension EventWidgetExtension on Event {
                                                               child: Opacity(
                                                                   opacity: 0.5,
                                                                   child: Text(subtitleString,
-                                                                      maxLines: 10, textAlign: TextAlign.end))))
+                                                                      maxLines: 15, textAlign: TextAlign.end))))
                                                     ],
                                                   )),
                                                   subtitleString.isNotEmpty)
@@ -655,6 +682,11 @@ extension EventWidgetExtension on Event {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         mainAxisSize: MainAxisSize.max,
                                         children: [
+                                          // Unread badge
+                                          UnreadDot(
+                                              unseen: () => unseen,
+                                              markAsSeen: markAsSeen,
+                                              margin: EdgeInsets.only(top: 5, right: 6)),
                                           // Event tag
                                           Visibility(
                                               visible: (day?.lessons
@@ -672,6 +704,7 @@ extension EventWidgetExtension on Event {
                                               flex: 2,
                                               child: Text(
                                                 titleString,
+                                                maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                                 style: TextStyle(
                                                     fontSize: 17,
@@ -689,6 +722,7 @@ extension EventWidgetExtension on Event {
                                               child: Container(
                                                   margin: EdgeInsets.only(top: 1, left: 3),
                                                   child: Text(
+                                                    maxLines: 1,
                                                     classroom?.name ?? '^^',
                                                     overflow: TextOverflow.ellipsis,
                                                     style: TextStyle(
@@ -703,6 +737,7 @@ extension EventWidgetExtension on Event {
                                                   child: (timeFrom.hour != 0 && timeTo?.hour != 0) &&
                                                           (timeFrom.asDate() == timeTo?.asDate())
                                                       ? Text(
+                                                          maxLines: 1,
                                                           "${DateFormat.Hm(Share.settings.appSettings.localeCode).format(timeFrom)} - ${DateFormat.Hm(Share.settings.appSettings.localeCode).format(timeTo ?? DateTime.now())}",
                                                           overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(
@@ -711,6 +746,7 @@ extension EventWidgetExtension on Event {
                                                               decoration: markRemoved ? TextDecoration.lineThrough : null),
                                                         )
                                                       : Text(
+                                                          maxLines: 1,
                                                           (timeFrom.month == timeTo?.month && timeFrom.day == timeTo?.day)
                                                               ? DateFormat.MMMd(Share.settings.appSettings.localeCode)
                                                                   .format(timeTo ?? DateTime.now())
@@ -731,6 +767,7 @@ extension EventWidgetExtension on Event {
                                             child: Container(
                                                 padding: EdgeInsets.only(top: 4),
                                                 child: Text(
+                                                  maxLines: 1,
                                                   locationString,
                                                   overflow: TextOverflow.ellipsis,
                                                   style: TextStyle(
@@ -850,7 +887,7 @@ extension LessonWidgetExtension on TimetableLesson {
       bool markModified = false,
       bool useOnTap = false,
       Function()? onTap}) {
-    var events = Share.session.data.student.mainClass.events
+    var events = Share.session.events
         .where((y) => y.date == selectedDate)
         .where((y) => (y.lessonNo ?? -1) == lessonNo)
         .select((y, index) => TableRow(children: [
@@ -1074,7 +1111,7 @@ extension LessonWidgetExtension on TimetableLesson {
                               mainAxisSize: MainAxisSize.max,
                               children:
                                   // Event tags
-                                  Share.session.data.student.mainClass.events
+                                  Share.session.events
                                           .where((y) => y.date == selectedDate)
                                           .where((y) => (y.lessonNo ?? -1) == lessonNo)
                                           .select((y, index) => Container(

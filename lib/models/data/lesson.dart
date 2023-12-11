@@ -77,6 +77,9 @@ class Lesson {
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get hasUnseen => grades.any((x) => x.unseen);
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  int get unseenCount => grades.count((x) => x.unseen);
+
   factory Lesson.fromJson(Map<String, dynamic> json) => _$LessonFromJson(json);
 
   Map<String, dynamic> toJson() => _$LessonToJson(this);

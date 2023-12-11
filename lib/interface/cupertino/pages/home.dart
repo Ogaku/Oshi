@@ -68,7 +68,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     // Re-subscribe to all events
     Share.refreshAll.unsubscribe(refresh);
     Share.refreshAll.subscribe(refresh);
-    
+
     Share.openTimeline.unsubscribeAll();
     Share.openTimeline.subscribe((args) {
       setState(() => segmentController.segment = HomepageSegments.timeline);
@@ -93,8 +93,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     // Event list for the next 2 weeks (14 days), exc homeworks and teacher absences
     var eventsWeek = Share.session.events
         .where((x) => x.category != EventCategory.homework && x.category != EventCategory.teacher)
-        .where((x) => x.date?.isAfterOrSame(DateTime.now().asDate()) ?? false)
-        .where((x) => x.date?.isBeforeOrSame(DateTime.now().add(Duration(days: 14)).asDate()) ?? false)
+        .where((x) => (x.date ?? x.timeTo ?? x.timeFrom).isAfterOrSame(DateTime.now().asDate()))
+        .where((x) => (x.date ?? x.timeTo ?? x.timeFrom).isBeforeOrSame(DateTime.now().add(Duration(days: 14)).asDate()))
         .orderBy((x) => x.date ?? x.timeTo ?? x.timeFrom)
         .toList();
 
@@ -110,10 +110,10 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
         .toList();
 
     // Homework list for the next week (7 days)
-    var homeworksWeek = Share.session.data.student.mainClass.events
+    var homeworksWeek = Share.session.events
         .where((x) => x.category == EventCategory.homework)
-        .where((x) => x.timeTo?.isAfterOrSame(DateTime.now().asDate()) ?? false)
-        .where((x) => x.timeTo?.isBeforeOrSame(DateTime.now().add(Duration(days: 7)).asDate()) ?? false)
+        .where((x) => (x.date ?? x.timeTo ?? x.timeFrom).isAfterOrSame(DateTime.now().asDate()))
+        .where((x) => (x.date ?? x.timeTo ?? x.timeFrom).isBeforeOrSame(DateTime.now().add(Duration(days: 7)).asDate()))
         .orderByDescending((x) => x.done ? 0 : 1)
         .thenBy((x) => x.date ?? x.timeTo ?? x.timeFrom)
         .toList();
@@ -172,7 +172,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                 builder: (context) => MessageComposePage(
                                     receivers: x.sender != null ? [x.sender!] : [],
                                     subject:
-                                        'Pytanie o pracę domową na dzień ${DateFormat("y.M.d").format(x.timeTo ?? x.timeFrom)}',
+                                        'Pytanie o pracę domową na dzień ${DateFormat("y.M.d").format(x.timeTo ?? x.date ?? x.timeFrom)}',
                                     signature:
                                         '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                           },
@@ -184,7 +184,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                               : () {
                                   Share.tabsNavigatePage.broadcast(Value(2));
                                   Future.delayed(Duration(milliseconds: 250))
-                                      .then((arg) => Share.timetableNavigateDay.broadcast(Value(x.timeTo ?? x.timeFrom)));
+                                      .then((arg) => Share.timetableNavigateDay.broadcast(Value(x.timeTo ?? x.date ?? x.timeFrom)));
                                 },
                           padding: EdgeInsets.zero,
                           child: Container(
@@ -215,7 +215,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                   children: [
                                                     TextChip(
                                                         text: DateFormat.Md(Share.settings.appSettings.localeCode)
-                                                            .format(x.timeTo ?? x.timeFrom),
+                                                            .format(x.timeTo ?? x.date ?? x.timeFrom),
                                                         margin: EdgeInsets.only(top: 6, bottom: 6, right: 10)),
                                                     Flexible(
                                                         child: Align(
@@ -1344,8 +1344,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                 ? '/Titles/Pages/Home'.localized
                 : '/Titles/Pages/Timeline'.localized)),
         middle: Text(segmentController.segment == HomepageSegments.home
-                ? '/Titles/Pages/Home'.localized
-                : '/Titles/Pages/Timeline'.localized),
+            ? '/Titles/Pages/Home'.localized
+            : '/Titles/Pages/Timeline'.localized),
         trailing: PullDownButton(
           itemBuilder: (context) => [
             PullDownMenuItem(

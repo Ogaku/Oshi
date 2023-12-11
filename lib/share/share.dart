@@ -802,6 +802,23 @@ class UnreadChanges {
   @HiveField(4)
   List<int> attendances;
 
+  int get gradesCount => Share.session.data.student.subjects.sum((x) => x.unseenCount);
+  int get timetablesCount => Share.session.data.timetables.timetable.entries
+      .where((x) => x.key.asDate().isAfterOrSame(DateTime.now().asDate()))
+      .sum((x) => x.value.unreadCount)
+      .round();
+  int get messagesCount => Share.session.data.messages.received.count((x) => !x.read);
+  int get announcementsCount => (Share.session.data.student.mainClass.unit.announcements?.count((x) => !x.read) ?? 0);
+  int get eventsCount => Share.session.data.student.mainClass.events
+      .where((x) => (x.date ?? x.timeFrom).asDate().isAfterOrSame(DateTime.now().asDate()))
+      .count((x) => x.unseen);
+  int get attendancesCount => (Share.session.data.student.attendances?.count((x) => x.unseen) ?? 0);
+
+  int get homeworksCount => Share.session.data.student.mainClass.events
+      .where((x) => (x.date ?? x.timeFrom).asDate().isAfterOrSame(DateTime.now().asDate()))
+      .where((x) => x.category == EventCategory.homework)
+      .count((x) => x.unseen);
+
   void markAsRead() {
     timetables.clear();
     grades.clear();
@@ -815,13 +832,7 @@ class UnreadChanges {
   }
 
   int count() {
-    return Share.session.data.student.subjects.count((x) => x.hasUnseen) +
-        Share.session.data.timetables.timetable.entries
-            .where((x) => x.key.asDate().isAfterOrSame(DateTime.now().asDate()))
-            .count((x) => x.value.hasUnread) +
-        Share.session.data.messages.received.count((x) => !x.read) +
-        (Share.session.data.student.mainClass.unit.announcements?.count((x) => !x.read) ?? 0) +
-        (Share.session.data.student.attendances?.count((x) => x.unseen) ?? 0);
+    return gradesCount + timetablesCount + messagesCount + announcementsCount + eventsCount + attendancesCount;
   }
 
   void updateBadge() {

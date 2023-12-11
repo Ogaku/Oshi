@@ -4,8 +4,10 @@
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/pages/timetable.dart';
+import 'package:oshi/interface/cupertino/views/new_event.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/data/timetables.dart';
@@ -80,9 +82,19 @@ class _EventsPageState extends State<EventsPage> {
         alwaysShowAddons: true,
         trailing: PullDownButton(
           itemBuilder: (context) => [
+            PullDownMenuItem(
+              title: 'New event',
+              icon: CupertinoIcons.add,
+              onTap: () {
+                showCupertinoModalBottomSheet(context: context, builder: (context) => EventComposePage())
+                    .then((value) => setState(() {}));
+              },
+            ),
+            PullDownMenuDivider.large(),
             PullDownMenuTitle(title: Text('Filters')),
             PullDownMenuItem(
-              title: 'Homeworks',
+              title:
+                  'Homeworks${((Share.session.unreadChanges.homeworksCount > 0) ? ' (${(Share.session.unreadChanges.homeworksCount)})' : '')}',
               icon: showHomeworks ? CupertinoIcons.book_fill : CupertinoIcons.book,
               onTap: () => setState(() => showHomeworks = !showHomeworks),
             ),

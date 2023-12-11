@@ -14,9 +14,9 @@ import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:path/path.dart' as path;
 
-import 'package:oshi/interface/cupertino/pages/home.dart' show DateTimeExtension, homePage;
+import 'package:oshi/interface/cupertino/pages/home.dart' show homePage;
 import 'package:oshi/interface/cupertino/pages/grades.dart' show gradesPage;
-import 'package:oshi/interface/cupertino/pages/timetable.dart' show DateTimeExtension, timetablePage;
+import 'package:oshi/interface/cupertino/pages/timetable.dart' show timetablePage;
 import 'package:oshi/interface/cupertino/pages/messages.dart' show messagesPage;
 import 'package:oshi/interface/cupertino/pages/absences.dart' show absencesPage;
 import 'package:oshi/share/share.dart';
@@ -69,7 +69,7 @@ class _BaseAppState extends State<BaseApp> {
     // Re-subscribe to all events - navigation
     Share.refreshAll.unsubscribe(refresh);
     Share.refreshAll.subscribe(refresh);
-    
+
     Share.tabsNavigatePage.unsubscribeAll();
     Share.tabsNavigatePage.subscribe((args) {
       if (args?.value == null) return;
@@ -153,7 +153,7 @@ class _BaseAppState extends State<BaseApp> {
                                     child: Icon(CupertinoIcons.rosette)),
                                 AnimatedOpacity(
                                     duration: const Duration(milliseconds: 500),
-                                    opacity: (Share.session.data.student.subjects.any((x) => x.hasUnseen)) ? 1.0 : 0.0,
+                                    opacity: Share.session.unreadChanges.gradesCount > 0 ? 1.0 : 0.0,
                                     child: Container(
                                         margin: EdgeInsets.only(),
                                         child: Container(
@@ -172,9 +172,9 @@ class _BaseAppState extends State<BaseApp> {
                                     child: Icon(CupertinoIcons.calendar)),
                                 AnimatedOpacity(
                                     duration: const Duration(milliseconds: 500),
-                                    opacity: (Share.session.data.timetables.timetable.entries
-                                            .where((x) => x.key.asDate().isAfterOrSame(DateTime.now().asDate()))
-                                            .any((x) => x.value.hasUnread))
+                                    opacity: (Share.session.unreadChanges.timetablesCount +
+                                                Share.session.unreadChanges.eventsCount) >
+                                            0
                                         ? 1.0
                                         : 0.0,
                                     child: Container(
@@ -195,9 +195,9 @@ class _BaseAppState extends State<BaseApp> {
                                     child: Icon(CupertinoIcons.envelope)),
                                 AnimatedOpacity(
                                     duration: const Duration(milliseconds: 500),
-                                    opacity: (Share.session.data.messages.received.any((x) => !x.read) ||
-                                            ((Share.session.data.student.mainClass.unit.announcements?.any((x) => !x.read) ??
-                                                false)))
+                                    opacity: (Share.session.unreadChanges.announcementsCount +
+                                                Share.session.unreadChanges.messagesCount >
+                                            0)
                                         ? 1.0
                                         : 0.0,
                                     child: Container(
@@ -218,8 +218,7 @@ class _BaseAppState extends State<BaseApp> {
                                     child: Icon(CupertinoIcons.person_crop_circle_badge_minus)),
                                 AnimatedOpacity(
                                     duration: const Duration(milliseconds: 500),
-                                    opacity:
-                                        (Share.session.data.student.attendances?.any((x) => x.unseen) ?? false) ? 1.0 : 0.0,
+                                    opacity: Share.session.unreadChanges.attendancesCount > 0 ? 1.0 : 0.0,
                                     child: Container(
                                         margin: EdgeInsets.only(),
                                         child: Container(

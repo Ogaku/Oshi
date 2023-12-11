@@ -96,6 +96,9 @@ class TimetableDay extends Equatable {
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get hasUnread => lessons.any((x) => x?.any((y) => y.unseen) ?? false);
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  int get unreadCount => lessons.count((x) => x?.any((y) => y.unseen) ?? false);
+
   @override
   List<Object> get props => [lessons];
 

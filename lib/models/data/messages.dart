@@ -91,9 +91,9 @@ class Message extends Equatable {
 
   String get senderName =>
       sender?.name ??
-      ((receivers?.isNotEmpty ?? false) ? "To: ${receivers?.select((x, index) => x.name).join(', ')}" : 'Unknown.');
+      ((receivers?.isNotEmpty ?? false) ? "To: ${receivers?.select((x, index) => x.name).join(', ')}" : 'Unknown');
 
-  String get previewString => (preview?.isEmpty ?? true) ? (content?.trim() ?? 'No content.') : preview!.trim();
+  String get previewString => (preview?.isEmpty ?? true) ? (content?.trim() ?? 'No preview available') : preview!.trim();
 
   String get sendDateString => sendDate.difference(DateTime.now().getDateOnly()).inDays > 0
       ? DateFormat.Hm().format(sendDate)
