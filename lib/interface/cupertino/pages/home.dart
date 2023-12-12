@@ -183,8 +183,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                               ? null
                               : () {
                                   Share.tabsNavigatePage.broadcast(Value(2));
-                                  Future.delayed(Duration(milliseconds: 250))
-                                      .then((arg) => Share.timetableNavigateDay.broadcast(Value(x.timeTo ?? x.date ?? x.timeFrom)));
+                                  Future.delayed(Duration(milliseconds: 250)).then((arg) =>
+                                      Share.timetableNavigateDay.broadcast(Value(x.timeTo ?? x.date ?? x.timeFrom)));
                                 },
                           padding: EdgeInsets.zero,
                           child: Container(
@@ -651,7 +651,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                   visible: currentLesson != null,
                                   child: Container(
                                       margin: EdgeInsets.only(bottom: 5),
-                                      child: Row(children: [
+                                      child: Row(
+                                          children: [
                                         Text(
                                           '/Now'.localized,
                                           style: TextStyle(fontWeight: FontWeight.w500),
@@ -660,21 +661,23 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                             child: Container(
                                                 margin: EdgeInsets.only(right: 3, left: 3),
                                                 child: Text(
-                                                  currentLesson?.subject?.name ?? 'Your mom',
+                                                  currentLesson?.subject?.name ?? 'Other lesson',
                                                   style: TextStyle(fontWeight: FontWeight.w500),
                                                 ))),
-                                        Text(
-                                          'in ${currentLesson?.classroom?.name ?? "the otherworld"}',
-                                          style: TextStyle(fontWeight: FontWeight.w400),
-                                        )
-                                      ]))),
+                                      ].appendIf(
+                                              Text(
+                                                'in ${currentLesson?.classroom?.name ?? "the otherworld"}',
+                                                style: TextStyle(fontWeight: FontWeight.w400),
+                                              ),
+                                              currentLesson?.classroom?.name.isNotEmpty ?? false)))),
                               Visibility(
                                   visible: nextLesson != null,
                                   child: Opacity(
                                       opacity: 0.5,
                                       child: Container(
                                           margin: EdgeInsets.only(),
-                                          child: Row(children: [
+                                          child: Row(
+                                              children: [
                                             Text(
                                               // If the "next" lesson is the first one
                                               (nextLesson != null &&
@@ -699,14 +702,15 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                 child: Container(
                                                     margin: EdgeInsets.only(right: 3, left: 3),
                                                     child: Text(
-                                                      nextLesson?.subject?.name ?? 'Your mom',
+                                                      nextLesson?.subject?.name ?? 'Other lesson',
                                                       style: TextStyle(fontWeight: FontWeight.w500),
                                                     ))),
-                                            Text(
-                                              'in ${nextLesson?.classroom?.name ?? "the otherworld"}',
-                                              style: TextStyle(fontWeight: FontWeight.w400),
-                                            )
-                                          ]))))
+                                          ].appendIf(
+                                                  Text(
+                                                    'in ${nextLesson?.classroom?.name ?? "the otherworld"}',
+                                                    style: TextStyle(fontWeight: FontWeight.w400),
+                                                  ),
+                                                  nextLesson?.classroom?.name.isNotEmpty ?? false)))))
                             ],
                           ))),
                   // Show during lessons and breaks (between lessons)
@@ -727,7 +731,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(children: [
+                              Row(
+                                  children: [
                                 Text(
                                   'First:',
                                   style: TextStyle(fontWeight: FontWeight.w500),
@@ -741,14 +746,21 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                   ?.firstWhereOrDefault((x) => !x.isCanceled)
                                                   ?.subject
                                                   ?.name ??
-                                              'Your mom',
+                                              'Other lesson',
                                           style: TextStyle(fontWeight: FontWeight.w500),
                                         ))),
-                                Text(
-                                  'in ${nextDay?.lessonsStrippedCancelled.firstWhereOrDefault((x) => x?.any((y) => !y.isCanceled) ?? false)?.firstWhereOrDefault((x) => !x.isCanceled)?.classroom?.name ?? "the otherworld"}',
-                                  style: TextStyle(fontWeight: FontWeight.w400),
-                                )
-                              ])
+                              ].appendIf(
+                                      Text(
+                                        'in ${nextDay?.lessonsStrippedCancelled.firstWhereOrDefault((x) => x?.any((y) => !y.isCanceled) ?? false)?.firstWhereOrDefault((x) => !x.isCanceled)?.classroom?.name ?? "the otherworld"}',
+                                        style: TextStyle(fontWeight: FontWeight.w400),
+                                      ),
+                                      nextDay?.lessonsStrippedCancelled
+                                              .firstWhereOrDefault((x) => x?.any((y) => !y.isCanceled) ?? false)
+                                              ?.firstWhereOrDefault((x) => !x.isCanceled)
+                                              ?.classroom
+                                              ?.name
+                                              .isNotEmpty ??
+                                          false))
                             ],
                           ))),
                   // Show >1h after the school day has ended, and if there are lessons tomorrow
