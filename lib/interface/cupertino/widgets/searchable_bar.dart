@@ -188,13 +188,13 @@ class _NavState extends State<SearchableSliverNavigationBar> {
         child: NotificationListener<ScrollNotification>(
           onNotification: (ScrollNotification scrollInfo) {
             if (widget.disableAddons) return true;
+            var pixelsRounded = scrollInfo.metrics.pixels; //.roundToDouble();
             if (scrollInfo is ScrollUpdateNotification) {
-              if (scrollInfo.metrics.pixels < -130 && !Share.session.refreshStatus.isRefreshing && widget.setState != null) {
+              if (pixelsRounded < -130 && !Share.session.refreshStatus.isRefreshing && widget.setState != null) {
                 Share.session.refreshStatus.refreshMutex.protect<void>(() async {
                   setState(() {
-                    refreshTurns =
-                        (-2 * (scrollInfo.metrics.pixels - _pixels) / (DateTime.now().millisecondsSinceEpoch - _timestamp))
-                            .clamp(0.3, 1);
+                    refreshTurns = (-2 * (pixelsRounded - _pixels) / (DateTime.now().millisecondsSinceEpoch - _timestamp))
+                        .clamp(0.3, 1);
                   });
 
                   try {
@@ -213,38 +213,34 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                 });
               }
               setState(() {
-                if (scrollInfo.metrics.pixels > previousScrollPosition) {
-                  if (isVisibleSearchBar > 0 && scrollInfo.metrics.pixels > 0) {
+                if (pixelsRounded > previousScrollPosition + 0.001) {
+                  if (isVisibleSearchBar > 0 && pixelsRounded > 1) {
                     isVisibleSearchBar = widget.alwaysShowAddons
                         ? 60
-                        : (55 - scrollInfo.metrics.pixels) >= 0
-                            ? (55 - scrollInfo.metrics.pixels)
+                        : (55 - pixelsRounded) >= 0
+                            ? (55 - pixelsRounded) - 1
                             : 0;
                   }
-                } else if (scrollInfo.metrics.pixels < previousScrollPosition) {
-                  if (isVisibleSearchBar < 54 /*&& scrollInfo.metrics.pixels >= 0*/ && scrollInfo.metrics.pixels <= 54) {
+                } else if (pixelsRounded < previousScrollPosition - 0.001) {
+                  if (isVisibleSearchBar < 53 && pixelsRounded <= 53) {
                     isVisibleSearchBar = widget.alwaysShowAddons
                         ? 60
-                        : (55 - scrollInfo.metrics.pixels) <= 55
-                            ? (55 - scrollInfo.metrics.pixels)
+                        : (55 - pixelsRounded) <= 55
+                            ? (55 - pixelsRounded) - 1
                             : 55;
-                  }
+                  } 
                 }
-                previousScrollPosition = scrollInfo.metrics.pixels;
-                _pixels = scrollInfo.metrics.pixels;
+                previousScrollPosition = pixelsRounded;
+                _pixels = pixelsRounded;
                 _timestamp = DateTime.now().millisecondsSinceEpoch;
               });
             } else if (scrollInfo is ScrollEndNotification) {
               if (widget.disableAddons || widget.child != null) return true;
               Future.delayed(Duration.zero, () {
-                if (isVisibleSearchBar < 25 && isVisibleSearchBar > 10 && !widget.alwaysShowAddons) {
-                  setState(() {
-                    scrollController.animateTo(55, duration: const Duration(milliseconds: 200), curve: Curves.ease);
-                  });
-                } else if (isVisibleSearchBar >= 25 && isVisibleSearchBar < 54) {
-                  setState(() {
+                if (isVisibleSearchBar < 25 && isVisibleSearchBar > 1 && !widget.alwaysShowAddons) {
+                    scrollController.animateTo(54, duration: const Duration(milliseconds: 200), curve: Curves.ease);
+                } else if (isVisibleSearchBar >= 25 && isVisibleSearchBar < 53) {
                     scrollController.animateTo(1, duration: const Duration(milliseconds: 200), curve: Curves.ease);
-                  });
                 }
               });
             }
