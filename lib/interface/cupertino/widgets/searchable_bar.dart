@@ -213,7 +213,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                 });
               }
               setState(() {
-                if (pixelsRounded > previousScrollPosition + 0.001) {
+                if (pixelsRounded > previousScrollPosition) {
                   if (isVisibleSearchBar > 0 && pixelsRounded > 1) {
                     isVisibleSearchBar = widget.alwaysShowAddons
                         ? 60
@@ -221,7 +221,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                             ? (55 - pixelsRounded) - 1
                             : 0;
                   }
-                } else if (pixelsRounded < previousScrollPosition - 0.001) {
+                } else if (pixelsRounded < previousScrollPosition) {
                   if (isVisibleSearchBar < 53 && pixelsRounded <= 53) {
                     isVisibleSearchBar = widget.alwaysShowAddons
                         ? 60
@@ -251,7 +251,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
               controller: scrollController,
               anchor: widget.anchor ??
                   lerpDouble(((60000.0 / (MediaQuery.of(context).size.height - 35.0)) - 5.0) / 1000.0, 0,
-                      ((isVisibleSearchBar + 1) / 55).clamp(0.0, 1.0)) ??
+                      (isVisibleSearchBar / 55).clamp(0.0, 1.0)) ??
                   0.0,
               slivers: <Widget>[
                 navBarSliver,
