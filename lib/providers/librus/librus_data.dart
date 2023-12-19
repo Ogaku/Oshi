@@ -460,6 +460,7 @@ class LibrusDataReader implements models.IProvider {
             student.mainClass.events,
             models.Event(
                 id: x.id,
+                date: y.key,
                 timeFrom: x.dateFrom ?? DateTime.now(),
                 timeTo: x.dateTo,
                 content: x.name,
@@ -484,6 +485,7 @@ class LibrusDataReader implements models.IProvider {
             student.mainClass.events,
             models.Event(
                 id: x.id,
+                date: y.key,
                 timeFrom: x.dateFrom ?? DateTime.now(),
                 timeTo: x.dateTo,
                 category: models.EventCategory.freeDay,
