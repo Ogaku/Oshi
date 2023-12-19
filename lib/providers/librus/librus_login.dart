@@ -47,7 +47,11 @@ class LibrusLogin {
           queryParameters: {'client_id': 46},
           data: FormData.fromMap({'action': 'login', 'login': synergiaLogin, 'pass': synergiaPass}));
     } on DioException catch (e) {
-      throw Exception(e.response?.data?['errors']?[0]?['message']?.toString() ?? e.message);
+      if (e.response?.data is Map<String, dynamic>) {
+        throw Exception(e.response?.data?['errors']?[0]?['message']?.toString() ?? e.message);
+      } else {
+        throw Exception(e.message);
+      }
     }
 
     // Acquire all required authorization headers here

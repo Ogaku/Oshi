@@ -261,8 +261,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                               child: Opacity(
                                                   opacity: 0.5,
                                                   child: Text(Share.session.data.student.subjects
-                                                      .where((x) => x.gradesAverage > 0)
-                                                      .average((x) => x.gradesAverage)
+                                                      .where((x) => x.hasMajor)
+                                                      .average((x) => x.topMajor!.asValue)
                                                       .toStringAsFixed(2))))),
                                       CupertinoListTile(
                                           title: Text('Wasted time', overflow: TextOverflow.ellipsis),

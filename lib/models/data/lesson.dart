@@ -59,16 +59,26 @@ class Lesson {
   @HiveField(10)
   final List<Grade> grades;
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
   Iterable<Grade> get gradesFirstSemester => grades.where((element) => element.semester == 1);
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
   Iterable<Grade> get gradesSecondSemester => grades.where((element) => element.semester == 2);
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
   Iterable<Grade> get gradesCurrentSemester =>
       DateTime.now().getDateOnly().isBefore(hostClass.endFirstSemester) ? gradesFirstSemester : gradesSecondSemester;
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
   bool get hasGrades => grades.isNotEmpty;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
   bool get hasGradesCurrentSemester => gradesCurrentSemester.isNotEmpty;
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
   String get nameExtra => name + (isExtracurricular ? '*' : '');
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
   double get gradesAverage => grades
       .where((x) => x.countsToAverage && x.asValue >= 0)
       .toList()
@@ -76,6 +86,14 @@ class Lesson {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get hasUnseen => grades.any((x) => x.unseen);
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get hasMajor => topMajor != null;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  Grade? get topMajor => grades.any((x) => x.semester > 1)
+      ? (grades.firstWhereOrDefault((x) => x.isFinal) ?? grades.firstWhereOrDefault((x) => x.isFinalProposition))
+      : (grades.firstWhereOrDefault((x) => x.isSemester) ?? grades.firstWhereOrDefault((x) => x.isSemesterProposition));
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   int get unseenCount => grades.count((x) => x.unseen);

@@ -220,12 +220,12 @@ class _GradesPageState extends State<GradesPage> {
                       child: Opacity(
                           opacity: 0.5,
                           child: Text(Share.session.data.student.subjects
-                              .where((x) => x.gradesAverage > 0)
-                              .average((x) => x.gradesAverage)
+                              .where((x) => x.hasMajor)
+                              .average((x) => x.topMajor!.asValue)
                               .toStringAsFixed(2)))))
             ],
           ),
-          searchQuery.isEmpty && Share.session.data.student.subjects.any((x) => x.gradesAverage > 0)),
+          searchQuery.isEmpty && Share.session.data.student.subjects.any((x) => x.hasMajor)),
     );
   }
 }
