@@ -137,7 +137,6 @@ class LibrusDataReader implements models.IProvider {
     var attendance = attendancesShim.attendances?.select((x, index) => models.Attendance(
         addDate: x.addDate ?? DateTime.now(),
         date: x.date ?? DateTime.now(),
-        id: x.id,
         lessonNo: x.lessonNo,
         type: x.type!.id.asAttendance(),
         teacher: teachersShim.users?.firstWhereOrDefault((element) => element.id == (x.addedBy?.id ?? -1))?.asTeacher(),

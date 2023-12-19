@@ -19,7 +19,6 @@ Map<String, dynamic> _$AttendancesToJson(Attendances instance) =>
 
 DataAttendance _$DataAttendanceFromJson(Map<String, dynamic> json) =>
     DataAttendance(
-      id: json['Id'] as int,
       lesson: json['Lesson'] == null
           ? null
           : Link.fromJson(json['Lesson'] as Map<String, dynamic>),
@@ -43,7 +42,6 @@ DataAttendance _$DataAttendanceFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$DataAttendanceToJson(DataAttendance instance) =>
     <String, dynamic>{
-      'Id': instance.id,
       'Lesson': instance.lesson,
       'Student': instance.student,
       'Date': instance.date?.toIso8601String(),

@@ -19,7 +19,6 @@ class Attendances {
 @JsonSerializable()
 class DataAttendance {
   DataAttendance({
-    required this.id,
     required this.lesson,
     required this.student,
     required this.date,
@@ -29,9 +28,6 @@ class DataAttendance {
     required this.type,
     required this.addedBy,
   });
-
-  @JsonKey(name: 'Id')
-  final int id;
 
   @JsonKey(name: 'Lesson')
   final Link? lesson;
