@@ -16,6 +16,7 @@ import 'package:oshi/share/translator.dart';
 
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
 import 'package:uuid/uuid.dart';
 
@@ -100,7 +101,35 @@ class _AbsencesPageState extends State<AbsencesPage> {
         segmentController: segmentController,
         trailing: isWorking
             ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
-            : null,
+            : PullDownButton(
+                itemBuilder: (context) => [
+                  PullDownMenuItem(
+                    title: 'Mark as read',
+                    icon: CupertinoIcons.checkmark_circle,
+                    onTap: () => Share.session.unreadChanges.markAsRead(attendaceOnly: true),
+                  ),
+                  PullDownMenuItem(
+                    title: 'Excuse all',
+                    icon: CupertinoIcons.doc_on_clipboard,
+                    onTap: () {
+                      if (Share.session.data.student.attendances?.isEmpty ?? true) return;
+                      showCupertinoModalBottomSheet(
+                          context: context,
+                          builder: (context) => MessageComposePage(
+                              receivers: [Share.session.data.student.mainClass.classTutor],
+                              subject: 'Usprawiedliwienie',
+                              message:
+                                  'Dzień dobry,\n\nProszę o usprawiedliwienie moich nieobencości w dniach:\n${Share.session.data.student.attendances!.where((x) => x.type == AttendanceType.absent).groupBy((x) => x.date).select((x, index) => ' - ${DateFormat("y.M.dd").format(x.key)} (${x.count > 1 ? '${x.orderBy((x) => x.lessonNo).first.lessonNo} - ${x.orderBy((x) => x.lessonNo).last.lessonNo} godzina lekcyjna' : '${x.first.lessonNo} godzina lekcyjna'}) \n').join()}',
+                              signature:
+                                  'Dziękuję,\n\nZ poważaniem,\n${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                    },
+                  ),
+                ],
+                buttonBuilder: (context, showMenu) => GestureDetector(
+                  onTap: showMenu,
+                  child: const Icon(CupertinoIcons.ellipsis_circle),
+                ),
+              ),
         useSliverBox: true,
         children: [
           ListView.builder(
@@ -220,7 +249,26 @@ extension LessonWidgetExtension on Attendance {
                           signature:
                               '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                 }),
-          ],
+          ]
+              .appendIf(
+                  CupertinoContextMenuAction(
+                      isDestructiveAction: true,
+                      trailingIcon: CupertinoIcons.doc_on_clipboard,
+                      child: Text('Excuse'),
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).pop();
+                        showCupertinoModalBottomSheet(
+                            context: context,
+                            builder: (context) => MessageComposePage(
+                                receivers: [Share.session.data.student.mainClass.classTutor],
+                                subject: 'Usprawiedliwienie',
+                                message:
+                                    'Dzień dobry,\n\nProszę o usprawiedliwienie mojej nieobencości\nw dniu ${DateFormat("y.M.dd").format(date)} na $lessonNo godzinie lekcyjnej.',
+                                signature:
+                                    'Dziękuję,\n\nZ poważaniem,\n${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                      }),
+                  type == AttendanceType.absent)
+              .toList(),
           builder: (BuildContext context, Animation<double> animation) => attendanceBody(context,
               animation: animation, markRemoved: markRemoved, markModified: markModified, onTap: onTap));
 

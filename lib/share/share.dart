@@ -819,10 +819,13 @@ class UnreadChanges {
       .where((x) => x.category == EventCategory.homework)
       .count((x) => x.unseen);
 
-  void markAsRead() {
-    timetables.clear();
-    grades.clear();
-    events.clear();
+  void markAsRead({bool attendaceOnly = false}) {
+    if (!attendaceOnly) {
+      timetables.clear();
+      events.clear();
+      grades.clear();
+    }
+
     attendances.clear();
     updateBadge();
 
