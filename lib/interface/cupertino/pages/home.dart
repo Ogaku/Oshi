@@ -1476,7 +1476,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
 
     // Christmas theme
     if (DateTime.now().month == DateTime.december &&
-        (DateTime.now().day == 24 || DateTime.now().day == 25 || DateTime.now().day == 26)) {
+        (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
       return 'Merry Christmas!';
     }
 
@@ -1554,7 +1554,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     }
     // Christmas theme
     if (DateTime.now().month == DateTime.december &&
-        (DateTime.now().day == 24 || DateTime.now().day == 25 || DateTime.now().day == 26)) {
+        (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
       return const Text('🎄');
     }
     // Default theme
