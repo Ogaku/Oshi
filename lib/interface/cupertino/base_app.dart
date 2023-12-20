@@ -284,7 +284,7 @@ class _BaseAppState extends State<BaseApp> {
     }
     // Christmas colors
     if (DateTime.now().month == DateTime.december &&
-        (DateTime.now().day == 24 || DateTime.now().day == 25 || DateTime.now().day == 26)) {
+        (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
       return CupertinoThemeData(primaryColor: CupertinoColors.systemRed);
     }
     // Default colors - should be changeable through settings
