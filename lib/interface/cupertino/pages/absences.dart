@@ -119,7 +119,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
                               receivers: [Share.session.data.student.mainClass.classTutor],
                               subject: 'Usprawiedliwienie',
                               message:
-                                  'Dzień dobry,\n\nProszę o usprawiedliwienie moich nieobencości w dniach:\n${Share.session.data.student.attendances!.where((x) => x.type == AttendanceType.absent).groupBy((x) => x.date).select((x, index) => ' - ${DateFormat("y.M.dd").format(x.key)} (${x.count > 1 ? '${x.orderBy((x) => x.lessonNo).first.lessonNo} - ${x.orderBy((x) => x.lessonNo).last.lessonNo} godzina lekcyjna' : '${x.first.lessonNo} godzina lekcyjna'}) \n').join()}',
+                                  'Dzień dobry,\n\nProszę o usprawiedliwienie moich nieobecności w dniach:\n${Share.session.data.student.attendances!.where((x) => x.type == AttendanceType.absent).groupBy((x) => x.date).select((x, index) => ' - ${DateFormat("y.M.dd").format(x.key)} (${x.count > 1 ? '${x.orderBy((x) => x.lessonNo).first.lessonNo} - ${x.orderBy((x) => x.lessonNo).last.lessonNo} godzina lekcyjna' : '${x.first.lessonNo} godzina lekcyjna'}) \n').join()}',
                               signature:
                                   'Dziękuję,\n\nZ poważaniem,\n${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                     },
@@ -263,7 +263,7 @@ extension LessonWidgetExtension on Attendance {
                                 receivers: [Share.session.data.student.mainClass.classTutor],
                                 subject: 'Usprawiedliwienie',
                                 message:
-                                    'Dzień dobry,\n\nProszę o usprawiedliwienie mojej nieobencości\nw dniu ${DateFormat("y.M.dd").format(date)} na $lessonNo godzinie lekcyjnej.',
+                                    'Dzień dobry,\n\nProszę o usprawiedliwienie mojej nieobecności\nw dniu ${DateFormat("y.M.dd").format(date)} na $lessonNo godzinie lekcyjnej.',
                                 signature:
                                     'Dziękuję,\n\nZ poważaniem,\n${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                       }),
