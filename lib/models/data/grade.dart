@@ -38,11 +38,12 @@ class Grade extends Equatable {
     this.isSemesterProposition = false,
     this.isFinal = false,
     this.isFinalProposition = false,
-    this.resitPart = false,
+    bool? resitPart,
   })  : comments = comments ?? [],
         date = date ?? DateTime(2000),
         addDate = addDate ?? DateTime(2000),
-        addedBy = addedBy ?? Teacher();
+        addedBy = addedBy ?? Teacher(),
+        resitPart = resitPart ?? false;
 
   @HiveField(0)
   final int id;
@@ -92,7 +93,7 @@ class Grade extends Equatable {
   @HiveField(15)
   final bool isFinalProposition;
 
-  @HiveField(16)
+  @HiveField(16, defaultValue: false)
   final bool resitPart;
 
   @JsonKey(includeToJson: false, includeFromJson: false)

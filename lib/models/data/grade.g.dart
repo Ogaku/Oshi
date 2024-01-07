@@ -33,7 +33,7 @@ class GradeAdapter extends TypeAdapter<Grade> {
       isSemesterProposition: fields[13] as bool,
       isFinal: fields[14] as bool,
       isFinalProposition: fields[15] as bool,
-      resitPart: fields[16] as bool,
+      resitPart: fields[16] == null ? false : fields[16] as bool?,
     );
   }
 
@@ -116,7 +116,7 @@ Grade _$GradeFromJson(Map<String, dynamic> json) => Grade(
       isSemesterProposition: json['isSemesterProposition'] as bool? ?? false,
       isFinal: json['isFinal'] as bool? ?? false,
       isFinalProposition: json['isFinalProposition'] as bool? ?? false,
-      resitPart: json['resitPart'] as bool? ?? false,
+      resitPart: json['resitPart'] as bool?,
     );
 
 Map<String, dynamic> _$GradeToJson(Grade instance) => <String, dynamic>{
