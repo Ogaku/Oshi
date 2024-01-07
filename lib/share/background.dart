@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' as notifications;
 import 'package:hive_flutter/adapters.dart';
+import 'package:oshi/share/appcenter.dart';
 import 'package:oshi/share/config.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
@@ -107,6 +108,8 @@ Future<void> setupBaseApplication() async {
     ..registerAdapter(RegisterChangeAdapter<Announcement>(id: 54))
     ..registerAdapter(RegisterChangeAdapter<Message>(id: 55))
     ..registerAdapter(RegisterChangeAdapter<Attendance>(id: 56));
+
+  AppCenter.initialize(); // Initialize AppCenter
 
   // Load english localization resources
   await Share.translator.loadResources('en');

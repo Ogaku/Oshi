@@ -113,9 +113,19 @@ class Settings {
         appSettings = (await Hive.openBox('config'))
             .get('config', defaultValue: Config(languageCode: Platform.localeName.substring(0, 2)));
       });
-    } on Exception catch (ex) {
+    } on Exception catch (ex, stack) {
+      try {
+        await AppCenterCrashes.trackException(message: ex.toString(), stackTrace: stack, properties: {'where': 'load'});
+      } catch (e) {
+        // ignored
+      }
       return (success: false, message: ex);
-    } catch (ex) {
+    } catch (ex, stack) {
+      try {
+        await AppCenterCrashes.trackException(message: ex.toString(), stackTrace: stack, properties: {'where': 'load'});
+      } catch (e) {
+        // ignored
+      }
       return (success: false, message: Exception(ex));
     }
     return (success: true, message: null);

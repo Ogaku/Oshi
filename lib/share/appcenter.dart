@@ -45,7 +45,6 @@ class AppCenter {
 
   static Future<({bool result, Uri download})> checkForUpdates() async {
     try {
-      initialize(); // Initialize AppCenter
       var result = (await fetchVersions())!;
       var checkResult = (result: result.version > Version.parse(Share.buildNumber), download: result.download);
       if (Platform.isAndroid &&
