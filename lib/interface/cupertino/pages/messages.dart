@@ -528,6 +528,15 @@ extension ListAppendExtensionT<T> on Iterable<T> {
     if (!condition) return toList();
     return prepend(element).toList();
   }
+ List<T> appendAllIf(Iterable<T> element, bool condition) {
+    if (!condition) return toList();
+    return appendAll(element).toList();
+  }
+
+  List<T> prependAllIf(Iterable<T> element, bool condition) {
+    if (!condition) return toList();
+    return prependAll(element).toList();
+  }
 
   List<T> appendIfEmpty(T element) {
     return appendIf(element, isEmpty).toList();
@@ -535,5 +544,13 @@ extension ListAppendExtensionT<T> on Iterable<T> {
 
   List<T> prependIfEmpty(T element) {
     return prependIf(element, isEmpty).toList();
+  }
+  
+  List<T> appendAllIfEmpty(Iterable<T> element) {
+    return appendAllIf(element, isEmpty).toList();
+  }
+
+  List<T> prependAllIfEmpty(Iterable<T> element) {
+    return prependAllIf(element, isEmpty).toList();
   }
 }

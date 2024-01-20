@@ -6,6 +6,7 @@ import 'package:extended_wrap/extended_wrap.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
+import 'package:oshi/interface/cupertino/pages/messages.dart';
 import 'package:oshi/interface/cupertino/views/grades_detailed.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/share/resources.dart';
@@ -61,6 +62,7 @@ class _GradesPageState extends State<GradesPage> {
         .orderBy((x) => x.name)
         .toList();
 
+    var hasSecondSemester = subjectsToDisplay.any((x) => x.grades.any((y) => y.semester == 2));
     var subjectsWidget = CupertinoListSection.insetGrouped(
       margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
       additionalDividerMargin: 5,
@@ -78,8 +80,10 @@ class _GradesPageState extends State<GradesPage> {
                           ))))
             ]
           // Bindable messages layout
-          : subjectsToDisplay
-              .select((x, index) => Builder(
+          : subjectsToDisplay.select((x, index) {
+              var grades = x.grades.where((x) => x.semester == 2).appendAllIfEmpty(x.grades);
+
+              return Builder(
                   builder: (context) => CupertinoListTile(
                       onTap: () => Navigator.push(
                           context,
@@ -114,7 +118,7 @@ class _GradesPageState extends State<GradesPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Visibility(
-                                          visible: x.grades.isNotEmpty,
+                                          visible: grades.isNotEmpty,
                                           child: Expanded(
                                               child: Container(
                                                   margin: EdgeInsets.only(top: 8),
@@ -122,7 +126,7 @@ class _GradesPageState extends State<GradesPage> {
                                                       maxLines: 1,
                                                       overflowWidget: Text('...'),
                                                       spacing: 5,
-                                                      children: x.grades
+                                                      children: grades
                                                           .where((y) => !y.major)
                                                           .orderByDescending((y) => y.addDate)
                                                           .distinct((x) =>
@@ -153,8 +157,8 @@ class _GradesPageState extends State<GradesPage> {
                                                                                     context)
                                                                                 : CupertinoColors.black)),
                                                               ))
-                                                          .prependIf(Container(width: 3), x.grades.any((y) => y.major))
-                                                          .prependAll(x.grades
+                                                          .prependIf(Container(width: 3), grades.any((y) => y.major))
+                                                          .prependAll(grades
                                                               .where((y) => y.major)
                                                               .orderByDescending((y) => y.isFinal ? 1 : 0)
                                                               .orderByDescending((y) => y.isSemester ? 1 : 0)
@@ -186,10 +190,20 @@ class _GradesPageState extends State<GradesPage> {
                                                                                     context)
                                                                                 : CupertinoColors.black)),
                                                                   )))
+                                                          .prependIf(
+                                                              Container(
+                                                                  margin: EdgeInsets.only(right: 3),
+                                                                  child: Text("/Semesters/First".localized,
+                                                                      textAlign: TextAlign.center,
+                                                                      style: TextStyle(
+                                                                          fontSize: 14,
+                                                                          color: CupertinoColors.secondaryLabel
+                                                                              .resolveFrom(context)))),
+                                                              hasSecondSemester && grades.all((y) => y.semester == 1))
                                                           .toList()))))
                                     ]),
                                 Visibility(
-                                    visible: x.grades.isEmpty,
+                                    visible: grades.isEmpty,
                                     child: Opacity(
                                         opacity: 0.5,
                                         child: Container(
@@ -198,8 +212,8 @@ class _GradesPageState extends State<GradesPage> {
                                               x.teacher.name,
                                               style: TextStyle(fontSize: 16),
                                             )))),
-                              ])))))
-              .toList(),
+                              ]))));
+            }).toList(),
     );
 
     return SearchableSliverNavigationBar(

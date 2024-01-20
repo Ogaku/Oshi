@@ -85,6 +85,12 @@ class Lesson {
       .gadesAverage(weighted: Share.session.settings.weightedAverage, adapt: Share.session.settings.autoArithmeticAverage);
 
   @JsonKey(includeToJson: false, includeFromJson: false)
+  double get gradesSemAverage => grades
+      .where((x) => x.countsToAverage && x.asValue >= 0 && x.semester == 1)
+      .toList()
+      .gadesAverage(weighted: Share.session.settings.weightedAverage, adapt: Share.session.settings.autoArithmeticAverage);
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
   bool get hasUnseen => grades.any((x) => x.unseen);
 
   @JsonKey(includeToJson: false, includeFromJson: false)

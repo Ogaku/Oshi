@@ -688,6 +688,14 @@
         {
             "id": "/Enums/EventCategory/admin",
             "translation": "Admin"
+        },
+        {
+            "id": "/Semesters/First",
+            "translation": "Semestr 1"
+        },
+        {
+            "id": "/Semesters/Second",
+            "translation": "Semestr 2"
         }
     ],
     "splashes": [

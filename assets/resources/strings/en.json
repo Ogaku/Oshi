@@ -712,6 +712,14 @@
         {
             "id": "/Notes",
             "translation": "Notes: {}"
+        },
+        {
+            "id": "/Semesters/First",
+            "translation": "Semester 1"
+        },
+        {
+            "id": "/Semesters/Second",
+            "translation": "Semester 2"
         }
     ],
     "splashes": [
