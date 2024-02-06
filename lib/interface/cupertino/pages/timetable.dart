@@ -417,33 +417,52 @@ extension EventWidgetExtension on Event {
                     trailingIcon: CupertinoIcons.calendar,
                     child: const Text('Add to calendar'),
                   ),
-            CupertinoContextMenuAction(
-              isDestructiveAction: true,
-              trailingIcon: CupertinoIcons.chat_bubble_2,
-              child: const Text('Inquiry'),
-              onPressed: () {
-                Navigator.of(context, rootNavigator: true).pop();
-                showCupertinoModalBottomSheet(
-                    context: context,
-                    builder: (context) => MessageComposePage(
-                        receivers: sender != null ? [sender!] : [],
-                        subject: 'Pytanie o wydarzenie w dniu ${DateFormat("y.M.d").format(date ?? timeFrom)}',
-                        signature:
-                            '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-              },
-            ),
-          ].appendIf(
-              CupertinoContextMenuAction(
+          ]
+              .appendIf(
+                  CupertinoContextMenuAction(
+                    trailingIcon: CupertinoIcons.pencil,
+                    child: const Text('Edit'),
+                    onPressed: () {
+                      try {
+                        showCupertinoModalBottomSheet(
+                            context: context,
+                            builder: (context) => EventComposePage(
+                                  previous: this,
+                                )).then((value) => setState(() {}));
+                      } catch (ex) {
+                        // ignored
+                      }
+                      Navigator.of(context, rootNavigator: true).pop();
+                    },
+                  ),
+                  isOwnEvent)
+              .append(CupertinoContextMenuAction(
                 isDestructiveAction: true,
-                trailingIcon: CupertinoIcons.delete,
-                child: const Text('Delete'),
+                trailingIcon: CupertinoIcons.chat_bubble_2,
+                child: const Text('Inquiry'),
                 onPressed: () {
                   Navigator.of(context, rootNavigator: true).pop();
-                  setState(() => Share.session.customEvents.remove(this));
-                  Share.settings.save();
+                  showCupertinoModalBottomSheet(
+                      context: context,
+                      builder: (context) => MessageComposePage(
+                          receivers: sender != null ? [sender!] : [],
+                          subject: 'Pytanie o wydarzenie w dniu ${DateFormat("y.M.d").format(date ?? timeFrom)}',
+                          signature:
+                              '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                 },
-              ),
-              isOwnEvent),
+              ))
+              .appendIf(
+                  CupertinoContextMenuAction(
+                    isDestructiveAction: true,
+                    trailingIcon: CupertinoIcons.delete,
+                    child: const Text('Delete'),
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: true).pop();
+                      setState(() => Share.session.customEvents.remove(this));
+                      Share.settings.save();
+                    },
+                  ),
+                  isOwnEvent),
           builder: (BuildContext context, Animation<double> animation) => eventBody(isNotEmpty, day, context,
               animation: animation, markRemoved: markRemoved, markModified: markModified, onTap: onTap));
 
@@ -842,6 +861,26 @@ extension LessonWidgetExtension on TimetableLesson {
             },
             trailingIcon: CupertinoIcons.calendar,
             child: const Text('Add to calendar'),
+          ),
+          CupertinoContextMenuAction(
+            onPressed: () {
+              try {
+                showCupertinoModalBottomSheet(
+                    context: context,
+                    builder: (context) => EventComposePage(
+                          date: date,
+                          startTime: timeFrom,
+                          endTime: timeTo,
+                          classroom: classroom?.name,
+                          lessonNumber: lessonNo,
+                        )).then((value) => setState(() {}));
+              } catch (ex) {
+                // ignored
+              }
+              Navigator.of(context, rootNavigator: true).pop();
+            },
+            trailingIcon: CupertinoIcons.add,
+            child: const Text('Create event'),
           ),
           CupertinoContextMenuAction(
             isDestructiveAction: true,

@@ -14,7 +14,13 @@ import 'package:oshi/models/data/event.dart';
 import 'package:oshi/share/share.dart';
 
 class EventComposePage extends StatefulWidget {
-  const EventComposePage({super.key});
+  const EventComposePage(
+      {super.key, this.date, this.startTime, this.endTime, this.lessonNumber, this.classroom, this.previous});
+
+  final DateTime? date, startTime, endTime;
+  final int? lessonNumber;
+  final String? classroom;
+  final Event? previous;
 
   @override
   State<EventComposePage> createState() => _EventComposePageState();
@@ -38,7 +44,36 @@ class _EventComposePageState extends State<EventComposePage> {
   @override
   void initState() {
     super.initState();
-    date = DateTime.now().asDate();
+    date = widget.date ?? DateTime.now().asDate();
+
+    if (widget.startTime != null || widget.endTime != null || widget.lessonNumber != null || widget.classroom != null) {
+      showOptional = true;
+      startTime = widget.startTime;
+      endTime = widget.endTime;
+
+      lessonNumberController.text = widget.lessonNumber?.toString() ?? '';
+      classroomController.text = widget.classroom ?? '';
+    }
+
+    if (widget.previous != null) {
+      subjectController.text = widget.previous!.title ?? '';
+      messageController.text = widget.previous!.content;
+      classroomController.text = widget.previous!.classroom?.name ?? '';
+      // categoryController.text = widget.previous!.categoryName;
+      customCategoryName = widget.previous!.categoryName;
+      category = widget.previous!.category;
+      date = widget.previous!.date ?? DateTime.now().asDate();
+
+      if (widget.previous!.timeFrom != DateTime(2000) ||
+          widget.previous!.timeTo != null ||
+          widget.previous!.lessonNo != null ||
+          widget.previous!.classroom != null) {
+        showOptional = true;
+        startTime = widget.previous!.timeFrom != DateTime(2000) ? widget.previous!.timeFrom : null;
+        endTime = widget.previous!.timeTo != DateTime(2000) ? widget.previous!.timeTo : null;
+        lessonNumberController.text = widget.previous!.lessonNo?.toString() ?? '';
+      }
+    }
   }
 
   @override
@@ -63,12 +98,16 @@ class _EventComposePageState extends State<EventComposePage> {
       trailing: CupertinoButton(
           padding: EdgeInsets.all(0),
           alignment: Alignment.centerRight,
-          child: Icon(CupertinoIcons.add,
+          child: Icon(widget.previous != null ? CupertinoIcons.pencil : CupertinoIcons.add,
               color: (subjectController.text.isNotEmpty && messageController.text.isNotEmpty)
                   ? CupertinoTheme.of(context).primaryColor
                   : CupertinoColors.inactiveGray),
           onPressed: () {
             try {
+              if (widget.previous != null) {
+                Share.session.customEvents.remove(widget.previous);
+              }
+
               Share.session.customEvents.add(Event(
                   title: subjectController.text,
                   content: messageController.text,
