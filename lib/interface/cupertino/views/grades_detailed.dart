@@ -152,7 +152,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                     CupertinoContextMenuAction(
                       onPressed: () {
                         sharing.Share.share(
-                            'My 1st semester average from ${widget.lesson.name} is ${widget.lesson.gradesAverage}!');
+                            'My 1st semester average from ${widget.lesson.name} is ${widget.lesson.gradesSemAverage}!');
                         Navigator.of(context, rootNavigator: true).pop();
                       },
                       trailingIcon: CupertinoIcons.share,
@@ -201,7 +201,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                   Container(
                                       padding: EdgeInsets.only(bottom: 5),
                                       child: Text(
-                                        widget.lesson.gradesAverage.toStringAsFixed(2),
+                                        widget.lesson.gradesSemAverage.toStringAsFixed(2),
                                         style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                                       )),
                                 ])));
