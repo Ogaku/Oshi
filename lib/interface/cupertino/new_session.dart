@@ -1,12 +1,17 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:darq/darq.dart';
+import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:format/format.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/share/appcenter.dart';
+import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:oshi/share/share.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -31,6 +36,35 @@ class NewSessionPage extends StatefulWidget {
 class _NewSessionPageState extends State<NewSessionPage> {
   final scrollController = ScrollController();
   bool subscribed = false, enableFake = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Set up other stuff after the app's launched
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Share.checkUpdates.broadcast(); // Check for updates
+      NotificationController.requestNotificationAccess();
+
+      log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
+      if (Share.settingsLoadError != null) {
+        Share.showErrorModal.broadcast(Value((
+          title: 'Error loading data!',
+          message:
+              'An exception "${Share.settingsLoadError?.exception.toString()}" occurred and settings couldn\'t be read.\n\nStack trace:\n${Share.settingsLoadError?.trace.toString() ?? "Unavailable"}',
+          actions: {
+            'Copy Exception': () async =>
+                await Clipboard.setData(ClipboardData(text: Share.settingsLoadError?.exception.toString() ?? '')),
+            'Copy Stack Trace': () async =>
+                await Clipboard.setData(ClipboardData(text: Share.settingsLoadError?.trace.toString() ?? '')),
+          }
+        )));
+
+        Share.settingsLoadError = null;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -226,8 +260,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
       return CupertinoThemeData(primaryColor: CupertinoColors.systemGreen);
     }
     // Christmas colors
-    if (DateTime.now().month == DateTime.december &&
-        (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
+    if (DateTime.now().month == DateTime.december && (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
       return CupertinoThemeData(primaryColor: CupertinoColors.systemRed);
     }
     // Default colors - should be changeable through settings

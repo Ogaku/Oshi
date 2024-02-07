@@ -49,6 +49,7 @@ class Share {
 
   static String currentIdleSplash = '???';
   static ({String title, String subtitle}) currentEndingSplash = (title: '???', subtitle: '???');
+  static ({Exception exception, StackTrace trace})? settingsLoadError;
 
   // The provider and register data for the current session
   // MUST be initialized before switching to the base app
@@ -115,14 +116,18 @@ class Settings {
       });
     } on Exception catch (ex, stack) {
       try {
-        await AppCenterCrashes.trackException(message: ex.toString(), stackTrace: stack, properties: {'where': 'load'});
+        Share.settingsLoadError = (exception: ex, trace: stack);
+        await AppCenterCrashes.trackException(message: ex.toString(), stackTrace: stack);
+        await AppCenterAnalytics.trackEvent(name: '${ex.toString()}:\n ${stack.toString()}');
       } catch (e) {
         // ignored
       }
       return (success: false, message: ex);
     } catch (ex, stack) {
       try {
-        await AppCenterCrashes.trackException(message: ex.toString(), stackTrace: stack, properties: {'where': 'load'});
+        Share.settingsLoadError = (exception: Exception(ex), trace: stack);
+        await AppCenterCrashes.trackException(message: ex.toString(), stackTrace: stack);
+        await AppCenterAnalytics.trackEvent(name: '${ex.toString()}:\n ${stack.toString()}');
       } catch (e) {
         // ignored
       }

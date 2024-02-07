@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:format/format.dart';
 import 'package:oshi/share/appcenter.dart';
 import 'package:oshi/share/notifications.dart';
@@ -283,8 +284,7 @@ class _BaseAppState extends State<BaseApp> {
       return CupertinoThemeData(primaryColor: CupertinoColors.systemGreen);
     }
     // Christmas colors
-    if (DateTime.now().month == DateTime.december &&
-        (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
+    if (DateTime.now().month == DateTime.december && (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
       return CupertinoThemeData(primaryColor: CupertinoColors.systemRed);
     }
     // Default colors - should be changeable through settings

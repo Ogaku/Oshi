@@ -1,11 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'dart:io';
 
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:event/event.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:format/format.dart';
 import 'package:oshi/interface/cupertino/new_session.dart';
 import 'package:oshi/models/progress.dart';
@@ -352,8 +352,7 @@ class _SessionsPageState extends State<SessionsPage> {
       return CupertinoThemeData(primaryColor: CupertinoColors.systemGreen);
     }
     // Christmas colors
-    if (DateTime.now().month == DateTime.december &&
-        (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
+    if (DateTime.now().month == DateTime.december && (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
       return CupertinoThemeData(primaryColor: CupertinoColors.systemRed);
     }
     // Default colors - should be changeable through settings
