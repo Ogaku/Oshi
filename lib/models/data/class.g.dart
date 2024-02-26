@@ -27,13 +27,14 @@ class ClassAdapter extends TypeAdapter<Class> {
       unit: fields[7] as Unit?,
       classTutor: fields[8] as Teacher?,
       events: (fields[9] as List?)?.cast<Event>(),
+      averages: (fields[10] as Map?)?.cast<DateTime, Averages>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Class obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -53,7 +54,9 @@ class ClassAdapter extends TypeAdapter<Class> {
       ..writeByte(8)
       ..write(obj.classTutor)
       ..writeByte(9)
-      ..write(obj.events);
+      ..write(obj.events)
+      ..writeByte(10)
+      ..write(obj.averages);
   }
 
   @override
@@ -94,6 +97,10 @@ Class _$ClassFromJson(Map<String, dynamic> json) => Class(
       events: (json['events'] as List<dynamic>?)
           ?.map((e) => Event.fromJson(e as Map<String, dynamic>))
           .toList(),
+      averages: (json['averages'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(
+            DateTime.parse(k), Averages.fromJson(e as Map<String, dynamic>)),
+      ),
     );
 
 Map<String, dynamic> _$ClassToJson(Class instance) {
@@ -116,5 +123,7 @@ Map<String, dynamic> _$ClassToJson(Class instance) {
   val['unit'] = instance.unit;
   val['classTutor'] = instance.classTutor;
   val['events'] = instance.events;
+  val['averages'] =
+      instance.averages.map((k, e) => MapEntry(k.toIso8601String(), e));
   return val;
 }

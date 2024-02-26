@@ -8,6 +8,7 @@ import 'package:event/src/event.dart';
 import 'package:event/src/eventargs.dart';
 import 'package:logging/logging.dart';
 import 'package:intl/intl.dart';
+import 'package:oshi/models/data/averages.dart';
 import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/providers/librus/librus_login.dart';
@@ -544,6 +545,29 @@ class LibrusDataReader implements models.IProvider {
     dataChunk.student = student; // Push the data to the outer scope, add or update
     dataChunk.timetables = timetable; // Push the data to the outer scope, add only
 
+    try {
+      var averagesRaw = await data!.librusApi!.synergiaRequest(
+          'uczen/graph_ajax.php?type=wykres_sredniej&classId=${mainStudentClass.id}&userId=${studentShim.me?.account?.userId}');
+
+      Map<String, dynamic> averages = jsonDecode(
+          '{ ${RegExp('(?<=chartDataGradeAverangeGraphDiv = \\[)((.|\n)*?)(?=\\];)').allMatches(averagesRaw).first.group(1)} }'
+              .replaceAll('{ columnGradeAverangeGraphDiv:', '')
+              .replaceAll('",\n', '": {')
+              .replaceAll('x0:', '"student":')
+              .replaceAll('x1:', '"class":')
+              .replaceAll('\n', ''));
+
+      dataChunk.student.mainClass.averages.clear();
+      dataChunk.student.mainClass.averages.addEntries(averages.entries.select((x, _) => MapEntry(
+          DateTime(int.parse(x.key.split('-')[0]), int.parse(x.key.split('-')[1])),
+          Averages(
+            student: x.value["student"] * 1.0,
+            level: x.value["class"] * 1.0,
+          ))));
+    } catch (ex) {
+      // ignored
+    }
+
     return (success: true, message: null);
   }
 
@@ -881,12 +905,14 @@ extension ClassExtension on StudentClass {
 
 extension UnitExtensions on StudentUnit {
   models.Unit asUnit(School school) => models.Unit(
-        id: unit!.id,
+        id: school.id,
         url: '',
         luckyNumber: null,
         name: unit!.name,
+        fullName: school.name,
         principalName: '${school.nameHeadTeacher} ${school.surnameHeadTeacher}',
         address: "${school.buildingNumber} ${school.street.replaceAll('ul. ', '')}, ${school.town}",
+        town: school.town,
         email: school.email,
         phone: school.phoneNumber,
         type: unit!.type,

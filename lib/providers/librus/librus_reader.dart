@@ -49,6 +49,21 @@ class LibrusReader {
     }
   }
 
+  Future<String> synergiaRequest(String endpoint) async {
+    try {
+      return (await synergiaData.session.get(
+              '$synergiaCookieUrl/${endpoint.replaceAll('https://api.librus.pl', 'https://synergia.librus.pl/gateway/api')}'))
+          .data;
+    } on DioException catch (e) {
+      if (e.response?.statusCode != 401) rethrow;
+
+      await synergiaData.synergiaLogin!.setupToken(); // Re-authorize
+      return (await synergiaData.session.get(
+              '$synergiaCookieUrl/${endpoint.replaceAll('https://api.librus.pl', 'https://synergia.librus.pl/gateway/api')}'))
+          .data;
+    }
+  }
+
   Future<Map<String, dynamic>> messagesRequest(String endpoint) async {
     try {
       return (await synergiaData.session.get(

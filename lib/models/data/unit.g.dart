@@ -21,8 +21,10 @@ class UnitAdapter extends TypeAdapter<Unit> {
       url: fields[2] as String,
       luckyNumber: fields[3] as int?,
       name: fields[5] as String,
+      fullName: fields[15] as String,
       principalName: fields[6] as String,
       address: fields[7] as String,
+      town: fields[16] as String,
       email: fields[8] as String,
       phone: fields[9] as String,
       type: fields[10] as String,
@@ -37,7 +39,7 @@ class UnitAdapter extends TypeAdapter<Unit> {
   @override
   void write(BinaryWriter writer, Unit obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(16)
       ..writeByte(1)
       ..write(obj.id)
       ..writeByte(2)
@@ -48,10 +50,14 @@ class UnitAdapter extends TypeAdapter<Unit> {
       ..write(obj.luckyNumberTomorrow)
       ..writeByte(5)
       ..write(obj.name)
+      ..writeByte(15)
+      ..write(obj.fullName)
       ..writeByte(6)
       ..write(obj.principalName)
       ..writeByte(7)
       ..write(obj.address)
+      ..writeByte(16)
+      ..write(obj.town)
       ..writeByte(8)
       ..write(obj.email)
       ..writeByte(9)
@@ -125,8 +131,10 @@ Unit _$UnitFromJson(Map<String, dynamic> json) => Unit(
       url: json['url'] as String? ?? 'https://g.co',
       luckyNumber: json['luckyNumber'] as int?,
       name: json['name'] as String? ?? '',
+      fullName: json['fullName'] as String? ?? '',
       principalName: json['principalName'] as String? ?? '',
       address: json['address'] as String? ?? '',
+      town: json['town'] as String? ?? '',
       email: json['email'] as String? ?? '',
       phone: json['phone'] as String? ?? '',
       type: json['type'] as String? ?? '',
@@ -158,8 +166,10 @@ Map<String, dynamic> _$UnitToJson(Unit instance) {
   writeNotNull('luckyNumber', instance.luckyNumber);
   val['luckyNumberTomorrow'] = instance.luckyNumberTomorrow;
   val['name'] = instance.name;
+  val['fullName'] = instance.fullName;
   val['principalName'] = instance.principalName;
   val['address'] = instance.address;
+  val['town'] = instance.town;
   val['email'] = instance.email;
   val['phone'] = instance.phone;
   val['type'] = instance.type;

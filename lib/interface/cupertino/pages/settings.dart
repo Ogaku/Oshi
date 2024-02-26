@@ -25,6 +25,7 @@ import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/announcement.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/models/data/teacher.dart';
+import 'package:oshi/models/provider.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
@@ -520,7 +521,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         context,
                         CupertinoPageRoute(
                             builder: (context) => StatefulBuilder(
-                                builder: ((context, setState) => CupertinoModalPage(title: 'Sync settings', children: [
+                                builder: ((context, setState) => CupertinoModalPage(title: 'Sync Settings', children: [
                                       CupertinoListSection.insetGrouped(
                                           additionalDividerMargin: 5,
                                           margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
@@ -599,6 +600,55 @@ class _SettingsPageState extends State<SettingsPage> {
                                           ])
                                     ]))))),
                     title: Text('Sync Settings', overflow: TextOverflow.ellipsis),
+                    trailing: CupertinoListTileChevron()),
+                CupertinoListTile(
+                    onTap: () => Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) => StatefulBuilder(
+                                builder: ((context, setState) => CupertinoModalPage(title: 'Shared Events', children: [
+                                      CupertinoListSection.insetGrouped(
+                                          additionalDividerMargin: 5,
+                                          margin: EdgeInsets.only(left: 15, right: 15, top: 15),
+                                          separatorColor: Colors.transparent,
+                                          footer: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 20)),
+                                          children: [
+                                            Image.network(
+                                                'https://github.com/szkolny-eu/szkolny-android/blob/develop/.github/readme-banner.png?raw=true'),
+                                          ]),
+                                      CupertinoListSection.insetGrouped(
+                                          additionalDividerMargin: 5,
+                                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
+                                          footer: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 20),
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Text(
+                                                      'By courtesy of Szkolny.eu developers, Szkolny.eu apps and Oshi can now share events, notes, and notifications!',
+                                                      style: TextStyle(fontSize: 13)))),
+                                          children: [
+                                            CupertinoFormRow(
+                                                prefix: Flexible(
+                                                    flex: 3,
+                                                    child: Text('Allow registration',
+                                                        maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                                child: CupertinoSwitch(
+                                                    value: Share.session.settings.allowSzkolnyIntegration,
+                                                    onChanged: (s) =>
+                                                        setState(() => Share.session.settings.allowSzkolnyIntegration = s))),
+                                            CupertinoFormRow(
+                                                prefix: Flexible(
+                                                    flex: 3,
+                                                    child: Text('Share events by default',
+                                                        maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                                child: CupertinoSwitch(
+                                                    value: Share.session.settings.shareEventsByDefault,
+                                                    onChanged: (s) =>
+                                                        setState(() => Share.session.settings.shareEventsByDefault = s))),
+                                          ])
+                                    ]))))),
+                    title: Text('Shared Events', overflow: TextOverflow.ellipsis),
                     trailing: CupertinoListTileChevron()),
                 CupertinoListTile(
                     onTap: () => Navigator.push(
@@ -1054,7 +1104,28 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                                         Share.session.settings.devMode = s);
                                                                                     Share.refreshBase
                                                                                         .broadcast(); // Refresh everything
-                                                                                  }))
+                                                                                  })),
+                                                                          CupertinoFormRow(
+                                                                              prefix: Flexible(
+                                                                                  flex: 1,
+                                                                                  child: Text('User code',
+                                                                                      maxLines: 1,
+                                                                                      overflow: TextOverflow.ellipsis)),
+                                                                              child: Flexible(
+                                                                                  flex: 3,
+                                                                                  child: Container(
+                                                                                      margin: EdgeInsets.only(
+                                                                                          top: 8, bottom: 8, right: 8),
+                                                                                      child: Text(
+                                                                                          Share.session.provider.userCode(
+                                                                                              Share
+                                                                                                      .session
+                                                                                                      .sessionCredentials
+                                                                                                      .values
+                                                                                                      .firstOrNull ??
+                                                                                                  ''),
+                                                                                          maxLines: 3,
+                                                                                          overflow: TextOverflow.ellipsis))))
                                                                         ]),
                                                                     CupertinoListSection.insetGrouped(
                                                                         margin:

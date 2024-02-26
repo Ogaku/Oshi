@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:oshi/models/data/averages.dart';
 import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/models/data/unit.dart';
@@ -20,42 +21,47 @@ class Class {
     Unit? unit,
     Teacher? classTutor,
     List<Event>? events,
+    Map<DateTime, Averages>? averages,
   })  : beginSchoolYear = beginSchoolYear ?? DateTime(2000),
         endFirstSemester = endFirstSemester ?? DateTime(2000),
         endSchoolYear = endSchoolYear ?? DateTime(2000),
         unit = unit ?? Unit(),
         classTutor = classTutor ?? Teacher(),
-        events = events ?? [];
+        events = events ?? [],
+        averages = averages ?? {};
 
   @HiveField(0)
   final int id;
-  
-  @HiveField(1)  
+
+  @HiveField(1)
   final int number;
-  
-  @HiveField(2)  
+
+  @HiveField(2)
   final String symbol;
-  
-  @HiveField(3)  
+
+  @HiveField(3)
   final String? name;
-  
-  @HiveField(4)  
+
+  @HiveField(4)
   final DateTime beginSchoolYear;
-  
-  @HiveField(5)  
+
+  @HiveField(5)
   final DateTime endFirstSemester;
-  
-  @HiveField(6)  
+
+  @HiveField(6)
   final DateTime endSchoolYear;
-  
-  @HiveField(7)  
+
+  @HiveField(7)
   final Unit unit;
-  
-  @HiveField(8)  
+
+  @HiveField(8)
   final Teacher classTutor;
-  
-  @HiveField(9)  
+
+  @HiveField(9)
   List<Event> events;
+
+  @HiveField(10)
+  Map<DateTime, Averages> averages;
 
   String get className => (name?.isEmpty ?? true) ? (number.toString() + symbol) : name!;
 

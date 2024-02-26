@@ -3,7 +3,10 @@
 
 import 'package:darq/darq.dart';
 import 'package:extended_wrap/extended_wrap.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/pages/messages.dart';
@@ -222,24 +225,207 @@ class _GradesPageState extends State<GradesPage> {
       middle: Text('/Grades'.localized),
       searchController: searchController,
       onChanged: (s) => setState(() => searchQuery = s),
-      children: [subjectsWidget].appendIf(
-          CupertinoListSection.insetGrouped(
-            margin: EdgeInsets.only(left: 15, right: 15, top: 5),
-            additionalDividerMargin: 5,
-            children: [
-              CupertinoListTile(
-                  title: Text('/Average'.localized, overflow: TextOverflow.ellipsis),
-                  trailing: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 5),
-                      child: Opacity(
-                          opacity: 0.5,
-                          child: Text(Share.session.data.student.subjects
-                              .where((x) => x.hasMajor)
-                              .average((x) => x.topMajor!.asValue)
-                              .toStringAsFixed(2)))))
-            ],
-          ),
-          searchQuery.isEmpty && Share.session.data.student.subjects.any((x) => x.hasMajor)),
+      children: [subjectsWidget]
+          .appendIf(
+              CupertinoListSection.insetGrouped(
+                margin: EdgeInsets.only(left: 15, right: 15, top: 5),
+                additionalDividerMargin: 5,
+                children: [
+                  CupertinoListTile(
+                      title: Text('/Average'.localized, overflow: TextOverflow.ellipsis),
+                      trailing: Container(
+                          margin: EdgeInsets.symmetric(horizontal: 5),
+                          child: Opacity(
+                              opacity: 0.5,
+                              child: Text(Share.session.data.student.subjects
+                                  .where((x) => x.hasMajor)
+                                  .average((x) => x.topMajor!.asValue)
+                                  .toStringAsFixed(2)))))
+                ],
+              ),
+              searchQuery.isEmpty && Share.session.data.student.subjects.any((x) => x.hasMajor))
+          // The average graph
+          .appendIf(
+              CupertinoListSection.insetGrouped(
+                margin: EdgeInsets.only(left: 15, right: 15, top: 15),
+                additionalDividerMargin: 5,
+                children: [
+                  CupertinoListTile(
+                      title: Container(
+                          transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
+                          margin: EdgeInsets.only(top: 20, bottom: 10),
+                          child: FittedBox(
+                              alignment: Alignment.topLeft,
+                              child: SizedBox(width: 400, height: 220, child: LineChartSample1()))))
+                ],
+              ),
+              searchQuery.isEmpty && Share.session.data.student.mainClass.averages.isNotEmpty),
     );
+  }
+}
+
+class _LineChart extends StatelessWidget {
+  const _LineChart();
+
+  @override
+  Widget build(BuildContext context) {
+    return LineChart(sampleData2);
+  }
+
+  LineChartData get sampleData2 => LineChartData(
+        lineTouchData: lineTouchData2,
+        gridData: gridData,
+        titlesData: titlesData2,
+        borderData: borderData,
+        lineBarsData: lineBarsData2,
+        minX: 0,
+        maxX: ((Share.session.data.student.mainClass.averages.keys.first
+                        .difference(Share.session.data.student.mainClass.averages.keys.last)
+                        .inDays) /
+                    -30.0)
+                .round() *
+            1.0,
+        maxY: 6,
+        minY: 0,
+      );
+
+  LineTouchData get lineTouchData1 => LineTouchData(
+        handleBuiltInTouches: true,
+        touchTooltipData: LineTouchTooltipData(
+          tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
+        ),
+      );
+
+  FlTitlesData get titlesData1 => FlTitlesData(
+        bottomTitles: AxisTitles(
+          sideTitles: bottomTitles,
+        ),
+        rightTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+        topTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+        leftTitles: AxisTitles(
+          sideTitles: leftTitles(),
+        ),
+      );
+
+  LineTouchData get lineTouchData2 => const LineTouchData(
+        enabled: false,
+      );
+
+  FlTitlesData get titlesData2 => FlTitlesData(
+        bottomTitles: AxisTitles(
+          sideTitles: bottomTitles,
+        ),
+        rightTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+        topTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+        leftTitles: AxisTitles(
+            sideTitles: leftTitles(), axisNameWidget: Opacity(opacity: 0.7, child: Text('Class average')), axisNameSize: 30),
+      );
+
+  List<LineChartBarData> get lineBarsData2 => [lineChartBarData2_1, lineChartBarData2_2];
+
+  Widget leftTitleWidgets(double value, TitleMeta meta) {
+    const style = TextStyle(
+      fontWeight: FontWeight.w500,
+      fontSize: 14,
+    );
+    return Text(value.toString(), style: style, textAlign: TextAlign.center);
+  }
+
+  SideTitles leftTitles() => SideTitles(
+        getTitlesWidget: leftTitleWidgets,
+        showTitles: true,
+        interval: 1,
+        reservedSize: 40,
+      );
+
+  Widget bottomTitleWidgets(double value, TitleMeta meta) {
+    const style = TextStyle(
+      fontWeight: FontWeight.w400,
+      fontSize: 16,
+    );
+
+    return SideTitleWidget(
+        axisSide: meta.axisSide,
+        space: 10,
+        child: Text(
+            DateFormat.MMM(Share.settings.appSettings.localeCode)
+                .format(Share.session.data.student.mainClass.averages.keys.first.add(Duration(days: (value * 30).round()))),
+            style: style));
+  }
+
+  SideTitles get bottomTitles => SideTitles(
+        showTitles: true,
+        reservedSize: 32,
+        interval: 1,
+        getTitlesWidget: bottomTitleWidgets,
+      );
+
+  FlGridData get gridData => const FlGridData(show: false);
+
+  FlBorderData get borderData => FlBorderData(
+        show: true,
+        border: Border(
+          left: const BorderSide(color: Colors.transparent),
+          right: const BorderSide(color: Colors.transparent),
+          top: const BorderSide(color: Colors.transparent),
+        ),
+      );
+
+  LineChartBarData get lineChartBarData2_1 => LineChartBarData(
+        isCurved: true,
+        curveSmoothness: 0,
+        color: CupertinoColors.systemGreen,
+        barWidth: 4,
+        isStrokeCapRound: true,
+        dotData: const FlDotData(show: false),
+        belowBarData: BarAreaData(show: false),
+        spots: Share.session.data.student.mainClass.averages.entries
+            .select((x, _) => FlSpot(
+                (Share.session.data.student.mainClass.averages.keys.first.difference(x.key).inDays) / -30.0,
+                x.value.student))
+            .toList(),
+      );
+
+  LineChartBarData get lineChartBarData2_2 => LineChartBarData(
+        isCurved: true,
+        color: CupertinoColors.systemPink,
+        barWidth: 4,
+        isStrokeCapRound: true,
+        dotData: const FlDotData(show: false),
+        belowBarData: BarAreaData(
+          show: true,
+          color: CupertinoColors.systemPink.withOpacity(0.1),
+        ),
+        spots: Share.session.data.student.mainClass.averages.entries
+            .select((x, _) => FlSpot(
+                (Share.session.data.student.mainClass.averages.keys.first.difference(x.key).inDays) / -30.0, x.value.level))
+            .toList(),
+      );
+}
+
+class LineChartSample1 extends StatefulWidget {
+  const LineChartSample1({super.key});
+
+  @override
+  State<StatefulWidget> createState() => LineChartSample1State();
+}
+
+class LineChartSample1State extends State<LineChartSample1> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _LineChart();
   }
 }

@@ -91,13 +91,16 @@ class SessionConfigAdapter extends TypeAdapter<SessionConfig> {
       .._enableBackgroundSync = fields[20] == null ? true : fields[20] as bool
       .._backgroundSyncWiFiOnly =
           fields[21] == null ? false : fields[21] as bool
-      .._backgroundSyncInterval = fields[22] == null ? 15 : fields[22] as int;
+      .._backgroundSyncInterval = fields[22] == null ? 15 : fields[22] as int
+      .._allowSzkolnyIntegration =
+          fields[23] == null ? true : fields[23] as bool
+      .._shareEventsByDefault = fields[24] == null ? true : fields[24] as bool;
   }
 
   @override
   void write(BinaryWriter writer, SessionConfig obj) {
     writer
-      ..writeByte(22)
+      ..writeByte(24)
       ..writeByte(1)
       ..write(obj._customGradeValues)
       ..writeByte(2)
@@ -141,7 +144,11 @@ class SessionConfigAdapter extends TypeAdapter<SessionConfig> {
       ..writeByte(21)
       ..write(obj._backgroundSyncWiFiOnly)
       ..writeByte(22)
-      ..write(obj._backgroundSyncInterval);
+      ..write(obj._backgroundSyncInterval)
+      ..writeByte(23)
+      ..write(obj._allowSzkolnyIntegration)
+      ..writeByte(24)
+      ..write(obj._shareEventsByDefault);
   }
 
   @override

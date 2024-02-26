@@ -52,6 +52,7 @@ dependencies:
   permission_handler: ^11.1.0
   extended_wrap: ^0.1.5
   flutter_app_badger: ^1.5.0
+  fl_chart: ^0.66.2
 
 dev_dependencies:
   flutter_test:

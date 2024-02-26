@@ -86,6 +86,8 @@ class SessionConfig with ChangeNotifier {
     bool? enableBackgroundSync,
     bool? backgroundSyncWiFiOnly,
     int? backgroundSyncInterval,
+    bool? allowSzkolnyIntegration,
+    bool? shareEventsByDefault,
   })  : _customGradeValues = customGradeValues ?? {},
         _customGradeMarginValues = customGradeMarginValues ?? {},
         _customGradeModifierValues = customGradeModifierValues ?? {'+': 0.5, '-': -0.25},
@@ -107,7 +109,9 @@ class SessionConfig with ChangeNotifier {
         _userAvatarImage = userAvatarImage ?? '',
         _enableBackgroundSync = enableBackgroundSync ?? true,
         _backgroundSyncWiFiOnly = backgroundSyncWiFiOnly ?? false,
-        _backgroundSyncInterval = backgroundSyncInterval ?? 15;
+        _backgroundSyncInterval = backgroundSyncInterval ?? 15,
+        _allowSzkolnyIntegration = allowSzkolnyIntegration ?? true,
+        _shareEventsByDefault = shareEventsByDefault ?? true;
 
   // TODO All HiveFields should be private and trigger a settings save
 
@@ -176,6 +180,12 @@ class SessionConfig with ChangeNotifier {
 
   @HiveField(22, defaultValue: 15)
   int _backgroundSyncInterval;
+
+  @HiveField(23, defaultValue: true)
+  bool _allowSzkolnyIntegration;
+
+  @HiveField(24, defaultValue: true)
+  bool _shareEventsByDefault;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   Map<String, double> get customGradeValues => _customGradeValues;
@@ -261,6 +271,12 @@ class SessionConfig with ChangeNotifier {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get enableBackgroundSync => _enableBackgroundSync;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get allowSzkolnyIntegration => _allowSzkolnyIntegration;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get shareEventsByDefault => _shareEventsByDefault;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get backgroundSyncWiFiOnly => _backgroundSyncWiFiOnly;
@@ -393,6 +409,18 @@ class SessionConfig with ChangeNotifier {
 
   set enableBackgroundSync(bool value) {
     _enableBackgroundSync = value;
+    notifyListeners();
+    Share.settings.save();
+  }
+
+  set allowSzkolnyIntegration(bool value) {
+    _allowSzkolnyIntegration = value;
+    notifyListeners();
+    Share.settings.save();
+  }
+
+  set shareEventsByDefault(bool value) {
+    _shareEventsByDefault = value;
     notifyListeners();
     Share.settings.save();
   }

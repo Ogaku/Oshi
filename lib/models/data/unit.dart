@@ -23,11 +23,17 @@ class Unit {
   @HiveField(5)
   String name;
 
+  @HiveField(15)
+  String fullName;
+
   @HiveField(6)
   String principalName;
 
   @HiveField(7)
   String address;
+
+  @HiveField(16)
+  String town;
 
   @HiveField(8)
   String email;
@@ -55,8 +61,10 @@ class Unit {
     this.url = 'https://g.co',
     this.luckyNumber,
     this.name = '',
+    this.fullName = '',
     this.principalName = '',
     this.address = '',
+    this.town = '',
     this.email = '',
     this.phone = '',
     this.type = '',
