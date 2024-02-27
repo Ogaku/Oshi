@@ -23,7 +23,7 @@ class Unit {
   @HiveField(5)
   String name;
 
-  @HiveField(15)
+  @HiveField(15, defaultValue: '')
   String fullName;
 
   @HiveField(6)
@@ -32,7 +32,7 @@ class Unit {
   @HiveField(7)
   String address;
 
-  @HiveField(16)
+  @HiveField(16, defaultValue: '')
   String town;
 
   @HiveField(8)

@@ -623,11 +623,11 @@
         },
         {
             "id": "/Notifications/Categories/Event/Teacher/Changed",
-            "translation": "Changed vacation of {}"
+            "translation": "Changed vacancy of {}"
         },
         {
             "id": "/Notifications/Categories/Event/Teacher/Removed",
-            "translation": "Cancelled vacation of {}"
+            "translation": "Cancelled vacancy of {}"
         },
         {
             "id": "/Notifications/Captions/Joiners/Lesson",

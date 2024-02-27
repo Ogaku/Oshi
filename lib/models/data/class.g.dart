@@ -26,7 +26,7 @@ class ClassAdapter extends TypeAdapter<Class> {
       endSchoolYear: fields[6] as DateTime?,
       unit: fields[7] as Unit?,
       classTutor: fields[8] as Teacher?,
-      events: (fields[9] as List?)?.cast<Event>(),
+      events: fields[9] == null ? [] : (fields[9] as List?)?.cast<Event>(),
       averages: (fields[10] as Map?)?.cast<DateTime, Averages>(),
     );
   }

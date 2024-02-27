@@ -57,7 +57,7 @@ class Class {
   @HiveField(8)
   final Teacher classTutor;
 
-  @HiveField(9)
+  @HiveField(9, defaultValue: [])
   List<Event> events;
 
   @HiveField(10)
