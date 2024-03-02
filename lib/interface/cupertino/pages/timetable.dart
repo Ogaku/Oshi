@@ -435,7 +435,7 @@ extension EventWidgetExtension on Event {
                       Navigator.of(context, rootNavigator: true).pop();
                     },
                   ),
-                  isOwnEvent)
+                  isOwnEvent || isSharedEvent)
               .append(CupertinoContextMenuAction(
                 isDestructiveAction: true,
                 trailingIcon: CupertinoIcons.chat_bubble_2,
@@ -462,7 +462,20 @@ extension EventWidgetExtension on Event {
                       Share.settings.save();
                     },
                   ),
-                  isOwnEvent),
+                  isOwnEvent)
+              .appendIf(
+                  CupertinoContextMenuAction(
+                    isDestructiveAction: true,
+                    trailingIcon: CupertinoIcons.delete,
+                    child: const Text('Delete'),
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: true).pop();
+                      setState(() => Share.session.sharedEvents.remove(this));
+                      Share.settings.save();
+                      this.unshare(); // Unshare the event using the API
+                    },
+                  ),
+                  isSharedEvent),
           builder: (BuildContext context, Animation<double> animation) => eventBody(isNotEmpty, day, context,
               animation: animation, markRemoved: markRemoved, markModified: markModified, onTap: onTap));
 

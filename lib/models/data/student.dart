@@ -58,15 +58,24 @@ class Student {
   @HiveField(5)
   final List<Lesson> subjects;
 
+  @HiveField(6, defaultValue: '')
+  final String userCode;
+
+  @HiveField(7, defaultValue: {})
+  final Map<String, String> teamCodes;
+
   Student({
     Account? account,
     Class? mainClass,
     this.virtualClasses,
     this.attendances,
     List<Lesson>? subjects,
+    this.userCode = '',
+    Map<String, String>? teamCodes,
   })  : account = account ?? Account(),
         mainClass = mainClass ?? Class(),
-        subjects = subjects ?? [];
+        subjects = subjects ?? [],
+        teamCodes = teamCodes ?? {};
 
   Iterable<Lesson> get subjectsByGrades =>
       subjects.orderByDescending((element) => element.hasGradesCurrentSemester).thenBy((element) => element.name);

@@ -1,6 +1,5 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
-import 'package:darq/darq.dart';
 import 'package:event/event.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/models/data/announcement.dart' show Announcement;
@@ -91,15 +90,4 @@ class ProviderData extends HiveObject {
   factory ProviderData.fromJson(Map<String, dynamic> json) => _$ProviderDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProviderDataToJson(this);
-}
-
-extension FirstLettersNames on String {
-  String get firstLettersName => split(' ').where((x) => x.isNotEmpty).select((x, _) => x[0].toLowerCase()).join();
-}
-
-extension SzkolnyExtensions on IProvider {
-  // Get the user code for data sharing
-  String userCode(String login) => registerData == null
-      ? ""
-      : '${registerData!.student.mainClass.unit.id}${registerData!.student.mainClass.unit.fullName.firstLettersName}_${registerData!.student.mainClass.unit.town}:$login';
 }

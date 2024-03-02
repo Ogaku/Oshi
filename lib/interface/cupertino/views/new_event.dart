@@ -11,6 +11,7 @@ import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/interface/cupertino/widgets/text_chip.dart';
 import 'package:oshi/models/data/classroom.dart';
 import 'package:oshi/models/data/event.dart';
+import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/share/share.dart';
 
 class EventComposePage extends StatefulWidget {
@@ -28,6 +29,7 @@ class EventComposePage extends StatefulWidget {
 
 class _EventComposePageState extends State<EventComposePage> {
   bool showOptional = false;
+  bool shareEvent = false;
 
   EventCategory category = EventCategory.other;
   String customCategoryName = '';
@@ -45,6 +47,7 @@ class _EventComposePageState extends State<EventComposePage> {
   void initState() {
     super.initState();
     date = widget.date ?? DateTime.now().asDate();
+    shareEvent = Share.session.settings.shareEventsByDefault;
 
     if (widget.startTime != null || widget.endTime != null || widget.lessonNumber != null || widget.classroom != null) {
       showOptional = true;
@@ -63,6 +66,7 @@ class _EventComposePageState extends State<EventComposePage> {
       customCategoryName = widget.previous!.categoryName;
       category = widget.previous!.category;
       date = widget.previous!.date ?? DateTime.now().asDate();
+      shareEvent = widget.previous!.isSharedEvent;
 
       if (widget.previous!.timeFrom != DateTime(2000) ||
           widget.previous!.timeTo != null ||
@@ -87,9 +91,9 @@ class _EventComposePageState extends State<EventComposePage> {
       searchController: TextEditingController(),
       backgroundColor: CupertinoDynamicColor.withBrightness(
           color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 28, 28, 30)),
-      largeTitle: subjectController.text.isEmpty
+      largeTitle: (shareEvent ? messageController : subjectController).text.isEmpty
           ? Text('New event')
-          : Text(subjectController.text, maxLines: 1, overflow: TextOverflow.ellipsis),
+          : Text((shareEvent ? messageController : subjectController).text, maxLines: 1, overflow: TextOverflow.ellipsis),
       leading: CupertinoButton(
           padding: EdgeInsets.all(0),
           child: Text('Cancel', style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
@@ -99,29 +103,43 @@ class _EventComposePageState extends State<EventComposePage> {
           padding: EdgeInsets.all(0),
           alignment: Alignment.centerRight,
           child: Icon(widget.previous != null ? CupertinoIcons.pencil : CupertinoIcons.add,
-              color: (subjectController.text.isNotEmpty && messageController.text.isNotEmpty)
+              color: ((shareEvent || subjectController.text.isNotEmpty) && messageController.text.isNotEmpty)
                   ? CupertinoTheme.of(context).primaryColor
                   : CupertinoColors.inactiveGray),
           onPressed: () {
             try {
               if (widget.previous != null) {
-                Share.session.customEvents.remove(widget.previous);
+                (widget.previous!.isSharedEvent ? Share.session.sharedEvents : Share.session.customEvents)
+                    .remove(widget.previous);
               }
 
-              Share.session.customEvents.add(Event(
-                  title: subjectController.text,
+              var event = Event(
+                  id: shareEvent
+                      ? (widget.previous != null ? widget.previous!.id : DateTime.now().millisecondsSinceEpoch)
+                      : -1,
+                  title: shareEvent ? null : subjectController.text,
                   content: messageController.text,
                   category: category,
                   categoryName: customCategoryName,
-                  isOwnEvent: true,
+                  isOwnEvent: !shareEvent,
+                  isSharedEvent: shareEvent,
+                  sender: shareEvent
+                      ? Teacher(
+                          firstName: Share.session.data.student.account.firstName,
+                          lastName: Share.session.data.student.account.lastName)
+                      : null,
                   classroom: classroomController.text.isNotEmpty
                       ? Classroom(name: classroomController.text, symbol: classroomController.text)
                       : null,
                   lessonNo: int.tryParse(lessonNumberController.text),
                   date: date,
                   timeFrom: startTime,
-                  timeTo: endTime));
+                  timeTo: endTime);
+
+              (shareEvent ? Share.session.sharedEvents : Share.session.customEvents).add(event);
               Share.settings.save();
+
+              if (shareEvent) event.share();
             } catch (e) {
               if (Platform.isAndroid || Platform.isIOS) {
                 Fluttertoast.showToast(
@@ -241,159 +259,188 @@ class _EventComposePageState extends State<EventComposePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.max,
                             children: [
-                                // Subject input
-                                CupertinoTextField.borderless(
-                                    maxLines: null,
-                                    onChanged: (s) => setState(() {}),
-                                    controller: subjectController,
-                                    placeholder: 'Title',
-                                    placeholderStyle:
-                                        TextStyle(fontWeight: FontWeight.w600, color: CupertinoColors.tertiaryLabel)),
-                                // Message input
-                                CupertinoTextField.borderless(
-                                    maxLines: null,
-                                    onChanged: (s) => setState(() {}),
-                                    controller: messageController,
-                                    placeholder: 'Type in the event description here...'),
-                                Container(
-                                    margin: EdgeInsets.only(left: 5, top: 25),
-                                    child: GestureDetector(
-                                        onTap: () => setState(() => showOptional = !showOptional),
-                                        child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                  showOptional
-                                                      ? CupertinoIcons.chevron_up_circle
-                                                      : CupertinoIcons.chevron_down_circle,
-                                                  size: 20),
-                                              Container(
-                                                  margin: EdgeInsets.only(left: 5),
-                                                  child: Opacity(
-                                                      opacity: 0.5,
-                                                      child: Text('Optional',
-                                                          style: TextStyle(fontWeight: FontWeight.normal)))),
-                                            ]))),
-                                AnimatedSwitcher(
-                                    duration: const Duration(milliseconds: 100),
-                                    switchInCurve: Curves.easeInExpo,
-                                    child: showOptional
-                                        ? Container(
-                                            margin: EdgeInsets.only(top: 5),
-                                            child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisSize: MainAxisSize.max,
-                                                children: [
-                                                  // Start time
-                                                  Row(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                                      children: [
-                                                        Container(
-                                                            margin: EdgeInsets.only(left: 5),
-                                                            child: Text('Start time:',
-                                                                style: TextStyle(fontWeight: FontWeight.w600))),
-                                                        Container(
+                              // Message input
+                              CupertinoTextField.borderless(
+                                  maxLines: null,
+                                  onChanged: (s) => setState(() {}),
+                                  controller: messageController,
+                                  placeholder: 'Type in the event description here...'),
+                            ]
+                                .prependIf(
+                                    // Subject input
+                                    CupertinoTextField.borderless(
+                                        maxLines: null,
+                                        onChanged: (s) => setState(() {}),
+                                        controller: subjectController,
+                                        placeholder: 'Title',
+                                        placeholderStyle:
+                                            TextStyle(fontWeight: FontWeight.w600, color: CupertinoColors.tertiaryLabel)),
+                                    !shareEvent)
+                                .appendIf(
+                                    // Shared event switch
+                                    CupertinoFormSection.insetGrouped(
+                                        margin: EdgeInsets.only(left: 5, right: 5, top: 25),
+                                        children: [
+                                          CupertinoFormRow(
+                                              prefix: Text('Share with class'),
+                                              child: CupertinoSwitch(
+                                                  value: shareEvent,
+                                                  onChanged: (value) => setState(() => shareEvent = value)))
+                                        ]),
+                                    Share.session.settings.shareEventsByDefault &&
+                                        Share.session.settings.allowSzkolnyIntegration)
+                                .appendAll([
+                              Container(
+                                  margin: EdgeInsets.only(left: 5, top: 15),
+                                  child: GestureDetector(
+                                      onTap: () => setState(() => showOptional = !showOptional),
+                                      child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                                showOptional
+                                                    ? CupertinoIcons.chevron_up_circle
+                                                    : CupertinoIcons.chevron_down_circle,
+                                                size: 20),
+                                            Container(
+                                                margin: EdgeInsets.only(left: 5),
+                                                child: Opacity(
+                                                    opacity: 0.5,
+                                                    child:
+                                                        Text('Optional', style: TextStyle(fontWeight: FontWeight.normal)))),
+                                          ]))),
+                              AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 100),
+                                  switchInCurve: Curves.easeInExpo,
+                                  child: showOptional
+                                      ? Container(
+                                          margin: EdgeInsets.only(top: 5),
+                                          child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: [
+                                                // Start time
+                                                Row(
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                    children: [
+                                                      Container(
                                                           margin: EdgeInsets.only(left: 5),
-                                                          child: GestureDetector(
-                                                              onTap: () => _showDialog(
-                                                                    CupertinoDatePicker(
-                                                                      initialDateTime: date,
-                                                                      mode: CupertinoDatePickerMode.time,
-                                                                      use24hFormat: true,
-                                                                      showDayOfWeek: true,
-                                                                      minimumDate: Share
-                                                                          .session.data.student.mainClass.beginSchoolYear,
-                                                                      maximumDate:
-                                                                          Share.session.data.student.mainClass.endSchoolYear,
-                                                                      onDateTimeChanged: (DateTime newDate) =>
-                                                                          setState(() => startTime = newDate),
-                                                                    ),
+                                                          child: Text('Start time:',
+                                                              style: TextStyle(fontWeight: FontWeight.w600))),
+                                                      Container(
+                                                        margin: EdgeInsets.only(left: 5),
+                                                        child: GestureDetector(
+                                                            onTap: () => _showDialog(
+                                                                  CupertinoDatePicker(
+                                                                    initialDateTime: date,
+                                                                    mode: CupertinoDatePickerMode.time,
+                                                                    use24hFormat: true,
+                                                                    showDayOfWeek: true,
+                                                                    minimumDate:
+                                                                        Share.session.data.student.mainClass.beginSchoolYear,
+                                                                    maximumDate:
+                                                                        Share.session.data.student.mainClass.endSchoolYear,
+                                                                    onDateTimeChanged: (DateTime newDate) =>
+                                                                        setState(() => startTime = newDate),
                                                                   ),
-                                                              child: Container(
-                                                                  margin: EdgeInsets.only(top: 5, bottom: 5),
-                                                                  child: Text(
-                                                                      startTime == null
-                                                                          ? 'not specified'
-                                                                          : DateFormat.Hm(
-                                                                                  Share.settings.appSettings.localeCode)
-                                                                              .format(startTime!),
-                                                                      style: TextStyle(
-                                                                          color: CupertinoTheme.of(context).primaryColor)))),
-                                                        ),
-                                                        Visibility(
-                                                            visible: startTime != null,
+                                                                ),
                                                             child: Container(
-                                                                margin: EdgeInsets.only(left: 3),
-                                                                child: GestureDetector(
-                                                                  onTap: () => setState(() => startTime = null),
-                                                                  child: Icon(CupertinoIcons.xmark_circle, size: 15),
-                                                                )))
-                                                      ]),
-                                                  // End time
-                                                  Row(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                                      children: [
-                                                        Container(
-                                                            margin: EdgeInsets.only(left: 5),
-                                                            child: Text('End time:',
-                                                                style: TextStyle(fontWeight: FontWeight.w600))),
-                                                        Container(
+                                                                margin: EdgeInsets.only(top: 5, bottom: 5),
+                                                                child: Text(
+                                                                    startTime == null
+                                                                        ? 'not specified'
+                                                                        : DateFormat.Hm(
+                                                                                Share.settings.appSettings.localeCode)
+                                                                            .format(startTime!),
+                                                                    style: TextStyle(
+                                                                        color: CupertinoTheme.of(context).primaryColor)))),
+                                                      ),
+                                                      Visibility(
+                                                          visible: startTime != null,
+                                                          child: Container(
+                                                              margin: EdgeInsets.only(left: 3),
+                                                              child: GestureDetector(
+                                                                onTap: () => setState(() => startTime = null),
+                                                                child: Icon(CupertinoIcons.xmark_circle, size: 15),
+                                                              )))
+                                                    ]),
+                                                // End time
+                                                Row(
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                    children: [
+                                                      Container(
                                                           margin: EdgeInsets.only(left: 5),
-                                                          child: GestureDetector(
-                                                              onTap: () => _showDialog(
-                                                                    CupertinoDatePicker(
-                                                                      initialDateTime: date,
-                                                                      mode: CupertinoDatePickerMode.time,
-                                                                      use24hFormat: true,
-                                                                      showDayOfWeek: true,
-                                                                      minimumDate: Share
-                                                                          .session.data.student.mainClass.beginSchoolYear,
-                                                                      maximumDate:
-                                                                          Share.session.data.student.mainClass.endSchoolYear,
-                                                                      onDateTimeChanged: (DateTime newDate) =>
-                                                                          setState(() => endTime = newDate),
-                                                                    ),
+                                                          child: Text('End time:',
+                                                              style: TextStyle(fontWeight: FontWeight.w600))),
+                                                      Container(
+                                                        margin: EdgeInsets.only(left: 5),
+                                                        child: GestureDetector(
+                                                            onTap: () => _showDialog(
+                                                                  CupertinoDatePicker(
+                                                                    initialDateTime: date,
+                                                                    mode: CupertinoDatePickerMode.time,
+                                                                    use24hFormat: true,
+                                                                    showDayOfWeek: true,
+                                                                    minimumDate:
+                                                                        Share.session.data.student.mainClass.beginSchoolYear,
+                                                                    maximumDate:
+                                                                        Share.session.data.student.mainClass.endSchoolYear,
+                                                                    onDateTimeChanged: (DateTime newDate) =>
+                                                                        setState(() => endTime = newDate),
                                                                   ),
-                                                              child: Container(
-                                                                  margin: EdgeInsets.only(top: 5, bottom: 5),
-                                                                  child: Text(
-                                                                      endTime == null
-                                                                          ? 'not specified'
-                                                                          : DateFormat.Hm(
-                                                                                  Share.settings.appSettings.localeCode)
-                                                                              .format(endTime!),
-                                                                      style: TextStyle(
-                                                                          color: CupertinoTheme.of(context).primaryColor)))),
-                                                        ),
-                                                        Visibility(
-                                                            visible: endTime != null,
+                                                                ),
                                                             child: Container(
-                                                                margin: EdgeInsets.only(left: 3),
-                                                                child: GestureDetector(
-                                                                  onTap: () => setState(() => endTime = null),
-                                                                  child: Icon(CupertinoIcons.xmark_circle, size: 15),
-                                                                )))
+                                                                margin: EdgeInsets.only(top: 5, bottom: 5),
+                                                                child: Text(
+                                                                    endTime == null
+                                                                        ? 'not specified'
+                                                                        : DateFormat.Hm(
+                                                                                Share.settings.appSettings.localeCode)
+                                                                            .format(endTime!),
+                                                                    style: TextStyle(
+                                                                        color: CupertinoTheme.of(context).primaryColor)))),
+                                                      ),
+                                                      Visibility(
+                                                          visible: endTime != null,
+                                                          child: Container(
+                                                              margin: EdgeInsets.only(left: 3),
+                                                              child: GestureDetector(
+                                                                onTap: () => setState(() => endTime = null),
+                                                                child: Icon(CupertinoIcons.xmark_circle, size: 15),
+                                                              )))
+                                                    ]),
+                                                // Classroom input
+                                                CupertinoTextField.borderless(
+                                                    maxLines: null,
+                                                    onChanged: (s) => setState(() {}),
+                                                    controller: classroomController,
+                                                    placeholder: 'Classroom'),
+                                                // Lesson number input
+                                                CupertinoTextField.borderless(
+                                                    maxLines: null,
+                                                    onChanged: (s) => setState(() => lessonNumberController.text =
+                                                        int.tryParse(lessonNumberController.text)?.toString() ?? ''),
+                                                    controller: lessonNumberController,
+                                                    placeholder: 'Lesson number'),
+                                              ].appendIf(
+                                                  // Shared event switch
+                                                  CupertinoFormSection.insetGrouped(
+                                                      margin: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                                                      children: [
+                                                        CupertinoFormRow(
+                                                            prefix: Text('Share with class'),
+                                                            child: CupertinoSwitch(
+                                                                value: shareEvent,
+                                                                onChanged: (value) => setState(() => shareEvent = value)))
                                                       ]),
-                                                  // Classroom input
-                                                  CupertinoTextField.borderless(
-                                                      maxLines: null,
-                                                      onChanged: (s) => setState(() {}),
-                                                      controller: classroomController,
-                                                      placeholder: 'Classroom'),
-                                                  // Lesson number input
-                                                  CupertinoTextField.borderless(
-                                                      maxLines: null,
-                                                      onChanged: (s) => setState(() => lessonNumberController.text =
-                                                          int.tryParse(lessonNumberController.text)?.toString() ?? ''),
-                                                      controller: lessonNumberController,
-                                                      placeholder: 'Lesson number'),
-                                                ]))
-                                        : null),
-                              ]),
+                                                  !Share.session.settings.shareEventsByDefault &&
+                                                      Share.session.settings.allowSzkolnyIntegration)))
+                                      : null),
+                            ]).toList()),
                   ]))),
     );
   }

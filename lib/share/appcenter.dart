@@ -11,6 +11,8 @@ import 'package:path_provider/path_provider.dart';
 
 class AppCenter {
   static bool _initializedOnce = false;
+  static String szkolnyAppKey = 'AZ_SZKOLNY_APP_TOKEN';
+
   static Future<void> initialize() async {
     if (_initializedOnce || !(Platform.isAndroid || Platform.isIOS)) return;
     try {

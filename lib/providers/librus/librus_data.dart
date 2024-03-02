@@ -8,6 +8,7 @@ import 'package:event/src/event.dart';
 import 'package:event/src/eventargs.dart';
 import 'package:logging/logging.dart';
 import 'package:intl/intl.dart';
+import 'package:oshi/interface/cupertino/pages/messages.dart';
 import 'package:oshi/models/data/averages.dart';
 import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/models/progress.dart';
@@ -173,6 +174,7 @@ class LibrusDataReader implements models.IProvider {
         .asTeacher();
 
     var mainStudentClass = sClassShim.asClass(sUnitShim.asUnit(sSchoolShim.school!), sHomeTeacher);
+    var virtualClasses = classesShim.virtualClasses?.select((element, index) => element.asClass(mainStudentClass)).toList();
 
     // Student - the user account, including (most) unit and (some) school data
     var student = models.Student(
@@ -185,15 +187,20 @@ class LibrusDataReader implements models.IProvider {
             firstName: studentShim.me!.account!.firstName,
             lastName: studentShim.me!.account!.lastName),
         mainClass: mainStudentClass,
-        virtualClasses: classesShim.virtualClasses?.select((element, index) => element.asClass(mainStudentClass)).toList(),
+        virtualClasses: virtualClasses,
+        userCode: '${mainStudentClass.unit.id}${mainStudentClass.unit.fullName.firstLettersName}_${mainStudentClass.unit.town}:${data?.synergiaLogin?.synergiaLogin}'
+            .toLowerCase(),
+        teamCodes: [mainStudentClass.teamCodePair]
+            .appendAllIf(
+                virtualClasses?.select((x, _) => x.teamCodePair).toList() ?? [], virtualClasses?.isNotEmpty ?? false)
+            .toMap((x) => x),
         attendances: attendance?.toList(),
         subjects: lessonsShim.lessons!
             .groupBy((x) => x.subject?.id)
             .where((x) => x.key != null)
             .select((x, index) =>
                 x.firstWhereOrDefault(
-                    (y) => timetableShim.timetable.values
-                        .any((z) => z.any((w) => w?.any((a) => a.teacher?.id == y.teacher?.id.toString()) ?? false)),
+                    (y) => timetableShim.timetable.values.any((z) => z.any((w) => w?.any((a) => a.teacher?.id == y.teacher?.id.toString()) ?? false)),
                     defaultValue: x.first) ??
                 x.first)
             .select((x, index) {
@@ -859,6 +866,15 @@ class LibrusDataReader implements models.IProvider {
   }
 }
 
+extension FirstLettersNames on String {
+  String get firstLettersName => split(' ').where((x) => x.isNotEmpty).select((x, _) => x[0].toLowerCase()).join();
+}
+
+extension ClassTeamCodeExtension on models.Class {
+  String get teamCode => '${unit.id}${unit.fullName.firstLettersName}_${unit.town}:${(name ?? symbol)}'.toLowerCase();
+  MapEntry<String, String> get teamCodePair => MapEntry(teamCode, (name ?? symbol));
+}
+
 extension DecodingExtension on String {
   String tryBase64Decoded() {
     try {
@@ -930,7 +946,7 @@ extension VirtualClassExtension on VirtualClass {
         id: id,
         number: number,
         symbol: symbol,
-        name: number.toString() + symbol,
+        name: name,
         beginSchoolYear: homeClass.beginSchoolYear,
         endFirstSemester: homeClass.endFirstSemester,
         endSchoolYear: homeClass.endSchoolYear,

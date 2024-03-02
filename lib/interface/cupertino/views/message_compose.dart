@@ -23,7 +23,7 @@ class MessageComposePage extends StatefulWidget {
 }
 
 class _MessageComposePageState extends State<MessageComposePage> {
-  bool isWorking = false; // TODO
+  bool isWorking = false;
 
   List<Teacher> receivers = [];
   late TextEditingController subjectController;

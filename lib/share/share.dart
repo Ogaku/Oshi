@@ -25,6 +25,7 @@ import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/models/data/timetables.dart';
 import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/provider.dart';
+import 'package:platform_device_id/platform_device_id.dart';
 
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -39,6 +40,7 @@ import 'package:oshi/share/config.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/translator.dart';
+import 'package:oshi/share/appcenter.dart' as apps;
 
 part 'share.g.dart';
 
@@ -234,6 +236,7 @@ class Session extends HiveObject {
       List<RegisterChanges>? changes,
       List<Event>? adminEvents,
       List<Event>? customEvents,
+      List<Event>? sharedEvents,
       SessionConfig? settings,
       UnreadChanges? unreadChanges})
       : provider = provider ?? Share.providers[providerGuid]!.factory(),
@@ -242,6 +245,7 @@ class Session extends HiveObject {
         changes = changes ?? [],
         adminEvents = adminEvents ?? [],
         customEvents = customEvents ?? [],
+        sharedEvents = sharedEvents ?? [],
         settings = settings ?? SessionConfig(),
         unreadChanges = unreadChanges ?? UnreadChanges();
 
@@ -280,11 +284,15 @@ class Session extends HiveObject {
   @HiveField(7)
   List<Event> customEvents;
 
+  @HiveField(10, defaultValue: [])
+  List<Event> sharedEvents;
+
   @HiveField(9)
   UnreadChanges unreadChanges;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  List<Event> get events => data.student.mainClass.events.appendAll(adminEvents).appendAll(customEvents).toList();
+  List<Event> get events =>
+      data.student.mainClass.events.appendAll(adminEvents).appendAll(customEvents).appendAll(sharedEvents).toList();
 
   // Login and reset methods for early setup - implement as async
   Future<({bool success, Exception? message})> login(
@@ -388,6 +396,66 @@ class Session extends HiveObject {
             .toList();
       } catch (ex) {
         // ignored
+      }
+
+      // Check out shared events, if allowed in settings
+      if (Share.session.settings.allowSzkolnyIntegration) {
+        try {
+          var data = (await Dio(BaseOptions(baseUrl: 'https://api.szkolny.eu')).post('/appSync',
+                  options: Options(headers: {
+                    "X-ApiKey": apps.AppCenter.szkolnyAppKey,
+                    "X-AppBuild": Share.buildNumber.split('.').last.toString(),
+                    "X-AppFlavor": "Release",
+                    "X-AppVersion": Share.buildNumber.toString(),
+                    "X-DeviceId": (await PlatformDeviceId.getDeviceId)?.trim() ?? "UNKNOWN",
+                    // "X-Signature": "",
+                    // "X-Timestamp": timestamp.toString(),
+                    'Content-Type': 'application/json'
+                  }),
+                  data: jsonEncode({
+                    "deviceId": (await PlatformDeviceId.getDeviceId)?.trim() ?? "UNKNOWN",
+                    "userCodes": [Share.session.data.student.userCode],
+                    "lastSync": -1
+                  })))
+              .data;
+
+          var eventsJson = (await () async {
+            return data is String ? jsonDecode(data) : data;
+          }());
+
+          if (eventsJson["success"] == true) {
+            sharedEvents = (eventsJson["data"]["events"] as List<dynamic>)
+                .where((element) => Share.session.data.student.teamCodes.keys.contains(element["teamCode"]))
+                .select((element, index) => Event(
+                    id: (element["id"] as int?) ?? -1,
+                    teamCode: element["teamCode"],
+                    date: element["eventDate"] > 10000101
+                        ? DateTime(
+                            int.parse(element["eventDate"].toString().substring(0, 4)),
+                            int.parse(element["eventDate"].toString().substring(4, 6)),
+                            int.parse(element["eventDate"].toString().substring(6, 8)))
+                        : null,
+                    timeFrom: (element["eventDate"] > 10000101 && element["startTime"] > 10000)
+                        ? DateTime(
+                            int.parse(element["eventDate"].toString().substring(0, 4)),
+                            int.parse(element["eventDate"].toString().substring(4, 6)),
+                            int.parse(element["eventDate"].toString().substring(6, 8)),
+                            int.parse(
+                                element["startTime"].toString().substring(0, element["startTime"].toString().length - 4)),
+                            int.parse(element["startTime"].toString().substring(
+                                element["startTime"].toString().length - 4, element["startTime"].toString().length - 2)),
+                            int.parse(element["startTime"].toString().substring(
+                                element["startTime"].toString().length - 2, element["startTime"].toString().length)))
+                        : null,
+                    isSharedEvent: true,
+                    sender: Teacher(firstName: element["sharedByName"] ?? ''),
+                    content: element["topic"] ?? '',
+                    category: (element["type"] as int? ?? 0).asEventCategory))
+                .toList();
+          }
+        } catch (ex) {
+          // ignored
+        }
       }
 
       NotificationController.sendNotification(
@@ -976,4 +1044,31 @@ class RegisterChangeAdapter<T> extends TypeAdapter<RegisterChange<T>> {
 
 extension OrNullExtension<T> on List<T> {
   List<T>? nullIfEmpty([bool and = true]) => (isNotEmpty && and) ? this : null;
+}
+
+extension EventCategorySelector on int {
+  EventCategory get asEventCategory => switch (this) {
+        -5 => EventCategory.onlineLesson,
+        -1 || 3 || 4 => EventCategory.homework,
+        1 => EventCategory.test,
+        2 || 3 => EventCategory.shortTest,
+        5 => EventCategory.gathering,
+        6 => EventCategory.freeDay,
+        7 => EventCategory.lecture,
+        _ => EventCategory.other
+      };
+}
+
+extension SzkolnyEventCategorySelector on EventCategory {
+  int get asEventCategory => switch (this) {
+        EventCategory.onlineLesson => -5,
+        EventCategory.homework => -1,
+        EventCategory.test => 1,
+        EventCategory.shortTest => 2,
+        EventCategory.gathering => 5,
+        EventCategory.freeDay => 6,
+        EventCategory.lecture => 7,
+        EventCategory.classWork => 1,
+        _ => 0
+      };
 }

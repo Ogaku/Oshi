@@ -32,13 +32,14 @@ class EventAdapter extends TypeAdapter<Event> {
       attachments: (fields[13] as List?)?.cast<Attachment>(),
       classroom: fields[12] as Classroom?,
       isOwnEvent: fields[14] as bool?,
+      isSharedEvent: fields[15] == null ? false : fields[15] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Event obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(16)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -68,7 +69,9 @@ class EventAdapter extends TypeAdapter<Event> {
       ..writeByte(13)
       ..write(obj.attachments)
       ..writeByte(14)
-      ..write(obj.isOwnEvent);
+      ..write(obj.isOwnEvent)
+      ..writeByte(15)
+      ..write(obj.isSharedEvent);
   }
 
   @override
@@ -220,6 +223,7 @@ Event _$EventFromJson(Map<String, dynamic> json) => Event(
           ? null
           : Classroom.fromJson(json['classroom'] as Map<String, dynamic>),
       isOwnEvent: json['isOwnEvent'] as bool?,
+      isSharedEvent: json['isSharedEvent'] as bool?,
     );
 
 Map<String, dynamic> _$EventToJson(Event instance) {
@@ -247,6 +251,7 @@ Map<String, dynamic> _$EventToJson(Event instance) {
   writeNotNull('classroom', instance.classroom);
   writeNotNull('attachments', instance.attachments);
   val['isOwnEvent'] = instance.isOwnEvent;
+  val['isSharedEvent'] = instance.isSharedEvent;
   return val;
 }
 

@@ -56,6 +56,7 @@ stages:
               sed -i '' "s/9.9.9+9/1.0.$(date '+%Y%m%d')/g" ./pubspec.yaml
               sed -i '' "s/9.9.9.9/$(Build.BuildNumber)/g" ./lib/share/share.dart
               sed -i '' "s/AZ_APPCENTER_TELEMETRY_TOKEN/$(APPCENTER_TELEMETRY_TOKEN)/g" ./lib/share/appcenter.dart
+              sed -i '' "s/AZ_SZKOLNY_APP_TOKEN/$(SZKOLNY_APP_TOKEN)/g" ./lib/share/appcenter.dart
             displayName: Add version and token data to Oshi
 
           - bash: |

@@ -68,13 +68,16 @@ class StudentAdapter extends TypeAdapter<Student> {
       virtualClasses: (fields[3] as List?)?.cast<Class>(),
       attendances: (fields[4] as List?)?.cast<Attendance>(),
       subjects: (fields[5] as List?)?.cast<Lesson>(),
+      userCode: fields[6] == null ? '' : fields[6] as String,
+      teamCodes:
+          fields[7] == null ? {} : (fields[7] as Map?)?.cast<String, String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Student obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7)
       ..writeByte(1)
       ..write(obj.account)
       ..writeByte(2)
@@ -84,7 +87,11 @@ class StudentAdapter extends TypeAdapter<Student> {
       ..writeByte(4)
       ..write(obj.attendances)
       ..writeByte(5)
-      ..write(obj.subjects);
+      ..write(obj.subjects)
+      ..writeByte(6)
+      ..write(obj.userCode)
+      ..writeByte(7)
+      ..write(obj.teamCodes);
   }
 
   @override
@@ -134,6 +141,10 @@ Student _$StudentFromJson(Map<String, dynamic> json) => Student(
       subjects: (json['subjects'] as List<dynamic>?)
           ?.map((e) => Lesson.fromJson(e as Map<String, dynamic>))
           .toList(),
+      userCode: json['userCode'] as String? ?? '',
+      teamCodes: (json['teamCodes'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, e as String),
+      ),
     );
 
 Map<String, dynamic> _$StudentToJson(Student instance) {
@@ -151,5 +162,7 @@ Map<String, dynamic> _$StudentToJson(Student instance) {
   writeNotNull('virtualClasses', instance.virtualClasses);
   writeNotNull('attendances', instance.attendances);
   val['subjects'] = instance.subjects;
+  val['userCode'] = instance.userCode;
+  val['teamCodes'] = instance.teamCodes;
   return val;
 }
