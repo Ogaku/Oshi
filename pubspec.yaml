@@ -53,7 +53,8 @@ dependencies:
   extended_wrap: ^0.1.5
   flutter_app_badger: ^1.5.0
   fl_chart: ^0.66.2
-  platform_device_id: ^1.0.1
+  platform_device_id: 
+    path: plugin/platform_device_id
 
 dev_dependencies:
   flutter_test:
