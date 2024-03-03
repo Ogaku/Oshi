@@ -415,6 +415,16 @@ class Session extends HiveObject {
                   data: jsonEncode({
                     "deviceId": (await PlatformDeviceId.getDeviceId)?.trim() ?? "UNKNOWN",
                     "userCodes": [Share.session.data.student.userCode],
+                    "users": [
+                      {
+                        "loginType": Share.session.provider.loginType,
+                        "studentName": Share.session.data.student.account.name,
+                        "studentNameShort":
+                            '${Share.session.data.student.account.firstName} ${Share.session.data.student.account.lastName[0]}.',
+                        "teamCodes": Share.session.data.student.teamCodes.keys.toList(),
+                        "userCode": Share.session.data.student.userCode
+                      }
+                    ],
                     "lastSync": -1
                   })))
               .data;
@@ -1071,4 +1081,8 @@ extension SzkolnyEventCategorySelector on EventCategory {
         EventCategory.classWork => 1,
         _ => 0
       };
+}
+
+extension ProviderLoginType on IProvider {
+  int get loginType => switch (runtimeType) { LibrusDataReader => 2, _ => 20 };
 }

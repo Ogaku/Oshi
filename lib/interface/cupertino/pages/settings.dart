@@ -613,8 +613,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                           separatorColor: Colors.transparent,
                                           footer: Container(margin: EdgeInsets.symmetric(horizontal: 20)),
                                           children: [
-                                            Image.network(
-                                                'https://github.com/szkolny-eu/szkolny-android/blob/develop/.github/readme-banner.png?raw=true'),
+                                            GestureDetector(
+                                                onTap: () => launchUrlString('https://github.com/szkolny-eu/szkolny-android'),
+                                                child: Image.network(
+                                                    'https://github.com/szkolny-eu/szkolny-android/blob/develop/.github/readme-banner.png?raw=true')),
                                           ]),
                                       CupertinoListSection.insetGrouped(
                                           additionalDividerMargin: 5,
@@ -639,12 +641,17 @@ class _SettingsPageState extends State<SettingsPage> {
                                             CupertinoFormRow(
                                                 prefix: Flexible(
                                                     flex: 3,
-                                                    child: Text('Share events by default',
-                                                        maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                                    child: Opacity(
+                                                        opacity: Share.session.settings.allowSzkolnyIntegration ? 1.0 : 0.5,
+                                                        child: Text('Share events by default',
+                                                            maxLines: 1, overflow: TextOverflow.ellipsis))),
                                                 child: CupertinoSwitch(
-                                                    value: Share.session.settings.shareEventsByDefault,
-                                                    onChanged: (s) =>
-                                                        setState(() => Share.session.settings.shareEventsByDefault = s))),
+                                                    value: Share.session.settings.allowSzkolnyIntegration &&
+                                                        Share.session.settings.shareEventsByDefault,
+                                                    onChanged: Share.session.settings.allowSzkolnyIntegration
+                                                        ? (s) =>
+                                                            setState(() => Share.session.settings.shareEventsByDefault = s)
+                                                        : null)),
                                           ])
                                     ]))))),
                     title: Text('Shared Events', overflow: TextOverflow.ellipsis),
