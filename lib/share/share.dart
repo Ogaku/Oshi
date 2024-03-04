@@ -436,32 +436,44 @@ class Session extends HiveObject {
           if (eventsJson["success"] == true) {
             sharedEvents = (eventsJson["data"]["events"] as List<dynamic>)
                 .where((element) => Share.session.data.student.teamCodes.keys.contains(element["teamCode"]))
-                .select((element, index) => Event(
-                    id: (element["id"] as int?) ?? -1,
-                    teamCode: element["teamCode"],
-                    date: element["eventDate"] > 10000101
-                        ? DateTime(
-                            int.parse(element["eventDate"].toString().substring(0, 4)),
-                            int.parse(element["eventDate"].toString().substring(4, 6)),
-                            int.parse(element["eventDate"].toString().substring(6, 8)))
-                        : null,
-                    timeFrom: (element["eventDate"] > 10000101 && element["startTime"] > 10000)
-                        ? DateTime(
-                            int.parse(element["eventDate"].toString().substring(0, 4)),
-                            int.parse(element["eventDate"].toString().substring(4, 6)),
-                            int.parse(element["eventDate"].toString().substring(6, 8)),
-                            int.parse(
-                                element["startTime"].toString().substring(0, element["startTime"].toString().length - 4)),
-                            int.parse(element["startTime"].toString().substring(
-                                element["startTime"].toString().length - 4, element["startTime"].toString().length - 2)),
-                            int.parse(element["startTime"].toString().substring(
-                                element["startTime"].toString().length - 2, element["startTime"].toString().length)))
-                        : null,
-                    isSharedEvent: true,
-                    sender: Teacher(firstName: element["sharedByName"] ?? ''),
-                    content: element["topic"] ?? '',
-                    category: (element["type"] as int? ?? 0).asEventCategory))
-                .toList();
+                .select((element, index) {
+              var eventDate = element["eventDate"] > 10000101
+                  ? DateTime(
+                      int.parse(element["eventDate"].toString().substring(0, 4)),
+                      int.parse(element["eventDate"].toString().substring(4, 6)),
+                      int.parse(element["eventDate"].toString().substring(6, 8)))
+                  : null;
+
+              var startTime = element["startTime"] > 10000
+                  ? DateTime(
+                      eventDate?.year ?? 2000,
+                      eventDate?.month ?? 1,
+                      eventDate?.day ?? 1,
+                      int.parse(element["startTime"].toString().substring(0, element["startTime"].toString().length - 4)),
+                      int.parse(element["startTime"].toString().substring(
+                          element["startTime"].toString().length - 4, element["startTime"].toString().length - 2)),
+                      int.parse(element["startTime"]
+                          .toString()
+                          .substring(element["startTime"].toString().length - 2, element["startTime"].toString().length)))
+                  : null;
+
+              return Event(
+                  id: (element["id"] as int?) ?? -1,
+                  teamCode: element["teamCode"],
+                  date: eventDate,
+                  timeFrom: startTime,
+                  timeTo: startTime?.add(const Duration(minutes: 45)),
+                  isSharedEvent: true,
+                  lessonNo: eventDate != null
+                      ? (Share.session.data.timetables[eventDate]?.lessons
+                          .firstWhereOrDefault((x) => x?.any((y) => y.timeFrom?.asHour() == startTime?.asHour()) ?? false)
+                          ?.firstWhereOrDefault((x) => x.timeFrom?.asHour() == startTime?.asHour())
+                          ?.lessonNo)
+                      : null,
+                  sender: Teacher(firstName: element["sharedByName"] ?? ''),
+                  content: element["topic"] ?? '',
+                  category: (element["type"] as int? ?? 0).asEventCategory);
+            }).toList();
           }
         } catch (ex) {
           // ignored
