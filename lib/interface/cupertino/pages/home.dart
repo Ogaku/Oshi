@@ -785,7 +785,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                 child: Text(
                                   DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)
                                       ? 'Tomorrow: ${nextDay?.lessonsNumber.asLessonNumber()}'
-                                      : 'Later: ${((currentDay?.lessonsStrippedCancelled.where((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.timeFrom)) ?? false).count((x) => (x?.isNotEmpty ?? false) && (x?.all((y) => !y.isCanceled) ?? false)) ?? 1) - 1).asLessonNumber()}',
+                                      : 'Later: ${((currentDay?.lessonsStrippedCancelled.where((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.timeFrom)) ?? false).count((x) => (x?.isNotEmpty ?? false) && (x?.any((y) => !y.isCanceled) ?? false)) ?? 1) - 1).asLessonNumber()}',
                                   style: TextStyle(fontWeight: FontWeight.w400),
                                 ))),
                         Text(
