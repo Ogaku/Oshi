@@ -19,14 +19,14 @@ Map<String, dynamic> _$GradeCommentsToJson(GradeComments instance) =>
     };
 
 Comment _$CommentFromJson(Map<String, dynamic> json) => Comment(
-      id: json['Id'] as int,
+      id: json['Id'] as int? ?? -1,
       addedBy: json['AddedBy'] == null
           ? null
           : AddedBy.fromJson(json['AddedBy'] as Map<String, dynamic>),
       grade: json['Grade'] == null
           ? null
           : AddedBy.fromJson(json['Grade'] as Map<String, dynamic>),
-      text: json['Text'] as String,
+      text: json['Text'] as String? ?? '',
     );
 
 Map<String, dynamic> _$CommentToJson(Comment instance) => <String, dynamic>{
@@ -37,8 +37,8 @@ Map<String, dynamic> _$CommentToJson(Comment instance) => <String, dynamic>{
     };
 
 AddedBy _$AddedByFromJson(Map<String, dynamic> json) => AddedBy(
-      id: json['Id'] as int,
-      url: json['Url'] as String,
+      id: json['Id'] as int? ?? -1,
+      url: json['Url'] as String? ?? '',
     );
 
 Map<String, dynamic> _$AddedByToJson(AddedBy instance) => <String, dynamic>{

@@ -8,7 +8,7 @@ class Grades {
     required this.grades,
   });
 
-  @JsonKey(name: 'Grades')
+  @JsonKey(name: 'Grades', defaultValue: null)
   final List<Grade>? grades;
 
   factory Grades.fromJson(Map<String, dynamic> json) => _$GradesFromJson(json);
@@ -39,58 +39,58 @@ class Grade {
     this.improvement,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Lesson')
+  @JsonKey(name: 'Lesson', defaultValue: null)
   final Link? lesson;
 
-  @JsonKey(name: 'Subject')
+  @JsonKey(name: 'Subject', defaultValue: null)
   final Link? subject;
 
-  @JsonKey(name: 'Student')
+  @JsonKey(name: 'Student', defaultValue: null)
   final Link? student;
 
-  @JsonKey(name: 'Category')
+  @JsonKey(name: 'Category', defaultValue: null)
   final Link? category;
 
-  @JsonKey(name: 'AddedBy')
+  @JsonKey(name: 'AddedBy', defaultValue: null)
   final Link? addedBy;
 
-  @JsonKey(name: 'Grade')
+  @JsonKey(name: 'Grade', defaultValue: '')
   final String grade;
 
-  @JsonKey(name: 'Date')
+  @JsonKey(name: 'Date', defaultValue: null)
   final DateTime? date;
 
-  @JsonKey(name: 'AddDate')
+  @JsonKey(name: 'AddDate', defaultValue: null)
   final DateTime? addDate;
 
-  @JsonKey(name: 'Semester')
+  @JsonKey(name: 'Semester', defaultValue: -1)
   final int semester;
 
-  @JsonKey(name: 'IsConstituent')
+  @JsonKey(name: 'IsConstituent', defaultValue: false)
   final bool isConstituent;
 
-  @JsonKey(name: 'IsSemester')
+  @JsonKey(name: 'IsSemester', defaultValue: false)
   final bool isSemester;
 
-  @JsonKey(name: 'IsSemesterProposition')
+  @JsonKey(name: 'IsSemesterProposition', defaultValue: false)
   final bool isSemesterProposition;
 
-  @JsonKey(name: 'IsFinal')
+  @JsonKey(name: 'IsFinal', defaultValue: false)
   final bool isFinal;
 
-  @JsonKey(name: 'IsFinalProposition')
+  @JsonKey(name: 'IsFinalProposition', defaultValue: false)
   final bool isFinalProposition;
 
-  @JsonKey(name: 'Comments')
+  @JsonKey(name: 'Comments', defaultValue: null)
   final List<Link>? comments;
 
-  @JsonKey(name: 'Resit')
+  @JsonKey(name: 'Resit', defaultValue: null)
   final dynamic resit;
 
-  @JsonKey(name: 'Improvement')
+  @JsonKey(name: 'Improvement', defaultValue: null)
   final dynamic improvement;
 
   factory Grade.fromJson(Map<String, dynamic> json) => _$GradeFromJson(json);
@@ -105,10 +105,10 @@ class Link {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory Link.fromJson(Map<String, dynamic> json) => _$LinkFromJson(json);

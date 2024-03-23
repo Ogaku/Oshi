@@ -8,7 +8,7 @@ class ParentTeacherConferences {
     required this.parentTeacherConferences,
   });
 
-  @JsonKey(name: 'ParentTeacherConferences')
+  @JsonKey(name: 'ParentTeacherConferences', defaultValue: null)
   final List<ParentTeacherConference>? parentTeacherConferences;
 
   factory ParentTeacherConferences.fromJson(Map<String, dynamic> json) => _$ParentTeacherConferencesFromJson(json);
@@ -29,28 +29,28 @@ class ParentTeacherConference {
     required this.time,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Date')
+  @JsonKey(name: 'Date', defaultValue: null)
   final DateTime? date;
 
-  @JsonKey(name: 'Name')
+  @JsonKey(name: 'Name', defaultValue: '')
   final String name;
 
-  @JsonKey(name: 'Class')
+  @JsonKey(name: 'Class', defaultValue: null)
   final Class? parentTeacherConferenceClass;
 
-  @JsonKey(name: 'Teacher')
+  @JsonKey(name: 'Teacher', defaultValue: null)
   final Class? teacher;
 
-  @JsonKey(name: 'Topic')
+  @JsonKey(name: 'Topic', defaultValue: '')
   final String topic;
 
-  @JsonKey(name: 'Room')
+  @JsonKey(name: 'Room', defaultValue: null)
   final dynamic room;
 
-  @JsonKey(name: 'Time')
+  @JsonKey(name: 'Time', defaultValue: '')
   final String time;
 
   factory ParentTeacherConference.fromJson(Map<String, dynamic> json) => _$ParentTeacherConferenceFromJson(json);
@@ -65,10 +65,10 @@ class Class {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory Class.fromJson(Map<String, dynamic> json) => _$ClassFromJson(json);

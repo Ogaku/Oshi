@@ -17,12 +17,12 @@ Map<String, dynamic> _$SubjectsToJson(Subjects instance) => <String, dynamic>{
     };
 
 Subject _$SubjectFromJson(Map<String, dynamic> json) => Subject(
-      id: json['Id'] as int,
-      name: json['Name'] as String,
-      no: json['No'] as int,
-      short: json['Short'] as String,
-      isExtracurricular: json['IsExtracurricular'] as bool,
-      isBlockLesson: json['IsBlockLesson'] as bool,
+      id: json['Id'] as int? ?? -1,
+      name: json['Name'] as String? ?? '',
+      no: json['No'] as int? ?? -1,
+      short: json['Short'] as String? ?? '',
+      isExtracurricular: json['IsExtracurricular'] as bool? ?? false,
+      isBlockLesson: json['IsBlockLesson'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$SubjectToJson(Subject instance) => <String, dynamic>{

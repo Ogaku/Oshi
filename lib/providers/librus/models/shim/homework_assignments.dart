@@ -8,7 +8,7 @@ class HomeWorkAssignments {
     required this.homeWorkAssignments,
   });
 
-  @JsonKey(name: 'HomeWorkAssignments')
+  @JsonKey(name: 'HomeWorkAssignments', defaultValue: null)
   final List<HomeWorkAssignment>? homeWorkAssignments;
 
   factory HomeWorkAssignments.fromJson(Map<String, dynamic> json) => _$HomeWorkAssignmentsFromJson(json);
@@ -35,46 +35,46 @@ class HomeWorkAssignment {
     required this.studentsWhoMarkedAsDone,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Teacher')
+  @JsonKey(name: 'Teacher', defaultValue: null)
   final Category? teacher;
 
-  @JsonKey(name: 'Student')
+  @JsonKey(name: 'Student', defaultValue: null)
   final List<Category>? student;
 
-  @JsonKey(name: 'Date')
+  @JsonKey(name: 'Date', defaultValue: null)
   final DateTime? date;
 
-  @JsonKey(name: 'DueDate')
+  @JsonKey(name: 'DueDate', defaultValue: null)
   final DateTime? dueDate;
 
-  @JsonKey(name: 'Text')
+  @JsonKey(name: 'Text', defaultValue: '')
   final String text;
 
-  @JsonKey(name: 'Topic')
+  @JsonKey(name: 'Topic', defaultValue: '')
   final String topic;
 
-  @JsonKey(name: 'Lesson')
+  @JsonKey(name: 'Lesson', defaultValue: null)
   final Category? lesson;
 
-  @JsonKey(name: 'MustSendAttachFile')
+  @JsonKey(name: 'MustSendAttachFile', defaultValue: false)
   final bool mustSendAttachFile;
 
-  @JsonKey(name: 'SendFilePossible')
+  @JsonKey(name: 'SendFilePossible', defaultValue: false)
   final bool sendFilePossible;
 
-  @JsonKey(name: 'AddedFiles')
+  @JsonKey(name: 'AddedFiles', defaultValue: false)
   final bool addedFiles;
 
-  @JsonKey(name: 'HomeworkAssigmentFiles')
+  @JsonKey(name: 'HomeworkAssigmentFiles', defaultValue: null)
   final List<Map<String, dynamic>>? homeworkAssigmentFiles;
 
-  @JsonKey(name: 'StudentsWhoMarkedAsDone')
+  @JsonKey(name: 'StudentsWhoMarkedAsDone', defaultValue: null)
   final List<dynamic>? studentsWhoMarkedAsDone;
 
-  @JsonKey(name: 'Category')
+  @JsonKey(name: 'Category', defaultValue: null)
   final Category? category;
 
   factory HomeWorkAssignment.fromJson(Map<String, dynamic> json) => _$HomeWorkAssignmentFromJson(json);
@@ -89,10 +89,10 @@ class Category {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory Category.fromJson(Map<String, dynamic> json) => _$CategoryFromJson(json);

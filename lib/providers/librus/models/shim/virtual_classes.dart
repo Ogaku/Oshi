@@ -8,7 +8,7 @@ class VirtualClasses {
     required this.virtualClasses,
   });
 
-  @JsonKey(name: 'VirtualClasses')
+  @JsonKey(name: 'VirtualClasses', defaultValue: null)
   final List<VirtualClass>? virtualClasses;
 
   factory VirtualClasses.fromJson(Map<String, dynamic> json) => _$VirtualClassesFromJson(json);
@@ -27,22 +27,22 @@ class VirtualClass {
     required this.symbol,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Teacher')
+  @JsonKey(name: 'Teacher', defaultValue: null)
   final Subject? teacher;
 
-  @JsonKey(name: 'Subject')
+  @JsonKey(name: 'Subject', defaultValue: null)
   final Subject? subject;
 
-  @JsonKey(name: 'Name')
+  @JsonKey(name: 'Name', defaultValue: '')
   final String name;
 
-  @JsonKey(name: 'Number')
+  @JsonKey(name: 'Number', defaultValue: -1)
   final int number;
 
-  @JsonKey(name: 'Symbol')
+  @JsonKey(name: 'Symbol', defaultValue: '')
   final String symbol;
 
   factory VirtualClass.fromJson(Map<String, dynamic> json) => _$VirtualClassFromJson(json);
@@ -57,10 +57,10 @@ class Subject {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory Subject.fromJson(Map<String, dynamic> json) => _$SubjectFromJson(json);

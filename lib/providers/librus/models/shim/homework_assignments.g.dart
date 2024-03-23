@@ -21,7 +21,7 @@ Map<String, dynamic> _$HomeWorkAssignmentsToJson(
 
 HomeWorkAssignment _$HomeWorkAssignmentFromJson(Map<String, dynamic> json) =>
     HomeWorkAssignment(
-      id: json['Id'] as int,
+      id: json['Id'] as int? ?? -1,
       teacher: json['Teacher'] == null
           ? null
           : Category.fromJson(json['Teacher'] as Map<String, dynamic>),
@@ -33,14 +33,14 @@ HomeWorkAssignment _$HomeWorkAssignmentFromJson(Map<String, dynamic> json) =>
       dueDate: json['DueDate'] == null
           ? null
           : DateTime.parse(json['DueDate'] as String),
-      text: json['Text'] as String,
-      topic: json['Topic'] as String,
+      text: json['Text'] as String? ?? '',
+      topic: json['Topic'] as String? ?? '',
       lesson: json['Lesson'] == null
           ? null
           : Category.fromJson(json['Lesson'] as Map<String, dynamic>),
-      mustSendAttachFile: json['MustSendAttachFile'] as bool,
-      sendFilePossible: json['SendFilePossible'] as bool,
-      addedFiles: json['AddedFiles'] as bool,
+      mustSendAttachFile: json['MustSendAttachFile'] as bool? ?? false,
+      sendFilePossible: json['SendFilePossible'] as bool? ?? false,
+      addedFiles: json['AddedFiles'] as bool? ?? false,
       homeworkAssigmentFiles: (json['HomeworkAssigmentFiles'] as List<dynamic>?)
           ?.map((e) => e as Map<String, dynamic>)
           .toList(),
@@ -70,8 +70,8 @@ Map<String, dynamic> _$HomeWorkAssignmentToJson(HomeWorkAssignment instance) =>
     };
 
 Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
-      id: json['Id'] as int,
-      url: json['Url'] as String,
+      id: json['Id'] as int? ?? -1,
+      url: json['Url'] as String? ?? '',
     );
 
 Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{

@@ -7,16 +7,17 @@ part of 'timetables.dart';
 // **************************************************************************
 
 Timetables _$TimetablesFromJson(Map<String, dynamic> json) => Timetables(
-      timetable: (json['Timetable'] as Map<String, dynamic>).map(
-        (k, e) => MapEntry(
-            k,
-            (e as List<dynamic>)
-                .map((e) => (e as List<dynamic>?)
-                    ?.map((e) =>
-                        TimetableLesson.fromJson(e as Map<String, dynamic>))
-                    .toList())
-                .toList()),
-      ),
+      timetable: (json['Timetable'] as Map<String, dynamic>?)?.map(
+            (k, e) => MapEntry(
+                k,
+                (e as List<dynamic>)
+                    .map((e) => (e as List<dynamic>?)
+                        ?.map((e) =>
+                            TimetableLesson.fromJson(e as Map<String, dynamic>))
+                        .toList())
+                    .toList()),
+          ) ??
+          {},
     );
 
 Map<String, dynamic> _$TimetablesToJson(Timetables instance) =>
@@ -38,17 +39,17 @@ TimetableLesson _$TimetableLessonFromJson(Map<String, dynamic> json) =>
       dateTo: json['DateTo'] == null
           ? null
           : DateTime.parse(json['DateTo'] as String),
-      lessonNo: json['LessonNo'] as String,
+      lessonNo: json['LessonNo'] as String? ?? '',
       subject: json['Subject'] == null
           ? null
           : Subject.fromJson(json['Subject'] as Map<String, dynamic>),
       teacher: json['Teacher'] == null
           ? null
           : Teacher.fromJson(json['Teacher'] as Map<String, dynamic>),
-      isSubstitutionClass: json['IsSubstitutionClass'] as bool,
-      isCanceled: json['IsCanceled'] as bool,
-      hourFrom: json['HourFrom'] as String,
-      hourTo: json['HourTo'] as String,
+      isSubstitutionClass: json['IsSubstitutionClass'] as bool? ?? false,
+      isCanceled: json['IsCanceled'] as bool? ?? false,
+      hourFrom: json['HourFrom'] as String? ?? '00:00',
+      hourTo: json['HourTo'] as String? ?? '00:00',
       timetableLessonClass: json['Class'] == null
           ? null
           : Class.fromJson(json['Class'] as Map<String, dynamic>),
@@ -131,8 +132,8 @@ Map<String, dynamic> _$TimetableLessonToJson(TimetableLesson instance) =>
     };
 
 Link _$LinkFromJson(Map<String, dynamic> json) => Link(
-      id: json['Id'] as String?,
-      url: json['Url'] as String?,
+      id: json['Id'] as String? ?? '',
+      url: json['Url'] as String? ?? '',
     );
 
 Map<String, dynamic> _$LinkToJson(Link instance) => <String, dynamic>{
@@ -141,8 +142,8 @@ Map<String, dynamic> _$LinkToJson(Link instance) => <String, dynamic>{
     };
 
 Class _$ClassFromJson(Map<String, dynamic> json) => Class(
-      id: json['Id'] as int,
-      url: json['Url'] as String,
+      id: json['Id'] as int? ?? -1,
+      url: json['Url'] as String? ?? '',
     );
 
 Map<String, dynamic> _$ClassToJson(Class instance) => <String, dynamic>{
@@ -151,10 +152,10 @@ Map<String, dynamic> _$ClassToJson(Class instance) => <String, dynamic>{
     };
 
 Subject _$SubjectFromJson(Map<String, dynamic> json) => Subject(
-      id: json['Id'] as String,
-      name: json['Name'] as String,
-      short: json['Short'] as String,
-      url: json['Url'] as String,
+      id: json['Id'] as String? ?? '',
+      name: json['Name'] as String? ?? '',
+      short: json['Short'] as String? ?? '',
+      url: json['Url'] as String? ?? '',
     );
 
 Map<String, dynamic> _$SubjectToJson(Subject instance) => <String, dynamic>{
@@ -165,10 +166,10 @@ Map<String, dynamic> _$SubjectToJson(Subject instance) => <String, dynamic>{
     };
 
 Teacher _$TeacherFromJson(Map<String, dynamic> json) => Teacher(
-      id: json['Id'] as String,
-      firstName: json['FirstName'] as String,
-      lastName: json['LastName'] as String,
-      url: json['Url'] as String,
+      id: json['Id'] as String? ?? '',
+      firstName: json['FirstName'] as String? ?? '',
+      lastName: json['LastName'] as String? ?? '',
+      url: json['Url'] as String? ?? '',
     );
 
 Map<String, dynamic> _$TeacherToJson(Teacher instance) => <String, dynamic>{

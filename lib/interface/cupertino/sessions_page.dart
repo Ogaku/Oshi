@@ -177,6 +177,8 @@ class _SessionsPageState extends State<SessionsPage> {
         theme: _eventfulColorTheme,
         debugShowCheckedModeBanner: false,
         home: Builder(builder: (context) {
+          ErrorWidget.builder = errorView;
+
           // Re-subscribe to all events - modals
           Share.showErrorModal.unsubscribeAll();
           Share.showErrorModal.subscribe((args) async {

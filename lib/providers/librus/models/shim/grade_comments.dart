@@ -8,7 +8,7 @@ class GradeComments {
     required this.comments,
   });
 
-  @JsonKey(name: 'Comments')
+  @JsonKey(name: 'Comments', defaultValue: null)
   final List<Comment>? comments;
 
   factory GradeComments.fromJson(Map<String, dynamic> json) => _$GradeCommentsFromJson(json);
@@ -25,16 +25,16 @@ class Comment {
     required this.text,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'AddedBy')
+  @JsonKey(name: 'AddedBy', defaultValue: null)
   final AddedBy? addedBy;
 
-  @JsonKey(name: 'Grade')
+  @JsonKey(name: 'Grade', defaultValue: null)
   final AddedBy? grade;
 
-  @JsonKey(name: 'Text')
+  @JsonKey(name: 'Text', defaultValue: '')
   final String text;
 
   factory Comment.fromJson(Map<String, dynamic> json) => _$CommentFromJson(json);
@@ -49,10 +49,10 @@ class AddedBy {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory AddedBy.fromJson(Map<String, dynamic> json) => _$AddedByFromJson(json);

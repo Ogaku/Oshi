@@ -3,6 +3,7 @@
 
 import 'dart:io';
 
+import 'package:appcenter_sdk_flutter/appcenter_sdk_flutter.dart' as apps;
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -85,6 +86,8 @@ class _BaseAppState extends State<BaseApp> {
         theme: _eventfulColorTheme,
         debugShowCheckedModeBanner: false,
         home: Builder(builder: (context) {
+          ErrorWidget.builder = errorView;
+
           // Re-subscribe to all events - update
           Share.checkUpdates.unsubscribeAll();
           Share.checkUpdates.subscribe((args) => _checkforUpdates(context));
@@ -371,3 +374,19 @@ class _UnreadDotState extends State<UnreadDot> {
 
 
  */
+
+Widget errorView(FlutterErrorDetails details) => CupertinoAlertDialog(
+      title: Text('A fucksy-wucksie occurd!'),
+      content: Column(children: [
+        Container(margin: EdgeInsets.only(top: 15, bottom: 10), child: Text(details.exceptionAsString())),
+        Opacity(opacity: 0.6, child: Text(details.stack.toString())),
+      ]),
+      actions: [
+        CupertinoButton(
+            onPressed: () async {
+              await Clipboard.setData(ClipboardData(text: '${details.exceptionAsString()}\n\n${details.stack.toString()}'));
+              await apps.AppCenterCrashes.trackException(message: details.exceptionAsString(), stackTrace: details.stack);
+            },
+            child: const Text('Press F to pay respects', style: TextStyle(color: CupertinoColors.destructiveRed)))
+      ],
+    );

@@ -19,22 +19,22 @@ Map<String, dynamic> _$SchoolNoticesToJson(SchoolNotices instance) =>
     };
 
 SchoolNotice _$SchoolNoticeFromJson(Map<String, dynamic> json) => SchoolNotice(
-      id: json['Id'] as String,
+      id: json['Id'] as String? ?? '',
       startDate: json['StartDate'] == null
           ? null
           : DateTime.parse(json['StartDate'] as String),
       endDate: json['EndDate'] == null
           ? null
           : DateTime.parse(json['EndDate'] as String),
-      subject: json['Subject'] as String,
-      content: json['Content'] as String,
+      subject: json['Subject'] as String? ?? '',
+      content: json['Content'] as String? ?? '',
       addedBy: json['AddedBy'] == null
           ? null
           : AddedBy.fromJson(json['AddedBy'] as Map<String, dynamic>),
       creationDate: json['CreationDate'] == null
           ? null
           : DateTime.parse(json['CreationDate'] as String),
-      wasRead: json['WasRead'] as bool,
+      wasRead: json['WasRead'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$SchoolNoticeToJson(SchoolNotice instance) =>
@@ -50,8 +50,8 @@ Map<String, dynamic> _$SchoolNoticeToJson(SchoolNotice instance) =>
     };
 
 AddedBy _$AddedByFromJson(Map<String, dynamic> json) => AddedBy(
-      id: json['Id'] as int,
-      url: json['Url'] as String,
+      id: json['Id'] as int? ?? -1,
+      url: json['Url'] as String? ?? '',
     );
 
 Map<String, dynamic> _$AddedByToJson(AddedBy instance) => <String, dynamic>{

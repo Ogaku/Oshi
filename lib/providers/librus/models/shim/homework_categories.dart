@@ -8,7 +8,7 @@ class HomeworkCategories {
     required this.categories,
   });
 
-  @JsonKey(name: 'Categories')
+  @JsonKey(name: 'Categories', defaultValue: null)
   final List<Category>? categories;
 
   factory HomeworkCategories.fromJson(Map<String, dynamic> json) =>
@@ -25,13 +25,13 @@ class Category {
     required this.categoryName,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Teacher')
+  @JsonKey(name: 'Teacher', defaultValue: null)
   final Teacher? teacher;
 
-  @JsonKey(name: 'CategoryName')
+  @JsonKey(name: 'CategoryName', defaultValue: '')
   final String categoryName;
 
   factory Category.fromJson(Map<String, dynamic> json) => _$CategoryFromJson(json);
@@ -46,10 +46,10 @@ class Teacher {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory Teacher.fromJson(Map<String, dynamic> json) => _$TeacherFromJson(json);

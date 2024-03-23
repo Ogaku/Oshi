@@ -8,7 +8,7 @@ class Timetables {
     required this.timetable,
   });
 
-  @JsonKey(name: 'Timetable')
+  @JsonKey(name: 'Timetable', defaultValue: {})
   final Map<String, List<List<TimetableLesson>?>> timetable;
 
   factory Timetables.fromJson(Map<String, dynamic> json) => _$TimetablesFromJson(json);
@@ -52,97 +52,97 @@ class TimetableLesson {
     this.virtualClassName,
   });
 
-  @JsonKey(name: 'Lesson')
+  @JsonKey(name: 'Lesson', defaultValue: null)
   final Link? lesson;
 
-  @JsonKey(name: 'Classroom')
+  @JsonKey(name: 'Classroom', defaultValue: null)
   final Link? classroom;
 
-  @JsonKey(name: 'DateFrom')
+  @JsonKey(name: 'DateFrom', defaultValue: null)
   final DateTime? dateFrom;
 
-  @JsonKey(name: 'DateTo')
+  @JsonKey(name: 'DateTo', defaultValue: null)
   final DateTime? dateTo;
 
-  @JsonKey(name: 'LessonNo')
+  @JsonKey(name: 'LessonNo', defaultValue: '')
   final String lessonNo;
 
-  @JsonKey(name: 'Subject')
+  @JsonKey(name: 'Subject', defaultValue: null)
   final Subject? subject;
 
-  @JsonKey(name: 'Teacher')
+  @JsonKey(name: 'Teacher', defaultValue: null)
   final Teacher? teacher;
 
-  @JsonKey(name: 'IsSubstitutionClass')
+  @JsonKey(name: 'IsSubstitutionClass', defaultValue: false)
   final bool isSubstitutionClass;
 
-  @JsonKey(name: 'IsCanceled')
+  @JsonKey(name: 'IsCanceled', defaultValue: false)
   final bool isCanceled;
 
-  @JsonKey(name: 'HourFrom')
+  @JsonKey(name: 'HourFrom', defaultValue: '00:00')
   final String hourFrom;
 
-  @JsonKey(name: 'HourTo')
+  @JsonKey(name: 'HourTo', defaultValue: '00:00')
   final String hourTo;
 
-  @JsonKey(name: 'VirtualClass')
+  @JsonKey(name: 'VirtualClass', defaultValue: null)
   final Class? virtualClass;
 
-  @JsonKey(name: 'VirtualClassName')
+  @JsonKey(name: 'VirtualClassName', defaultValue: null)
   final String? virtualClassName;
 
-  @JsonKey(name: 'Class')
+  @JsonKey(name: 'Class', defaultValue: null)
   final Class? timetableLessonClass;
 
-  @JsonKey(name: 'OrgClassroom')
+  @JsonKey(name: 'OrgClassroom', defaultValue: null)
   final Link? orgClassroom;
 
-  @JsonKey(name: 'OrgDate')
+  @JsonKey(name: 'OrgDate', defaultValue: null)
   final DateTime? orgDate;
 
-  @JsonKey(name: 'OrgLessonNo')
+  @JsonKey(name: 'OrgLessonNo', defaultValue: null)
   final String? orgLessonNo;
 
-  @JsonKey(name: 'OrgLesson')
+  @JsonKey(name: 'OrgLesson', defaultValue: null)
   final Link? orgLesson;
 
-  @JsonKey(name: 'OrgSubject')
+  @JsonKey(name: 'OrgSubject', defaultValue: null)
   final Link? orgSubject;
 
-  @JsonKey(name: 'OrgTeacher')
+  @JsonKey(name: 'OrgTeacher', defaultValue: null)
   final Link? orgTeacher;
 
-  @JsonKey(name: 'OrgHourFrom')
+  @JsonKey(name: 'OrgHourFrom', defaultValue: null)
   final String? orgHourFrom;
 
-  @JsonKey(name: 'OrgHourTo')
+  @JsonKey(name: 'OrgHourTo', defaultValue: null)
   final String? orgHourTo;
 
-  @JsonKey(name: 'NewClassroom')
+  @JsonKey(name: 'NewClassroom', defaultValue: null)
   final Link? newClassroom;
 
-  @JsonKey(name: 'NewDate')
+  @JsonKey(name: 'NewDate', defaultValue: null)
   final DateTime? newDate;
 
-  @JsonKey(name: 'NewLessonNo')
+  @JsonKey(name: 'NewLessonNo', defaultValue: null)
   final String? newLessonNo;
 
-  @JsonKey(name: 'NewLesson')
+  @JsonKey(name: 'NewLesson', defaultValue: null)
   final Link? newLesson;
 
-  @JsonKey(name: 'NewSubject')
+  @JsonKey(name: 'NewSubject', defaultValue: null)
   final Link? newSubject;
 
-  @JsonKey(name: 'NewTeacher')
+  @JsonKey(name: 'NewTeacher', defaultValue: null)
   final Link? newTeacher;
 
-  @JsonKey(name: 'NewHourFrom')
+  @JsonKey(name: 'NewHourFrom', defaultValue: null)
   final String? newHourFrom;
 
-  @JsonKey(name: 'NewHourTo')
+  @JsonKey(name: 'NewHourTo', defaultValue: null)
   final String? newHourTo;
 
-  @JsonKey(name: 'SubstitutionClassUrl')
+  @JsonKey(name: 'SubstitutionClassUrl', defaultValue: null)
   final String? substitutionClassUrl;
 
   factory TimetableLesson.fromJson(Map<String, dynamic> json) => _$TimetableLessonFromJson(json);
@@ -157,10 +157,10 @@ class Link {
     this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: '')
   final String? id;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String? url;
 
   factory Link.fromJson(Map<String, dynamic> json) => _$LinkFromJson(json);
@@ -175,10 +175,10 @@ class Class {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory Class.fromJson(Map<String, dynamic> json) => _$ClassFromJson(json);
@@ -195,16 +195,16 @@ class Subject {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: '')
   final String id;
 
-  @JsonKey(name: 'Name')
+  @JsonKey(name: 'Name', defaultValue: '')
   final String name;
 
-  @JsonKey(name: 'Short')
+  @JsonKey(name: 'Short', defaultValue: '')
   final String short;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory Subject.fromJson(Map<String, dynamic> json) => _$SubjectFromJson(json);
@@ -221,16 +221,16 @@ class Teacher {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: '')
   final String id;
 
-  @JsonKey(name: 'FirstName')
+  @JsonKey(name: 'FirstName', defaultValue: '')
   final String firstName;
 
-  @JsonKey(name: 'LastName')
+  @JsonKey(name: 'LastName', defaultValue: '')
   final String lastName;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory Teacher.fromJson(Map<String, dynamic> json) => _$TeacherFromJson(json);

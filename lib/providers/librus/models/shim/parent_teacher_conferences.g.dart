@@ -25,19 +25,19 @@ Map<String, dynamic> _$ParentTeacherConferencesToJson(
 ParentTeacherConference _$ParentTeacherConferenceFromJson(
         Map<String, dynamic> json) =>
     ParentTeacherConference(
-      id: json['Id'] as int,
+      id: json['Id'] as int? ?? -1,
       date:
           json['Date'] == null ? null : DateTime.parse(json['Date'] as String),
-      name: json['Name'] as String,
+      name: json['Name'] as String? ?? '',
       parentTeacherConferenceClass: json['Class'] == null
           ? null
           : Class.fromJson(json['Class'] as Map<String, dynamic>),
       teacher: json['Teacher'] == null
           ? null
           : Class.fromJson(json['Teacher'] as Map<String, dynamic>),
-      topic: json['Topic'] as String,
+      topic: json['Topic'] as String? ?? '',
       room: json['Room'],
-      time: json['Time'] as String,
+      time: json['Time'] as String? ?? '',
     );
 
 Map<String, dynamic> _$ParentTeacherConferenceToJson(
@@ -54,8 +54,8 @@ Map<String, dynamic> _$ParentTeacherConferenceToJson(
     };
 
 Class _$ClassFromJson(Map<String, dynamic> json) => Class(
-      id: json['Id'] as int,
-      url: json['Url'] as String,
+      id: json['Id'] as int? ?? -1,
+      url: json['Url'] as String? ?? '',
     );
 
 Map<String, dynamic> _$ClassToJson(Class instance) => <String, dynamic>{

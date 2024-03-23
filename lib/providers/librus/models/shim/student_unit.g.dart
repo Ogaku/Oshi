@@ -18,11 +18,11 @@ Map<String, dynamic> _$StudentUnitToJson(StudentUnit instance) =>
     };
 
 Unit _$UnitFromJson(Map<String, dynamic> json) => Unit(
-      id: json['Id'] as int,
-      name: json['Name'] as String,
-      shortName: json['ShortName'] as String,
-      type: json['Type'] as String,
-      behaviourType: json['BehaviourType'] as String,
+      id: json['Id'] as int? ?? -1,
+      name: json['Name'] as String? ?? '',
+      shortName: json['ShortName'] as String? ?? '',
+      type: json['Type'] as String? ?? '',
+      behaviourType: json['BehaviourType'] as String? ?? '',
       gradesSettings: json['GradesSettings'] == null
           ? null
           : GradesSettings.fromJson(
@@ -69,8 +69,8 @@ Map<String, dynamic> _$BehaviourGradesSettingsToJson(
     };
 
 StartPoints _$StartPointsFromJson(Map<String, dynamic> json) => StartPoints(
-      semester1: json['Semester1'] as int,
-      semester2: json['Semester2'] as int,
+      semester1: json['Semester1'] as int? ?? -1,
+      semester2: json['Semester2'] as int? ?? -2,
     );
 
 Map<String, dynamic> _$StartPointsToJson(StartPoints instance) =>
@@ -81,14 +81,17 @@ Map<String, dynamic> _$StartPointsToJson(StartPoints instance) =>
 
 GradesSettings _$GradesSettingsFromJson(Map<String, dynamic> json) =>
     GradesSettings(
-      standardGradesEnabled: json['StandardGradesEnabled'] as bool,
-      pointGradesEnabled: json['PointGradesEnabled'] as bool,
-      descriptiveGradesEnabled: json['DescriptiveGradesEnabled'] as bool,
+      standardGradesEnabled: json['StandardGradesEnabled'] as bool? ?? false,
+      pointGradesEnabled: json['PointGradesEnabled'] as bool? ?? false,
+      descriptiveGradesEnabled:
+          json['DescriptiveGradesEnabled'] as bool? ?? false,
       forcePointGradesDictionaries:
-          json['ForcePointGradesDictionaries'] as bool,
-      allowOverrangePointGrades: json['AllowOverrangePointGrades'] as bool,
-      allowClassTutorEditGrades: json['AllowClassTutorEditGrades'] as bool,
-      canAddAnyGrades: json['CanAddAnyGrades'] as bool,
+          json['ForcePointGradesDictionaries'] as bool? ?? false,
+      allowOverrangePointGrades:
+          json['AllowOverrangePointGrades'] as bool? ?? false,
+      allowClassTutorEditGrades:
+          json['AllowClassTutorEditGrades'] as bool? ?? false,
+      canAddAnyGrades: json['CanAddAnyGrades'] as bool? ?? false,
       grade0Map: json['Grade0Map'] as String? ?? '',
     );
 
@@ -106,12 +109,12 @@ Map<String, dynamic> _$GradesSettingsToJson(GradesSettings instance) =>
 
 LessonSettings _$LessonSettingsFromJson(Map<String, dynamic> json) =>
     LessonSettings(
-      allowZeroLessonNumber: json['AllowZeroLessonNumber'] as bool,
-      maxLessonNumber: json['MaxLessonNumber'] as int,
-      isExtramuralCourse: json['IsExtramuralCourse'] as bool,
-      isAdultsDaily: json['IsAdultsDaily'] as bool,
-      allowAddOtherLessons: json['AllowAddOtherLessons'] as bool,
-      allowAddSubstitutions: json['AllowAddSubstitutions'] as bool,
+      allowZeroLessonNumber: json['AllowZeroLessonNumber'] as bool? ?? false,
+      maxLessonNumber: json['MaxLessonNumber'] as int? ?? -1,
+      isExtramuralCourse: json['IsExtramuralCourse'] as bool? ?? false,
+      isAdultsDaily: json['IsAdultsDaily'] as bool? ?? false,
+      allowAddOtherLessons: json['AllowAddOtherLessons'] as bool? ?? false,
+      allowAddSubstitutions: json['AllowAddSubstitutions'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$LessonSettingsToJson(LessonSettings instance) =>
@@ -125,8 +128,8 @@ Map<String, dynamic> _$LessonSettingsToJson(LessonSettings instance) =>
     };
 
 LessonsRange _$LessonsRangeFromJson(Map<String, dynamic> json) => LessonsRange(
-      from: json['From'] as String? ?? '08:45',
-      to: json['To'] as String? ?? '08:00',
+      from: json['From'] as String? ?? '08:00',
+      to: json['To'] as String? ?? '08:45',
       rawFrom: json['RawFrom'] as int? ?? 946713600,
       rawTo: json['RawTo'] as int? ?? 946716300,
     );

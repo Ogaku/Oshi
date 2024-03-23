@@ -19,11 +19,11 @@ Map<String, dynamic> _$HomeworkCategoriesToJson(HomeworkCategories instance) =>
     };
 
 Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
-      id: json['Id'] as int,
+      id: json['Id'] as int? ?? -1,
       teacher: json['Teacher'] == null
           ? null
           : Teacher.fromJson(json['Teacher'] as Map<String, dynamic>),
-      categoryName: json['CategoryName'] as String,
+      categoryName: json['CategoryName'] as String? ?? '',
     );
 
 Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
@@ -33,8 +33,8 @@ Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
     };
 
 Teacher _$TeacherFromJson(Map<String, dynamic> json) => Teacher(
-      id: json['Id'] as int,
-      url: json['Url'] as String,
+      id: json['Id'] as int? ?? -1,
+      url: json['Url'] as String? ?? '',
     );
 
 Map<String, dynamic> _$TeacherToJson(Teacher instance) => <String, dynamic>{

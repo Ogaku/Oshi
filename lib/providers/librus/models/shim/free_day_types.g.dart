@@ -18,8 +18,8 @@ Map<String, dynamic> _$FreeDayTypesToJson(FreeDayTypes instance) =>
     };
 
 Type _$TypeFromJson(Map<String, dynamic> json) => Type(
-      id: json['Id'] as int,
-      name: json['Name'] as String,
+      id: json['Id'] as int? ?? -1,
+      name: json['Name'] as String? ?? '',
     );
 
 Map<String, dynamic> _$TypeToJson(Type instance) => <String, dynamic>{

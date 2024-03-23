@@ -29,28 +29,28 @@ class DataAttendance {
     required this.addedBy,
   });
 
-  @JsonKey(name: 'Lesson')
+  @JsonKey(name: 'Lesson', defaultValue: null)
   final Link? lesson;
 
-  @JsonKey(name: 'Student')
+  @JsonKey(name: 'Student', defaultValue: null)
   final Link? student;
 
-  @JsonKey(name: 'Date')
+  @JsonKey(name: 'Date', defaultValue: null)
   final DateTime? date;
 
-  @JsonKey(name: 'AddDate')
+  @JsonKey(name: 'AddDate', defaultValue: null)
   final DateTime? addDate;
 
-  @JsonKey(name: 'LessonNo')
+  @JsonKey(name: 'LessonNo', defaultValue: -1)
   final int lessonNo;
 
-  @JsonKey(name: 'Semester')
+  @JsonKey(name: 'Semester', defaultValue: -1)
   final int semester;
 
-  @JsonKey(name: 'Type')
+  @JsonKey(name: 'Type', defaultValue: null)
   final Link? type;
 
-  @JsonKey(name: 'AddedBy')
+  @JsonKey(name: 'AddedBy', defaultValue: null)
   final Link? addedBy;
 
   factory DataAttendance.fromJson(Map<String, dynamic> json) => _$DataAttendanceFromJson(json);
@@ -65,10 +65,10 @@ class Link {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory Link.fromJson(Map<String, dynamic> json) => _$LinkFromJson(json);

@@ -8,7 +8,7 @@ class Users {
     required this.users,
   });
 
-  @JsonKey(name: 'Users')
+  @JsonKey(name: 'Users', defaultValue: null)
   final List<User>? users;
 
   factory Users.fromJson(Map<String, dynamic> json) => _$UsersFromJson(json);
@@ -26,22 +26,22 @@ class User {
     required this.groupId,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'UserId')
+  @JsonKey(name: 'UserId', defaultValue: null)
   int? userId;
 
-  @JsonKey(name: 'FirstName')
+  @JsonKey(name: 'FirstName', defaultValue: '')
   final String firstName;
 
-  @JsonKey(name: 'LastName')
+  @JsonKey(name: 'LastName', defaultValue: '')
   final String lastName;
 
-  @JsonKey(name: 'IsEmployee')
+  @JsonKey(name: 'IsEmployee', defaultValue: false)
   final bool isEmployee;
 
-  @JsonKey(name: 'GroupId')
+  @JsonKey(name: 'GroupId', defaultValue: -1)
   final int groupId;
 
   @JsonKey(includeFromJson: false, includeToJson: false)

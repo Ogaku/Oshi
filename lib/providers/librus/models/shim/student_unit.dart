@@ -9,7 +9,7 @@ class StudentUnit {
     required this.unit,
   });
 
-  @JsonKey(name: 'Unit')
+  @JsonKey(name: 'Unit', defaultValue: null)
   final Unit? unit;
 
   factory StudentUnit.fromJson(Map<String, dynamic> json) => _$StudentUnitFromJson(json);
@@ -31,31 +31,31 @@ class Unit {
     required this.behaviourGradesSettings,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Name')
+  @JsonKey(name: 'Name', defaultValue: '')
   final String name;
 
-  @JsonKey(name: 'ShortName')
+  @JsonKey(name: 'ShortName', defaultValue: '')
   final String shortName;
 
-  @JsonKey(name: 'Type')
+  @JsonKey(name: 'Type', defaultValue: '')
   final String type;
 
-  @JsonKey(name: 'BehaviourType')
+  @JsonKey(name: 'BehaviourType', defaultValue: '')
   final String behaviourType;
 
-  @JsonKey(name: 'GradesSettings')
+  @JsonKey(name: 'GradesSettings', defaultValue: null)
   final GradesSettings? gradesSettings;
 
-  @JsonKey(name: 'LessonSettings')
+  @JsonKey(name: 'LessonSettings', defaultValue: null)
   final LessonSettings? lessonSettings;
 
-  @JsonKey(name: 'LessonsRange')
+  @JsonKey(name: 'LessonsRange', defaultValue: null)
   final List<LessonsRange>? lessonsRange;
 
-  @JsonKey(name: 'BehaviourGradesSettings')
+  @JsonKey(name: 'BehaviourGradesSettings', defaultValue: null)
   final BehaviourGradesSettings? behaviourGradesSettings;
 
   factory Unit.fromJson(Map<String, dynamic> json) => _$UnitFromJson(json);
@@ -70,10 +70,10 @@ class BehaviourGradesSettings {
     required this.showCategoriesShortcuts,
   });
 
-  @JsonKey(name: 'StartPoints')
+  @JsonKey(name: 'StartPoints', defaultValue: null)
   final StartPoints? startPoints;
 
-  @JsonKey(name: 'ShowCategoriesShortcuts')
+  @JsonKey(name: 'ShowCategoriesShortcuts', defaultValue: null)
   final bool showCategoriesShortcuts;
 
   factory BehaviourGradesSettings.fromJson(Map<String, dynamic> json) => _$BehaviourGradesSettingsFromJson(json);
@@ -88,10 +88,10 @@ class StartPoints {
     required this.semester2,
   });
 
-  @JsonKey(name: 'Semester1')
+  @JsonKey(name: 'Semester1', defaultValue: -1)
   final int semester1;
 
-  @JsonKey(name: 'Semester2')
+  @JsonKey(name: 'Semester2', defaultValue: -2)
   final int semester2;
 
   factory StartPoints.fromJson(Map<String, dynamic> json) => _$StartPointsFromJson(json);
@@ -112,28 +112,28 @@ class GradesSettings {
     this.grade0Map = '',
   });
 
-  @JsonKey(name: 'StandardGradesEnabled')
+  @JsonKey(name: 'StandardGradesEnabled', defaultValue: false)
   final bool standardGradesEnabled;
 
-  @JsonKey(name: 'PointGradesEnabled')
+  @JsonKey(name: 'PointGradesEnabled', defaultValue: false)
   final bool pointGradesEnabled;
 
-  @JsonKey(name: 'DescriptiveGradesEnabled')
+  @JsonKey(name: 'DescriptiveGradesEnabled', defaultValue: false)
   final bool descriptiveGradesEnabled;
 
-  @JsonKey(name: 'ForcePointGradesDictionaries')
+  @JsonKey(name: 'ForcePointGradesDictionaries', defaultValue: false)
   final bool forcePointGradesDictionaries;
 
-  @JsonKey(name: 'AllowOverrangePointGrades')
+  @JsonKey(name: 'AllowOverrangePointGrades', defaultValue: false)
   final bool allowOverrangePointGrades;
 
-  @JsonKey(name: 'AllowClassTutorEditGrades')
+  @JsonKey(name: 'AllowClassTutorEditGrades', defaultValue: false)
   final bool allowClassTutorEditGrades;
 
-  @JsonKey(name: 'CanAddAnyGrades')
+  @JsonKey(name: 'CanAddAnyGrades', defaultValue: false)
   final bool canAddAnyGrades;
 
-  @JsonKey(name: 'Grade0Map')
+  @JsonKey(name: 'Grade0Map', defaultValue: '')
   final String grade0Map;
 
   factory GradesSettings.fromJson(Map<String, dynamic> json) => _$GradesSettingsFromJson(json);
@@ -152,22 +152,22 @@ class LessonSettings {
     required this.allowAddSubstitutions,
   });
 
-  @JsonKey(name: 'AllowZeroLessonNumber')
+  @JsonKey(name: 'AllowZeroLessonNumber', defaultValue: false)
   final bool allowZeroLessonNumber;
 
-  @JsonKey(name: 'MaxLessonNumber')
+  @JsonKey(name: 'MaxLessonNumber', defaultValue: -1)
   final int maxLessonNumber;
 
-  @JsonKey(name: 'IsExtramuralCourse')
+  @JsonKey(name: 'IsExtramuralCourse', defaultValue: false)
   final bool isExtramuralCourse;
 
-  @JsonKey(name: 'IsAdultsDaily')
+  @JsonKey(name: 'IsAdultsDaily', defaultValue: false)
   final bool isAdultsDaily;
 
-  @JsonKey(name: 'AllowAddOtherLessons')
+  @JsonKey(name: 'AllowAddOtherLessons', defaultValue: false)
   final bool allowAddOtherLessons;
 
-  @JsonKey(name: 'AllowAddSubstitutions')
+  @JsonKey(name: 'AllowAddSubstitutions', defaultValue: false)
   final bool allowAddSubstitutions;
 
   factory LessonSettings.fromJson(Map<String, dynamic> json) => _$LessonSettingsFromJson(json);
@@ -178,22 +178,22 @@ class LessonSettings {
 @JsonSerializable()
 class LessonsRange {
   LessonsRange({
-    this.from = '08:45',
-    this.to = '08:00',
+    this.from = '08:00',
+    this.to = '08:45',
     this.rawFrom = 946713600,
     this.rawTo = 946716300,
   });
 
-  @JsonKey(name: 'From')
+  @JsonKey(name: 'From', defaultValue: '08:00')
   final String from;
 
-  @JsonKey(name: 'To')
+  @JsonKey(name: 'To', defaultValue: '08:45')
   final String to;
 
-  @JsonKey(name: 'RawFrom')
+  @JsonKey(name: 'RawFrom', defaultValue: 946713600)
   final int rawFrom;
 
-  @JsonKey(name: 'RawTo')
+  @JsonKey(name: 'RawTo', defaultValue: 946716300)
   final int rawTo;
 
   DateTime get fromTime => from.asTime();

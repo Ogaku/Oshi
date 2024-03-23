@@ -8,7 +8,7 @@ class SchoolNotices {
     required this.schoolNotices,
   });
 
-  @JsonKey(name: 'SchoolNotices')
+  @JsonKey(name: 'SchoolNotices', defaultValue: null)
   final List<SchoolNotice>? schoolNotices;
 
   factory SchoolNotices.fromJson(Map<String, dynamic> json) => _$SchoolNoticesFromJson(json);
@@ -29,28 +29,28 @@ class SchoolNotice {
     required this.wasRead,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: '')
   final String id;
 
-  @JsonKey(name: 'StartDate')
+  @JsonKey(name: 'StartDate', defaultValue: null)
   final DateTime? startDate;
 
-  @JsonKey(name: 'EndDate')
+  @JsonKey(name: 'EndDate', defaultValue: null)
   final DateTime? endDate;
 
-  @JsonKey(name: 'Subject')
+  @JsonKey(name: 'Subject', defaultValue: '')
   final String subject;
 
-  @JsonKey(name: 'Content')
+  @JsonKey(name: 'Content', defaultValue: '')
   final String content;
 
-  @JsonKey(name: 'AddedBy')
+  @JsonKey(name: 'AddedBy', defaultValue: null)
   final AddedBy? addedBy;
 
-  @JsonKey(name: 'CreationDate')
+  @JsonKey(name: 'CreationDate', defaultValue: null)
   final DateTime? creationDate;
 
-  @JsonKey(name: 'WasRead')
+  @JsonKey(name: 'WasRead', defaultValue: false)
   final bool wasRead;
 
   factory SchoolNotice.fromJson(Map<String, dynamic> json) => _$SchoolNoticeFromJson(json);
@@ -65,10 +65,10 @@ class AddedBy {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory AddedBy.fromJson(Map<String, dynamic> json) => _$AddedByFromJson(json);

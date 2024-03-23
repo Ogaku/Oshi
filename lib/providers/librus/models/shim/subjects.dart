@@ -8,7 +8,7 @@ class Subjects {
     required this.subjects,
   });
 
-  @JsonKey(name: 'Subjects')
+  @JsonKey(name: 'Subjects', defaultValue: null)
   final List<Subject>? subjects;
 
   factory Subjects.fromJson(Map<String, dynamic> json) => _$SubjectsFromJson(json);
@@ -27,22 +27,22 @@ class Subject {
     required this.isBlockLesson,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Name')
+  @JsonKey(name: 'Name', defaultValue: '')
   final String name;
 
-  @JsonKey(name: 'No')
+  @JsonKey(name: 'No', defaultValue: -1)
   final int no;
 
-  @JsonKey(name: 'Short')
+  @JsonKey(name: 'Short', defaultValue: '')
   final String short;
 
-  @JsonKey(name: 'IsExtracurricular')
+  @JsonKey(name: 'IsExtracurricular', defaultValue: false)
   final bool isExtracurricular;
 
-  @JsonKey(name: 'IsBlockLesson')
+  @JsonKey(name: 'IsBlockLesson', defaultValue: false)
   final bool isBlockLesson;
 
   factory Subject.fromJson(Map<String, dynamic> json) => _$SubjectFromJson(json);

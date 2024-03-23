@@ -17,11 +17,11 @@ Map<String, dynamic> _$UsersToJson(Users instance) => <String, dynamic>{
     };
 
 User _$UserFromJson(Map<String, dynamic> json) => User(
-      id: json['Id'] as int,
+      id: json['Id'] as int? ?? -1,
       firstName: json['FirstName'] as String? ?? '',
-      lastName: json['LastName'] as String,
-      isEmployee: json['IsEmployee'] as bool,
-      groupId: json['GroupId'] as int,
+      lastName: json['LastName'] as String? ?? '',
+      isEmployee: json['IsEmployee'] as bool? ?? false,
+      groupId: json['GroupId'] as int? ?? -1,
     )..userId = json['UserId'] as int?;
 
 Map<String, dynamic> _$UserToJson(User instance) {

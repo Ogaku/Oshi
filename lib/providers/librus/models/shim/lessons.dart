@@ -8,7 +8,7 @@ class Lessons {
     required this.lessons,
   });
 
-  @JsonKey(name: 'Lessons')
+  @JsonKey(name: 'Lessons', defaultValue: null)
   final List<Lesson>? lessons;
 
   factory Lessons.fromJson(Map<String, dynamic> json) => _$LessonsFromJson(json);
@@ -25,16 +25,16 @@ class Lesson {
     this.lessonClass
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Teacher')
+  @JsonKey(name: 'Teacher', defaultValue: null)
   final Link? teacher;
 
-  @JsonKey(name: 'Subject')
+  @JsonKey(name: 'Subject', defaultValue: null)
   final Link? subject;
 
-  @JsonKey(name: 'Class')
+  @JsonKey(name: 'Class', defaultValue: null)
   final Link? lessonClass;
 
   factory Lesson.fromJson(Map<String, dynamic> json) => _$LessonFromJson(json);
@@ -49,10 +49,10 @@ class Link {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory Link.fromJson(Map<String, dynamic> json) => _$LinkFromJson(json);

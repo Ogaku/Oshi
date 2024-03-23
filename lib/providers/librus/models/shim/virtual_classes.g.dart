@@ -19,16 +19,16 @@ Map<String, dynamic> _$VirtualClassesToJson(VirtualClasses instance) =>
     };
 
 VirtualClass _$VirtualClassFromJson(Map<String, dynamic> json) => VirtualClass(
-      id: json['Id'] as int,
+      id: json['Id'] as int? ?? -1,
       teacher: json['Teacher'] == null
           ? null
           : Subject.fromJson(json['Teacher'] as Map<String, dynamic>),
       subject: json['Subject'] == null
           ? null
           : Subject.fromJson(json['Subject'] as Map<String, dynamic>),
-      name: json['Name'] as String,
-      number: json['Number'] as int,
-      symbol: json['Symbol'] as String,
+      name: json['Name'] as String? ?? '',
+      number: json['Number'] as int? ?? -1,
+      symbol: json['Symbol'] as String? ?? '',
     );
 
 Map<String, dynamic> _$VirtualClassToJson(VirtualClass instance) =>
@@ -42,8 +42,8 @@ Map<String, dynamic> _$VirtualClassToJson(VirtualClass instance) =>
     };
 
 Subject _$SubjectFromJson(Map<String, dynamic> json) => Subject(
-      id: json['Id'] as int,
-      url: json['Url'] as String,
+      id: json['Id'] as int? ?? -1,
+      url: json['Url'] as String? ?? '',
     );
 
 Map<String, dynamic> _$SubjectToJson(Subject instance) => <String, dynamic>{

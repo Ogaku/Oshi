@@ -8,7 +8,7 @@ class EventCategories {
     required this.categories,
   });
 
-  @JsonKey(name: 'Categories')
+  @JsonKey(name: 'Categories', defaultValue: null)
   final List<Category>? categories;
 
   factory EventCategories.fromJson(Map<String, dynamic> json) => _$EventCategoriesFromJson(json);
@@ -24,13 +24,13 @@ class Category {
     required this.color,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Name')
+  @JsonKey(name: 'Name', defaultValue: '')
   final String name;
 
-  @JsonKey(name: 'Color')
+  @JsonKey(name: 'Color', defaultValue: null)
   final Color? color;
 
   factory Category.fromJson(Map<String, dynamic> json) => _$CategoryFromJson(json);
@@ -45,10 +45,10 @@ class Color {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory Color.fromJson(Map<String, dynamic> json) => _$ColorFromJson(json);

@@ -8,7 +8,7 @@ class TeacherFreeDays {
     required this.teacherFreeDays,
   });
 
-  @JsonKey(name: 'TeacherFreeDays')
+  @JsonKey(name: 'TeacherFreeDays', defaultValue: null)
   final List<TeacherFreeDay>? teacherFreeDays;
 
   factory TeacherFreeDays.fromJson(Map<String, dynamic> json) => _$TeacherFreeDaysFromJson(json);
@@ -27,22 +27,22 @@ class TeacherFreeDay {
     this.timeTo,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Teacher')
+  @JsonKey(name: 'Teacher', defaultValue: null)
   final Teacher? teacher;
 
-  @JsonKey(name: 'DateFrom')
+  @JsonKey(name: 'DateFrom', defaultValue: null)
   final DateTime? dateFrom;
 
-  @JsonKey(name: 'DateTo')
+  @JsonKey(name: 'DateTo', defaultValue: null)
   final DateTime? dateTo;
 
-  @JsonKey(name: 'TimeFrom')
+  @JsonKey(name: 'TimeFrom', defaultValue: null)
   final String? timeFrom;
 
-  @JsonKey(name: 'TimeTo')
+  @JsonKey(name: 'TimeTo', defaultValue: null)
   final String? timeTo;
 
   factory TeacherFreeDay.fromJson(Map<String, dynamic> json) => _$TeacherFreeDayFromJson(json);
@@ -57,10 +57,10 @@ class Teacher {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory Teacher.fromJson(Map<String, dynamic> json) => _$TeacherFromJson(json);

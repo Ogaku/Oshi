@@ -8,7 +8,7 @@ class ClassFreeDays {
     required this.classFreeDays,
   });
 
-  @JsonKey(name: 'ClassFreeDays')
+  @JsonKey(name: 'ClassFreeDays', defaultValue: null)
   final List<ClassFreeDay>? classFreeDays;
 
   factory ClassFreeDays.fromJson(Map<String, dynamic> json) => _$ClassFreeDaysFromJson(json);
@@ -29,28 +29,28 @@ class ClassFreeDay {
     this.virtualClass,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Class')
+  @JsonKey(name: 'Class', defaultValue: null)
   final Class? classFreeDayClass;
 
-  @JsonKey(name: 'Type')
+  @JsonKey(name: 'Type', defaultValue: null)
   final Class? type;
 
-  @JsonKey(name: 'DateFrom')
+  @JsonKey(name: 'DateFrom', defaultValue: null)
   final DateTime? dateFrom;
 
-  @JsonKey(name: 'DateTo')
+  @JsonKey(name: 'DateTo', defaultValue: null)
   final DateTime? dateTo;
 
-  @JsonKey(name: 'LessonNoFrom')
+  @JsonKey(name: 'LessonNoFrom', defaultValue: null)
   final int? lessonNoFrom;
 
-  @JsonKey(name: 'LessonNoTo')
+  @JsonKey(name: 'LessonNoTo', defaultValue: null)
   final int? lessonNoTo;
 
-  @JsonKey(name: 'VirtualClass')
+  @JsonKey(name: 'VirtualClass', defaultValue: null)
   final Class? virtualClass;
 
   factory ClassFreeDay.fromJson(Map<String, dynamic> json) => _$ClassFreeDayFromJson(json);
@@ -65,10 +65,10 @@ class Class {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory Class.fromJson(Map<String, dynamic> json) => _$ClassFromJson(json);

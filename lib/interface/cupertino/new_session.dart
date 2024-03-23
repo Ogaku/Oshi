@@ -15,6 +15,7 @@ import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:oshi/share/share.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:oshi/interface/cupertino/base_app.dart' show errorView;
 
 import 'package:oshi/interface/cupertino/session_login.dart' show LoginPage;
 import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart' show SliverNavigationBar;
@@ -189,7 +190,9 @@ class _NewSessionPageState extends State<NewSessionPage> {
         : CupertinoApp(
             theme: _eventfulColorTheme,
             debugShowCheckedModeBanner: false,
-            home: Builder(builder: (context) {
+            home: Builder(builder: (context) {    
+              ErrorWidget.builder = errorView;
+
               // Re-subscribe to all events - modals
               Share.showErrorModal.unsubscribeAll();
               Share.showErrorModal.subscribe((args) async {

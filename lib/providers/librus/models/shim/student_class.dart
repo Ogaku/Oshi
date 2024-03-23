@@ -6,7 +6,7 @@ part 'student_class.g.dart';
 class StudentClass {
   StudentClass({required this.studentClassClass});
 
-  @JsonKey(name: 'Class')
+  @JsonKey(name: 'Class', defaultValue: null)
   final Class? studentClassClass;
 
   factory StudentClass.fromJson(Map<String, dynamic> json) => _$StudentClassFromJson(json);
@@ -28,31 +28,31 @@ class Class {
     required this.classTutors,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Number')
+  @JsonKey(name: 'Number', defaultValue: -1)
   final int number;
 
-  @JsonKey(name: 'Symbol')
+  @JsonKey(name: 'Symbol', defaultValue: '')
   final String symbol;
 
-  @JsonKey(name: 'BeginSchoolYear')
+  @JsonKey(name: 'BeginSchoolYear', defaultValue: null)
   final DateTime? beginSchoolYear;
 
-  @JsonKey(name: 'EndFirstSemester')
+  @JsonKey(name: 'EndFirstSemester', defaultValue: null)
   final DateTime? endFirstSemester;
 
-  @JsonKey(name: 'EndSchoolYear')
+  @JsonKey(name: 'EndSchoolYear', defaultValue: null)
   final DateTime? endSchoolYear;
 
-  @JsonKey(name: 'Unit')
+  @JsonKey(name: 'Unit', defaultValue: null)
   final ClassTutor? unit;
 
-  @JsonKey(name: 'ClassTutor')
+  @JsonKey(name: 'ClassTutor', defaultValue: null)
   final ClassTutor? classTutor;
 
-  @JsonKey(name: 'ClassTutors')
+  @JsonKey(name: 'ClassTutors', defaultValue: null)
   final List<ClassTutor>? classTutors;
 
   factory Class.fromJson(Map<String, dynamic> json) => _$ClassFromJson(json);
@@ -67,10 +67,10 @@ class ClassTutor {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory ClassTutor.fromJson(Map<String, dynamic> json) => _$ClassTutorFromJson(json);

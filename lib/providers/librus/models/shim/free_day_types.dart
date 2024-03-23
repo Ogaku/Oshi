@@ -8,7 +8,7 @@ class FreeDayTypes {
     required this.types,
   });
 
-  @JsonKey(name: 'Types')
+  @JsonKey(name: 'Types', defaultValue: null)
   final List<Type>? types;
 
   factory FreeDayTypes.fromJson(Map<String, dynamic> json) => _$FreeDayTypesFromJson(json);
@@ -23,10 +23,10 @@ class Type {
     required this.name,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Name')
+  @JsonKey(name: 'Name', defaultValue: '')
   final String name;
 
   factory Type.fromJson(Map<String, dynamic> json) => _$TypeFromJson(json);

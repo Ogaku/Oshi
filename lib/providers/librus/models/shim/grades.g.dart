@@ -17,7 +17,7 @@ Map<String, dynamic> _$GradesToJson(Grades instance) => <String, dynamic>{
     };
 
 Grade _$GradeFromJson(Map<String, dynamic> json) => Grade(
-      id: json['Id'] as int,
+      id: json['Id'] as int? ?? -1,
       lesson: json['Lesson'] == null
           ? null
           : Link.fromJson(json['Lesson'] as Map<String, dynamic>),
@@ -33,18 +33,18 @@ Grade _$GradeFromJson(Map<String, dynamic> json) => Grade(
       addedBy: json['AddedBy'] == null
           ? null
           : Link.fromJson(json['AddedBy'] as Map<String, dynamic>),
-      grade: json['Grade'] as String,
+      grade: json['Grade'] as String? ?? '',
       date:
           json['Date'] == null ? null : DateTime.parse(json['Date'] as String),
       addDate: json['AddDate'] == null
           ? null
           : DateTime.parse(json['AddDate'] as String),
-      semester: json['Semester'] as int,
-      isConstituent: json['IsConstituent'] as bool,
-      isSemester: json['IsSemester'] as bool,
-      isSemesterProposition: json['IsSemesterProposition'] as bool,
-      isFinal: json['IsFinal'] as bool,
-      isFinalProposition: json['IsFinalProposition'] as bool,
+      semester: json['Semester'] as int? ?? -1,
+      isConstituent: json['IsConstituent'] as bool? ?? false,
+      isSemester: json['IsSemester'] as bool? ?? false,
+      isSemesterProposition: json['IsSemesterProposition'] as bool? ?? false,
+      isFinal: json['IsFinal'] as bool? ?? false,
+      isFinalProposition: json['IsFinalProposition'] as bool? ?? false,
       comments: (json['Comments'] as List<dynamic>?)
           ?.map((e) => Link.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -84,8 +84,8 @@ Map<String, dynamic> _$GradeToJson(Grade instance) {
 }
 
 Link _$LinkFromJson(Map<String, dynamic> json) => Link(
-      id: json['Id'] as int,
-      url: json['Url'] as String,
+      id: json['Id'] as int? ?? -1,
+      url: json['Url'] as String? ?? '',
     );
 
 Map<String, dynamic> _$LinkToJson(Link instance) => <String, dynamic>{

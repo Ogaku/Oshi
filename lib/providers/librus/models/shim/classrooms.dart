@@ -8,7 +8,7 @@ class Classrooms {
     required this.classrooms,
   });
 
-  @JsonKey(name: 'Classrooms')
+  @JsonKey(name: 'Classrooms', defaultValue: null)
   final List<Classroom>? classrooms;
 
   factory Classrooms.fromJson(Map<String, dynamic> json) => _$ClassroomsFromJson(json);
@@ -27,22 +27,22 @@ class Classroom {
     required this.description,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Name')
+  @JsonKey(name: 'Name', defaultValue: '')
   final String name;
 
-  @JsonKey(name: 'Symbol')
+  @JsonKey(name: 'Symbol', defaultValue: '')
   final String symbol;
 
-  @JsonKey(name: 'Size')
+  @JsonKey(name: 'Size', defaultValue: -1)
   final int size;
 
-  @JsonKey(name: 'SchoolCommonRoom')
+  @JsonKey(name: 'SchoolCommonRoom', defaultValue: false)
   final bool schoolCommonRoom;
 
-  @JsonKey(name: 'Description')
+  @JsonKey(name: 'Description', defaultValue: null)
   final String? description;
 
   factory Classroom.fromJson(Map<String, dynamic> json) => _$ClassroomFromJson(json);

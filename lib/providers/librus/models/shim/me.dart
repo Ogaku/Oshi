@@ -6,7 +6,7 @@ part 'me.g.dart';
 class Me {
   Me({required this.me});
 
-  @JsonKey(name: 'Me')
+  @JsonKey(name: 'Me', defaultValue: null)
   final MeClass? me;
 
   factory Me.fromJson(Map<String, dynamic> json) => _$MeFromJson(json);
@@ -23,16 +23,16 @@ class MeClass {
     required this.meClass,
   });
 
-  @JsonKey(name: 'Account')
+  @JsonKey(name: 'Account', defaultValue: null)
   final Account? account;
 
-  @JsonKey(name: 'Refresh')
+  @JsonKey(name: 'Refresh', defaultValue: -1)
   final int refresh;
 
-  @JsonKey(name: 'User')
+  @JsonKey(name: 'User', defaultValue: null)
   final User? user;
 
-  @JsonKey(name: 'Class')
+  @JsonKey(name: 'Class', defaultValue: null)
   final Class? meClass;
 
   factory MeClass.fromJson(Map<String, dynamic> json) => _$MeClassFromJson(json);
@@ -52,28 +52,28 @@ class Account {
       required this.isActive,
       required this.login});
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'UserId')
+  @JsonKey(name: 'UserId', defaultValue: -1)
   final int userId;
 
-  @JsonKey(name: 'FirstName')
+  @JsonKey(name: 'FirstName', defaultValue: '')
   final String firstName;
 
-  @JsonKey(name: 'LastName')
+  @JsonKey(name: 'LastName', defaultValue: '')
   final String lastName;
 
-  @JsonKey(name: 'Email')
+  @JsonKey(name: 'Email', defaultValue: '')
   final String email;
 
-  @JsonKey(name: 'GroupId')
+  @JsonKey(name: 'GroupId', defaultValue: -1)
   final int groupId;
 
-  @JsonKey(name: 'IsActive')
+  @JsonKey(name: 'IsActive', defaultValue: false)
   final bool isActive;
 
-  @JsonKey(name: 'Login')
+  @JsonKey(name: 'Login', defaultValue: '')
   final String login;
 
   factory Account.fromJson(Map<String, dynamic> json) => _$AccountFromJson(json);
@@ -88,10 +88,10 @@ class Class {
     required this.url,
   });
 
-  @JsonKey(name: 'Id')
+  @JsonKey(name: 'Id', defaultValue: -1)
   final int id;
 
-  @JsonKey(name: 'Url')
+  @JsonKey(name: 'Url', defaultValue: '')
   final String url;
 
   factory Class.fromJson(Map<String, dynamic> json) => _$ClassFromJson(json);
@@ -106,10 +106,10 @@ class User {
     required this.lastName,
   });
 
-  @JsonKey(name: 'FirstName')
+  @JsonKey(name: 'FirstName', defaultValue: '')
   final String firstName;
 
-  @JsonKey(name: 'LastName')
+  @JsonKey(name: 'LastName', defaultValue: '')
   final String lastName;
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
