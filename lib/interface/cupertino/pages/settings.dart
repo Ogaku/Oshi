@@ -261,10 +261,14 @@ class _SettingsPageState extends State<SettingsPage> {
                                               margin: EdgeInsets.symmetric(horizontal: 5),
                                               child: Opacity(
                                                   opacity: 0.5,
-                                                  child: Text(Share.session.data.student.subjects
-                                                      .where((x) => x.hasMajor)
-                                                      .average((x) => x.topMajor!.asValue)
-                                                      .toStringAsFixed(2))))),
+                                                  child: Text(() {
+                                                    var majors = Share.session.data.student.subjects
+                                                        .where((x) => x.hasMajor)
+                                                        .select((x, _) => x.topMajor!.asValue);
+                                                    return majors.isNotEmpty
+                                                        ? majors.average().toStringAsFixed(2)
+                                                        : 'Unavailable';
+                                                  }())))),
                                       CupertinoListTile(
                                           title: Text('Wasted time', overflow: TextOverflow.ellipsis),
                                           trailing: Container(
@@ -614,7 +618,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                           footer: Container(margin: EdgeInsets.symmetric(horizontal: 20)),
                                           children: [
                                             GestureDetector(
-                                                onTap: () => launchUrlString('https://github.com/szkolny-eu/szkolny-android'),
+                                                onTap: () =>
+                                                    launchUrlString('https://github.com/szkolny-eu/szkolny-android'),
                                                 child: Image.network(
                                                     'https://github.com/szkolny-eu/szkolny-android/blob/develop/.github/readme-banner.png?raw=true')),
                                           ]),
