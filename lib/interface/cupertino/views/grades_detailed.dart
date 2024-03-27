@@ -562,7 +562,11 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
 
 extension StringExtension on String {
   String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1)}";
+    try {
+      return "${this[0].toUpperCase()}${substring(1)}";
+    } catch (ex) {
+      return this;
+    }
   }
 }
 

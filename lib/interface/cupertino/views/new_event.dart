@@ -102,57 +102,59 @@ class _EventComposePageState extends State<EventComposePage> {
       trailing: CupertinoButton(
           padding: EdgeInsets.all(0),
           alignment: Alignment.centerRight,
+          onPressed: ((shareEvent || subjectController.text.isNotEmpty) && messageController.text.isNotEmpty)
+              ? () {
+                  try {
+                    if (widget.previous != null) {
+                      (widget.previous!.isSharedEvent ? Share.session.sharedEvents : Share.session.customEvents)
+                          .remove(widget.previous);
+                    }
+
+                    var event = Event(
+                        id: shareEvent
+                            ? (widget.previous != null ? widget.previous!.id : DateTime.now().millisecondsSinceEpoch)
+                            : -1,
+                        title: shareEvent ? null : subjectController.text,
+                        content: messageController.text,
+                        category: category,
+                        categoryName: customCategoryName,
+                        isOwnEvent: !shareEvent,
+                        isSharedEvent: shareEvent,
+                        sender: shareEvent
+                            ? Teacher(
+                                firstName: Share.session.data.student.account.firstName,
+                                lastName: Share.session.data.student.account.lastName)
+                            : null,
+                        classroom: classroomController.text.isNotEmpty
+                            ? Classroom(name: classroomController.text, symbol: classroomController.text)
+                            : null,
+                        lessonNo: int.tryParse(lessonNumberController.text),
+                        date: date,
+                        timeFrom: startTime,
+                        timeTo: endTime);
+
+                    (shareEvent ? Share.session.sharedEvents : Share.session.customEvents).add(event);
+                    Share.settings.save();
+
+                    if (shareEvent) event.share();
+                  } catch (e) {
+                    if (Platform.isAndroid || Platform.isIOS) {
+                      Fluttertoast.showToast(
+                        msg: '$e',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                      );
+                    }
+                  }
+                  // Close the current page
+                  Navigator.pop(context);
+                }
+              : null,
           child: Icon(widget.previous != null ? CupertinoIcons.pencil : CupertinoIcons.add,
               color: ((shareEvent || subjectController.text.isNotEmpty) && messageController.text.isNotEmpty)
                   ? CupertinoTheme.of(context).primaryColor
-                  : CupertinoColors.inactiveGray),
-          onPressed: () {
-            try {
-              if (widget.previous != null) {
-                (widget.previous!.isSharedEvent ? Share.session.sharedEvents : Share.session.customEvents)
-                    .remove(widget.previous);
-              }
-
-              var event = Event(
-                  id: shareEvent
-                      ? (widget.previous != null ? widget.previous!.id : DateTime.now().millisecondsSinceEpoch)
-                      : -1,
-                  title: shareEvent ? null : subjectController.text,
-                  content: messageController.text,
-                  category: category,
-                  categoryName: customCategoryName,
-                  isOwnEvent: !shareEvent,
-                  isSharedEvent: shareEvent,
-                  sender: shareEvent
-                      ? Teacher(
-                          firstName: Share.session.data.student.account.firstName,
-                          lastName: Share.session.data.student.account.lastName)
-                      : null,
-                  classroom: classroomController.text.isNotEmpty
-                      ? Classroom(name: classroomController.text, symbol: classroomController.text)
-                      : null,
-                  lessonNo: int.tryParse(lessonNumberController.text),
-                  date: date,
-                  timeFrom: startTime,
-                  timeTo: endTime);
-
-              (shareEvent ? Share.session.sharedEvents : Share.session.customEvents).add(event);
-              Share.settings.save();
-
-              if (shareEvent) event.share();
-            } catch (e) {
-              if (Platform.isAndroid || Platform.isIOS) {
-                Fluttertoast.showToast(
-                  msg: '$e',
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                );
-              }
-            }
-            // Close the current page
-            Navigator.pop(context);
-          }),
+                  : CupertinoColors.inactiveGray)),
       child: SingleChildScrollView(
           child: Container(
               margin: EdgeInsets.only(right: 10, left: 10, bottom: 10, top: 15),

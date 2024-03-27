@@ -63,37 +63,39 @@ class _MessageComposePageState extends State<MessageComposePage> {
       trailing: CupertinoButton(
           padding: EdgeInsets.all(0),
           alignment: Alignment.centerRight,
+          onPressed: (receivers.isNotEmpty && subjectController.text.isNotEmpty && messageController.text.isNotEmpty)
+              ? () {
+                  if (isWorking) return;
+                  try {
+                    setState(() => isWorking = true);
+                    Share.session.provider
+                        .sendMessage(
+                            receivers: receivers,
+                            topic: subjectController.text.replaceAll('\n', ' '),
+                            content: messageController.text +
+                                (signatureController.text.isEmpty ? '' : '\n\n${signatureController.text}'))
+                        .then((value) => setState(() => isWorking = false));
+                  } on Exception catch (e) {
+                    setState(() => isWorking = false);
+                    if (Platform.isAndroid || Platform.isIOS) {
+                      Fluttertoast.showToast(
+                        msg: '$e',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                      );
+                    }
+                  }
+                  // Close the current page
+                  Navigator.pop(context);
+                }
+              : null,
           child: isWorking
               ? CupertinoActivityIndicator()
               : Icon(CupertinoIcons.paperplane_fill,
                   color: (receivers.isNotEmpty && subjectController.text.isNotEmpty && messageController.text.isNotEmpty)
                       ? CupertinoTheme.of(context).primaryColor
-                      : CupertinoColors.inactiveGray),
-          onPressed: () {
-            if (isWorking) return;
-            try {
-              setState(() => isWorking = true);
-              Share.session.provider
-                  .sendMessage(
-                      receivers: receivers,
-                      topic: subjectController.text.replaceAll('\n', ' '),
-                      content: messageController.text +
-                          (signatureController.text.isEmpty ? '' : '\n\n${signatureController.text}'))
-                  .then((value) => setState(() => isWorking = false));
-            } on Exception catch (e) {
-              setState(() => isWorking = false);
-              if (Platform.isAndroid || Platform.isIOS) {
-                Fluttertoast.showToast(
-                  msg: '$e',
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                );
-              }
-            }
-            // Close the current page
-            Navigator.pop(context);
-          }),
+                      : CupertinoColors.inactiveGray)),
       child: SingleChildScrollView(
           child: Container(
               margin: EdgeInsets.only(right: 10, left: 10, bottom: 10, top: 15),
