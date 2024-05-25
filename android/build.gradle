@@ -1,6 +1,7 @@
 buildscript {
     ext.kotlin_version = '1.7.10'
     ext {
+        minSdkVersion       = 28
         compileSdkVersion   = 34                // or latest
         targetSdkVersion    = 34                // or latest
         appCompatVersion    = "1.4.2"           // or latest
@@ -38,10 +39,4 @@ subprojects {
 
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
-}
-
-android {
-  defaultConfig {
-    minSdkVersion 28
-  }
 }
