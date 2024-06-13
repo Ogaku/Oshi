@@ -1,6 +1,7 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
 import 'package:darq/darq.dart';
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/models/data/class.dart';
 import 'package:oshi/models/data/grade.dart';
@@ -13,7 +14,7 @@ part 'lesson.g.dart';
 
 @HiveType(typeId: 27)
 @JsonSerializable()
-class Lesson {
+class Lesson extends Equatable {
   Lesson({
     this.id = -1,
     this.url = 'https://g.co',
@@ -27,7 +28,7 @@ class Lesson {
     List<Grade>? grades,
   })  : hostClass = hostClass ?? Class(),
         teacher = teacher ?? Teacher(),
-        grades = grades ?? [];
+        _grades = grades ?? [];
 
   @HiveField(1)
   final int id;
@@ -57,7 +58,12 @@ class Lesson {
   final Teacher teacher;
 
   @HiveField(10)
-  final List<Grade> grades;
+  final List<Grade> _grades;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  List<Grade> get grades => _grades
+      .appendAll(Share.session.customGrades.containsKey(this) ? (Share.session.customGrades[this] ?? []) : [])
+      .toList();
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   Iterable<Grade> get gradesFirstSemester => grades.where((element) => element.semester == 1);
@@ -103,6 +109,18 @@ class Lesson {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   int get unseenCount => grades.count((x) => x.unseen);
+
+  @override
+  List<Object> get props => [
+        id,
+        url,
+        name,
+        no,
+        short,
+        isExtracurricular,
+        isBlockLesson,
+        teacher,
+      ];
 
   factory Lesson.fromJson(Map<String, dynamic> json) => _$LessonFromJson(json);
 

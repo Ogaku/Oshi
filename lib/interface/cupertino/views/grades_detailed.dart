@@ -9,6 +9,7 @@ import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/pages/messages.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
+import 'package:oshi/interface/cupertino/views/new_grade.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/grade.dart';
 import 'package:oshi/models/data/lesson.dart';
@@ -66,7 +67,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
           : gradesToDisplay.select((x, index) {
               return CupertinoListTile(
                   padding: EdgeInsets.all(0),
-                  title: x.asGrade(context,
+                  title: x.asGrade(context, setState,
                       corrected: widget.lesson.grades.firstWhereOrDefault(
                           (y) => x.resitPart && y.resitPart && y.name == x.name && x != y,
                           defaultValue: null)));
@@ -571,7 +572,7 @@ extension StringExtension on String {
 }
 
 extension GradeBodyExtension on Grade {
-  Widget asGrade(BuildContext context,
+  Widget asGrade(BuildContext context, void Function(VoidCallback fn) setState,
           {bool markRemoved = false, bool markModified = false, Function()? onTap, Grade? corrected}) =>
       CupertinoContextMenu.builder(
           enableHapticFeedback: true,
@@ -584,29 +585,62 @@ extension GradeBodyExtension on Grade {
               trailingIcon: CupertinoIcons.share,
               child: const Text('Share'),
             ),
-            CupertinoContextMenuAction(
-              isDestructiveAction: true,
-              trailingIcon: CupertinoIcons.chat_bubble_2,
-              child: const Text('Inquiry'),
-              onPressed: () {
-                Navigator.of(context, rootNavigator: true).pop();
-                showCupertinoModalBottomSheet(
-                    context: context,
-                    builder: (context) => MessageComposePage(
-                        receivers: [addedBy],
-                        subject: 'Pytanie o ocenę $value z dnia ${DateFormat("y.M.d").format(addDate)}',
-                        signature:
-                            '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-              },
-            ),
-          ],
+          ]
+              .appendIf(
+                  CupertinoContextMenuAction(
+                    trailingIcon: CupertinoIcons.pencil,
+                    child: const Text('Edit'),
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: true).pop();
+                      try {
+                        showCupertinoModalBottomSheet(
+                            context: context,
+                            builder: (context) => GradeComposePage(
+                                  previous: (grade: this, lesson: customLesson),
+                                )).then((value) => setState(() {}));
+                      } catch (ex) {
+                        // ignored
+                      }
+                    },
+                  ),
+                  isOwnGrade)
+              .append(CupertinoContextMenuAction(
+                isDestructiveAction: true,
+                trailingIcon: CupertinoIcons.chat_bubble_2,
+                child: const Text('Inquiry'),
+                onPressed: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  showCupertinoModalBottomSheet(
+                      context: context,
+                      builder: (context) => MessageComposePage(
+                          receivers: [addedBy],
+                          subject: 'Pytanie o ocenę $value z dnia ${DateFormat("y.M.d").format(addDate)}',
+                          signature:
+                              '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                },
+              ))
+              .appendIf(
+                  CupertinoContextMenuAction(
+                    isDestructiveAction: true,
+                    trailingIcon: CupertinoIcons.delete,
+                    child: const Text('Delete'),
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: true).pop();
+                      setState(() {
+                        Share.session.customGrades[customLesson]?.remove(this);
+                        Share.session.customGrades[customLesson]?.removeWhere((x) => x.id != -1 && x.id == id);
+                      });
+                      Share.settings.save();
+                    },
+                  ),
+                  isOwnGrade),
           builder: (BuildContext context, Animation<double> animation) => Column(
                   children: [
                 gradeBody(context, animation: animation, markRemoved: markRemoved, markModified: markModified, onTap: onTap)
               ].appendIf(
                       Container(
                           padding: EdgeInsets.only(left: 20, right: 10, top: 5, bottom: 10),
-                          child: corrected?.asGrade(context, markRemoved: true, markModified: true) ?? SizedBox()),
+                          child: corrected?.asGrade(context, setState, markRemoved: true, markModified: true) ?? SizedBox()),
                       corrected != null)));
 
   Widget gradeBody(BuildContext context,

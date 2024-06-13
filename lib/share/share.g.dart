@@ -61,6 +61,10 @@ class SessionAdapter extends TypeAdapter<Session> {
       customEvents: (fields[7] as List?)?.cast<Event>(),
       sharedEvents:
           fields[10] == null ? [] : (fields[10] as List?)?.cast<Event>(),
+      customGrades: fields[11] == null
+          ? {}
+          : (fields[11] as Map?)?.map((dynamic k, dynamic v) =>
+              MapEntry(k as Lesson, (v as List).cast<Grade>())),
       settings: fields[8] as SessionConfig?,
       unreadChanges: fields[9] as UnreadChanges?,
     )
@@ -71,7 +75,7 @@ class SessionAdapter extends TypeAdapter<Session> {
   @override
   void write(BinaryWriter writer, Session obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(1)
       ..write(obj.sessionName)
       ..writeByte(2)
@@ -90,6 +94,8 @@ class SessionAdapter extends TypeAdapter<Session> {
       ..write(obj.customEvents)
       ..writeByte(10)
       ..write(obj.sharedEvents)
+      ..writeByte(11)
+      ..write(obj.customGrades)
       ..writeByte(9)
       ..write(obj.unreadChanges);
   }

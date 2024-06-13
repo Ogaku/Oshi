@@ -1094,7 +1094,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                     .select(
                                       (y, index) => CupertinoListTile(
                                           padding: EdgeInsets.only(top: 5, bottom: 5),
-                                          title: y.value.asGrade(context,
+                                          title: y.value.asGrade(context, setState,
                                               markModified: y.type == RegisterChangeTypes.changed, onTap: () {
                                             var lesson = Share.session.data.student.subjects
                                                 .firstWhereOrDefault((value) => value.grades.contains(y.value));
@@ -1121,7 +1121,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                     .select(
                                       (y, index) => CupertinoListTile(
                                           padding: EdgeInsets.only(top: 5, bottom: 5),
-                                          title: y.value.asGrade(context, markRemoved: true)),
+                                          title: y.value.asGrade(context, setState, markRemoved: true)),
                                     )
                                     .toList())),
                         x.gradesChanged.any((element) => element.type == RegisterChangeTypes.removed))

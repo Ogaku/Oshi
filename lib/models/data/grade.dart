@@ -4,6 +4,7 @@ import 'package:darq/darq.dart';
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/models/data/teacher.dart';
 
 import 'package:hive/hive.dart';
@@ -119,6 +120,13 @@ class Grade extends Equatable {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get major => isFinal || isFinalProposition || isSemester || isSemesterProposition;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool get isOwnGrade => Share.session.customGrades.entries.any((x) => x.value.any((y) => y == this));
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  Lesson get customLesson =>
+      Share.session.customGrades.entries.firstWhereOrDefault((x) => x.value.any((y) => y == this))?.key ?? Lesson();
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   double get asValue {

@@ -237,6 +237,7 @@ class Session extends HiveObject {
       List<Event>? adminEvents,
       List<Event>? customEvents,
       List<Event>? sharedEvents,
+      Map<Lesson, List<Grade>>? customGrades,
       SessionConfig? settings,
       UnreadChanges? unreadChanges})
       : provider = provider ?? Share.providers[providerGuid]!.factory(),
@@ -246,6 +247,7 @@ class Session extends HiveObject {
         adminEvents = adminEvents ?? [],
         customEvents = customEvents ?? [],
         sharedEvents = sharedEvents ?? [],
+        customGrades = customGrades ?? {},
         settings = settings ?? SessionConfig(),
         unreadChanges = unreadChanges ?? UnreadChanges();
 
@@ -286,6 +288,9 @@ class Session extends HiveObject {
 
   @HiveField(10, defaultValue: [])
   List<Event> sharedEvents;
+
+  @HiveField(11, defaultValue: {})
+  Map<Lesson, List<Grade>> customGrades;
 
   @HiveField(9)
   UnreadChanges unreadChanges;

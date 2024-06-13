@@ -19,6 +19,8 @@ import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/pages/messages.dart';
 import 'package:oshi/interface/cupertino/pages/timetable.dart';
 import 'package:oshi/interface/cupertino/views/new_event.dart';
+import 'package:oshi/interface/cupertino/views/grades_detailed.dart' show GradeBodyExtension;
+import 'package:oshi/interface/cupertino/views/new_grade.dart';
 import 'package:oshi/interface/cupertino/widgets/entries_form.dart';
 import 'package:oshi/interface/cupertino/widgets/modal_page.dart';
 import 'package:oshi/interface/cupertino/widgets/options_form.dart';
@@ -775,7 +777,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         CupertinoPageRoute(
                             builder: (context) => CupertinoModalPage(title: 'Timetable Settings', children: [
                                   CupertinoListSection.insetGrouped(
-                                      margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
+                                      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
                                       additionalDividerMargin: 5,
                                       header: Container(
                                           margin: EdgeInsets.symmetric(horizontal: 20),
@@ -833,7 +835,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                         )),
                                       ]),
                                   CupertinoListSection.insetGrouped(
-                                      margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
+                                      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
                                       additionalDividerMargin: 5,
                                       header: Container(
                                           margin: EdgeInsets.symmetric(horizontal: 20),
@@ -965,7 +967,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             builder: (context) => StatefulBuilder(
                                 builder: ((context, setState) => CupertinoModalPage(title: 'Grades Settings', children: [
                                       CupertinoListSection.insetGrouped(
-                                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
+                                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
                                           additionalDividerMargin: 5,
                                           header: Container(
                                               margin: EdgeInsets.symmetric(horizontal: 20),
@@ -998,7 +1000,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                 child: CupertinoSwitch(
                                                     value: Share.session.settings.autoArithmeticAverage,
                                                     onChanged: (s) =>
-                                                        setState(() => Share.session.settings.autoArithmeticAverage = s)))
+                                                        setState(() => Share.session.settings.autoArithmeticAverage = s))),
                                           ]),
                                       OptionsForm(
                                           pop: false,
@@ -1012,7 +1014,102 @@ class _SettingsPageState extends State<SettingsPage> {
                                           update: <T>(v) {
                                             Share.session.settings.yearlyAverageMethod = v; // Set
                                             Share.refreshBase.broadcast(); // Refresh
-                                          })
+                                          }),
+                                      CupertinoListSection.insetGrouped(
+                                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
+                                          additionalDividerMargin: 5,
+                                          header: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 20),
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Text('GRADES SIMULATOR',
+                                                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
+                                          footer: Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 20),
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Text(
+                                                      'Grades added by you here are not synchronized across devices, and have local effect only.',
+                                                      style: TextStyle(fontSize: 13)))),
+                                          children: [
+                                            CupertinoListTile(
+                                                onTap: () => Navigator.push(
+                                                    context,
+                                                    CupertinoPageRoute(
+                                                        builder: (context) => StatefulBuilder(
+                                                            builder: ((context, setState) => CupertinoModalPage(
+                                                                title: 'Custom Grades',
+                                                                previousPageTitle: 'Grade Settings',
+                                                                trailing: PullDownButton(
+                                                                  itemBuilder: (context) => [
+                                                                    PullDownMenuItem(
+                                                                      title: 'New custom grade',
+                                                                      icon: CupertinoIcons.add,
+                                                                      onTap: () => showCupertinoModalBottomSheet(
+                                                                              context: context,
+                                                                              builder: (context) => GradeComposePage())
+                                                                          .then((value) => setState(() {})),
+                                                                    )
+                                                                  ],
+                                                                  buttonBuilder: (context, showMenu) => GestureDetector(
+                                                                    onTap: showMenu,
+                                                                    child: const Icon(CupertinoIcons.ellipsis_circle),
+                                                                  ),
+                                                                ),
+                                                                children: Share.session.customGrades.entries
+                                                                    .selectMany((x, _) =>
+                                                                        x.value.select((y, _) => (lesson: x.key, grade: y)))
+                                                                    .orderBy((x) => x.grade.date)
+                                                                    .groupBy((x) => x.lesson)
+                                                                    .select((element, index) =>
+                                                                        CupertinoListSection.insetGrouped(
+                                                                            margin: EdgeInsets.only(
+                                                                                left: 15, right: 15, bottom: 10),
+                                                                            header: Text(element.key.nameExtra),
+                                                                            additionalDividerMargin: 5,
+                                                                            children: element.isEmpty
+                                                                                // No messages to display
+                                                                                ? [
+                                                                                    CupertinoListTile(
+                                                                                        title: Opacity(
+                                                                                            opacity: 0.5,
+                                                                                            child: Container(
+                                                                                                alignment: Alignment.center,
+                                                                                                child: Text(
+                                                                                                  'No grades to display',
+                                                                                                  style: TextStyle(
+                                                                                                      fontSize: 16,
+                                                                                                      fontWeight:
+                                                                                                          FontWeight.normal),
+                                                                                                ))))
+                                                                                  ]
+                                                                                // Bindable messages layout
+                                                                                : element
+                                                                                    .toList()
+                                                                                    .select(
+                                                                                        (x, _) => x.grade.asGrade(context, setState))
+                                                                                    .toList()))
+                                                                    .appendIfEmpty(CupertinoListSection.insetGrouped(
+                                                                        margin:
+                                                                            EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                                                                        additionalDividerMargin: 5,
+                                                                        children: [
+                                                                          CupertinoListTile(
+                                                                              title: Opacity(
+                                                                                  opacity: 0.5,
+                                                                                  child: Container(
+                                                                                      alignment: Alignment.center,
+                                                                                      child: Text(
+                                                                                        'No grades to display',
+                                                                                        style: TextStyle(
+                                                                                            fontSize: 16,
+                                                                                            fontWeight: FontWeight.normal),
+                                                                                      ))))
+                                                                        ]))
+                                                                    .toList()))))),
+                                                title: Text('Custom Grades', overflow: TextOverflow.ellipsis),
+                                                trailing: CupertinoListTileChevron()),
+                                          ]),
                                     ]))))),
                     title: Text('Grades Settings', overflow: TextOverflow.ellipsis),
                     trailing: CupertinoListTileChevron()),
@@ -1068,7 +1165,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         CupertinoPageRoute(
                             builder: (context) => CupertinoModalPage(title: 'App Info', children: [
                                   CupertinoListSection.insetGrouped(
-                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
+                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
                                     additionalDividerMargin: 5,
                                     header: Container(
                                         margin: EdgeInsets.symmetric(horizontal: 20),
@@ -1383,7 +1480,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                     ],
                                   ),
                                   CupertinoListSection.insetGrouped(
-                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
+                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
                                     additionalDividerMargin: 5,
                                     header: Container(
                                         margin: EdgeInsets.symmetric(horizontal: 20),

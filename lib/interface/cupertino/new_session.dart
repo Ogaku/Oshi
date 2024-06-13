@@ -1,6 +1,4 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:darq/darq.dart';
@@ -46,8 +44,6 @@ class _NewSessionPageState extends State<NewSessionPage> {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Share.checkUpdates.broadcast(); // Check for updates
       NotificationController.requestNotificationAccess();
-
-      log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
       if (Share.settingsLoadError != null) {
         Share.showErrorModal.broadcast(Value((
