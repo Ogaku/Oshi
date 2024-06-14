@@ -28,7 +28,7 @@ class Lesson extends Equatable {
     List<Grade>? grades,
   })  : hostClass = hostClass ?? Class(),
         teacher = teacher ?? Teacher(),
-        _grades = grades ?? [];
+        grades = grades ?? [];
 
   @HiveField(1)
   final int id;
@@ -58,25 +58,25 @@ class Lesson extends Equatable {
   final Teacher teacher;
 
   @HiveField(10)
-  final List<Grade> _grades;
+  final List<Grade> grades;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  List<Grade> get grades => _grades
+  List<Grade> get allGrades => grades
       .appendAll(Share.session.customGrades.containsKey(this) ? (Share.session.customGrades[this] ?? []) : [])
       .toList();
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  Iterable<Grade> get gradesFirstSemester => grades.where((element) => element.semester == 1);
+  Iterable<Grade> get gradesFirstSemester => allGrades.where((element) => element.semester == 1);
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  Iterable<Grade> get gradesSecondSemester => grades.where((element) => element.semester == 2);
+  Iterable<Grade> get gradesSecondSemester => allGrades.where((element) => element.semester == 2);
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   Iterable<Grade> get gradesCurrentSemester =>
       DateTime.now().getDateOnly().isBefore(hostClass.endFirstSemester) ? gradesFirstSemester : gradesSecondSemester;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  bool get hasGrades => grades.isNotEmpty;
+  bool get hasGrades => allGrades.isNotEmpty;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get hasGradesCurrentSemester => gradesCurrentSemester.isNotEmpty;
@@ -85,30 +85,30 @@ class Lesson extends Equatable {
   String get nameExtra => name + (isExtracurricular ? '*' : '');
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  double get gradesAverage => grades
+  double get gradesAverage => allGrades
       .where((x) => x.countsToAverage && x.asValue >= 0)
       .toList()
       .gadesAverage(weighted: Share.session.settings.weightedAverage, adapt: Share.session.settings.autoArithmeticAverage);
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  double get gradesSemAverage => grades
+  double get gradesSemAverage => allGrades
       .where((x) => x.countsToAverage && x.asValue >= 0 && x.semester == 1)
       .toList()
       .gadesAverage(weighted: Share.session.settings.weightedAverage, adapt: Share.session.settings.autoArithmeticAverage);
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  bool get hasUnseen => grades.any((x) => x.unseen);
+  bool get hasUnseen => allGrades.any((x) => x.unseen);
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get hasMajor => topMajor != null;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  Grade? get topMajor => grades.any((x) => x.semester > 1)
-      ? (grades.firstWhereOrDefault((x) => x.isFinal) ?? grades.firstWhereOrDefault((x) => x.isFinalProposition))
-      : (grades.firstWhereOrDefault((x) => x.isSemester) ?? grades.firstWhereOrDefault((x) => x.isSemesterProposition));
+  Grade? get topMajor => allGrades.any((x) => x.semester > 1)
+      ? (allGrades.firstWhereOrDefault((x) => x.isFinal) ?? allGrades.firstWhereOrDefault((x) => x.isFinalProposition))
+      : (allGrades.firstWhereOrDefault((x) => x.isSemester) ?? allGrades.firstWhereOrDefault((x) => x.isSemesterProposition));
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  int get unseenCount => grades.count((x) => x.unseen);
+  int get unseenCount => allGrades.count((x) => x.unseen);
 
   @override
   List<Object> get props => [

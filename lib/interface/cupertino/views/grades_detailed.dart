@@ -33,9 +33,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
 
   @override
   Widget build(BuildContext context) {
-    var gradesToDisplay = widget.lesson.grades
+    var gradesToDisplay = widget.lesson.allGrades
         .where((x) => x.semester == 2)
-        .appendAllIfEmpty(widget.lesson.grades)
+        .appendAllIfEmpty(widget.lesson.allGrades)
         .where((x) => !x.major)
         .where((x) =>
             x.name.contains(RegExp(searchQuery, caseSensitive: false)) ||
@@ -46,7 +46,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
         .distinct((x) => mapPropsToHashCode([x.resitPart ? 0 : UniqueKey(), x.name]))
         .toList();
 
-    var secondSemester = widget.lesson.grades.any((x) => x.semester == 2 || x.isFinal || x.isFinalProposition);
+    var secondSemester = widget.lesson.allGrades.any((x) => x.semester == 2 || x.isFinal || x.isFinalProposition);
     var gradesWidget = CupertinoListSection.insetGrouped(
       margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
       additionalDividerMargin: 5,
@@ -68,7 +68,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
               return CupertinoListTile(
                   padding: EdgeInsets.all(0),
                   title: x.asGrade(context, setState,
-                      corrected: widget.lesson.grades.firstWhereOrDefault(
+                      corrected: widget.lesson.allGrades.firstWhereOrDefault(
                           (y) => x.resitPart && y.resitPart && y.name == x.name && x != y,
                           defaultValue: null)));
             }).toList(),
@@ -210,7 +210,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
     ];
 
     // Proposed grade (2nd semester / year)
-    if (widget.lesson.grades
+    if (widget.lesson.allGrades
             .firstWhereOrDefault((x) => x.isFinalProposition || (x.isSemesterProposition && x.semester == 2))
             ?.value !=
         null) {
@@ -222,7 +222,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                 CupertinoContextMenuAction(
                   onPressed: () {
                     sharing.Share.share(
-                        'I got a ${widget.lesson.grades.firstWhereOrDefault((x) => x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition))?.value} proposition from ${widget.lesson.name}!');
+                        'I got a ${widget.lesson.allGrades.firstWhereOrDefault((x) => x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition))?.value} proposition from ${widget.lesson.name}!');
                     Navigator.of(context, rootNavigator: true).pop();
                   },
                   trailingIcon: CupertinoIcons.share,
@@ -267,10 +267,10 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     UnreadDot(
-                                        unseen: () => widget.lesson.grades.any((x) =>
+                                        unseen: () => widget.lesson.allGrades.any((x) =>
                                             (x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition)) &&
                                             x.unseen),
-                                        markAsSeen: () => widget.lesson.grades
+                                        markAsSeen: () => widget.lesson.allGrades
                                             .where(
                                                 (x) => x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition))
                                             .forEach((x) => x.markAsSeen()),
@@ -281,7 +281,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                     ),
                                   ]),
                               Text(
-                                widget.lesson.grades
+                                widget.lesson.allGrades
                                         .firstWhereOrDefault(
                                             (x) => x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition))
                                         ?.value
@@ -294,7 +294,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
     }
 
     // Proposed grade (1st semester)
-    if (widget.lesson.grades.firstWhereOrDefault((x) => x.isSemesterProposition && x.semester == 1)?.value != null) {
+    if (widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemesterProposition && x.semester == 1)?.value != null) {
       gradesSemesterBottomWidgets.add(CupertinoListTile(
           padding: EdgeInsets.all(0),
           title: CupertinoContextMenu.builder(
@@ -303,7 +303,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                 CupertinoContextMenuAction(
                   onPressed: () {
                     sharing.Share.share(
-                        'I got a ${widget.lesson.grades.firstWhereOrDefault((x) => x.isSemesterProposition && x.semester == 1)?.value} semester proposition from ${widget.lesson.name}!');
+                        'I got a ${widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemesterProposition && x.semester == 1)?.value} semester proposition from ${widget.lesson.name}!');
                     Navigator.of(context, rootNavigator: true).pop();
                   },
                   trailingIcon: CupertinoIcons.share,
@@ -348,9 +348,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     UnreadDot(
-                                        unseen: () => widget.lesson.grades
+                                        unseen: () => widget.lesson.allGrades
                                             .any((x) => (x.isSemesterProposition && x.semester == 1) && x.unseen),
-                                        markAsSeen: () => widget.lesson.grades
+                                        markAsSeen: () => widget.lesson.allGrades
                                             .where((x) => x.isSemesterProposition && x.semester == 1)
                                             .forEach((x) => x.markAsSeen()),
                                         margin: EdgeInsets.only(right: 8)),
@@ -360,7 +360,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                     ),
                                   ]),
                               Text(
-                                widget.lesson.grades
+                                widget.lesson.allGrades
                                         .firstWhereOrDefault((x) => x.isSemesterProposition && x.semester == 1)
                                         ?.value
                                         .toString() ??
@@ -372,7 +372,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
     }
 
     // Final grade (2nd semester / year)
-    if (widget.lesson.grades.firstWhereOrDefault((x) => x.isFinal || (x.isSemester && x.semester == 2))?.value != null) {
+    if (widget.lesson.allGrades.firstWhereOrDefault((x) => x.isFinal || (x.isSemester && x.semester == 2))?.value != null) {
       gradesBottomWidgets.add(CupertinoListTile(
           padding: EdgeInsets.all(0),
           title: CupertinoContextMenu.builder(
@@ -381,7 +381,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                 CupertinoContextMenuAction(
                   onPressed: () {
                     sharing.Share.share(
-                        'I got a ${widget.lesson.grades.firstWhereOrDefault((x) => x.isFinal || (x.semester == 2 && x.isSemester))?.value} final from ${widget.lesson.name}!');
+                        'I got a ${widget.lesson.allGrades.firstWhereOrDefault((x) => x.isFinal || (x.semester == 2 && x.isSemester))?.value} final from ${widget.lesson.name}!');
                     Navigator.of(context, rootNavigator: true).pop();
                   },
                   trailingIcon: CupertinoIcons.share,
@@ -426,9 +426,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     UnreadDot(
-                                        unseen: () => widget.lesson.grades
+                                        unseen: () => widget.lesson.allGrades
                                             .any((x) => (x.isFinal || (x.semester == 2 && x.isSemester)) && x.unseen),
-                                        markAsSeen: () => widget.lesson.grades
+                                        markAsSeen: () => widget.lesson.allGrades
                                             .where((x) => x.isFinal || (x.semester == 2 && x.isSemester))
                                             .forEach((x) => x.markAsSeen()),
                                         margin: EdgeInsets.only(right: 8)),
@@ -438,7 +438,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                     ),
                                   ]),
                               Text(
-                                widget.lesson.grades
+                                widget.lesson.allGrades
                                         .firstWhereOrDefault((x) => x.isFinal || (x.semester == 2 && x.isSemester))
                                         ?.value
                                         .toString() ??
@@ -450,7 +450,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
     }
 
     // Final grade (1st semester)
-    if (widget.lesson.grades.firstWhereOrDefault((x) => x.isSemester && x.semester == 1)?.value != null) {
+    if (widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemester && x.semester == 1)?.value != null) {
       gradesSemesterBottomWidgets.add(CupertinoListTile(
           padding: EdgeInsets.all(0),
           title: CupertinoContextMenu.builder(
@@ -459,7 +459,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                 CupertinoContextMenuAction(
                   onPressed: () {
                     sharing.Share.share(
-                        'I got a ${widget.lesson.grades.firstWhereOrDefault((x) => x.isSemester && x.semester == 1)?.value} semester from ${widget.lesson.name}!');
+                        'I got a ${widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemester && x.semester == 1)?.value} semester from ${widget.lesson.name}!');
                     Navigator.of(context, rootNavigator: true).pop();
                   },
                   trailingIcon: CupertinoIcons.share,
@@ -505,8 +505,8 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                   children: [
                                     UnreadDot(
                                         unseen: () =>
-                                            widget.lesson.grades.any((x) => (x.isSemester && x.semester == 1) && x.unseen),
-                                        markAsSeen: () => widget.lesson.grades
+                                            widget.lesson.allGrades.any((x) => (x.isSemester && x.semester == 1) && x.unseen),
+                                        markAsSeen: () => widget.lesson.allGrades
                                             .where((x) => x.isSemester && x.semester == 1)
                                             .forEach((x) => x.markAsSeen()),
                                         margin: EdgeInsets.only(right: 8)),
@@ -516,7 +516,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                     ),
                                   ]),
                               Text(
-                                widget.lesson.grades
+                                widget.lesson.allGrades
                                         .firstWhereOrDefault((x) => x.isSemester && x.semester == 1)
                                         ?.value
                                         .toString() ??
@@ -604,21 +604,23 @@ extension GradeBodyExtension on Grade {
                     },
                   ),
                   isOwnGrade)
-              .append(CupertinoContextMenuAction(
-                isDestructiveAction: true,
-                trailingIcon: CupertinoIcons.chat_bubble_2,
-                child: const Text('Inquiry'),
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: true).pop();
-                  showCupertinoModalBottomSheet(
-                      context: context,
-                      builder: (context) => MessageComposePage(
-                          receivers: [addedBy],
-                          subject: 'Pytanie o ocenę $value z dnia ${DateFormat("y.M.d").format(addDate)}',
-                          signature:
-                              '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-                },
-              ))
+              .appendIf(
+                  CupertinoContextMenuAction(
+                    isDestructiveAction: true,
+                    trailingIcon: CupertinoIcons.chat_bubble_2,
+                    child: const Text('Inquiry'),
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: true).pop();
+                      showCupertinoModalBottomSheet(
+                          context: context,
+                          builder: (context) => MessageComposePage(
+                              receivers: [addedBy],
+                              subject: 'Pytanie o ocenę $value z dnia ${DateFormat("y.M.d").format(addDate)}',
+                              signature:
+                                  '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                    },
+                  ),
+                  !isOwnGrade)
               .appendIf(
                   CupertinoContextMenuAction(
                     isDestructiveAction: true,

@@ -65,7 +65,7 @@ class _GradesPageState extends State<GradesPage> {
         .orderBy((x) => x.name)
         .toList();
 
-    var hasSecondSemester = subjectsToDisplay.any((x) => x.grades.any((y) => y.semester == 2));
+    var hasSecondSemester = subjectsToDisplay.any((x) => x.allGrades.any((y) => y.semester == 2));
     var subjectsWidget = CupertinoListSection.insetGrouped(
       margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
       additionalDividerMargin: 5,
@@ -84,7 +84,7 @@ class _GradesPageState extends State<GradesPage> {
             ]
           // Bindable messages layout
           : subjectsToDisplay.select((x, index) {
-              var grades = x.grades.where((x) => x.semester == 2).appendAllIfEmpty(x.grades);
+              var grades = x.allGrades.where((x) => x.semester == 2).appendAllIfEmpty(x.allGrades);
 
               return Builder(
                   builder: (context) => CupertinoListTile(

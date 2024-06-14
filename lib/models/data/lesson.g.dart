@@ -26,6 +26,7 @@ class LessonAdapter extends TypeAdapter<Lesson> {
       isBlockLesson: fields[7] as bool,
       hostClass: fields[8] as Class?,
       teacher: fields[9] as Teacher?,
+      grades: (fields[10] as List?)?.cast<Grade>(),
     );
   }
 
@@ -52,7 +53,7 @@ class LessonAdapter extends TypeAdapter<Lesson> {
       ..writeByte(9)
       ..write(obj.teacher)
       ..writeByte(10)
-      ..write(obj._grades);
+      ..write(obj.grades);
   }
 
   @override
@@ -84,6 +85,9 @@ Lesson _$LessonFromJson(Map<String, dynamic> json) => Lesson(
       teacher: json['teacher'] == null
           ? null
           : Teacher.fromJson(json['teacher'] as Map<String, dynamic>),
+      grades: (json['grades'] as List<dynamic>?)
+          ?.map((e) => Grade.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$LessonToJson(Lesson instance) => <String, dynamic>{
@@ -96,4 +100,5 @@ Map<String, dynamic> _$LessonToJson(Lesson instance) => <String, dynamic>{
       'isBlockLesson': instance.isBlockLesson,
       'hostClass': instance.hostClass,
       'teacher': instance.teacher,
+      'grades': instance.grades,
     };

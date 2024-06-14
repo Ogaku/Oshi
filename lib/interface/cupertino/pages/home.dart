@@ -100,10 +100,10 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
 
     // Event list for the next week (7 days), exc homeworks and teacher absences
     var gradesWeek = Share.session.data.student.subjects
-        .where((x) => x.grades.isNotEmpty)
+        .where((x) => x.allGrades.isNotEmpty)
         .select((x, index) => (
               lesson: x,
-              grades: x.grades.where((y) => y.addDate.isAfter(DateTime.now().subtract(Duration(days: 7)).asDate())).toList()
+              grades: x.allGrades.where((y) => y.addDate.isAfter(DateTime.now().subtract(Duration(days: 7)).asDate())).toList()
             ))
         .where((x) => x.grades.isNotEmpty)
         .orderByDescending((x) => x.grades.orderByDescending((y) => y.addDate).first.addDate)
@@ -1097,7 +1097,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                           title: y.value.asGrade(context, setState,
                                               markModified: y.type == RegisterChangeTypes.changed, onTap: () {
                                             var lesson = Share.session.data.student.subjects
-                                                .firstWhereOrDefault((value) => value.grades.contains(y.value));
+                                                .firstWhereOrDefault((value) => value.allGrades.contains(y.value));
                                             if (lesson == null) return;
                                             Share.tabsNavigatePage.broadcast(Value(1));
                                             Future.delayed(Duration(milliseconds: 250))
