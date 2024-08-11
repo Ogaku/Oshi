@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 
 // Boiler: returned to the main application
@@ -18,13 +19,21 @@ class _SessionsPageState extends State<SessionsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Material App',
-      home: Scaffold(
-        body: const Center(
-          child: Text('Hello World'),
-        ),
-      ),
-    );
+    return DynamicColorBuilder(
+        builder: (lightColorScheme, darkColorScheme) => MaterialApp(
+              theme: ThemeData(
+                colorScheme: lightColorScheme,
+                useMaterial3: true,
+              ),
+              darkTheme: ThemeData(
+                colorScheme: darkColorScheme,
+                useMaterial3: true,
+              ),
+              home: Scaffold(
+                body: const Center(
+                  child: Text('Hello World'),
+                ),
+              ),
+            ));
   }
 }

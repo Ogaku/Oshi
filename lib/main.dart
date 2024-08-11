@@ -9,10 +9,12 @@ import 'package:oshi/share/background.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/share.dart';
 
-import 'package:oshi/interface/material/sessions_page.dart' as materialapp show sessionsPage;
 import 'package:oshi/interface/cupertino/sessions_page.dart' as cupertinoapp show sessionsPage;
 import 'package:oshi/interface/cupertino/new_session.dart' as cupertinoapp show newSessionPage;
 import 'package:oshi/interface/cupertino/base_app.dart' as cupertinoapp show baseApp;
+import 'package:oshi/interface/material/sessions_page.dart' as materialapp show sessionsPage;
+import 'package:oshi/interface/material/new_session.dart' as materialapp show newSessionPage;
+import 'package:oshi/interface/material/base_app.dart' as materialapp show baseApp;
 
 Future<void> main() async {
   // Setup routine, see background.dart
@@ -36,26 +38,30 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  StatefulWidget Function() child = Share.settings.appSettings.useCupertino
+  StatefulWidget Function() child = Share.settings.appSettings.useCupertino && false // TODO
       ? () => (Share.settings.sessions.lastSession != null
           ? cupertinoapp.baseApp
           : (Share.settings.sessions.sessions.isEmpty ? cupertinoapp.newSessionPage : cupertinoapp.sessionsPage))
-      : () => materialapp.sessionsPage;
+      : () => (Share.settings.sessions.lastSession != null
+          ? materialapp.baseApp
+          : (Share.settings.sessions.sessions.isEmpty ? materialapp.newSessionPage : materialapp.sessionsPage));
 
   @override
   void initState() {
     super.initState();
     initializeDateFormatting();
 
-    if (Platform.isAndroid || Platform.isIOS) initPlatformState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // Check whether the app was launched by a notification, parse the payload
-      Share.notificationsPlugin.getNotificationAppLaunchDetails().then((value) {
-        if (value?.didNotificationLaunchApp ?? false) {
-          NotificationController.handleJsonNotificationPayload(value?.notificationResponse);
-        }
+    if (Platform.isAndroid || Platform.isIOS) {
+      initPlatformState();
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        // Check whether the app was launched by a notification, parse the payload
+        Share.notificationsPlugin.getNotificationAppLaunchDetails().then((value) {
+          if (value?.didNotificationLaunchApp ?? false) {
+            NotificationController.handleJsonNotificationPayload(value?.notificationResponse);
+          }
+        });
       });
-    });
+    }
   }
 
   Future<void> initPlatformState() async {
