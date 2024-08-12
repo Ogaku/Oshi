@@ -4,6 +4,8 @@ on:
     branches:
       - main
 
+permissions: write-all
+
 jobs:
   build:
     name: Build Web
@@ -24,16 +26,10 @@ jobs:
           flutter pub get
           flutter build web --release --base-href /Oshi/
 
-      - name: Push to gh-pages
-        run: |
-          cd build/web
-          git init
-          
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git remote add origin https://${{ secrets.KEY }}@github.com:Ogaku/Oshi.git
-
-          git checkout -b gh-pages
-          git add --all
-          git commit -m "Update Pages"
-          git push origin gh-pages
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: build/web
+          CLEAN: true

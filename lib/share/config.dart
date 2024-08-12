@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_final_fields
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:universal_io/io.dart';
 import 'dart:typed_data';
 
@@ -172,7 +173,7 @@ class SessionConfig with ChangeNotifier {
   @HiveField(19, defaultValue: '')
   String _userAvatarImage;
 
-  @HiveField(20, defaultValue: true)
+  @HiveField(20, defaultValue: !kIsWeb)
   bool _enableBackgroundSync;
 
   @HiveField(21, defaultValue: false)

@@ -1,11 +1,10 @@
 {
-    "name": "oshi",
-    "short_name": "oshi",
-    "start_url": ".",
+    "name": "Oshi",
+    "short_name": "Oshi",
+    "start_url": "https://ogaku.github.io/Oshi",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "theme_color": "#000000",
+    "description": "The Hoshi of Oshi's",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

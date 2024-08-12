@@ -7,6 +7,7 @@ import 'package:darq/darq.dart';
 import 'package:duration/locale.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -539,9 +540,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                                     child: Text('Background synchronization',
                                                         maxLines: 1, overflow: TextOverflow.ellipsis)),
                                                 child: CupertinoSwitch(
-                                                    value: Share.session.settings.enableBackgroundSync,
-                                                    onChanged: (s) =>
-                                                        setState(() => Share.session.settings.enableBackgroundSync = s))),
+                                                    value: kIsWeb ? false : Share.session.settings.enableBackgroundSync,
+                                                    onChanged: (s) => setState(() =>
+                                                        Share.session.settings.enableBackgroundSync = kIsWeb ? false : s))),
                                           ]),
                                       CupertinoListSection.insetGrouped(
                                           additionalDividerMargin: 5,
@@ -1087,8 +1088,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                                 // Bindable messages layout
                                                                                 : element
                                                                                     .toList()
-                                                                                    .select(
-                                                                                        (x, _) => x.grade.asGrade(context, setState))
+                                                                                    .select((x, _) =>
+                                                                                        x.grade.asGrade(context, setState))
                                                                                     .toList()))
                                                                     .appendIfEmpty(CupertinoListSection.insetGrouped(
                                                                         margin:
