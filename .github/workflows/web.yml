@@ -2,33 +2,36 @@ name: Flutter Web
 on:
   push:
     branches:
-      - master
+      - main
+
 jobs:
   build:
     name: Build Web
-    environment: Web
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           token: ${{ secrets.KEY }}
 
-      - uses: subosito/flutter-action@v1
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          channel: 'dev'
+          channel: stable
+          flutter-version: 3.22.3
 
-      - run: |
-          flutter config --enable-web
+      - name: Build the web app
+        run: |
           flutter pub get
           flutter build web --release --base-href /Oshi/
 
-      - run: |
+      - name: Push to gh-pages
+        run: |
           cd build/web
           git init
           
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git remote add origin https://github.com/Ogaku/Oshi
+          git remote add origin https://${{ secrets.KEY }}@github.com:Ogaku/Oshi.git
 
           git checkout -b gh-pages
           git add --all
