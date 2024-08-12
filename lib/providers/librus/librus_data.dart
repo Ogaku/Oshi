@@ -698,13 +698,17 @@ class LibrusDataReader implements models.IProvider {
   Uri? get providerBannerUri => Uri.parse('https://api.librus.pl/OAuth/images/synergia-logo.png');
 
   @override
-  Map<String, ({String name, bool obscure})> get credentialsConfig => kIsWeb
+  Map<String, ({String name, bool obscure, ({String text, Uri link})? helper})> get credentialsConfig => kIsWeb
       ? {
-          'login': (name: 'Username', obscure: false),
-          'pass': (name: 'Password', obscure: true),
-          'proxy': (name: 'Proxy URL', obscure: false)
+          'login': (name: 'Username', obscure: false, helper: null),
+          'pass': (name: 'Password', obscure: true, helper: null),
+          'proxy': (
+            name: 'Proxy URL',
+            obscure: false,
+            helper: (text: 'Create your own proxy using our template', link: Uri.parse('https://github.com/Ogaku/Oshi/wiki/Web-app'))
+          )
         }
-      : {'login': (name: 'Username', obscure: false), 'pass': (name: 'Password', obscure: true)};
+      : {'login': (name: 'Username', obscure: false, helper: null), 'pass': (name: 'Password', obscure: true, helper: null)};
 
   @override
   Future<({Exception? message, Message? result, bool success})> fetchMessageContent(

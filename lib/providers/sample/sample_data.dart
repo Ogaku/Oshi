@@ -55,7 +55,7 @@ class FakeDataReader implements IProvider {
           mainClass: Class(symbol: 'Gryffindor', unit: Unit(name: 'Hogwarts School of Witchcraft and Wizardry'))));
 
   @override
-  Map<String, ({String name, bool obscure})> get credentialsConfig => {};
+  Map<String, ({String name, bool obscure, ({String text, Uri link})? helper})> get credentialsConfig => {};
 
   @override
   Future<({Exception? message, Message? result, bool success})> fetchMessageContent(

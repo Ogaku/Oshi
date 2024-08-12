@@ -20,7 +20,7 @@ abstract class IProvider {
   // Login, password, etc configuration
   // Maps KEY (data) to <(field name), (obscure?)?
   // Passed to login(...) as <KEY, value>
-  Map<String, ({String name, bool obscure})> get credentialsConfig;
+  Map<String, ({String name, bool obscure, ({String text, Uri link})? helper})> get credentialsConfig;
 
   // Provider's header - distinct data
   String get providerName;

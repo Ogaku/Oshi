@@ -3,6 +3,7 @@ import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_shake_animated/flutter_shake_animated.dart';
 import 'package:format/format.dart';
@@ -12,6 +13,7 @@ import 'package:oshi/models/provider.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 class LoginPage extends StatefulWidget {
@@ -39,6 +41,21 @@ class _LoginPageState extends State<LoginPage> {
     var credentialEntries = widget.instance.credentialsConfig.entries
         .select((x, index) => CupertinoFormRow(
             prefix: SizedBox(width: 90, child: Text(x.value.name)),
+            helper: Align(
+              alignment: Alignment.centerLeft,
+              child: x.value.helper != null
+                  ? CupertinoButton(
+                      padding: EdgeInsets.only(),
+                      onPressed: () async {
+                        try {
+                          await launchUrl(x.value.helper!.link);
+                        } catch (ex) {
+                          // ignored
+                        }
+                      },
+                      child: Text(x.value.helper!.text, maxLines: 1, overflow: TextOverflow.ellipsis))
+                  : null,
+            ),
             child: CupertinoTextFormFieldRow(
               enabled: !isWorking,
               placeholder: '/Required'.localized,
