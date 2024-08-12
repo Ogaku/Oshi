@@ -32,7 +32,7 @@
 
   <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "2116709685";
+    const serviceWorkerVersion = "1507587994";
   </script>
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer=""></script>
@@ -66,8 +66,9 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      -ms-transform: translate(-50%, -50%);
-      transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%) scale(0.3, 0.3);
+      transform: translate(-50%, -50%) scale(0.3, 0.3);
+      transform-origin: center center;
     }
 
     .contain {
