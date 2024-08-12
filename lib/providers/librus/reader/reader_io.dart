@@ -13,7 +13,7 @@ import 'package:oshi/providers/librus/reader/librus_reader.dart' as reader;
 
 class SynergiaData extends reader.SynergiaData {
   @override
-  SynergiaData() : session = Dio() {
+  SynergiaData([String pvReserved = '']) : session = Dio() {
     librusApi = LibrusReader(this);
     session.httpClientAdapter = NativeAdapter();
   }
