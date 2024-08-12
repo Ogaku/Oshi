@@ -1,0 +1,58 @@
+{
+    "language": "jp",
+    "messages": [
+        {
+            "id": "/Titles/Pages/Home",
+            "translation": "ホーム"
+        },
+        {
+            "id": "/Titles/Pages/Timeline",
+            "translation": "タイムライン"
+        },
+        {
+            "id": "/Titles/Pages/Grades",
+            "translation": "成績"
+        },
+        {
+            "id": "/Titles/Pages/Schedule",
+            "translation": "スケジュール"
+        },
+        {
+            "id": "/Titles/Pages/Messages",
+            "translation": "メッセージ"
+        },
+        {
+            "id": "/Titles/Pages/Messages/Inbox",
+            "translation": "受信トレイ"
+        },
+        {
+            "id": "/Titles/Pages/Messages/Sent",
+            "translation": "送信済み"
+        },
+        {
+            "id": "/Titles/Pages/Messages/Announcements",
+            "translation": "お知らせ"
+        },
+        {
+            "id": "/Titles/Pages/Absences",
+            "translation": "欠席"
+        }
+    ],
+    "splashes": [
+        "頑張ってね！"
+    ],
+    "ending_splashes": [
+        {
+            "title": "やっと終わったんだよ！",
+            "subtitle": "すべての{}授業をやり遂げた！"
+        },
+        {
+            "title": "頑張った！",
+            "subtitle": "もう日も{}授業終了…"
+        },
+        {
+            "title": "色は匂えど…",
+            "subtitle": "散りぬるを！"
+        }
+    ]
+}
