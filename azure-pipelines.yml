@@ -50,7 +50,8 @@ stages:
             inputs:
               mode: "auto"
               channel: "stable"
-              version: "latest"
+              version: 'custom'
+              customVersion: "3.22.3"
 
           - bash: |
               sed -i '' "s/9.9.9+9/1.0.$(date '+%Y%m%d')/g" ./pubspec.yaml

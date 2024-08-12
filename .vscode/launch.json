@@ -23,6 +23,23 @@
             ]
         },
         {
+            "name": "Flutter (edge, \"secure\")",
+            "type": "dart",
+            "request": "launch",
+            // "program": "lib/main.dart",
+            // "deviceId": "edge",
+            // "toolArgs": [
+            //     "--web-browser-flag \"--disable-web-security\"",
+            //     "--web-renderer html"
+            // ]
+            "args": [
+                "-d",
+                "edge",
+                "--web-renderer",
+                "html"
+            ]
+        },
+        {
             "name": "Oshi",
             "request": "launch",
             "type": "dart"
