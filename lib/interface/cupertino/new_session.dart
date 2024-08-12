@@ -2,6 +2,7 @@
 import 'package:darq/darq.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:format/format.dart';
@@ -226,6 +227,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
   }
 
   void _showAlertDialog(BuildContext context, Uri url) {
+    if (kIsWeb) return;
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(

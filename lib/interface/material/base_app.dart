@@ -283,6 +283,7 @@ class _BaseAppState extends State<BaseApp> {
   }
 
   void _showAlertDialog(BuildContext context, Uri url) {
+    if (kIsWeb) return;
     showMaterialModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(

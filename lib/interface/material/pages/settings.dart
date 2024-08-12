@@ -440,7 +440,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                         OptionEntry(name: 'Cupertino', value: true),
                                         OptionEntry(name: 'Material', value: false),
                                       ],
-                                      update: <T>(v) {})
+                                      update: <T>(v) {
+                                        Share.settings.appSettings.useCupertino = v; // Set
+                                        Share.refreshBase.broadcast(); // Refresh
+                                      })
                                 ]))),
                     title: Text('App Style', overflow: TextOverflow.ellipsis),
                     trailing: Row(children: [

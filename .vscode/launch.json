@@ -19,7 +19,9 @@
                 "edge",
                 "--web-renderer",
                 "html",
-                "--web-browser-flag=--disable-web-security"
+                "--web-browser-flag=--disable-web-security",
+                "--web-port=8080",
+                "--web-hostname=127.0.0.1"
             ]
         },
         {
@@ -36,7 +38,9 @@
                 "-d",
                 "edge",
                 "--web-renderer",
-                "html"
+                "html",
+                "--web-port=8080",
+                "--web-hostname=127.0.0.1"
             ]
         },
         {
