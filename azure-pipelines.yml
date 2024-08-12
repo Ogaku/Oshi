@@ -48,8 +48,7 @@ stages:
           - task: FlutterInstall@0
             displayName: "Install Flutter SDK"
             inputs:
-              mode: "auto"
-              channel: "stable"
+              channel: 'stable'
               version: 'custom'
               customVersion: "3.22.3"
 
