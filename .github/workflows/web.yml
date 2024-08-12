@@ -23,10 +23,10 @@ jobs:
 
       - name: Setup app secrets
         run: |
-          sed -i '' "s/9.9.9+9/1.0.$(date '+%Y%m%d')/g" ./pubspec.yaml
-          sed -i '' "s/9.9.9.9/1.0.$(date '+%Y%m%d').1/g" ./lib/share/share.dart
-          sed -i '' "s/AZ_APPCENTER_TELEMETRY_TOKEN/${{ secrets.APPCENTER_TELEMETRY_TOKEN }}/g" ./lib/share/appcenter.dart
-          sed -i '' "s/AZ_SZKOLNY_APP_TOKEN/${{ secrets.SZKOLNY_APP_TOKEN }}/g" ./lib/share/appcenter.dart
+          sed -i "s/9.9.9+9/1.0.$(date '+%Y%m%d')/g" ./pubspec.yaml
+          sed -i "s/9.9.9.9/1.0.$(date '+%Y%m%d').1/g" ./lib/share/share.dart
+          sed -i "s/AZ_APPCENTER_TELEMETRY_TOKEN/${{ secrets.APPCENTER_TELEMETRY_TOKEN }}/g" ./lib/share/appcenter.dart
+          sed -i "s/AZ_SZKOLNY_APP_TOKEN/${{ secrets.SZKOLNY_APP_TOKEN }}/g" ./lib/share/appcenter.dart
 
       - name: Build the web app
         run: |
