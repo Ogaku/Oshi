@@ -439,13 +439,20 @@ class _SettingsPageState extends State<SettingsPage> {
                                         OptionEntry(name: 'Cupertino', value: true),
                                         OptionEntry(name: 'Material', value: false),
                                       ],
-                                      update: <T>(v) {})
+                                      update: <T>(v) {
+                                        if (Share.settings.appSettings.useCupertino == v) return;
+                                        Share.settings.appSettings.useCupertino = v; // Set
+                                        Share.changeBase.broadcast(); // Refresh
+                                        Navigator.of(context).pop();
+                                      })
                                 ]))),
                     title: Text('App Style', overflow: TextOverflow.ellipsis),
                     trailing: Row(children: [
                       Container(
                           margin: EdgeInsets.symmetric(horizontal: 5),
-                          child: Opacity(opacity: 0.5, child: Text('Cupertino'))),
+                          child: Opacity(
+                              opacity: 0.5,
+                              child: Text(Share.settings.appSettings.useCupertino ? 'Cupertino' : 'Material'))),
                       CupertinoListTileChevron()
                     ])),
                 CupertinoListTile(
@@ -1087,8 +1094,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                                 // Bindable messages layout
                                                                                 : element
                                                                                     .toList()
-                                                                                    .select(
-                                                                                        (x, _) => x.grade.asGrade(context, setState))
+                                                                                    .select((x, _) =>
+                                                                                        x.grade.asGrade(context, setState))
                                                                                     .toList()))
                                                                     .appendIfEmpty(CupertinoListSection.insetGrouped(
                                                                         margin:

@@ -37,7 +37,8 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  StatefulWidget Function() child = Share.settings.appSettings.useCupertino
+  late StatefulWidget Function() child;
+  StatefulWidget Function() get _child => Share.settings.appSettings.useCupertino
       ? () => (Share.settings.sessions.lastSession != null
           ? cupertinoapp.baseApp
           : (Share.settings.sessions.sessions.isEmpty ? cupertinoapp.newSessionPage : cupertinoapp.sessionsPage))
@@ -49,6 +50,7 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
     initializeDateFormatting();
+    child = _child;
 
     if (isAndroid || isIOS) {
       initPlatformState();
@@ -108,7 +110,10 @@ class _MainAppState extends State<MainApp> {
     Share.changeBase.unsubscribeAll();
     Share.changeBase.subscribe((args) {
       setState(() {
-        if (args != null) child = args.value;
+        if (args != null)
+          child = args.value;
+        else
+          child = _child;
       });
     });
 

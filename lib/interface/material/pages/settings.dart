@@ -441,15 +441,19 @@ class _SettingsPageState extends State<SettingsPage> {
                                         OptionEntry(name: 'Material', value: false),
                                       ],
                                       update: <T>(v) {
+                                        if (Share.settings.appSettings.useCupertino == v) return;
                                         Share.settings.appSettings.useCupertino = v; // Set
-                                        Share.refreshBase.broadcast(); // Refresh
+                                        Share.changeBase.broadcast(); // Refresh
+                                        Navigator.of(context).pop();
                                       })
                                 ]))),
                     title: Text('App Style', overflow: TextOverflow.ellipsis),
                     trailing: Row(children: [
                       Container(
                           margin: EdgeInsets.symmetric(horizontal: 5),
-                          child: Opacity(opacity: 0.5, child: Text('Cupertino'))),
+                          child: Opacity(
+                              opacity: 0.5,
+                              child: Text(Share.settings.appSettings.useCupertino ? 'Cupertino' : 'Material'))),
                       CupertinoListTileChevron()
                     ])),
                 CupertinoListTile(
