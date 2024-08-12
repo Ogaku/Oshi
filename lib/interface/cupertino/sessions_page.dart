@@ -1,6 +1,4 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-import 'dart:io';
-
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:event/event.dart';
@@ -15,6 +13,7 @@ import 'package:oshi/share/share.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:oshi/share/platform.dart';
 
 import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart' show SliverNavigationBar;
 import 'package:url_launcher/url_launcher.dart';
@@ -326,7 +325,7 @@ class _SessionsPageState extends State<SessionsPage> {
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
         title: Text('/BaseApp/Update/AlertHeader'.localized),
-        content: Text('/BaseApp/Update/Alert'.localized.format(Platform.isAndroid ? 'Android' : 'iOS')),
+        content: Text('/BaseApp/Update/Alert'.localized.format(isAndroid ? 'Android' : 'iOS')),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
             onPressed: () async {

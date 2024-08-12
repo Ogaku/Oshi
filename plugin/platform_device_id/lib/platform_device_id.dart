@@ -5,6 +5,9 @@ import 'package:device_info/device_info.dart';
 import 'package:platform_device_id_platform_interface/platform_device_id_platform_interface.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+bool get isIOS => !kIsWeb && Platform.isIOS;
+bool get isAndroid => !kIsWeb && Platform.isAndroid;
+
 /// Provides device id information.
 class PlatformDeviceId {
   /// Provides device and operating system information.
@@ -16,10 +19,10 @@ class PlatformDeviceId {
     try {
       if (kIsWeb) {
         deviceId = await PlatformDeviceIdPlatform.instance.getDeviceId();
-      } else if (Platform.isAndroid) {
+      } else if (isAndroid) {
         AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
         deviceId = androidInfo.androidId;
-      } else if (Platform.isIOS) {
+      } else if (isIOS) {
         IosDeviceInfo iosInfo = await deviceInfoPlugin.iosInfo;
         deviceId = iosInfo.identifierForVendor;
       } else {

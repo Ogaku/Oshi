@@ -1,7 +1,4 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
-import 'dart:io';
-
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -12,6 +9,7 @@ import 'package:oshi/interface/material/widgets/text_chip.dart';
 import 'package:oshi/models/data/classroom.dart';
 import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/data/teacher.dart';
+import 'package:oshi/share/platform.dart';
 import 'package:oshi/share/share.dart';
 
 class EventComposePage extends StatefulWidget {
@@ -138,7 +136,7 @@ class _EventComposePageState extends State<EventComposePage> {
 
                     if (shareEvent) event.share();
                   } catch (e) {
-                    if (Platform.isAndroid || Platform.isIOS) {
+                    if (isAndroid || isIOS) {
                       Fluttertoast.showToast(
                         msg: '$e',
                         toastLength: Toast.LENGTH_SHORT,

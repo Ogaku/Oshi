@@ -6,6 +6,7 @@ import 'package:darq/darq.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
+import 'package:oshi/share/platform.dart';
 import 'package:oshi/share/share.dart';
 import 'package:path/path.dart' as path;
 
@@ -98,7 +99,7 @@ class Translator {
 
   Future<Map<String, dynamic>> _loadAssets(String code) async {
     try {
-      return jsonDecode(kDebugMode && Platform.isWindows
+      return jsonDecode(kDebugMode && isWindows
           ? await File(path.join(Directory.current.path, 'assets/resources/strings/$code.json')).readAsString()
           : await rootBundle.loadString('assets/resources/strings/$code.json'));
     } catch (ex) {

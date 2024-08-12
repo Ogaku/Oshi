@@ -2,7 +2,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:darq/darq.dart';
 import 'package:duration/locale.dart';
@@ -32,8 +31,10 @@ import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
+import 'package:universal_io/io.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:duration/duration.dart';
+import 'package:oshi/share/platform.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -96,7 +97,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       Container(
                           margin: EdgeInsets.all(15),
                           child: GestureDetector(
-                              onTap: (Platform.isAndroid || Platform.isIOS)
+                              onTap: (isAndroid || isIOS)
                                   ? () => ImagePicker().pickImage(source: ImageSource.gallery).then((value) {
                                         if (value == null) return;
                                         File(value.path).readAsBytes().then((result) =>

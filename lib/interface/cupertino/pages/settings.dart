@@ -15,6 +15,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/share/platform.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/pages/messages.dart';
 import 'package:oshi/interface/cupertino/pages/timetable.dart';
@@ -96,7 +97,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       Container(
                           margin: EdgeInsets.all(15),
                           child: GestureDetector(
-                              onTap: (Platform.isAndroid || Platform.isIOS)
+                              onTap: (isAndroid || isIOS)
                                   ? () => ImagePicker().pickImage(source: ImageSource.gallery).then((value) {
                                         if (value == null) return;
                                         File(value.path).readAsBytes().then((result) =>

@@ -1,6 +1,5 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
-
-import 'dart:io';
+import 'package:oshi/share/platform.dart';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +24,7 @@ Future<void> main() async {
 
   // Register to receive BackgroundFetch events after app is terminated
   // Requires {stopOnTerminate: false, enableHeadless: true}
-  if (Platform.isAndroid || Platform.isIOS) {
+  if (isAndroid || isIOS) {
     BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
   }
 }
@@ -38,7 +37,7 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  StatefulWidget Function() child = Share.settings.appSettings.useCupertino && false // TODO
+  StatefulWidget Function() child = Share.settings.appSettings.useCupertino
       ? () => (Share.settings.sessions.lastSession != null
           ? cupertinoapp.baseApp
           : (Share.settings.sessions.sessions.isEmpty ? cupertinoapp.newSessionPage : cupertinoapp.sessionsPage))
@@ -51,7 +50,7 @@ class _MainAppState extends State<MainApp> {
     super.initState();
     initializeDateFormatting();
 
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (isAndroid || isIOS) {
       initPlatformState();
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         // Check whether the app was launched by a notification, parse the payload

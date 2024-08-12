@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_final_fields
 import 'dart:convert';
-import 'dart:io';
+import 'package:universal_io/io.dart';
 import 'dart:typed_data';
 
 import 'package:darq/darq.dart';

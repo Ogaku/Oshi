@@ -1,6 +1,4 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-import 'dart:io';
-
 import 'package:darq/darq.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,6 +10,7 @@ import 'package:oshi/share/appcenter.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/platform.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:oshi/interface/cupertino/base_app.dart' show errorView;
 
@@ -231,7 +230,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
         title: Text('/BaseApp/Update/AlertHeader'.localized),
-        content: Text('/BaseApp/Update/Alert'.localized.format(Platform.isAndroid ? 'Android' : 'iOS')),
+        content: Text('/BaseApp/Update/Alert'.localized.format(isAndroid ? 'Android' : 'iOS')),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
             onPressed: () async {

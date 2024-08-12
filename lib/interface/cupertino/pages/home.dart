@@ -1,8 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
-
 import 'dart:async';
-import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:darq/darq.dart';
@@ -11,12 +9,14 @@ import 'package:duration/locale.dart';
 import 'package:event/event.dart';
 import 'package:extended_wrap/extended_wrap.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/pages/absences.dart';
+import 'package:oshi/share/platform.dart';
 import 'package:oshi/interface/cupertino/pages/settings.dart';
 import 'package:oshi/interface/cupertino/pages/timetable.dart';
 import 'package:oshi/interface/cupertino/sessions_page.dart';
@@ -1346,7 +1346,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
         segmentController: segmentController,
         largeTitle: GestureDetector(
             onDoubleTap: () {
-              if (!Platform.isWindows) return;
+              if (!isWindows && !kIsWeb) return;
               Share.session.refreshStatus.refreshMutex.protect<void>(() async {
                 await Share.session.refreshAll();
                 setState(() {});

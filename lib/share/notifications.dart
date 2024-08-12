@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:event/event.dart';
+import 'package:oshi/share/platform.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -183,7 +184,7 @@ class NotificationController {
       int? id,
       double? progress,
       bool? playSoundforce}) async {
-    if (Platform.isWindows || Platform.isFuchsia) return;
+    if (isWindows || isFuchsia) return;
 
     try {
       AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(

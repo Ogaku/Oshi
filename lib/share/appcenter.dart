@@ -5,6 +5,7 @@ import 'package:appcenter_sdk_flutter/appcenter_sdk_flutter.dart' as apps;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:oshi/models/progress.dart';
+import 'package:oshi/share/platform.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/share.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,7 +16,7 @@ class AppCenter {
       Platform.environment['OSHI-APP-TOKEN-D73A3091-2328-4DA3-8632-2D1090A4881A'] ?? 'AZ_SZKOLNY_APP_TOKEN';
 
   static Future<void> initialize() async {
-    if (_initializedOnce || !(Platform.isAndroid || Platform.isIOS)) return;
+    if (_initializedOnce || !(isAndroid || isIOS)) return;
     try {
       await apps.AppCenter.start(secret: 'AZ_APPCENTER_TELEMETRY_TOKEN');
       _initializedOnce = true;
@@ -40,7 +41,7 @@ class AppCenter {
 
       return AppVersion(
           version: Version.parse(result['version']?.toString()),
-          download: Uri.parse(result[Platform.isAndroid ? 'download_apk' : 'download_ios']));
+          download: Uri.parse(result[isAndroid ? 'download_apk' : 'download_ios']));
     } catch (ex) {
       return null;
     }
@@ -50,7 +51,7 @@ class AppCenter {
     try {
       var result = (await fetchVersions())!;
       var checkResult = (result: result.version > Version.parse(Share.buildNumber), download: result.download);
-      if (Platform.isAndroid &&
+      if (isAndroid &&
           checkResult.result &&
           (await (Connectivity().checkConnectivity())) == ConnectivityResult.wifi) {
         // Else try to download the update and show a notification
@@ -87,7 +88,7 @@ class AppCenter {
         }
 
         return (result: false, download: Uri());
-      } else if ((Platform.isIOS || Platform.isAndroid) && checkResult.result) {
+      } else if ((isIOS || isAndroid) && checkResult.result) {
         NotificationController.sendNotification(
             title: 'The latest Oshi is waiting for you!',
             content: 'Click to download Oshi ${result.version}',

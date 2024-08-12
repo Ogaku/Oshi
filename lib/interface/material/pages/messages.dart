@@ -1,8 +1,5 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_cast
 // ignore_for_file: prefer_const_literals_to_create_immutables
-
-import 'dart:io';
-
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +17,7 @@ import 'package:oshi/share/translator.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
+import 'package:oshi/share/platform.dart';
 
 // Boiler: returned to the app tab builder
 StatefulWidget get messagesPage => MessagesPage();
@@ -156,7 +154,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                       .then((value) => setState(() => isWorking = false));
                                 } on Exception catch (e) {
                                   setState(() => isWorking = false);
-                                  if (Platform.isAndroid || Platform.isIOS) {
+                                  if (isAndroid || isIOS) {
                                     Fluttertoast.showToast(
                                       msg: '$e',
                                       toastLength: Toast.LENGTH_SHORT,
@@ -222,7 +220,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                             .then((value) => setState(() => isWorking = false));
                                       } on Exception catch (e) {
                                         setState(() => isWorking = false);
-                                        if (Platform.isAndroid || Platform.isIOS) {
+                                        if (isAndroid || isIOS) {
                                           Fluttertoast.showToast(
                                             msg: '$e',
                                             toastLength: Toast.LENGTH_SHORT,
@@ -250,7 +248,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                         });
                                         Share.refreshAll.broadcast();
                                       } on Exception catch (e) {
-                                        if (Platform.isAndroid || Platform.isIOS) {
+                                        if (isAndroid || isIOS) {
                                           Fluttertoast.showToast(
                                             msg: '$e',
                                             toastLength: Toast.LENGTH_SHORT,
@@ -504,7 +502,7 @@ class _MessagesPageState extends State<MessagesPage> {
       }
     } on Exception catch (e) {
       setState(() => isWorking = false);
-      if (Platform.isAndroid || Platform.isIOS) {
+      if (isAndroid || isIOS) {
         Fluttertoast.showToast(
           msg: '$e',
           toastLength: Toast.LENGTH_SHORT,

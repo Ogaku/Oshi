@@ -1,21 +1,22 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:event/src/event.dart';
 import 'package:event/src/eventargs.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:logging/logging.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/interface/cupertino/pages/messages.dart';
 import 'package:oshi/models/data/averages.dart';
 import 'package:oshi/models/data/messages.dart';
+import 'package:oshi/share/platform.dart';
 import 'package:oshi/models/progress.dart';
-import 'package:oshi/providers/librus/librus_login.dart';
-import 'package:oshi/providers/librus/librus_reader.dart';
-import 'package:oshi/providers/librus/login_data.dart';
 import 'package:darq/darq.dart';
+
+import 'package:oshi/providers/librus/reader/reader_stub.dart'
+    if (dart.library.io) 'package:oshi/providers/librus/reader/reader_io.dart'
+    if (dart.library.js) 'package:oshi/providers/librus/reader/reader_web.dart';
 
 import 'package:oshi/models/data/attendances.dart' as models;
 import 'package:oshi/models/data/lesson.dart' as models;
@@ -73,10 +74,17 @@ class LibrusDataReader implements models.IProvider {
     // Grab our credentials from the map
     var username = credentials?['login'];
     var password = credentials?['pass'];
+    var proxy = credentials?['proxy'];
+
+    // Check the provided proxy URL if running on web
+    if (kIsWeb && Uri.tryParse(proxy ?? '') == null)
+      return (success: false, message: Exception('No valid proxy provided!'));
+    else
+      data = SynergiaData(credentials?['proxy'] ?? ''); // Reset again
 
     // Instantiate a portal login
     progress?.report((progress: 0.2, message: "Looking at your pathetic password..."));
-    data?.synergiaLogin = LibrusLogin(synergiaData: data, login: username, pass: password);
+    data?.synergiaLogin = LibrusLogin(synergiaData: data, login: username, pass: password, proxyUrl: proxy);
 
     // Check whether there is data to log in with
     if ((username?.isEmpty ?? true) || (password?.isEmpty ?? true))
@@ -690,8 +698,13 @@ class LibrusDataReader implements models.IProvider {
   Uri? get providerBannerUri => Uri.parse('https://api.librus.pl/OAuth/images/synergia-logo.png');
 
   @override
-  Map<String, ({String name, bool obscure})> get credentialsConfig =>
-      {'login': (name: 'Username', obscure: false), 'pass': (name: 'Password', obscure: true)};
+  Map<String, ({String name, bool obscure})> get credentialsConfig => kIsWeb
+      ? {
+          'login': (name: 'Username', obscure: false),
+          'pass': (name: 'Password', obscure: true),
+          'proxy': (name: 'Proxy URL', obscure: false)
+        }
+      : {'login': (name: 'Username', obscure: false), 'pass': (name: 'Password', obscure: true)};
 
   @override
   Future<({Exception? message, Message? result, bool success})> fetchMessageContent(
@@ -880,7 +893,7 @@ extension DecodingExtension on String {
     try {
       return utf8.decode(base64.decode(this));
     } catch (ex, stack) {
-      if (Platform.isAndroid) {
+      if (isAndroid) {
         Logger('Temporary: tryBase64Decoded')
           ..severe(ex) // The exception
           ..severe(stack); // The stack

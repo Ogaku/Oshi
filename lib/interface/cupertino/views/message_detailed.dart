@@ -1,8 +1,5 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
-
-import 'dart:io';
-
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
@@ -10,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
+import 'package:oshi/share/platform.dart';
 import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart';
 import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/share/share.dart';
@@ -90,7 +88,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                       });
                       Share.session.provider.moveMessageToTrash(parent: widget.message, byMe: widget.isByMe);
                     } on Exception catch (e) {
-                      if (Platform.isAndroid || Platform.isIOS) {
+                      if (isAndroid || isIOS) {
                         Fluttertoast.showToast(
                           msg: '$e',
                           toastLength: Toast.LENGTH_SHORT,

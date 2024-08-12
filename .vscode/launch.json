@@ -5,6 +5,24 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Flutter (edge)",
+            "type": "dart",
+            "request": "launch",
+            // "program": "lib/main.dart",
+            // "deviceId": "edge",
+            // "toolArgs": [
+            //     "--web-browser-flag \"--disable-web-security\"",
+            //     "--web-renderer html"
+            // ]
+            "args": [
+                "-d",
+                "edge",
+                "--web-renderer",
+                "html",
+                "--web-browser-flag=--disable-web-security"
+            ]
+        },
+        {
             "name": "Oshi",
             "request": "launch",
             "type": "dart"
@@ -14,52 +32,6 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
-        },
-        {
-            "name": "Oshi (release mode)",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "release"
-        },
-        {
-            "name": "platform_device_id",
-            "cwd": "plugin\\platform_device_id",
-            "request": "launch",
-            "type": "dart"
-        },
-        {
-            "name": "platform_device_id (profile mode)",
-            "cwd": "plugin\\platform_device_id",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "profile"
-        },
-        {
-            "name": "platform_device_id (release mode)",
-            "cwd": "plugin\\platform_device_id",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "release"
-        },
-        {
-            "name": "example",
-            "cwd": "plugin\\platform_device_id\\example",
-            "request": "launch",
-            "type": "dart"
-        },
-        {
-            "name": "example (profile mode)",
-            "cwd": "plugin\\platform_device_id\\example",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "profile"
-        },
-        {
-            "name": "example (release mode)",
-            "cwd": "plugin\\platform_device_id\\example",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "release"
         }
     ]
 }

@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_function_literals_in_foreach_calls
 
 import 'dart:convert';
-import 'dart:io';
+import 'package:universal_io/io.dart';
 
 import 'package:appcenter_sdk_flutter/appcenter_sdk_flutter.dart';
 import 'package:darq/darq.dart';

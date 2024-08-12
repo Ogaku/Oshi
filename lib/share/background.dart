@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:background_fetch/background_fetch.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:oshi/share/platform.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:flutter/material.dart';
@@ -63,7 +62,7 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
 }
 
 Future<void> setupBaseApplication() async {
-  if (Platform.isAndroid) {
+  if (isAndroid) {
     WidgetsFlutterBinding.ensureInitialized();
     Logger.root.activateLogcat();
   }

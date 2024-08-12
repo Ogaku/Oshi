@@ -39,7 +39,6 @@ dependencies:
   duration: ^3.0.13
   equatable: ^2.0.5
   flutter_local_notifications: ^16.1.0
-  flutter_native_splash: ^2.3.5
   show_fps: ^1.0.6
   image_picker: ^1.0.4
   maps_launcher: ^2.2.0
@@ -55,6 +54,8 @@ dependencies:
   fl_chart: ^0.66.2
   platform_device_id: 
     path: plugin/platform_device_id
+  web: ^0.5.1
+  universal_io: ^2.2.2
   native_dio_adapter: ^1.3.0
 
 dev_dependencies:
@@ -69,26 +70,3 @@ flutter:
   assets:
     - assets/resources/strings/
 
-flutter_native_splash:
-  # Customize the parameters below, and run the following command in the terminal:
-  # dart run flutter_native_splash:create
-  # To restore Flutter's default white splash screen, run the following command in the terminal:
-  # dart run flutter_native_splash:remove
-
-  color: "#ffffff"
-  color_dark: "#1c1c1c"
-
-  color_ios: "#ffffff"
-  color_dark_ios: "#000000"
-
-  image: assets/resources/images/logo.png
-  image_ios: assets/resources/images/logo_ios.png
-  #image_dark: assets/splash-invert.png
-
-  android_12:
-    image: assets/resources/images/logo_fit.png
-    #image_dark: assets/splash-invert.png
-
-    # Splash screen background color.
-    color: "#ffffff"
-    color_dark: "#1c1c1c"

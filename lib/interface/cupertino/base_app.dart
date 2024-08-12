@@ -8,6 +8,7 @@ import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:oshi/share/platform.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:format/format.dart';
@@ -44,7 +45,7 @@ class _BaseAppState extends State<BaseApp> {
     super.initState();
 
     // Set up a filesystem watcher
-    if (kDebugMode && Platform.isWindows) {
+    if (kDebugMode && isWindows) {
       File(path.join(Directory.current.path, 'assets/resources/strings')).watch().listen((event) =>
           Share.translator.loadResources(Share.settings.appSettings.languageCode).then((value) => setState(() {})));
     }
@@ -253,7 +254,7 @@ class _BaseAppState extends State<BaseApp> {
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
         title: Text('/BaseApp/Update/AlertHeader'.localized),
-        content: Text('/BaseApp/Update/Alert'.localized.format(Platform.isAndroid ? 'Android' : 'iOS')),
+        content: Text('/BaseApp/Update/Alert'.localized.format(isAndroid ? 'Android' : 'iOS')),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
             onPressed: () async {

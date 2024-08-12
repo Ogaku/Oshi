@@ -2,7 +2,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'dart:async';
-import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:darq/darq.dart';
@@ -30,6 +29,7 @@ import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/platform.dart';
 
 import 'package:oshi/interface/material/widgets/text_chip.dart' show TextChip;
 import 'package:oshi/share/translator.dart';
@@ -1346,7 +1346,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
         segmentController: segmentController,
         largeTitle: GestureDetector(
             onDoubleTap: () {
-              if (!Platform.isWindows) return;
+              if (!isWindows) return;
               Share.session.refreshStatus.refreshMutex.protect<void>(() async {
                 await Share.session.refreshAll();
                 setState(() {});
