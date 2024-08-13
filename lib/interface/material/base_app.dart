@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:format/format.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/share/appcenter.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/translator.dart';
@@ -112,29 +111,29 @@ class _BaseAppState extends State<BaseApp> {
                   Share.showErrorModal.unsubscribeAll();
                   Share.showErrorModal.subscribe((args) async {
                     if (args?.value == null) return;
-                    await showMaterialModalBottomSheet(
-                        context: context,
-                        useRootNavigator: true,
-                        builder: (s) => CupertinoActionSheet(
-                            title: Text(args!.value.title),
-                            message: Text(args.value.message),
-                            actions: args.value.actions.isEmpty
-                                ? null
-                                : args.value.actions.entries
-                                    .select(
-                                      (x, index) => CupertinoActionSheetAction(
-                                        child: Text(x.key),
-                                        onPressed: () {
-                                          try {
-                                            x.value();
-                                          } catch (ex) {
-                                            // ignored
-                                          }
-                                          Navigator.of(context, rootNavigator: true).pop();
-                                        },
-                                      ),
-                                    )
-                                    .toList()));
+                    await showDialog<void>(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                          title: Text(args!.value.title),
+                          content: Text(args.value.message),
+                          actions: args.value.actions.isEmpty
+                              ? []
+                              : args.value.actions.entries
+                                  .select(
+                                    (x, index) => TextButton(
+                                      child: Text(x.key),
+                                      onPressed: () {
+                                        try {
+                                          x.value();
+                                        } catch (ex) {
+                                          // ignored
+                                        }
+                                        Navigator.of(context, rootNavigator: true).pop();
+                                      },
+                                    ),
+                                  )
+                                  .toList()),
+                    );
                   });
 
                   return Scaffold(
@@ -284,13 +283,14 @@ class _BaseAppState extends State<BaseApp> {
 
   void _showAlertDialog(BuildContext context, Uri url) {
     if (kIsWeb) return;
-    showMaterialModalBottomSheet<void>(
+
+    showDialog<void>(
       context: context,
-      builder: (BuildContext context) => CupertinoAlertDialog(
+      builder: (BuildContext context) => AlertDialog(
         title: Text('/BaseApp/Update/AlertHeader'.localized),
         content: Text('/BaseApp/Update/Alert'.localized.format(isAndroid ? 'Android' : 'iOS')),
-        actions: <CupertinoDialogAction>[
-          CupertinoDialogAction(
+        actions: [
+          TextButton(
             onPressed: () async {
               Navigator.pop(context);
               try {

@@ -103,7 +103,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
         .where((x) => x.allGrades.isNotEmpty)
         .select((x, index) => (
               lesson: x,
-              grades: x.allGrades.where((y) => y.addDate.isAfter(DateTime.now().subtract(Duration(days: 7)).asDate())).toList()
+              grades:
+                  x.allGrades.where((y) => y.addDate.isAfter(DateTime.now().subtract(Duration(days: 7)).asDate())).toList()
             ))
         .where((x) => x.grades.isNotEmpty)
         .orderByDescending((x) => x.grades.orderByDescending((y) => y.addDate).first.addDate)
@@ -1475,8 +1476,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     }
 
     // Christmas theme
-    if (DateTime.now().month == DateTime.december &&
-        (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
+    if (DateTime.now().month == DateTime.december && (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
       return 'Merry Christmas!';
     }
 
@@ -1553,8 +1553,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       return const Text('🍀');
     }
     // Christmas theme
-    if (DateTime.now().month == DateTime.december &&
-        (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
+    if (DateTime.now().month == DateTime.december && (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
       return const Text('🎄');
     }
     // Default theme

@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_final_fields
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:oshi/share/platform.dart';
 import 'package:universal_io/io.dart';
 import 'dart:typed_data';
 
@@ -22,12 +23,12 @@ class Config with ChangeNotifier {
   Config({
     bool? useCupertino,
     String? languageCode,
-  })  : _useCupertino = useCupertino ?? true,
+  })  : _useCupertino = useCupertino ?? (!isIOS),
         _languageCode = languageCode ?? 'en';
 
   // TODO All HiveFields should be private and trigger a settings save
 
-  @HiveField(1, defaultValue: true)
+  @HiveField(1, defaultValue: true) // TODO Change to false when done
   bool _useCupertino;
 
   @HiveField(2, defaultValue: 'en')

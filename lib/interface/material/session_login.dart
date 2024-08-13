@@ -55,96 +55,102 @@ class _LoginPageState extends State<LoginPage> {
             ))
         .toList();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_progressMessage ?? 'Log in to ${widget.instance.providerName}'), // TODO: Translate
-        actions: [
-          Container(
-            padding: EdgeInsets.only(right: 10),
-            child: TextButton(
-                child: isWorking
-                    ? CupertinoActivityIndicator()
-                    : Text('/Next'.localized,
-                        style: TextStyle(
-                            color: (credentialControllers!.values.every((x) => x.text.isNotEmpty))
-                                ? CupertinoTheme.of(context).primaryColor
-                                : CupertinoColors.inactiveGray)),
-                onPressed: () async {
-                  if (isWorking) return; // Already handling something, give up
-                  if (credentialControllers!.values.every((x) => x.text.isNotEmpty)) {
-                    TextInput.finishAutofillContext(); // Hide autofill if present
-                    setState(() {
-                      // Mark as working, the 1st refresh is gonna take a while
-                      isWorking = true;
-                    });
-
-                    var progress = Progress<({double? progress, String? message})>();
-                    progress.progressChanged.subscribe((args) => setState(() => _progressMessage = args?.value.message));
-
-                    if (!await tryLogin(
-                        progress: progress,
-                        guid: widget.providerGuid,
-                        credentials: credentialControllers!.entries.toMap((x) => MapEntry(x.key, x.value.text)))) {
+    return PopScope(
+      canPop: !isWorking,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            _progressMessage ?? 'Log in to ${widget.instance.providerName}',
+            style: TextStyle(fontSize: _progressMessage != null ? 14 : 22),
+          ), // TODO: Translate
+          actions: [
+            Container(
+              padding: EdgeInsets.only(right: 10),
+              child: TextButton(
+                  child: isWorking
+                      ? CupertinoActivityIndicator()
+                      : Text('/Next'.localized,
+                          style: TextStyle(
+                              color: (credentialControllers!.values.every((x) => x.text.isNotEmpty))
+                                  ? CupertinoTheme.of(context).primaryColor
+                                  : CupertinoColors.inactiveGray)),
+                  onPressed: () async {
+                    if (isWorking) return; // Already handling something, give up
+                    if (credentialControllers!.values.every((x) => x.text.isNotEmpty)) {
+                      TextInput.finishAutofillContext(); // Hide autofill if present
                       setState(() {
-                        // Reset the animation in case the login method hasn't finished
-                        isWorking = false;
-                        shakeFields = true;
-
-                        progress.progressChanged.unsubscribeAll();
-                        _progressMessage = null; // Reset the message
+                        // Mark as working, the 1st refresh is gonna take a while
+                        isWorking = true;
                       });
 
-                      // Reset the shake
-                      Future.delayed(Duration(milliseconds: 300)).then((value) => setState(() => shakeFields = false));
+                      var progress = Progress<({double? progress, String? message})>();
+                      progress.progressChanged.subscribe((args) => setState(() => _progressMessage = args?.value.message));
+
+                      if (!await tryLogin(
+                          progress: progress,
+                          guid: widget.providerGuid,
+                          credentials: credentialControllers!.entries.toMap((x) => MapEntry(x.key, x.value.text)))) {
+                        setState(() {
+                          // Reset the animation in case the login method hasn't finished
+                          isWorking = false;
+                          shakeFields = true;
+
+                          progress.progressChanged.unsubscribeAll();
+                          _progressMessage = null; // Reset the message
+                        });
+
+                        // Reset the shake
+                        Future.delayed(Duration(milliseconds: 300)).then((value) => setState(() => shakeFields = false));
+                      }
                     }
-                  }
-                }),
-          )
-        ],
-      ),
-      body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Visibility(
-                visible: widget.instance.providerBannerUri != null,
-                child: Container(
-                    margin: EdgeInsets.only(top: 30, left: 100, right: 100),
-                    child: FadeInImage.memoryNetwork(
-                        placeholder: kTransparentImage,
-                        image: widget.instance.providerBannerUri?.toString() ??
-                            'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg'))),
-            Container(
-                margin: EdgeInsets.only(top: 35),
-                child: credentialEntries.isNotEmpty
-                    ? ShakeWidget(
-                        shakeConstant: ShakeHorizontalConstant2(),
-                        autoPlay: shakeFields,
-                        enableWebMouseHover: false,
-                        child: AutofillGroup(
-                            child: Container(
-                                margin: EdgeInsets.only(left: 20, right: 20), child: Column(children: credentialEntries))))
-                    : Opacity(opacity: 0.5, child: Text('/Session/Login/Data/Complete'.localized))),
-            Opacity(
-                opacity: 0.7,
-                child: Container(
-                    margin: EdgeInsets.only(top: 10, left: 20, right: 20),
-                    child: Text(widget.instance.providerDescription, style: TextStyle(fontSize: 14)))),
-            Expanded(
-                child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Opacity(
-                  opacity: 0.5,
+                  }),
+            )
+          ],
+        ),
+        body: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Visibility(
+                  visible: widget.instance.providerBannerUri != null,
                   child: Container(
-                      margin: EdgeInsets.only(right: 20, left: 20, bottom: 20),
-                      child: Text(
-                        '/Session/Login/Data/Info'.localized,
-                        style: TextStyle(fontSize: 12),
-                        textAlign: TextAlign.justify,
-                      ))),
-            )),
-          ]),
+                      margin: EdgeInsets.only(top: 30, left: 100, right: 100),
+                      child: FadeInImage.memoryNetwork(
+                          placeholder: kTransparentImage,
+                          image: widget.instance.providerBannerUri?.toString() ??
+                              'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg'))),
+              Container(
+                  margin: EdgeInsets.only(top: 35),
+                  child: credentialEntries.isNotEmpty
+                      ? ShakeWidget(
+                          shakeConstant: ShakeHorizontalConstant2(),
+                          autoPlay: shakeFields,
+                          enableWebMouseHover: false,
+                          child: AutofillGroup(
+                              child: Container(
+                                  margin: EdgeInsets.only(left: 20, right: 20), child: Column(children: credentialEntries))))
+                      : Opacity(opacity: 0.5, child: Text('/Session/Login/Data/Complete'.localized))),
+              Opacity(
+                  opacity: 0.7,
+                  child: Container(
+                      margin: EdgeInsets.only(top: 10, left: 20, right: 20),
+                      child: Text(widget.instance.providerDescription, style: TextStyle(fontSize: 14)))),
+              Expanded(
+                  child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Opacity(
+                    opacity: 0.5,
+                    child: Container(
+                        margin: EdgeInsets.only(right: 20, left: 20, bottom: 20),
+                        child: Text(
+                          '/Session/Login/Data/Info'.localized,
+                          style: TextStyle(fontSize: 12),
+                          textAlign: TextAlign.justify,
+                        ))),
+              )),
+            ]),
+      ),
     );
   }
 
