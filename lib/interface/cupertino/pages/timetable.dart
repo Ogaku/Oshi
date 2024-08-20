@@ -17,6 +17,7 @@ import 'package:oshi/interface/cupertino/widgets/text_chip.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/data/timetables.dart';
+import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/share/translator.dart';

@@ -7,12 +7,12 @@ import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/base_app.dart';
 import 'package:oshi/interface/cupertino/pages/home.dart';
-import 'package:oshi/interface/cupertino/pages/messages.dart';
 import 'package:oshi/interface/cupertino/views/message_compose.dart';
 import 'package:oshi/interface/cupertino/views/new_grade.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/grade.dart';
 import 'package:oshi/models/data/lesson.dart';
+import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
 import 'package:uuid/uuid.dart';
@@ -504,8 +504,8 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     UnreadDot(
-                                        unseen: () =>
-                                            widget.lesson.allGrades.any((x) => (x.isSemester && x.semester == 1) && x.unseen),
+                                        unseen: () => widget.lesson.allGrades
+                                            .any((x) => (x.isSemester && x.semester == 1) && x.unseen),
                                         markAsSeen: () => widget.lesson.allGrades
                                             .where((x) => x.isSemester && x.semester == 1)
                                             .forEach((x) => x.markAsSeen()),

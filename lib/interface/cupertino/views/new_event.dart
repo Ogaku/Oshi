@@ -9,6 +9,7 @@ import 'package:oshi/interface/cupertino/widgets/text_chip.dart';
 import 'package:oshi/models/data/classroom.dart';
 import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/data/teacher.dart';
+import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/share/share.dart';
 
@@ -258,7 +259,7 @@ class _EventComposePageState extends State<EventComposePage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.max,
-                            children: [
+                            children: <Widget>[
                               // Message input
                               CupertinoTextField.borderless(
                                   maxLines: null,

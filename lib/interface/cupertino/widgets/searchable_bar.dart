@@ -5,8 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/widgets/navigation_bar.dart';
+import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
 
 class SegmentController with ChangeNotifier {

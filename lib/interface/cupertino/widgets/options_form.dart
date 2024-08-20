@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:oshi/interface/cupertino/pages/home.dart';
+import 'package:oshi/share/extensions.dart';
 
 typedef Callback<T> = void Function(T value);
 
@@ -62,7 +62,7 @@ class _OptionsFormState<T> extends State<OptionsForm<T>> {
                   }
                 },
                 title: Row(
-                    children: [Flexible(child: Text(x.name, overflow: TextOverflow.ellipsis))]
+                    children: <Widget>[Flexible(child: Text(x.name, overflow: TextOverflow.ellipsis))]
                         .prependIf(x.decoration ?? Container(), x.decoration != null)),
                 trailing: widget.selection == x.value
                     ? Transform.scale(scale: 0.8, child: Icon(CupertinoIcons.check_mark))

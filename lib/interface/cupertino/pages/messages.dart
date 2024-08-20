@@ -12,6 +12,7 @@ import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/announcement.dart';
 import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/models/data/teacher.dart';
+import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/share/translator.dart';
@@ -515,40 +516,3 @@ class _MessagesPageState extends State<MessagesPage> {
 }
 
 enum MessageFolders { inbox, outbox, announcements }
-
-extension ListAppendExtensionT<T> on Iterable<T> {
-  List<T> appendIf(T element, bool condition) {
-    if (!condition) return toList();
-    return append(element).toList();
-  }
-
-  List<T> prependIf(T element, bool condition) {
-    if (!condition) return toList();
-    return prepend(element).toList();
-  }
- List<T> appendAllIf(Iterable<T> element, bool condition) {
-    if (!condition) return toList();
-    return appendAll(element).toList();
-  }
-
-  List<T> prependAllIf(Iterable<T> element, bool condition) {
-    if (!condition) return toList();
-    return prependAll(element).toList();
-  }
-
-  List<T> appendIfEmpty(T element) {
-    return appendIf(element, isEmpty).toList();
-  }
-
-  List<T> prependIfEmpty(T element) {
-    return prependIf(element, isEmpty).toList();
-  }
-  
-  List<T> appendAllIfEmpty(Iterable<T> element) {
-    return appendAllIf(element, isEmpty).toList();
-  }
-
-  List<T> prependAllIfEmpty(Iterable<T> element) {
-    return prependAllIf(element, isEmpty).toList();
-  }
-}

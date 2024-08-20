@@ -4,8 +4,6 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:darq/darq.dart';
-import 'package:duration/duration.dart';
-import 'package:duration/locale.dart';
 import 'package:event/event.dart';
 import 'package:extended_wrap/extended_wrap.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,6 +14,7 @@ import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/cupertino/pages/absences.dart';
+import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/interface/cupertino/pages/settings.dart';
 import 'package:oshi/interface/cupertino/pages/timetable.dart';
@@ -103,7 +102,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
         .where((x) => x.allGrades.isNotEmpty)
         .select((x, index) => (
               lesson: x,
-              grades: x.allGrades.where((y) => y.addDate.isAfter(DateTime.now().subtract(Duration(days: 7)).asDate())).toList()
+              grades:
+                  x.allGrades.where((y) => y.addDate.isAfter(DateTime.now().subtract(Duration(days: 7)).asDate())).toList()
             ))
         .where((x) => x.grades.isNotEmpty)
         .orderByDescending((x) => x.grades.orderByDescending((y) => y.addDate).first.addDate)
@@ -1318,6 +1318,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                     .toList());
           })
     ]
+        .cast<Widget>()
         .appendIf(
             CupertinoListTile(
                 title: Opacity(
@@ -1475,8 +1476,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     }
 
     // Christmas theme
-    if (DateTime.now().month == DateTime.december &&
-        (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
+    if (DateTime.now().month == DateTime.december && (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
       return 'Merry Christmas!';
     }
 
@@ -1553,8 +1553,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       return const Text('🍀');
     }
     // Christmas theme
-    if (DateTime.now().month == DateTime.december &&
-        (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
+    if (DateTime.now().month == DateTime.december && (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
       return const Text('🎄');
     }
     // Default theme
@@ -1582,195 +1581,4 @@ extension ColorsExtension on Grade {
         1 => CupertinoColors.destructiveRed,
         _ => CupertinoColors.inactiveGray
       };
-}
-
-extension ListExtension<T> on List<T> {
-  Iterable<T> intersperse(T element) sync* {
-    for (int i = 0; i < length; i++) {
-      yield this[i];
-      if (length != i + 1) yield element;
-    }
-  }
-}
-
-extension ListAppendExtension on Iterable<Widget> {
-  List<Widget> appendIf(Widget element, bool condition) {
-    if (!condition) return toList();
-    return append(element).toList();
-  }
-
-  List<Widget> prependIf(Widget element, bool condition) {
-    if (!condition) return toList();
-    return prepend(element).toList();
-  }
-
-  List<Widget> appendIfEmpty(Widget element) {
-    return appendIf(element, isEmpty).toList();
-  }
-
-  List<Widget> prependIfEmpty(Widget element) {
-    return prependIf(element, isEmpty).toList();
-  }
-}
-
-extension TableAppendExtension on Iterable<TableRow> {
-  List<TableRow> appendIf(TableRow element, bool condition) {
-    if (!condition) return toList();
-    return append(element).toList();
-  }
-
-  List<TableRow> appendAllIf(List<TableRow> elements, bool condition) {
-    if (!condition) return toList();
-    return appendAll(elements).toList();
-  }
-}
-
-extension LessonNumber on int {
-  String asLessonNumber() => switch (this) {
-        1 => '$this ${"/Home/Counters/Lessons/Singular".localized}', // "lekcja"
-        >= 2 && < 5 ||
-        _ when this % 10 >= 2 && this % 10 < 5 =>
-          '$this ${"/Home/Counters/Lessons/Plural/Start".localized}', // "lekcje"
-        >= 5 && < 22 ||
-        _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
-          '$this ${"/Home/Counters/Lessons/Plural/End".localized}', // "lekcji"
-        _ => '$this ${"/Home/Counters/Lessons/Plural/End".localized}' // "lekcji"
-        // Note for other languages:
-        // stackoverflow.com/a/76413634
-      };
-
-  String asTimetablesNumber([RegisterChangeTypes? changeType]) {
-    var modifier = switch (changeType) {
-      RegisterChangeTypes.added => '/New',
-      RegisterChangeTypes.changed => '/Updated',
-      RegisterChangeTypes.removed => '/Removed',
-      _ => '/Both',
-    };
-    return switch (this) {
-      1 => '$this ${"/Timeline/Lang/Counters/Timetables$modifier/Singular".localized}', // "lekcja"
-      >= 2 && < 5 ||
-      _ when this % 10 >= 2 && this % 10 < 5 =>
-        '$this ${"/Timeline/Lang/Counters/Timetables$modifier/Plural/Start".localized}', // "lekcje"
-      >= 5 && < 22 ||
-      _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
-        '$this ${"/Timeline/Lang/Counters/Timetables$modifier/Plural/End".localized}', // "lekcji"
-      _ => '$this ${"/Timeline/Lang/Counters/Timetables$modifier/Plural/End".localized}' // "lekcji"
-      // Note for other languages:
-      // stackoverflow.com/a/76413634
-    };
-  }
-
-  String asGradesNumber([RegisterChangeTypes? changeType]) {
-    var modifier = switch (changeType) {
-      RegisterChangeTypes.added => '/New',
-      RegisterChangeTypes.changed => '/Updated',
-      RegisterChangeTypes.removed => '/Removed',
-      _ => '/Both',
-    };
-    return switch (this) {
-      1 => '$this ${"/Timeline/Lang/Counters/Grades$modifier/Singular".localized}', // "lekcja"
-      >= 2 && < 5 ||
-      _ when this % 10 >= 2 && this % 10 < 5 =>
-        '$this ${"/Timeline/Lang/Counters/Grades$modifier/Plural/Start".localized}', // "lekcje"
-      >= 5 && < 22 ||
-      _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
-        '$this ${"/Timeline/Lang/Counters/Grades$modifier/Plural/End".localized}', // "lekcji"
-      _ => '$this ${"/Timeline/Lang/Counters/Grades$modifier/Plural/End".localized}' // "lekcji"
-      // Note for other languages:
-      // stackoverflow.com/a/76413634
-    };
-  }
-
-  String asEventsNumber([RegisterChangeTypes? changeType]) {
-    var modifier = switch (changeType) {
-      RegisterChangeTypes.added => '/New',
-      RegisterChangeTypes.changed => '/Updated',
-      RegisterChangeTypes.removed => '/Removed',
-      _ => '/Both',
-    };
-    return switch (this) {
-      1 => '$this ${"/Timeline/Lang/Counters/Events$modifier/Singular".localized}', // "lekcja"
-      >= 2 && < 5 ||
-      _ when this % 10 >= 2 && this % 10 < 5 =>
-        '$this ${"/Timeline/Lang/Counters/Events$modifier/Plural/Start".localized}', // "lekcje"
-      >= 5 && < 22 ||
-      _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
-        '$this ${"/Timeline/Lang/Counters/Events$modifier/Plural/End".localized}', // "lekcji"
-      _ => '$this ${"/Timeline/Lang/Counters/Events$modifier/Plural/End".localized}' // "lekcji"
-      // Note for other languages:
-      // stackoverflow.com/a/76413634
-    };
-  }
-
-  String asAnnouncementsNumber([RegisterChangeTypes? changeType]) {
-    var modifier = switch (changeType) {
-      RegisterChangeTypes.added => '/New',
-      RegisterChangeTypes.changed => '/Updated',
-      RegisterChangeTypes.removed => '/Removed',
-      _ => '/Both',
-    };
-    return switch (this) {
-      1 => '$this ${"/Timeline/Lang/Counters/Announcements$modifier/Singular".localized}', // "lekcja"
-      >= 2 && < 5 ||
-      _ when this % 10 >= 2 && this % 10 < 5 =>
-        '$this ${"/Timeline/Lang/Counters/Announcements$modifier/Plural/Start".localized}', // "lekcje"
-      >= 5 && < 22 ||
-      _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
-        '$this ${"/Timeline/Lang/Counters/Announcements$modifier/Plural/End".localized}', // "lekcji"
-      _ => '$this ${"/Timeline/Lang/Counters/Announcements$modifier/Plural/End".localized}' // "lekcji"
-      // Note for other languages:
-      // stackoverflow.com/a/76413634
-    };
-  }
-
-  String asMessagesNumber([RegisterChangeTypes? changeType]) {
-    var modifier = switch (changeType) {
-      RegisterChangeTypes.added => '/New',
-      RegisterChangeTypes.changed => '/Updated',
-      RegisterChangeTypes.removed => '/Removed',
-      _ => '/Both',
-    };
-    return switch (this) {
-      1 => '$this ${"/Timeline/Lang/Counters/Messages$modifier/Singular".localized}', // "lekcja"
-      >= 2 && < 5 ||
-      _ when this % 10 >= 2 && this % 10 < 5 =>
-        '$this ${"/Timeline/Lang/Counters/Messages$modifier/Plural/Start".localized}', // "lekcje"
-      >= 5 && < 22 ||
-      _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
-        '$this ${"/Timeline/Lang/Counters/Messages$modifier/Plural/End".localized}', // "lekcji"
-      _ => '$this ${"/Timeline/Lang/Counters/Messages$modifier/Plural/End".localized}' // "lekcji"
-      // Note for other languages:
-      // stackoverflow.com/a/76413634
-    };
-  }
-
-  String asAttendancesNumber([RegisterChangeTypes? changeType]) {
-    var modifier = switch (changeType) {
-      RegisterChangeTypes.added => '/New',
-      RegisterChangeTypes.changed => '/Updated',
-      RegisterChangeTypes.removed => '/Removed',
-      _ => '/Both',
-    };
-    return switch (this) {
-      1 => '$this ${"/Timeline/Lang/Counters/Attendances$modifier/Singular".localized}', // "lekcja"
-      >= 2 && < 5 ||
-      _ when this % 10 >= 2 && this % 10 < 5 =>
-        '$this ${"/Timeline/Lang/Counters/Attendances$modifier/Plural/Start".localized}', // "lekcje"
-      >= 5 && < 22 ||
-      _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
-        '$this ${"/Timeline/Lang/Counters/Attendances$modifier/Plural/End".localized}', // "lekcji"
-      _ => '$this ${"/Timeline/Lang/Counters/Attendances$modifier/Plural/End".localized}' // "lekcji"
-      // Note for other languages:
-      // stackoverflow.com/a/76413634
-    };
-  }
-}
-
-extension Pretty on Duration {
-  String get prettyBellString => prettyDuration(abs() + Share.session.settings.bellOffset,
-      tersity: abs() < Duration(minutes: 1) ? DurationTersity.second : DurationTersity.minute,
-      upperTersity: DurationTersity.minute,
-      abbreviated: abs() < Duration(minutes: 1),
-      conjunction: ', ',
-      locale: DurationLocale.fromLanguageCode(Share.settings.appSettings.localeCode) ?? EnglishDurationLocale());
 }

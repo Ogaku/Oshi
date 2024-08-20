@@ -13,6 +13,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:format/format.dart';
 import 'package:oshi/share/appcenter.dart';
+import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:path/path.dart' as path;
@@ -84,6 +85,89 @@ class _BaseAppState extends State<BaseApp> {
     Share.refreshBase.unsubscribeAll();
     Share.refreshBase.subscribe((args) => setState(() {}));
 
+    // Navigation destinations
+    var navigationDestinations = <({Widget selectedIcon, Widget icon, String label})>[
+      (
+        selectedIcon: Icon(Icons.home),
+        icon: Icon(Icons.home_outlined),
+        label: '/Titles/Pages/Home'.localized,
+      ),
+      (
+        selectedIcon: Stack(children: <Widget>[
+          Icon(Icons.grade),
+          AnimatedOpacity(
+              duration: const Duration(milliseconds: 500),
+              opacity: Share.session.unreadChanges.gradesCount > 0 ? 1.0 : 0.0,
+              child: Icon(Icons.brightness_1, size: 8.0, color: Colors.redAccent))
+        ]),
+        icon: Stack(children: <Widget>[
+          Icon(Icons.grade_outlined),
+          AnimatedOpacity(
+              duration: const Duration(milliseconds: 500),
+              opacity: Share.session.unreadChanges.gradesCount > 0 ? 1.0 : 0.0,
+              child: Icon(Icons.brightness_1, size: 8.0, color: Colors.redAccent))
+        ]),
+        label: '/Titles/Pages/Grades'.localized,
+      ),
+      (
+        selectedIcon: Stack(children: <Widget>[
+          Icon(Icons.schedule),
+          AnimatedOpacity(
+              duration: const Duration(milliseconds: 500),
+              opacity:
+                  (Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount) > 0 ? 1.0 : 0.0,
+              child: Icon(Icons.brightness_1, size: 8.0, color: Colors.redAccent))
+        ]),
+        icon: Stack(children: <Widget>[
+          Icon(Icons.schedule_outlined),
+          AnimatedOpacity(
+              duration: const Duration(milliseconds: 500),
+              opacity:
+                  (Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount) > 0 ? 1.0 : 0.0,
+              child: Icon(Icons.brightness_1, size: 8.0, color: Colors.redAccent))
+        ]),
+        label: '/Titles/Pages/Schedule'.localized,
+      ),
+      (
+        selectedIcon: Stack(children: <Widget>[
+          Icon(Icons.message),
+          AnimatedOpacity(
+              duration: const Duration(milliseconds: 500),
+              opacity: (Share.session.unreadChanges.announcementsCount + Share.session.unreadChanges.messagesCount > 0)
+                  ? 1.0
+                  : 0.0,
+              child: Icon(Icons.brightness_1, size: 8.0, color: Colors.redAccent))
+        ]),
+        icon: Stack(children: <Widget>[
+          Icon(Icons.message_outlined),
+          AnimatedOpacity(
+              duration: const Duration(milliseconds: 500),
+              opacity: (Share.session.unreadChanges.announcementsCount + Share.session.unreadChanges.messagesCount > 0)
+                  ? 1.0
+                  : 0.0,
+              child: Icon(Icons.brightness_1, size: 8.0, color: Colors.redAccent))
+        ]),
+        label: '/Titles/Pages/Messages'.localized,
+      ),
+      (
+        selectedIcon: Stack(children: <Widget>[
+          Icon(Icons.person_remove),
+          AnimatedOpacity(
+              duration: const Duration(milliseconds: 500),
+              opacity: Share.session.unreadChanges.attendancesCount > 0 ? 1.0 : 0.0,
+              child: Icon(Icons.brightness_1, size: 8.0, color: Colors.redAccent))
+        ]),
+        icon: Stack(children: <Widget>[
+          Icon(Icons.person_remove_outlined),
+          AnimatedOpacity(
+              duration: const Duration(milliseconds: 500),
+              opacity: Share.session.unreadChanges.attendancesCount > 0 ? 1.0 : 0.0,
+              child: Icon(Icons.brightness_1, size: 8.0, color: Colors.redAccent))
+        ]),
+        label: '/Titles/Pages/Absences'.localized,
+      ),
+    ];
+
     return DynamicColorBuilder(
         builder: (lightColorScheme, darkColorScheme) => MaterialApp(
             theme: ThemeData(
@@ -137,145 +221,50 @@ class _BaseAppState extends State<BaseApp> {
                   });
 
                   return Scaffold(
-                    bottomNavigationBar: NavigationBar(
-                      onDestinationSelected: (int index) {
-                        setState(() {
-                          currentPageIndex = index;
-                        });
-                      },
-                      selectedIndex: currentPageIndex,
-                      destinations: <Widget>[
-                        NavigationDestination(
-                          selectedIcon: Icon(Icons.home),
-                          icon: Icon(Icons.home_outlined),
-                          label: '/Titles/Pages/Home'.localized,
-                        ),
-                        NavigationDestination(
-                          selectedIcon: Stack(children: <Widget>[
-                            Icon(Icons.grade),
-                            AnimatedOpacity(
-                                duration: const Duration(milliseconds: 500),
-                                opacity: Share.session.unreadChanges.gradesCount > 0 ? 1.0 : 0.0,
-                                child: Positioned(
-                                  top: 0.0,
-                                  right: 0.0,
-                                  child: Icon(Icons.brightness_1, size: 8.0, color: Colors.redAccent),
-                                ))
-                          ]),
-                          icon: Stack(children: <Widget>[
-                            Icon(Icons.grade_outlined),
-                            AnimatedOpacity(
-                                duration: const Duration(milliseconds: 500),
-                                opacity: Share.session.unreadChanges.gradesCount > 0 ? 1.0 : 0.0,
-                                child: Positioned(
-                                  top: 0.0,
-                                  right: 0.0,
-                                  child: Icon(Icons.brightness_1, size: 8.0, color: Colors.redAccent),
-                                ))
-                          ]),
-                          label: '/Titles/Pages/Grades'.localized,
-                        ),
-                        NavigationDestination(
-                          selectedIcon: Stack(children: <Widget>[
-                            Icon(Icons.schedule),
-                            AnimatedOpacity(
-                                duration: const Duration(milliseconds: 500),
-                                opacity:
-                                    (Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount) >
-                                            0
-                                        ? 1.0
-                                        : 0.0,
-                                child: Positioned(
-                                  top: 0.0,
-                                  right: 0.0,
-                                  child: Icon(Icons.brightness_1, size: 8.0, color: Colors.redAccent),
-                                ))
-                          ]),
-                          icon: Stack(children: <Widget>[
-                            Icon(Icons.schedule_outlined),
-                            AnimatedOpacity(
-                                duration: const Duration(milliseconds: 500),
-                                opacity:
-                                    (Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount) >
-                                            0
-                                        ? 1.0
-                                        : 0.0,
-                                child: Positioned(
-                                  top: 0.0,
-                                  right: 0.0,
-                                  child: Icon(Icons.brightness_1, size: 8.0, color: Colors.redAccent),
-                                ))
-                          ]),
-                          label: '/Titles/Pages/Schedule'.localized,
-                        ),
-                        NavigationDestination(
-                          selectedIcon: Stack(children: <Widget>[
-                            Icon(Icons.message),
-                            AnimatedOpacity(
-                                duration: const Duration(milliseconds: 500),
-                                opacity: (Share.session.unreadChanges.announcementsCount +
-                                            Share.session.unreadChanges.messagesCount >
-                                        0)
-                                    ? 1.0
-                                    : 0.0,
-                                child: Positioned(
-                                  top: 0.0,
-                                  right: 0.0,
-                                  child: Icon(Icons.brightness_1, size: 8.0, color: Colors.redAccent),
-                                ))
-                          ]),
-                          icon: Stack(children: <Widget>[
-                            Icon(Icons.message_outlined),
-                            AnimatedOpacity(
-                                duration: const Duration(milliseconds: 500),
-                                opacity: (Share.session.unreadChanges.announcementsCount +
-                                            Share.session.unreadChanges.messagesCount >
-                                        0)
-                                    ? 1.0
-                                    : 0.0,
-                                child: Positioned(
-                                  top: 0.0,
-                                  right: 0.0,
-                                  child: Icon(Icons.brightness_1, size: 8.0, color: Colors.redAccent),
-                                ))
-                          ]),
-                          label: '/Titles/Pages/Messages'.localized,
-                        ),
-                        NavigationDestination(
-                          selectedIcon: Stack(children: <Widget>[
-                            Icon(Icons.person_remove),
-                            AnimatedOpacity(
-                                duration: const Duration(milliseconds: 500),
-                                opacity: Share.session.unreadChanges.attendancesCount > 0 ? 1.0 : 0.0,
-                                child: Positioned(
-                                  top: 0.0,
-                                  right: 0.0,
-                                  child: Icon(Icons.brightness_1, size: 8.0, color: Colors.redAccent),
-                                ))
-                          ]),
-                          icon: Stack(children: <Widget>[
-                            Icon(Icons.person_remove_outlined),
-                            AnimatedOpacity(
-                                duration: const Duration(milliseconds: 500),
-                                opacity: Share.session.unreadChanges.attendancesCount > 0 ? 1.0 : 0.0,
-                                child: Positioned(
-                                  top: 0.0,
-                                  right: 0.0,
-                                  child: Icon(Icons.brightness_1, size: 8.0, color: Colors.redAccent),
-                                ))
-                          ]),
-                          label: '/Titles/Pages/Absences'.localized,
-                        ),
-                      ],
-                    ),
-                    body: <Widget>[
-                      homePage,
-                      gradesPage,
-                      timetablePage,
-                      messagesPage,
-                      absencesPage,
-                    ][currentPageIndex],
-                  );
+                      bottomNavigationBar: MediaQuery.of(context).size.width < 640
+                          ? NavigationBar(
+                              onDestinationSelected: (int index) {
+                                setState(() {
+                                  currentPageIndex = index;
+                                });
+                              },
+                              selectedIndex: currentPageIndex,
+                              destinations: navigationDestinations
+                                  .select((x, index) => NavigationDestination(
+                                        selectedIcon: x.selectedIcon,
+                                        icon: x.icon,
+                                        label: x.label,
+                                      ))
+                                  .toList(),
+                            )
+                          : null,
+                      body: Row(
+                        children: <Widget>[
+                          Expanded(
+                              child: <Widget>[
+                            homePage,
+                            gradesPage,
+                            timetablePage,
+                            messagesPage,
+                            absencesPage,
+                          ][currentPageIndex]),
+                        ].prependIf(
+                            NavigationRail(
+                                minWidth: 55.0,
+                                selectedIndex: currentPageIndex,
+                                onDestinationSelected: (int index) => setState(() => currentPageIndex = index),
+                                labelType: NavigationRailLabelType.all,
+                                leading: SizedBox(height: 5),
+                                unselectedLabelTextStyle: const TextStyle(),
+                                destinations: navigationDestinations.select((x, index) {
+                                  return NavigationRailDestination(
+                                    icon: x.icon,
+                                    selectedIcon: x.selectedIcon,
+                                    label: Text(x.label),
+                                  );
+                                }).toList()),
+                            MediaQuery.of(context).size.width >= 640),
+                      ));
                 }),
               );
             })));

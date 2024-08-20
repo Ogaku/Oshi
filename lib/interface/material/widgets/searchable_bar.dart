@@ -5,8 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:oshi/interface/material/pages/home.dart';
 import 'package:oshi/interface/material/widgets/navigation_bar.dart';
+import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
 
 class SegmentController with ChangeNotifier {
@@ -192,8 +192,9 @@ class _NavState extends State<SearchableSliverNavigationBar> {
               if (scrollInfo.metrics.pixels < -130 && !Share.session.refreshStatus.isRefreshing && widget.setState != null) {
                 Share.session.refreshStatus.refreshMutex.protect<void>(() async {
                   setState(() {
-                    refreshTurns = (-2 * (scrollInfo.metrics.pixels - _pixels) / (DateTime.now().millisecondsSinceEpoch - _timestamp))
-                        .clamp(0.3, 1);
+                    refreshTurns =
+                        (-2 * (scrollInfo.metrics.pixels - _pixels) / (DateTime.now().millisecondsSinceEpoch - _timestamp))
+                            .clamp(0.3, 1);
                   });
 
                   try {

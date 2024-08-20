@@ -8,9 +8,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/interface/cupertino/base_app.dart';
-import 'package:oshi/interface/cupertino/pages/home.dart';
 import 'package:oshi/interface/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/models/data/attendances.dart';
+import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/share/translator.dart';
 
