@@ -14,9 +14,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart' as
 import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:mutex/mutex.dart';
-import 'package:oshi/interface/cupertino/pages/absences.dart';
-import 'package:oshi/interface/cupertino/pages/home.dart';
-import 'package:oshi/interface/cupertino/pages/timetable.dart';
+import 'package:oshi/interface/shared/pages/absences.dart';
+import 'package:oshi/interface/shared/pages/home.dart';
+import 'package:oshi/interface/shared/pages/timetable.dart';
 import 'package:oshi/models/data/announcement.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/models/data/grade.dart';
@@ -32,7 +32,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/models/progress.dart';
-import 'package:oshi/interface/cupertino/pages/home.dart' show DateTimeExtension;
+import 'package:oshi/interface/shared/pages/home.dart' show DateTimeExtension;
 
 import 'package:oshi/providers/librus/librus_data.dart' hide DateTimeExtension;
 import 'package:oshi/providers/sample/sample_data.dart';

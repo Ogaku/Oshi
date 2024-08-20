@@ -2,7 +2,7 @@ import 'package:darq/darq.dart';
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:oshi/interface/cupertino/pages/timetable.dart';
+import 'package:oshi/interface/shared/pages/timetable.dart';
 import 'package:oshi/models/data/class.dart';
 import 'package:oshi/models/data/classroom.dart';
 import 'package:oshi/models/data/lesson.dart';
