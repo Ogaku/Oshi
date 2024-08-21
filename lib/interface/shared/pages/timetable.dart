@@ -47,6 +47,7 @@ class TimetablePage extends StatefulWidget {
 
 class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
   final searchController = TextEditingController(); // Notg even used anymore
+  late final SegmentController segmentController;
   final pageController = PageController(
       initialPage: DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays);
 
@@ -58,6 +59,17 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
 
   DateTime get selectedDate =>
       Share.session.data.student.mainClass.beginSchoolYear.asDate(utc: true).add(Duration(days: dayDifference)).asDate();
+
+  @override
+  void initState() {
+    super.initState();
+    segmentController = SegmentController(
+        segment: DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays,
+        scrollable: true);
+
+    segmentController.removeListener(() => setState(() => dayDifference = segmentController.segment));
+    segmentController.addListener(() => setState(() => dayDifference = segmentController.segment));
+  }
 
   @override
   void dispose() {
@@ -329,9 +341,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
           x,
           DateFormat('EEEEE, d.MM', Share.settings.appSettings.localeCode)
               .format(Share.session.data.student.mainClass.beginSchoolYear.add(Duration(days: x))))),
-      segmentController: SegmentController(
-          segment: DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays,
-          scrollable: true),
+      segmentController: segmentController,
       pageBuilder: Share.settings.appSettings.useCupertino ? null : timetableBuilder,
     );
   }
