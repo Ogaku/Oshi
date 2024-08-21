@@ -13,6 +13,7 @@ class DataPage extends DataPageBase {
       super.pageFlags = 0,
       super.setState,
       super.searchController,
+      super.searchBuilder,
       super.segmentController,
       super.children,
       super.selectedDate,

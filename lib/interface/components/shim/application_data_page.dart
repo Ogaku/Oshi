@@ -1,4 +1,6 @@
-import 'package:flutter/widgets.dart';
+import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:oshi/share/share.dart';
 
@@ -12,6 +14,7 @@ abstract class DataPageBase extends StatefulWidget {
       this.pageFlags = 0,
       this.setState,
       this.searchController,
+      this.searchBuilder,
       this.segmentController,
       this.children,
       this.selectedDate,
@@ -28,7 +31,9 @@ abstract class DataPageBase extends StatefulWidget {
   final int pageFlags; // Page flags
   final void Function(VoidCallback fn)? setState;
 
-  final TextEditingController? searchController; // Searchable
+  final FutureOr<Iterable<Widget>> Function(BuildContext, SearchController)? searchBuilder; // Searchable <- for material
+  final TextEditingController? searchController; // Searchable <- for cupertino only, manual search
+
   final SegmentController? segmentController; // Segmentable
   final Map<dynamic, String>? segments; // For segmented control
 

@@ -168,6 +168,7 @@ class _BaseAppState extends State<BaseApp> {
 
     return DynamicColorBuilder(
         builder: (lightColorScheme, darkColorScheme) => MaterialApp(
+            debugShowCheckedModeBanner: false,
             theme: ThemeData(
               colorScheme: lightColorScheme,
               useMaterial3: true,
