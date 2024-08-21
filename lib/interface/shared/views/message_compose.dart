@@ -2,9 +2,12 @@
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:oshi/interface/components/cupertino/widgets/text_chip.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
+import 'package:oshi/interface/shared/containers.dart';
+import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/share/share.dart';
@@ -58,7 +61,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
               style: TextStyle(color: !isWorking ? CupertinoTheme.of(context).primaryColor : CupertinoColors.inactiveGray)),
           onPressed: () async => Navigator.pop(context)),
       trailing: CupertinoButton(
-          padding: EdgeInsets.all(0),
+          padding: EdgeInsets.only(right: Share.settings.appSettings.useCupertino ? 0 : 10),
           alignment: Alignment.centerRight,
           onPressed: (receivers.isNotEmpty && subjectController.text.isNotEmpty && messageController.text.isNotEmpty)
               ? () {
@@ -111,9 +114,10 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                 child: Text('To:', style: TextStyle(fontWeight: FontWeight.w600))),
                             ConstrainedBox(
                                 constraints: BoxConstraints(maxWidth: 250),
-                                child: CupertinoTextField.borderless(
+                                child: AdaptiveTextField(
                                     enabled: !isWorking,
-                                    onChanged: (s) => setState(() {}),
+                                    secondary: true,
+                                    setState: setState,
                                     controller: receiverController,
                                     placeholder: 'Type in receivers...')),
                           ]),
@@ -140,14 +144,14 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                   .toList())),
                       // Either the receiver search or the contents
                       receiverController.text.isNotEmpty
-                          ? CupertinoListSection.insetGrouped(
-                              margin: EdgeInsets.only(left: 5, right: 5, bottom: 10),
+                          ? CardContainer(
+                              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
                               additionalDividerMargin: 5,
                               children: receiversToDisplay.isEmpty
                                   // No messages to display
                                   ? [
-                                      CupertinoListTile(
-                                          title: Opacity(
+                                      AdaptiveCard(
+                                          child: Opacity(
                                               opacity: 0.5,
                                               child: Container(
                                                   alignment: Alignment.center,
@@ -158,14 +162,15 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                     ]
                                   // Bindable messages layout
                                   : receiversToDisplay
-                                      .select((x, index) => CupertinoListTile(
-                                          onTap: receivers.contains(x)
+                                      .select((x, index) => AdaptiveCard(
+                                          hideChevron: true,
+                                          click: receivers.contains(x)
                                               ? null
                                               : () => setState(() {
                                                     receivers.add(x);
                                                     receiverController.text = '';
                                                   }),
-                                          title: Opacity(opacity: receivers.contains(x) ? 0.3 : 1.0, child: Text(x.name))))
+                                          child: Opacity(opacity: receivers.contains(x) ? 0.3 : 1.0, child: Text(x.name))))
                                       .toList())
                           : Column(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -173,28 +178,28 @@ class _MessageComposePageState extends State<MessageComposePage> {
                               mainAxisSize: MainAxisSize.max,
                               children: [
                                   // Subject input
-                                  CupertinoTextField.borderless(
-                                      maxLines: null,
-                                      enabled: !isWorking,
-                                      onChanged: (s) => setState(() {}),
-                                      controller: subjectController,
-                                      placeholder: 'Subject',
-                                      placeholderStyle:
-                                          TextStyle(fontWeight: FontWeight.w600, color: CupertinoColors.tertiaryLabel)),
+                                  AdaptiveTextField(
+                                    controller: subjectController,
+                                    placeholder: 'Subject',
+                                    enabled: !isWorking,
+                                    setState: setState,
+                                  ),
                                   // Message input
-                                  CupertinoTextField.borderless(
-                                      maxLines: null,
-                                      enabled: !isWorking,
-                                      onChanged: (s) => setState(() {}),
-                                      controller: messageController,
-                                      placeholder: 'Type in your message here...'),
+                                  AdaptiveTextField(
+                                    controller: messageController,
+                                    secondary: true,
+                                    placeholder: 'Type in your message here...',
+                                    enabled: !isWorking,
+                                    setState: setState,
+                                  ),
                                   // Signature input
-                                  CupertinoTextField.borderless(
-                                      maxLines: null,
-                                      enabled: !isWorking,
-                                      onChanged: (s) => setState(() {}),
-                                      controller: signatureController,
-                                      placeholder: 'No Signature')
+                                  AdaptiveTextField(
+                                    controller: signatureController,
+                                    secondary: true,
+                                    placeholder: 'No Signature',
+                                    enabled: !isWorking,
+                                    setState: setState,
+                                  ),
                                 ])
                     ])))
       ],

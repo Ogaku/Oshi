@@ -17,6 +17,7 @@ class CardContainer extends StatefulWidget {
     this.dividerMargin = 14,
     this.noDivider = false,
     this.filled = true,
+    this.backgroundColor,
   });
 
   final bool largeHeader;
@@ -28,6 +29,8 @@ class CardContainer extends StatefulWidget {
   final double dividerMargin;
   final bool noDivider;
   final bool filled;
+
+  final Color? backgroundColor;
 
   @override
   State<CardContainer> createState() => _CardContainerState();
@@ -74,9 +77,10 @@ class _CardContainerState extends State<CardContainer> {
             ),
           ]),
         TableRow(children: [
-          widget.filled
+          (widget.filled || widget.backgroundColor != null)
               ? Card(
                   clipBehavior: Clip.antiAlias,
+                  color: widget.backgroundColor,
                   margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
                   child: Column(
                     children: widget.children,

@@ -156,10 +156,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
                     // No messages to display
                     ? []
                     // Bindable messages layout
-                    : x
-                        .select((x, index) =>
-                            CupertinoListTile(padding: EdgeInsets.all(0), title: x.asAttendanceWidget(context)))
-                        .toList(),
+                    : x.select((x, index) => AdaptiveCard(child: x.asAttendanceWidget(context))).toList(),
               ),
             )
             .cast<Widget>()
@@ -301,8 +298,8 @@ extension LessonWidgetExtension on Attendance {
                             CardContainer(
                                 additionalDividerMargin: 5,
                                 children: [
-                                  CupertinoListTile(
-                                      title: Row(
+                                  AdaptiveCard(
+                                      child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(margin: EdgeInsets.only(right: 3), child: Text('/Type'.localized)),
@@ -312,8 +309,8 @@ extension LessonWidgetExtension on Attendance {
                                               child: Text(type.asStringLong(), maxLines: 2, textAlign: TextAlign.end)))
                                     ],
                                   )),
-                                  CupertinoListTile(
-                                      title: Row(
+                                  AdaptiveCard(
+                                      child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(margin: EdgeInsets.only(right: 3), child: Text('/AddedBy'.localized)),
@@ -323,8 +320,8 @@ extension LessonWidgetExtension on Attendance {
                                               child: Text(teacher.name, maxLines: 1, overflow: TextOverflow.ellipsis)))
                                     ],
                                   )),
-                                  CupertinoListTile(
-                                      title: Row(
+                                  AdaptiveCard(
+                                      child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(margin: EdgeInsets.only(right: 3), child: Text('/Date'.localized)),
@@ -337,8 +334,8 @@ extension LessonWidgetExtension on Attendance {
                                                   overflow: TextOverflow.ellipsis)))
                                     ],
                                   )),
-                                  CupertinoListTile(
-                                      title: Row(
+                                  AdaptiveCard(
+                                      child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(margin: EdgeInsets.only(right: 3), child: Text('/Added'.localized)),
@@ -352,8 +349,8 @@ extension LessonWidgetExtension on Attendance {
                                     ],
                                   )),
                                 ].appendIf(
-                                    CupertinoListTile(
-                                        title: Row(
+                                    AdaptiveCard(
+                                        child: Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text('/Lesson'.localized),

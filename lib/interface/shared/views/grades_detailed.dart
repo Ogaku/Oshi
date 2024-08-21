@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
+import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
 import 'package:oshi/interface/shared/views/message_compose.dart';
 import 'package:oshi/interface/shared/views/new_grade.dart';
@@ -29,7 +30,7 @@ class GradesDetailedPage extends StatefulWidget {
 }
 
 class _GradesDetailedPageState extends State<GradesDetailedPage> {
-  Widget gradesWidget([String query = '']) {
+  Widget gradesWidget([String query = '', bool filled = true]) {
     var gradesToDisplay = widget.lesson.allGrades
         .where((x) => x.semester == 2)
         .appendAllIfEmpty(widget.lesson.allGrades)
@@ -43,27 +44,22 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
         .distinct((x) => mapPropsToHashCode([x.resitPart ? 0 : UniqueKey(), x.name]))
         .toList();
 
-    return CupertinoListSection.insetGrouped(
-      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+    return CardContainer(
       additionalDividerMargin: 5,
+      filled: gradesToDisplay.isNotEmpty && filled,
       children: gradesToDisplay.isEmpty
           // No messages to display
           ? [
-              CupertinoListTile(
-                  title: Opacity(
-                      opacity: 0.5,
-                      child: Container(
-                          alignment: Alignment.center,
-                          child: Text(
-                            query.isNotEmpty ? 'No grades matching the query' : 'No grades',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                          ))))
+              AdaptiveCard(
+                centered: true,
+                secondary: true,
+                child: query.isNotEmpty ? 'No grades matching the query' : 'No grades',
+              )
             ]
           // Bindable messages layout
           : gradesToDisplay.select((x, index) {
-              return CupertinoListTile(
-                  padding: EdgeInsets.all(0),
-                  title: x.asGrade(context, setState,
+              return AdaptiveCard(
+                  child: x.asGrade(context, setState,
                       corrected: widget.lesson.allGrades.firstWhereOrDefault(
                           (y) => x.resitPart && y.resitPart && y.name == x.name && x != y,
                           defaultValue: null)));
@@ -78,9 +74,8 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
         // Average (yearly)
         Visibility(
             visible: widget.lesson.gradesAverage >= 0,
-            child: CupertinoListTile(
-                padding: EdgeInsets.all(0),
-                title: CupertinoContextMenu.builder(
+            child: AdaptiveCard(
+                child: CupertinoContextMenu.builder(
                     enableHapticFeedback: true,
                     actions: [
                       CupertinoContextMenuAction(
@@ -145,9 +140,8 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
       // Average (1st semester)
       Visibility(
           visible: widget.lesson.gradesSemAverage >= 0,
-          child: CupertinoListTile(
-              padding: EdgeInsets.all(0),
-              title: CupertinoContextMenu.builder(
+          child: AdaptiveCard(
+              child: CupertinoContextMenu.builder(
                   enableHapticFeedback: true,
                   actions: [
                     CupertinoContextMenuAction(
@@ -214,9 +208,8 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
             .firstWhereOrDefault((x) => x.isFinalProposition || (x.isSemesterProposition && x.semester == 2))
             ?.value !=
         null) {
-      gradesBottomWidgets.add(CupertinoListTile(
-          padding: EdgeInsets.all(0),
-          title: CupertinoContextMenu.builder(
+      gradesBottomWidgets.add(AdaptiveCard(
+          child: CupertinoContextMenu.builder(
               enableHapticFeedback: true,
               actions: [
                 CupertinoContextMenuAction(
@@ -295,9 +288,8 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
 
     // Proposed grade (1st semester)
     if (widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemesterProposition && x.semester == 1)?.value != null) {
-      gradesSemesterBottomWidgets.add(CupertinoListTile(
-          padding: EdgeInsets.all(0),
-          title: CupertinoContextMenu.builder(
+      gradesSemesterBottomWidgets.add(AdaptiveCard(
+          child: CupertinoContextMenu.builder(
               enableHapticFeedback: true,
               actions: [
                 CupertinoContextMenuAction(
@@ -373,9 +365,8 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
 
     // Final grade (2nd semester / year)
     if (widget.lesson.allGrades.firstWhereOrDefault((x) => x.isFinal || (x.isSemester && x.semester == 2))?.value != null) {
-      gradesBottomWidgets.add(CupertinoListTile(
-          padding: EdgeInsets.all(0),
-          title: CupertinoContextMenu.builder(
+      gradesBottomWidgets.add(AdaptiveCard(
+          child: CupertinoContextMenu.builder(
               enableHapticFeedback: true,
               actions: [
                 CupertinoContextMenuAction(
@@ -451,9 +442,8 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
 
     // Final grade (1st semester)
     if (widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemester && x.semester == 1)?.value != null) {
-      gradesSemesterBottomWidgets.add(CupertinoListTile(
-          padding: EdgeInsets.all(0),
-          title: CupertinoContextMenu.builder(
+      gradesSemesterBottomWidgets.add(AdaptiveCard(
+          child: CupertinoContextMenu.builder(
               enableHapticFeedback: true,
               actions: [
                 CupertinoContextMenuAction(
@@ -529,20 +519,19 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
 
     return DataPageBase.adaptive(
         pageFlags: [
-          DataPageType.segmented,
+          DataPageType.searchable,
           DataPageType.refreshable,
         ].flag,
         setState: setState,
         title: widget.lesson.name,
-        searchBuilder: (_, controller) => [gradesWidget(controller.text)],
+        searchBuilder: (_, controller) => [gradesWidget(controller.text, false)],
         children: <Widget>[
           gradesWidget(),
         ]
             .appendIf(
                 Container(
                     margin: EdgeInsets.only(top: 20),
-                    child: CupertinoListSection.insetGrouped(
-                      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                    child: CardContainer(
                       additionalDividerMargin: 5,
                       header: gradesSemesterBottomWidgets.isEmpty ? Container() : null,
                       children: gradesSemesterBottomWidgets,
@@ -551,8 +540,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
             .appendIf(
                 Container(
                     margin: EdgeInsets.only(top: 20),
-                    child: CupertinoListSection.insetGrouped(
-                      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                    child: CardContainer(
                       additionalDividerMargin: 5,
                       header: gradesBottomWidgets.isEmpty ? Container() : null,
                       children: gradesBottomWidgets,
@@ -680,12 +668,11 @@ extension GradeBodyExtension on Grade {
                                         onTap: onTap)))
                           ]),
                           TableRow(children: [
-                            CupertinoListSection.insetGrouped(
-                                margin: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
+                            CardContainer(
                                 additionalDividerMargin: 5,
                                 children: [
-                                  CupertinoListTile(
-                                      title: Row(
+                                  AdaptiveCard(
+                                      child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(margin: EdgeInsets.only(right: 3), child: Text('Grade')),
@@ -695,8 +682,8 @@ extension GradeBodyExtension on Grade {
                                               child: Text('$value, weight $weight', maxLines: 2, textAlign: TextAlign.end)))
                                     ],
                                   )),
-                                  CupertinoListTile(
-                                      title: Row(
+                                  AdaptiveCard(
+                                      child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(margin: EdgeInsets.only(right: 3), child: Text('Added by')),
@@ -706,8 +693,8 @@ extension GradeBodyExtension on Grade {
                                               child: Text(addedBy.name, maxLines: 1, overflow: TextOverflow.ellipsis)))
                                     ],
                                   )),
-                                  CupertinoListTile(
-                                      title: Row(
+                                  AdaptiveCard(
+                                      child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(margin: EdgeInsets.only(right: 3), child: Text('Date')),
@@ -720,8 +707,8 @@ extension GradeBodyExtension on Grade {
                                                   overflow: TextOverflow.ellipsis)))
                                     ],
                                   )),
-                                  CupertinoListTile(
-                                      title: Row(
+                                  AdaptiveCard(
+                                      child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(margin: EdgeInsets.only(right: 3), child: Text('Added')),
@@ -736,8 +723,8 @@ extension GradeBodyExtension on Grade {
                                   )),
                                 ]
                                     .appendIf(
-                                        CupertinoListTile(
-                                            title: Row(
+                                        AdaptiveCard(
+                                            child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text('Description'),
@@ -752,8 +739,8 @@ extension GradeBodyExtension on Grade {
                                         )),
                                         name.isNotEmpty)
                                     .appendIf(
-                                        CupertinoListTile(
-                                            title: Row(
+                                        AdaptiveCard(
+                                            child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text('Comments'),
@@ -767,8 +754,8 @@ extension GradeBodyExtension on Grade {
                                         )),
                                         commentsString.isNotEmpty)
                                     .appendIf(
-                                        CupertinoListTile(
-                                            title: Row(
+                                        AdaptiveCard(
+                                            child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             Flexible(

@@ -31,6 +31,7 @@ class DataPage extends DataPageBase {
 
 class DataPageState extends State<DataPage> with TickerProviderStateMixin {
   late final TabController tabController;
+  bool? isChildPage;
   var refreshController = RefreshController(initialRefresh: false);
 
   @override
@@ -62,6 +63,9 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    // Detect if this is a child page (once)
+    isChildPage ??= Navigator.of(context).canPop();
+
     // Re-subscribe to all events
     Share.refreshAll.unsubscribe(refresh);
     Share.refreshAll.subscribe(refresh);
@@ -134,9 +138,13 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
                               ? SearchAnchor(
                                   isFullScreen: true,
                                   builder: (context, controller) => Padding(
-                                    padding: const EdgeInsets.all(15.0),
+                                    padding: (isChildPage ?? false) && widget.trailing != null
+                                        ? const EdgeInsets.only(left: 65, top: 17)
+                                        : const EdgeInsets.all(15.0),
                                     child: Align(
-                                        alignment: Alignment.topLeft,
+                                        alignment: (isChildPage ?? false) && widget.trailing == null
+                                            ? Alignment.topRight
+                                            : Alignment.topLeft,
                                         child: Icon(
                                           Icons.search,
                                           size: 25,
@@ -148,20 +156,22 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
                                 )
                               : null));
                     }),
-                    leadingWidth: 150,
-                    leading: (Share.session.refreshStatus.progressStatus?.isNotEmpty ?? false)
-                        ? Container(
-                            margin: const EdgeInsets.only(top: 7, left: 10),
-                            child: ConstrainedBox(
-                                constraints: const BoxConstraints(maxWidth: 150),
-                                child: Text(
-                                  Share.session.refreshStatus.progressStatus ?? '',
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                      color: CupertinoColors.inactiveGray, fontSize: 13, fontWeight: FontWeight.w300),
-                                )))
-                        : Container(margin: EdgeInsets.only(left: 10, top: 3, bottom: 1), child: widget.leading),
+                    leadingWidth: (isChildPage ?? false) ? null : 150,
+                    leading: (isChildPage ?? false)
+                        ? null
+                        : ((Share.session.refreshStatus.progressStatus?.isNotEmpty ?? false)
+                            ? Container(
+                                margin: const EdgeInsets.only(top: 7, left: 10),
+                                child: ConstrainedBox(
+                                    constraints: const BoxConstraints(maxWidth: 150),
+                                    child: Text(
+                                      Share.session.refreshStatus.progressStatus ?? '',
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                          color: CupertinoColors.inactiveGray, fontSize: 13, fontWeight: FontWeight.w300),
+                                    )))
+                            : Container(margin: EdgeInsets.only(left: 10, top: 3, bottom: 1), child: widget.leading)),
                     actions: <Widget>[Container(margin: EdgeInsets.only(right: 10), child: widget.trailing)],
                   ),
                   if (widget.pageFlags.hasFlag(DataPageType.segmented) && (widget.segments?.isNotEmpty ?? false))

@@ -250,7 +250,7 @@ class _SessionsPageState extends State<SessionsPage> {
                                           // ignored
                                         }
                                       },
-                                child: isWorking ? CupertinoActivityIndicator() : Icon(Icons.help_outline_rounded),
+                                child: isWorking ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator()) : Icon(Icons.help_outline_rounded),
                               ),
                             )
                           ],
@@ -598,7 +598,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: EdgeInsets.only(right: 10),
               child: TextButton(
                   child: isWorking
-                      ? CupertinoActivityIndicator()
+                      ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
                       : Text('/Next'.localized,
                           style: TextStyle(
                               color: (credentialControllers!.values.every((x) => x.text.isNotEmpty))

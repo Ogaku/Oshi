@@ -37,7 +37,7 @@ class _NavState extends State<TextChip> {
       decoration:
           BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(widget.radius ?? 5)), color: const Color(0x33AAAAAA)),
       child: Container(
-          padding: EdgeInsets.only(top: 3, bottom: widget.noMargin ? 1 : 0),
+          padding: EdgeInsets.only(top: 3, bottom: widget.noMargin ? 3 : 0),
           child: Text(
             widget.text,
             textAlign: TextAlign.center,
