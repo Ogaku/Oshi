@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
+import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
 import 'package:oshi/interface/shared/views/message_compose.dart';
 import 'package:oshi/interface/shared/views/new_event.dart';
@@ -133,7 +134,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                   ),
                 ),
             child: Container(
-                margin: EdgeInsets.only(top: 5, bottom: 5),
+                margin: EdgeInsets.only(top: 5, bottom: 5, right: Share.settings.appSettings.useCupertino ? 0 : 25),
                 child:
                     TextChip(width: 110, text: DateFormat.yMd(Share.settings.appSettings.localeCode).format(selectedDate)))),
         trailing: isWorking
@@ -166,7 +167,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                       title:
                           'Agenda${((Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount > 0) ? ' (${(Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount)})' : '')}',
                       icon: CupertinoIcons.list_bullet_below_rectangle,
-                      onTap: () => Navigator.push(context, CupertinoPageRoute(builder: (context) => EventsPage())),
+                      onTap: () => Navigator.push(context, AdaptivePageRoute(builder: (context) => EventsPage())),
                     ),
                   ],
                   buttonBuilder: (context, showMenu) => GestureDetector(

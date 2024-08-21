@@ -10,6 +10,7 @@ import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
+import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
@@ -133,52 +134,41 @@ class _AbsencesPageState extends State<AbsencesPage> {
                   child: const Icon(CupertinoIcons.ellipsis_circle),
                 ),
               ),
-        children: [
-          ListView.builder(
-            shrinkWrap: true,
-            primary: false,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: attendances.count(),
-            itemBuilder: (BuildContext context, int index) => CupertinoListSection.insetGrouped(
-              margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-              header: attendances[index].key.contains('\n')
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Flexible(
-                            child: Text(attendances[index].key.split('\n').first,
-                                maxLines: 1, overflow: TextOverflow.ellipsis)),
-                        Container(
-                            margin: EdgeInsets.only(left: 3),
-                            child: Text(attendances[index].key.split('\n').last,
-                                style: TextStyle(
-                                    color: CupertinoColors.inactiveGray, fontWeight: FontWeight.w400, fontSize: 16)))
-                      ],
-                    )
-                  : Text(attendances[index].key),
-              additionalDividerMargin: 5,
-              children: attendances[index].isEmpty
-                  // No messages to display
-                  ? [
-                      CupertinoListTile(
-                          title: Opacity(
-                              opacity: 0.5,
-                              child: Container(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    '/Page/Absences/No'.localized,
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                                  ))))
-                    ]
-                  // Bindable messages layout
-                  : attendances[index]
-                      .select(
-                          (x, index) => CupertinoListTile(padding: EdgeInsets.all(0), title: x.asAttendanceWidget(context)))
-                      .toList(),
-            ),
-          ),
-        ]);
+        children: attendances
+            .select(
+              (x, _) => CardContainer(
+                header: x.key.contains('\n')
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Flexible(child: Text(x.key.split('\n').first, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                          Container(
+                              margin: EdgeInsets.only(left: 3),
+                              child: Text(x.key.split('\n').last,
+                                  style: TextStyle(
+                                      color: CupertinoColors.inactiveGray, fontWeight: FontWeight.w400, fontSize: 16)))
+                        ],
+                      )
+                    : Text(x.key),
+                additionalDividerMargin: 5,
+                children: x.isEmpty
+                    // No messages to display
+                    ? []
+                    // Bindable messages layout
+                    : x
+                        .select((x, index) =>
+                            CupertinoListTile(padding: EdgeInsets.all(0), title: x.asAttendanceWidget(context)))
+                        .toList(),
+              ),
+            )
+            .cast<Widget>()
+            .appendIfEmpty(AdaptiveCard(
+              centered: true,
+              secondary: true,
+              child: '/Page/Absences/No'.localized,
+            ))
+            .toList());
   }
 }
 
@@ -308,8 +298,7 @@ extension LessonWidgetExtension on Attendance {
                                         onTap: onTap)))
                           ]),
                           TableRow(children: [
-                            CupertinoListSection.insetGrouped(
-                                margin: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
+                            CardContainer(
                                 additionalDividerMargin: 5,
                                 children: [
                                   CupertinoListTile(

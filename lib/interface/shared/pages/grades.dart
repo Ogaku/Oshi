@@ -9,6 +9,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
+import 'package:oshi/interface/components/shim/page_routes.dart';
+import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
 import 'package:oshi/interface/shared/views/grades_detailed.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
@@ -39,38 +41,27 @@ class _GradesPageState extends State<GradesPage> {
     if (mounted) setState(() {});
   }
 
-  Widget subjectsWidget(List<Lesson> subjectsToDisplay) {
+  Widget subjectsWidget(List<Lesson> subjectsToDisplay, [bool filled = true]) {
     var hasSecondSemester = subjectsToDisplay.any((x) => x.allGrades.any((y) => y.semester == 2));
-    return CupertinoListSection.insetGrouped(
-      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+    return CardContainer(
+      filled: filled,
       additionalDividerMargin: 5,
       children: subjectsToDisplay.isEmpty
           // No messages to display
-          ? [
-              CupertinoListTile(
-                  title: Opacity(
-                      opacity: 0.5,
-                      child: Container(
-                          alignment: Alignment.center,
-                          child: Text(
-                            '/Grades/NoLessons'.localized,
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                          ))))
-            ]
+          ? [AdaptiveCard(secondary: true, centered: true, child: '/Grades/NoLessons'.localized)]
           // Bindable messages layout
           : subjectsToDisplay.select((x, index) {
               var grades = x.allGrades.where((x) => x.semester == 2).appendAllIfEmpty(x.allGrades);
 
               return Builder(
-                  builder: (context) => CupertinoListTile(
-                      onTap: () => Navigator.push(
+                  builder: (context) => AdaptiveCard(
+                      click: () => Navigator.push(
                           context,
-                          CupertinoPageRoute(
+                          AdaptivePageRoute(
                               builder: (context) => GradesDetailedPage(
                                     lesson: x,
                                   ))),
-                      trailing: Container(margin: EdgeInsets.only(left: 3), child: CupertinoListTileChevron()),
-                      title: Container(
+                      child: Container(
                           padding: EdgeInsets.only(top: 15, bottom: 15),
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -207,7 +198,7 @@ class _GradesPageState extends State<GradesPage> {
       if (Navigator.of(context).canPop()) Navigator.of(context).pop();
       Navigator.push(
           context,
-          CupertinoPageRoute(
+          AdaptivePageRoute(
               builder: (context) => GradesDetailedPage(
                     lesson: args!.value,
                   )));
@@ -218,22 +209,24 @@ class _GradesPageState extends State<GradesPage> {
         setState: setState,
         title: '/Grades'.localized,
         searchBuilder: (context, controller) => [
-              subjectsWidget(Share.session.data.student.subjects
-                  .where((x) =>
-                      x.name.contains(RegExp(controller.text, caseSensitive: false)) ||
-                      x.teacher.name.contains(RegExp(controller.text, caseSensitive: false)))
-                  .orderBy((x) => x.name)
-                  .toList())
+              if (!Share.settings.appSettings.useCupertino) SizedBox(height: 15),
+              subjectsWidget(
+                  Share.session.data.student.subjects
+                      .where((x) =>
+                          x.name.contains(RegExp(controller.text, caseSensitive: false)) ||
+                          x.teacher.name.contains(RegExp(controller.text, caseSensitive: false)))
+                      .orderBy((x) => x.name)
+                      .toList(),
+                  false)
             ],
         children: [
           subjectsWidget(Share.session.data.student.subjects.orderBy((x) => x.name).toList()),
-          CupertinoListSection.insetGrouped(
-            margin: EdgeInsets.only(left: 15, right: 15, top: 5),
+          CardContainer(
             additionalDividerMargin: 5,
             children: [
-              CupertinoListTile(
-                  title: Text('/Average'.localized, overflow: TextOverflow.ellipsis),
-                  trailing: Container(
+              AdaptiveCard(
+                  child: '/Average'.localized,
+                  after: Container(
                       margin: EdgeInsets.symmetric(horizontal: 5),
                       child: Opacity(
                           opacity: 0.5,
@@ -245,19 +238,19 @@ class _GradesPageState extends State<GradesPage> {
                           }()))))
             ],
           ),
-          CupertinoListSection.insetGrouped(
-            margin: EdgeInsets.only(left: 15, right: 15, top: 15),
-            additionalDividerMargin: 5,
-            children: [
-              CupertinoListTile(
-                  title: Container(
-                      transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
-                      margin: EdgeInsets.only(top: 20, bottom: 10),
-                      child: FittedBox(
-                          alignment: Alignment.topLeft,
-                          child: SizedBox(width: 400, height: 220, child: LineChartSample1()))))
-            ],
-          ),
+          if (Share.session.data.student.mainClass.averages.isNotEmpty)
+            CardContainer(
+              additionalDividerMargin: 5,
+              children: [
+                AdaptiveCard(
+                    child: Container(
+                        transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
+                        margin: EdgeInsets.only(top: 20, bottom: 10),
+                        child: FittedBox(
+                            alignment: Alignment.topLeft,
+                            child: SizedBox(width: 400, height: 220, child: LineChartSample1()))))
+              ],
+            ),
         ]);
   }
 }

@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_shake_animated/flutter_shake_animated.dart';
 import 'package:format/format.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/interface/components/shim/session_management.dart';
 import 'package:oshi/interface/shared/session_management.dart';
 import 'package:oshi/models/progress.dart';
@@ -294,7 +295,7 @@ class _SessionsPageState extends State<SessionsPage> {
                                                   )),
                                               onPressed: () {
                                                 Navigator.push(
-                                                    context, CupertinoPageRoute(builder: (context) => NewSessionPage()));
+                                                    context, AdaptivePageRoute(builder: (context) => NewSessionPage()));
                                               },
                                             )))
                               ]),

@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/interface/components/shim/page_routes.dart';
+import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/pages/absences.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/interface/shared/session_management.dart';
@@ -124,28 +126,22 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
 
     // Homeworks - first if any(), otherwise last
     var homeworksLast = homeworksWeek.isEmpty || homeworksWeek.all((x) => x.done);
-    var homeworksWidget = CupertinoListSection.insetGrouped(
-      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+    var homeworksWidget = CardContainer(
       dividerMargin: 35,
-      header: Text('/Homeworks'.localized),
+      header: '/Homeworks'.localized,
       children: homeworksWeek.isEmpty
           // No homeworks to display
           ? [
-              CupertinoListTile(
-                  title: Opacity(
-                      opacity: 0.5,
-                      child: Container(
-                          alignment: Alignment.center,
-                          child: Text(
-                            '/Homeworks/Done'.localized,
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                          ))))
+              AdaptiveCard(
+                secondary: true,
+                centered: true,
+                child: '/Homeworks/Done'.localized,
+              )
             ]
           // Bindable homework layout
           : homeworksWeek
-              .select((x, index) => CupertinoListTile(
-                  padding: EdgeInsets.all(0),
-                  title: CupertinoContextMenu.builder(
+              .select((x, index) => AdaptiveCard(
+                  child: CupertinoContextMenu.builder(
                       enableHapticFeedback: true,
                       actions: [
                         CupertinoContextMenuAction(
@@ -280,28 +276,22 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     );
 
     // Recent grades
-    var gradesWidget = CupertinoListSection.insetGrouped(
-      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+    var gradesWidget = CardContainer(
       additionalDividerMargin: 0,
-      header: Text('Recent grades'),
+      header: 'Recent grades',
       children: gradesWeek.isEmpty
           // No grades to display
           ? [
-              CupertinoListTile(
-                  title: Opacity(
-                      opacity: 0.5,
-                      child: Container(
-                          alignment: Alignment.center,
-                          child: Text(
-                            'No recent grades',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                          ))))
+              AdaptiveCard(
+                secondary: true,
+                centered: true,
+                child: 'No recent grades',
+              )
             ]
           // Bindable grades layout
           : gradesWeek
-              .select((x, index) => CupertinoListTile(
-                  padding: EdgeInsets.all(0),
-                  title: CupertinoContextMenu.builder(
+              .select((x, index) => AdaptiveCard(
+                  child: CupertinoContextMenu.builder(
                       enableHapticFeedback: true,
                       actions: [
                         CupertinoContextMenuAction(
@@ -424,28 +414,22 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     );
 
     // Upcoming events
-    var eventsWidget = CupertinoListSection.insetGrouped(
-      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+    var eventsWidget = CardContainer(
       dividerMargin: 35,
-      header: Text('Upcoming events'),
+      header: 'Upcoming events',
       children: eventsWeek.isEmpty
           // No events to display
           ? [
-              CupertinoListTile(
-                  title: Opacity(
-                      opacity: 0.5,
-                      child: Container(
-                          alignment: Alignment.center,
-                          child: Text(
-                            'It\'s quiet, too quiet...',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                          ))))
+              AdaptiveCard(
+                secondary: true,
+                centered: true,
+                child: 'It\'s quiet, too quiet...',
+              )
             ]
           // Bindable event layout
           : eventsWeek
-              .select((x, index) => CupertinoListTile(
-                  padding: EdgeInsets.all(0),
-                  title: CupertinoContextMenu.builder(
+              .select((x, index) => AdaptiveCard(
+                  child: CupertinoContextMenu.builder(
                       enableHapticFeedback: true,
                       actions: [
                         CupertinoContextMenuAction(
@@ -545,15 +529,13 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     );
 
     // Widgets for the home page
-    var homePageChildren = [
-      CupertinoListSection.insetGrouped(
-          margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-          additionalDividerMargin: 5,
-          hasLeading: false,
-          header: Text('/Summary'.localized),
-          children: [
-            CupertinoListTile(
-                onTap: () {
+    var homePageChildren = <Widget>[
+      CardContainer(
+          header: '/Summary'.localized,
+          children: <Widget>[
+            AdaptiveCard(
+                hideChevron: true,
+                click: () {
                   Share.tabsNavigatePage.broadcast(Value(2));
                   Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay.broadcast(Value(
                       DateTime.now().asDate(utc: true).add(Duration(
@@ -562,8 +544,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                               ? 1
                               : 0)))));
                 },
-                padding: EdgeInsets.only(left: 20, right: 10),
-                title: Container(
+                child: Container(
                     margin: EdgeInsets.only(top: 3, bottom: 15),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -629,8 +610,9 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                     )))
           ]
               .appendIf(
-                  CupertinoListTile(
-                      onTap: () {
+                  AdaptiveCard(
+                      hideChevron: true,
+                      click: () {
                         Share.tabsNavigatePage.broadcast(Value(2));
                         Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay.broadcast(Value(
                             DateTime.now().asDate(utc: true).add(Duration(
@@ -639,7 +621,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                     ? 1
                                     : 0)))));
                       },
-                      title: Container(
+                      child: Container(
                           margin: EdgeInsets.only(top: 10, bottom: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -713,8 +695,9 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                   // Show during lessons and breaks (between lessons)
                   nextLesson != null || currentLesson != null)
               .appendIf(
-                  CupertinoListTile(
-                      onTap: () {
+                  AdaptiveCard(
+                      hideChevron: true,
+                      click: () {
                         Share.tabsNavigatePage.broadcast(Value(2));
                         Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay.broadcast(Value(
                             DateTime.now().asDate(utc: true).add(Duration(
@@ -723,7 +706,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                     ? 1
                                     : 0)))));
                       },
-                      title: Container(
+                      child: Container(
                           margin: EdgeInsets.only(top: 10, bottom: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -764,8 +747,9 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                   (DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)) &&
                       DateTime.now().difference(currentDay?.dayEnd ?? DateTime.now()).inHours > 1)
               .appendIf(
-                  CupertinoListTile(
-                      onTap: () {
+                  AdaptiveCard(
+                      hideChevron: true,
+                      click: () {
                         Share.tabsNavigatePage.broadcast(Value(2));
                         Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay.broadcast(Value(
                             DateTime.now().asDate(utc: true).add(Duration(
@@ -774,8 +758,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                     ? 1
                                     : 0)))));
                       },
-                      padding: EdgeInsets.only(left: 20, right: 5),
-                      title: Row(children: [
+                      child: Row(children: [
                         Expanded(
                             child: Container(
                                 margin: EdgeInsets.only(right: 3),
@@ -827,213 +810,178 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
           itemCount: timelineChanges.count(),
           itemBuilder: (BuildContext context, int index) {
             var x = timelineChanges[index];
-            return CupertinoListSection.insetGrouped(
-                margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-                separatorColor: Colors.transparent,
-                header: Container(
-                    margin: EdgeInsets.only(left: 5),
-                    child: Text(
-                        (x.refreshDate.asDate() == DateTime.now().asDate() ? 'Today, ' : '') +
-                            DateFormat(x.refreshDate.asDate() == DateTime.now().asDate() ? 'h:mm a' : 'EEE, MMM d, h:mm a')
-                                .format(x.refreshDate),
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray))),
+            return CardContainer(
+                largeHeader: false,
+                header: (x.refreshDate.asDate() == DateTime.now().asDate() ? 'Today, ' : '') +
+                    DateFormat(x.refreshDate.asDate() == DateTime.now().asDate() ? 'h:mm a' : 'EEE, MMM d, h:mm a')
+                        .format(x.refreshDate),
                 children: <Widget>[]
                     // Added or updated lessons
                     .appendIf(
-                        CupertinoListTile(
-                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                            title: CupertinoListSection.insetGrouped(
-                                separatorColor: Colors.transparent,
-                                backgroundColor: Colors.transparent,
-                                margin: EdgeInsets.zero,
-                                hasLeading: false,
-                                header: Text(
-                                    x.timetablesChanged
-                                        .count((element) => element.type != RegisterChangeTypes.removed)
-                                        .asTimetablesNumber(RegisterChangeTypes.added),
-                                    style: TextStyle(
-                                        fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                        AdaptiveCard(
+                            child: CardContainer(
+                                noDivider: true,
+                                largeHeader: false,
+                                header: x.timetablesChanged
+                                    .count((element) => element.type != RegisterChangeTypes.removed)
+                                    .asTimetablesNumber(RegisterChangeTypes.added),
                                 children: x.timetablesChanged
                                     .where((element) => element.type != RegisterChangeTypes.removed)
                                     .select(
-                                      (y, index) => CupertinoListTile(
-                                          padding: EdgeInsets.only(top: 5, bottom: 5),
-                                          title: y.value.asLessonWidget(context, null, null, _setState,
+                                      (y, index) => AdaptiveCard(
+                                          child: y.value.asLessonWidget(context, null, null, _setState,
                                               markModified: y.type == RegisterChangeTypes.changed, onTap: () {
-                                            Share.tabsNavigatePage.broadcast(Value(2));
-                                            Future.delayed(Duration(milliseconds: 250))
-                                                .then((arg) => Share.timetableNavigateDay.broadcast(Value(y.value.date)));
-                                          })),
+                                        Share.tabsNavigatePage.broadcast(Value(2));
+                                        Future.delayed(Duration(milliseconds: 250))
+                                            .then((arg) => Share.timetableNavigateDay.broadcast(Value(y.value.date)));
+                                      })),
                                     )
                                     .toList())),
                         x.timetablesChanged.any((element) => element.type != RegisterChangeTypes.removed))
                     // Deleted lessons
                     .appendIf(
-                        CupertinoListTile(
-                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                            title: CupertinoListSection.insetGrouped(
-                                separatorColor: Colors.transparent,
-                                backgroundColor: Colors.transparent,
-                                margin: EdgeInsets.zero,
-                                hasLeading: false,
-                                header: Text(
-                                    x.timetablesChanged
-                                        .count((element) => element.type == RegisterChangeTypes.removed)
-                                        .asTimetablesNumber(RegisterChangeTypes.removed),
-                                    style:
-                                        TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                        AdaptiveCard(
+                            child: CardContainer(
+                                noDivider: true,
+                                largeHeader: false,
+                                header: x.timetablesChanged
+                                    .count((element) => element.type == RegisterChangeTypes.removed)
+                                    .asTimetablesNumber(RegisterChangeTypes.removed),
                                 children: x.timetablesChanged
                                     .where((element) => element.type == RegisterChangeTypes.removed)
                                     .select(
-                                      (y, index) => CupertinoListTile(
-                                          padding: EdgeInsets.only(top: 5, bottom: 5),
-                                          title: y.value.asLessonWidget(context, null, null, _setState, markRemoved: true)),
+                                      (y, index) => AdaptiveCard(
+                                          child: y.value.asLessonWidget(context, null, null, _setState, markRemoved: true)),
                                     )
                                     .toList())),
                         x.timetablesChanged.any((element) => element.type == RegisterChangeTypes.removed))
                     // Added or updated messages
                     .appendIf(
-                        CupertinoListTile(
-                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                            title: CupertinoListSection.insetGrouped(
-                                separatorColor: Colors.transparent,
-                                backgroundColor: Colors.transparent,
-                                margin: EdgeInsets.zero,
-                                hasLeading: false,
+                        AdaptiveCard(
+                            child: CardContainer(
+                                noDivider: true,
+                                largeHeader: false,
                                 header: () {
                                   var news = x.messagesChanged.count((element) => element.type == RegisterChangeTypes.added);
                                   var changes =
                                       x.messagesChanged.count((element) => element.type == RegisterChangeTypes.changed);
 
-                                  return Text(
-                                      switch (news) {
-                                        // There's only new grades
-                                        > 0 when changes == 0 => news.asMessagesNumber(RegisterChangeTypes.added),
-                                        // There's only changed grades
-                                        0 when changes > 0 => changes.asMessagesNumber(RegisterChangeTypes.changed),
-                                        // Some are new, some are changed
-                                        > 0 when changes > 0 => (news + changes).asMessagesNumber(),
-                                        // Shouldn't happen, but we need a _ case
-                                        _ => 'No changes, WTF?!'
-                                      },
-                                      style: TextStyle(
-                                          fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
+                                  return switch (news) {
+                                    // There's only new grades
+                                    > 0 when changes == 0 => news.asMessagesNumber(RegisterChangeTypes.added),
+                                    // There's only changed grades
+                                    0 when changes > 0 => changes.asMessagesNumber(RegisterChangeTypes.changed),
+                                    // Some are new, some are changed
+                                    > 0 when changes > 0 => (news + changes).asMessagesNumber(),
+                                    // Shouldn't happen, but we need a _ case
+                                    _ => 'No changes, WTF?!'
+                                  };
                                 }(),
                                 children: x.messagesChanged
                                     .where((element) => element.type != RegisterChangeTypes.removed)
                                     .select(
-                                      (y, index) => CupertinoListTile(
-                                          padding: EdgeInsets.only(top: 5, bottom: 5),
-                                          title: CupertinoListTile(
-                                              padding: EdgeInsets.all(0),
-                                              title: GestureDetector(
-                                                  onTap: () {
-                                                    Share.tabsNavigatePage.broadcast(Value(3));
-                                                    Future.delayed(Duration(milliseconds: 250))
-                                                        .then((arg) => Share.messagesNavigate.broadcast(Value(y.value)));
-                                                  },
-                                                  child: Container(
-                                                      decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                                                          color: CupertinoDynamicColor.resolve(
-                                                              CupertinoColors.tertiarySystemBackground, context)),
-                                                      padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
-                                                      child: Column(
-                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          mainAxisSize: MainAxisSize.max,
-                                                          children: [
-                                                            Row(
-                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Expanded(
-                                                                      child: Container(
-                                                                          margin: EdgeInsets.only(right: 10),
-                                                                          child: Text(
-                                                                            y.value.senderName,
-                                                                            overflow: TextOverflow.ellipsis,
-                                                                            style: TextStyle(
-                                                                                fontSize: 17, fontWeight: FontWeight.w600),
-                                                                          ))),
-                                                                  Visibility(
-                                                                    visible: y.value.hasAttachments,
-                                                                    child: Transform.scale(
-                                                                        scale: 0.6,
-                                                                        child: Icon(CupertinoIcons.paperclip,
-                                                                            color: CupertinoColors.inactiveGray)),
-                                                                  ),
-                                                                  Container(
-                                                                      margin: EdgeInsets.only(top: 1),
-                                                                      child: Opacity(
-                                                                          opacity: 0.5,
-                                                                          child: Text(
-                                                                            y.value.sendDateString,
-                                                                            overflow: TextOverflow.ellipsis,
-                                                                            style: TextStyle(
-                                                                                fontSize: 16, fontWeight: FontWeight.normal),
-                                                                          )))
-                                                                ]),
-                                                            Container(
-                                                                margin: EdgeInsets.only(top: 3),
+                                      (y, index) => AdaptiveCard(
+                                          child: GestureDetector(
+                                              onTap: () {
+                                                Share.tabsNavigatePage.broadcast(Value(3));
+                                                Future.delayed(Duration(milliseconds: 250))
+                                                    .then((arg) => Share.messagesNavigate.broadcast(Value(y.value)));
+                                              },
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                                                      color: CupertinoDynamicColor.resolve(
+                                                          CupertinoColors.tertiarySystemBackground, context)),
+                                                  padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
+                                                  child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      mainAxisSize: MainAxisSize.max,
+                                                      children: [
+                                                        Row(
+                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Expanded(
+                                                                  child: Container(
+                                                                      margin: EdgeInsets.only(right: 10),
+                                                                      child: Text(
+                                                                        y.value.senderName,
+                                                                        overflow: TextOverflow.ellipsis,
+                                                                        style: TextStyle(
+                                                                            fontSize: 17, fontWeight: FontWeight.w600),
+                                                                      ))),
+                                                              Visibility(
+                                                                visible: y.value.hasAttachments,
+                                                                child: Transform.scale(
+                                                                    scale: 0.6,
+                                                                    child: Icon(CupertinoIcons.paperclip,
+                                                                        color: CupertinoColors.inactiveGray)),
+                                                              ),
+                                                              Container(
+                                                                  margin: EdgeInsets.only(top: 1),
+                                                                  child: Opacity(
+                                                                      opacity: 0.5,
+                                                                      child: Text(
+                                                                        y.value.sendDateString,
+                                                                        overflow: TextOverflow.ellipsis,
+                                                                        style: TextStyle(
+                                                                            fontSize: 16, fontWeight: FontWeight.normal),
+                                                                      )))
+                                                            ]),
+                                                        Container(
+                                                            margin: EdgeInsets.only(top: 3),
+                                                            child: Text(
+                                                              y.value.topic,
+                                                              maxLines: 2,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              style: TextStyle(fontSize: 16),
+                                                            )),
+                                                        Opacity(
+                                                            opacity: 0.5,
+                                                            child: Container(
+                                                                margin: EdgeInsets.only(top: 5),
                                                                 child: Text(
-                                                                  y.value.topic,
+                                                                  y.value.previewString
+                                                                      .replaceAll('\n ', '\n')
+                                                                      .replaceAll('\n\n', '\n'),
                                                                   maxLines: 2,
                                                                   overflow: TextOverflow.ellipsis,
                                                                   style: TextStyle(fontSize: 16),
-                                                                )),
-                                                            Opacity(
-                                                                opacity: 0.5,
-                                                                child: Container(
-                                                                    margin: EdgeInsets.only(top: 5),
-                                                                    child: Text(
-                                                                      y.value.previewString
-                                                                          .replaceAll('\n ', '\n')
-                                                                          .replaceAll('\n\n', '\n'),
-                                                                      maxLines: 2,
-                                                                      overflow: TextOverflow.ellipsis,
-                                                                      style: TextStyle(fontSize: 16),
-                                                                    ))),
-                                                          ]))))),
+                                                                ))),
+                                                      ])))),
                                     )
                                     .toList())),
                         x.messagesChanged.any((element) => element.type != RegisterChangeTypes.removed))
                     // Added or updated attendances
                     .appendIf(
-                        CupertinoListTile(
-                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                            title: CupertinoListSection.insetGrouped(
-                                separatorColor: Colors.transparent,
-                                backgroundColor: Colors.transparent,
-                                margin: EdgeInsets.zero,
-                                hasLeading: false,
+                        AdaptiveCard(
+                            child: CardContainer(
+                                noDivider: true,
+                                largeHeader: false,
                                 header: () {
                                   var news =
                                       x.attendancesChanged.count((element) => element.type == RegisterChangeTypes.added);
                                   var changes =
                                       x.attendancesChanged.count((element) => element.type == RegisterChangeTypes.changed);
 
-                                  return Text(
-                                      switch (news) {
-                                        // There's only new grades
-                                        > 0 when changes == 0 => news.asAttendancesNumber(RegisterChangeTypes.added),
-                                        // There's only changed grades
-                                        0 when changes > 0 => changes.asAttendancesNumber(RegisterChangeTypes.changed),
-                                        // Some are new, some are changed
-                                        > 0 when changes > 0 => (news + changes).asAttendancesNumber(),
-                                        // Shouldn't happen, but we need a _ case
-                                        _ => 'No changes, WTF?!'
-                                      },
-                                      style: TextStyle(
-                                          fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
+                                  return switch (news) {
+                                    // There's only new grades
+                                    > 0 when changes == 0 => news.asAttendancesNumber(RegisterChangeTypes.added),
+                                    // There's only changed grades
+                                    0 when changes > 0 => changes.asAttendancesNumber(RegisterChangeTypes.changed),
+                                    // Some are new, some are changed
+                                    > 0 when changes > 0 => (news + changes).asAttendancesNumber(),
+                                    // Shouldn't happen, but we need a _ case
+                                    _ => 'No changes, WTF?!'
+                                  };
                                 }(),
                                 children: x.attendancesChanged
                                     .orderByDescending((element) => element.value.addDate)
                                     .where((element) => element.type != RegisterChangeTypes.removed)
                                     .select(
-                                      (y, index) => CupertinoListTile(
-                                          padding: EdgeInsets.only(top: 5, bottom: 5),
-                                          title: y.value.asAttendanceWidget(context,
+                                      (y, index) => AdaptiveCard(
+                                          child: y.value.asAttendanceWidget(context,
                                               markModified: y.type == RegisterChangeTypes.changed,
                                               onTap: () => Share.tabsNavigatePage.broadcast(Value(4)))),
                                     )
@@ -1041,115 +989,98 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                         x.attendancesChanged.any((element) => element.type != RegisterChangeTypes.removed))
                     // Deleted attendances
                     .appendIf(
-                        CupertinoListTile(
-                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                            title: CupertinoListSection.insetGrouped(
-                                separatorColor: Colors.transparent,
-                                backgroundColor: Colors.transparent,
-                                margin: EdgeInsets.zero,
-                                hasLeading: false,
-                                header: Text(x.attendancesChanged.count((element) => element.type == RegisterChangeTypes.removed).asAttendancesNumber(RegisterChangeTypes.removed), style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                        AdaptiveCard(
+                            child: CardContainer(
+                                noDivider: true,
+                                largeHeader: false,
+                                header: x.attendancesChanged
+                                    .count((element) => element.type == RegisterChangeTypes.removed)
+                                    .asAttendancesNumber(RegisterChangeTypes.removed),
                                 children: x.attendancesChanged
                                     .where((element) => element.type == RegisterChangeTypes.removed)
                                     .select(
-                                      (y, index) => CupertinoListTile(
-                                          padding: EdgeInsets.only(top: 5, bottom: 5),
-                                          title: y.value.asAttendanceWidget(context, markRemoved: true)),
+                                      (y, index) =>
+                                          AdaptiveCard(child: y.value.asAttendanceWidget(context, markRemoved: true)),
                                     )
                                     .toList())),
                         x.attendancesChanged.any((element) => element.type == RegisterChangeTypes.removed))
                     // Added or updated grades
                     .appendIf(
-                        CupertinoListTile(
-                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                            title: CupertinoListSection.insetGrouped(
-                                separatorColor: Colors.transparent,
-                                backgroundColor: Colors.transparent,
-                                margin: EdgeInsets.zero,
-                                hasLeading: false,
+                        AdaptiveCard(
+                            child: CardContainer(
+                                noDivider: true,
+                                largeHeader: false,
                                 header: () {
                                   var news = x.gradesChanged.count((element) => element.type == RegisterChangeTypes.added);
                                   var changes =
                                       x.gradesChanged.count((element) => element.type == RegisterChangeTypes.changed);
 
-                                  return Text(
-                                      switch (news) {
-                                        // There's only new grades
-                                        > 0 when changes == 0 => news.asGradesNumber(RegisterChangeTypes.added),
-                                        // There's only changed grades
-                                        0 when changes > 0 => changes.asGradesNumber(RegisterChangeTypes.changed),
-                                        // Some are new, some are changed
-                                        > 0 when changes > 0 => (news + changes).asGradesNumber(),
-                                        // Shouldn't happen, but we need a _ case
-                                        _ => 'No changes, WTF?!'
-                                      },
-                                      style: TextStyle(
-                                          fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
+                                  return switch (news) {
+                                    // There's only new grades
+                                    > 0 when changes == 0 => news.asGradesNumber(RegisterChangeTypes.added),
+                                    // There's only changed grades
+                                    0 when changes > 0 => changes.asGradesNumber(RegisterChangeTypes.changed),
+                                    // Some are new, some are changed
+                                    > 0 when changes > 0 => (news + changes).asGradesNumber(),
+                                    // Shouldn't happen, but we need a _ case
+                                    _ => 'No changes, WTF?!'
+                                  };
                                 }(),
                                 children: x.gradesChanged
                                     .where((element) => element.type != RegisterChangeTypes.removed)
                                     .select(
-                                      (y, index) => CupertinoListTile(
-                                          padding: EdgeInsets.only(top: 5, bottom: 5),
-                                          title: y.value.asGrade(context, setState,
+                                      (y, index) => AdaptiveCard(
+                                          child: y.value.asGrade(context, setState,
                                               markModified: y.type == RegisterChangeTypes.changed, onTap: () {
-                                            var lesson = Share.session.data.student.subjects
-                                                .firstWhereOrDefault((value) => value.allGrades.contains(y.value));
-                                            if (lesson == null) return;
-                                            Share.tabsNavigatePage.broadcast(Value(1));
-                                            Future.delayed(Duration(milliseconds: 250))
-                                                .then((arg) => Share.gradesNavigate.broadcast(Value(lesson)));
-                                          })),
+                                        var lesson = Share.session.data.student.subjects
+                                            .firstWhereOrDefault((value) => value.allGrades.contains(y.value));
+                                        if (lesson == null) return;
+                                        Share.tabsNavigatePage.broadcast(Value(1));
+                                        Future.delayed(Duration(milliseconds: 250))
+                                            .then((arg) => Share.gradesNavigate.broadcast(Value(lesson)));
+                                      })),
                                     )
                                     .toList())),
                         x.gradesChanged.any((element) => element.type != RegisterChangeTypes.removed))
                     // Deleted grades
                     .appendIf(
-                        CupertinoListTile(
-                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                            title: CupertinoListSection.insetGrouped(
-                                separatorColor: Colors.transparent,
-                                backgroundColor: Colors.transparent,
-                                margin: EdgeInsets.zero,
-                                hasLeading: false,
-                                header: Text(x.gradesChanged.count((element) => element.type == RegisterChangeTypes.removed).asGradesNumber(RegisterChangeTypes.removed), style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                        AdaptiveCard(
+                            child: CardContainer(
+                                noDivider: true,
+                                largeHeader: false,
+                                header: x.gradesChanged
+                                    .count((element) => element.type == RegisterChangeTypes.removed)
+                                    .asGradesNumber(RegisterChangeTypes.removed),
                                 children: x.gradesChanged
                                     .where((element) => element.type == RegisterChangeTypes.removed)
                                     .select(
-                                      (y, index) => CupertinoListTile(
-                                          padding: EdgeInsets.only(top: 5, bottom: 5),
-                                          title: y.value.asGrade(context, setState, markRemoved: true)),
+                                      (y, index) =>
+                                          AdaptiveCard(child: y.value.asGrade(context, setState, markRemoved: true)),
                                     )
                                     .toList())),
                         x.gradesChanged.any((element) => element.type == RegisterChangeTypes.removed))
                     // Added or updated announcements
                     .appendIf(
-                        CupertinoListTile(
-                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                            title: CupertinoListSection.insetGrouped(
-                                separatorColor: Colors.transparent,
-                                backgroundColor: Colors.transparent,
-                                margin: EdgeInsets.zero,
-                                hasLeading: false,
+                        AdaptiveCard(
+                            child: CardContainer(
+                                noDivider: true,
+                                largeHeader: false,
                                 header: () {
                                   var news =
                                       x.announcementsChanged.count((element) => element.type == RegisterChangeTypes.added);
                                   var changes =
                                       x.announcementsChanged.count((element) => element.type == RegisterChangeTypes.changed);
 
-                                  return Text(
-                                      switch (news) {
-                                        // There's only new grades
-                                        > 0 when changes == 0 => news.asAnnouncementsNumber(RegisterChangeTypes.added),
-                                        // There's only changed grades
-                                        0 when changes > 0 => changes.asAnnouncementsNumber(RegisterChangeTypes.changed),
-                                        // Some are new, some are changed
-                                        > 0 when changes > 0 => (news + changes).asAnnouncementsNumber(),
-                                        // Shouldn't happen, but we need a _ case
-                                        _ => 'No changes, WTF?!'
-                                      },
-                                      style: TextStyle(
-                                          fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
+                                  return switch (news) {
+                                    // There's only new grades
+                                    > 0 when changes == 0 => news.asAnnouncementsNumber(RegisterChangeTypes.added),
+                                    // There's only changed grades
+                                    0 when changes > 0 => changes.asAnnouncementsNumber(RegisterChangeTypes.changed),
+                                    // Some are new, some are changed
+                                    > 0 when changes > 0 => (news + changes).asAnnouncementsNumber(),
+                                    // Shouldn't happen, but we need a _ case
+                                    _ => 'No changes, WTF?!'
+                                  };
                                 }(),
                                 children: x.announcementsChanged
                                     .where((element) => element.type != RegisterChangeTypes.removed)
@@ -1167,148 +1098,135 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                         ))
                                     .toList()
                                     .select(
-                                      (y, index) => CupertinoListTile(
-                                          padding: EdgeInsets.only(top: 5, bottom: 5),
-                                          title: CupertinoListTile(
-                                              padding: EdgeInsets.all(0),
-                                              title: GestureDetector(
-                                                  onTap: () {
-                                                    Share.tabsNavigatePage.broadcast(Value(3));
-                                                    Future.delayed(Duration(milliseconds: 250)).then(
-                                                        (arg) => Share.messagesNavigateAnnouncement.broadcast(Value(y)));
-                                                  },
-                                                  child: Container(
-                                                      decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                                                          color: CupertinoDynamicColor.resolve(
-                                                              CupertinoColors.tertiarySystemBackground, context)),
-                                                      padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
-                                                      child: Column(
-                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          mainAxisSize: MainAxisSize.max,
-                                                          children: [
-                                                            Row(
-                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Expanded(
-                                                                      child: Container(
-                                                                          margin: EdgeInsets.only(right: 10),
-                                                                          child: Text(
-                                                                            y.message.senderName,
-                                                                            overflow: TextOverflow.ellipsis,
-                                                                            style: TextStyle(
-                                                                                fontSize: 17, fontWeight: FontWeight.w600),
-                                                                          ))),
-                                                                  Visibility(
-                                                                    visible: y.message.hasAttachments,
-                                                                    child: Transform.scale(
-                                                                        scale: 0.6,
-                                                                        child: Icon(CupertinoIcons.paperclip,
-                                                                            color: CupertinoColors.inactiveGray)),
-                                                                  ),
-                                                                  Container(
-                                                                      margin: EdgeInsets.only(top: 1),
-                                                                      child: Opacity(
-                                                                          opacity: 0.5,
-                                                                          child: Text(
-                                                                            (y.message.sendDate.month ==
-                                                                                        y.message.readDate?.month &&
-                                                                                    y.message.sendDate.year ==
-                                                                                        y.message.readDate?.year &&
-                                                                                    y.message.sendDate.day !=
-                                                                                        y.message.readDate?.day
-                                                                                ? '${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(y.message.sendDate)} - ${DateFormat.d(Share.settings.appSettings.localeCode).format(y.message.readDate ?? DateTime.now())}'
-                                                                                : '${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(y.message.sendDate)} - ${DateFormat(y.message.sendDate.year == y.message.readDate?.year ? 'MMMd' : 'yMMMd', Share.settings.appSettings.localeCode).format(y.message.readDate ?? DateTime.now())}'),
-                                                                            overflow: TextOverflow.ellipsis,
-                                                                            style: TextStyle(
-                                                                                fontSize: 16, fontWeight: FontWeight.normal),
-                                                                          )))
-                                                                ]),
-                                                            Container(
-                                                                margin: EdgeInsets.only(top: 3),
+                                      (y, index) => AdaptiveCard(
+                                          child: GestureDetector(
+                                              onTap: () {
+                                                Share.tabsNavigatePage.broadcast(Value(3));
+                                                Future.delayed(Duration(milliseconds: 250))
+                                                    .then((arg) => Share.messagesNavigateAnnouncement.broadcast(Value(y)));
+                                              },
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                                                      color: CupertinoDynamicColor.resolve(
+                                                          CupertinoColors.tertiarySystemBackground, context)),
+                                                  padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
+                                                  child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      mainAxisSize: MainAxisSize.max,
+                                                      children: [
+                                                        Row(
+                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Expanded(
+                                                                  child: Container(
+                                                                      margin: EdgeInsets.only(right: 10),
+                                                                      child: Text(
+                                                                        y.message.senderName,
+                                                                        overflow: TextOverflow.ellipsis,
+                                                                        style: TextStyle(
+                                                                            fontSize: 17, fontWeight: FontWeight.w600),
+                                                                      ))),
+                                                              Visibility(
+                                                                visible: y.message.hasAttachments,
+                                                                child: Transform.scale(
+                                                                    scale: 0.6,
+                                                                    child: Icon(CupertinoIcons.paperclip,
+                                                                        color: CupertinoColors.inactiveGray)),
+                                                              ),
+                                                              Container(
+                                                                  margin: EdgeInsets.only(top: 1),
+                                                                  child: Opacity(
+                                                                      opacity: 0.5,
+                                                                      child: Text(
+                                                                        (y.message.sendDate.month ==
+                                                                                    y.message.readDate?.month &&
+                                                                                y.message.sendDate.year ==
+                                                                                    y.message.readDate?.year &&
+                                                                                y.message.sendDate.day !=
+                                                                                    y.message.readDate?.day
+                                                                            ? '${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(y.message.sendDate)} - ${DateFormat.d(Share.settings.appSettings.localeCode).format(y.message.readDate ?? DateTime.now())}'
+                                                                            : '${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(y.message.sendDate)} - ${DateFormat(y.message.sendDate.year == y.message.readDate?.year ? 'MMMd' : 'yMMMd', Share.settings.appSettings.localeCode).format(y.message.readDate ?? DateTime.now())}'),
+                                                                        overflow: TextOverflow.ellipsis,
+                                                                        style: TextStyle(
+                                                                            fontSize: 16, fontWeight: FontWeight.normal),
+                                                                      )))
+                                                            ]),
+                                                        Container(
+                                                            margin: EdgeInsets.only(top: 3),
+                                                            child: Text(
+                                                              y.message.topic,
+                                                              maxLines: 2,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              style: TextStyle(fontSize: 16),
+                                                            )),
+                                                        Opacity(
+                                                            opacity: 0.5,
+                                                            child: Container(
+                                                                margin: EdgeInsets.only(top: 5),
                                                                 child: Text(
-                                                                  y.message.topic,
+                                                                  y.message.previewString
+                                                                      .replaceAll('\n ', '\n')
+                                                                      .replaceAll('\n\n', '\n'),
                                                                   maxLines: 2,
                                                                   overflow: TextOverflow.ellipsis,
                                                                   style: TextStyle(fontSize: 16),
-                                                                )),
-                                                            Opacity(
-                                                                opacity: 0.5,
-                                                                child: Container(
-                                                                    margin: EdgeInsets.only(top: 5),
-                                                                    child: Text(
-                                                                      y.message.previewString
-                                                                          .replaceAll('\n ', '\n')
-                                                                          .replaceAll('\n\n', '\n'),
-                                                                      maxLines: 2,
-                                                                      overflow: TextOverflow.ellipsis,
-                                                                      style: TextStyle(fontSize: 16),
-                                                                    ))),
-                                                          ]))))),
+                                                                ))),
+                                                      ])))),
                                     )
                                     .toList())),
                         x.announcementsChanged.any((element) => element.type != RegisterChangeTypes.removed))
                     // Added or updated events
                     .appendIf(
-                        CupertinoListTile(
-                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                            title: CupertinoListSection.insetGrouped(
-                                separatorColor: Colors.transparent,
-                                backgroundColor: Colors.transparent,
-                                margin: EdgeInsets.zero,
-                                hasLeading: false,
+                        AdaptiveCard(
+                            child: CardContainer(
+                                noDivider: true,
+                                largeHeader: false,
                                 header: () {
                                   var news = x.eventsChanged.count((element) => element.type == RegisterChangeTypes.added);
                                   var changes =
                                       x.eventsChanged.count((element) => element.type == RegisterChangeTypes.changed);
 
-                                  return Text(
-                                      switch (news) {
-                                        // There's only new grades
-                                        > 0 when changes == 0 => news.asEventsNumber(RegisterChangeTypes.added),
-                                        // There's only changed grades
-                                        0 when changes > 0 => changes.asEventsNumber(RegisterChangeTypes.changed),
-                                        // Some are new, some are changed
-                                        > 0 when changes > 0 => (news + changes).asEventsNumber(),
-                                        // Shouldn't happen, but we need a _ case
-                                        _ => 'No changes, WTF?!'
-                                      },
-                                      style: TextStyle(
-                                          fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray));
+                                  return switch (news) {
+                                    // There's only new grades
+                                    > 0 when changes == 0 => news.asEventsNumber(RegisterChangeTypes.added),
+                                    // There's only changed grades
+                                    0 when changes > 0 => changes.asEventsNumber(RegisterChangeTypes.changed),
+                                    // Some are new, some are changed
+                                    > 0 when changes > 0 => (news + changes).asEventsNumber(),
+                                    // Shouldn't happen, but we need a _ case
+                                    _ => 'No changes, WTF?!'
+                                  };
                                 }(),
                                 children: x.eventsChanged
                                     .where((element) => element.type != RegisterChangeTypes.removed)
                                     .select(
-                                      (y, index) => CupertinoListTile(
-                                          padding: EdgeInsets.only(top: 5, bottom: 5),
-                                          title: y.value.asEventWidget(context, true, null, _setState,
+                                      (y, index) => AdaptiveCard(
+                                          child: y.value.asEventWidget(context, true, null, _setState,
                                               markModified: y.type == RegisterChangeTypes.changed, onTap: () {
-                                            Share.tabsNavigatePage.broadcast(Value(2));
-                                            Future.delayed(Duration(milliseconds: 250)).then((arg) => Share
-                                                .timetableNavigateDay
-                                                .broadcast(Value(y.value.date ?? y.value.timeFrom)));
-                                          })),
+                                        Share.tabsNavigatePage.broadcast(Value(2));
+                                        Future.delayed(Duration(milliseconds: 250)).then((arg) =>
+                                            Share.timetableNavigateDay.broadcast(Value(y.value.date ?? y.value.timeFrom)));
+                                      })),
                                     )
                                     .toList())),
                         x.eventsChanged.any((element) => element.type != RegisterChangeTypes.removed))
                     // Deleted events
                     .appendIf(
-                        CupertinoListTile(
-                            padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                            title: CupertinoListSection.insetGrouped(
-                                separatorColor: Colors.transparent,
-                                backgroundColor: Colors.transparent,
-                                margin: EdgeInsets.zero,
-                                hasLeading: false,
-                                header: Text(x.eventsChanged.count((element) => element.type == RegisterChangeTypes.removed).asEventsNumber(RegisterChangeTypes.removed), style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: CupertinoColors.inactiveGray)),
+                        AdaptiveCard(
+                            child: CardContainer(
+                                noDivider: true,
+                                largeHeader: false,
+                                header: x.eventsChanged
+                                    .count((element) => element.type == RegisterChangeTypes.removed)
+                                    .asEventsNumber(RegisterChangeTypes.removed),
                                 children: x.eventsChanged
                                     .where((element) => element.type == RegisterChangeTypes.removed)
                                     .select(
-                                      (y, index) => CupertinoListTile(
-                                          padding: EdgeInsets.only(top: 5, bottom: 5),
-                                          title: y.value.asEventWidget(context, true, null, _setState, markRemoved: true)),
+                                      (y, index) => AdaptiveCard(
+                                          child: y.value.asEventWidget(context, true, null, _setState, markRemoved: true)),
                                     )
                                     .toList())),
                         x.eventsChanged.any((element) => element.type == RegisterChangeTypes.removed))
@@ -1317,15 +1235,11 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     ]
         .cast<Widget>()
         .appendIf(
-            CupertinoListTile(
-                title: Opacity(
-                    opacity: 0.5,
-                    child: Container(
-                        alignment: Alignment.center,
-                        child: Text(
-                          'No changes to display',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                        )))),
+            AdaptiveCard(
+              secondary: true,
+              centered: true,
+              child: 'No changes to display',
+            ),
             timelineChanges.isEmpty)
         .toList();
 
@@ -1352,7 +1266,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
               title: 'Settings',
               icon: CupertinoIcons.gear,
               onTap: () =>
-                  Navigator.of(context, rootNavigator: true).push(CupertinoPageRoute(builder: (context) => SettingsPage()))),
+                  Navigator.of(context, rootNavigator: true).push(AdaptivePageRoute(builder: (context) => SettingsPage()))),
           PullDownMenuDivider.large(),
           PullDownMenuTitle(title: Text('Accounts')),
           PullDownMenuItem(

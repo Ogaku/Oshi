@@ -254,6 +254,7 @@ class _BaseAppState extends State<BaseApp> {
                                   setState(() => currentPageIndex = index);
                                   Share.refreshAll.broadcast();
                                 },
+                                backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
                                 labelType: NavigationRailLabelType.all,
                                 leading: SizedBox(height: 5),
                                 unselectedLabelTextStyle: const TextStyle(),

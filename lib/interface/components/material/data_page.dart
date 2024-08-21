@@ -36,7 +36,10 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: widget.segments?.length ?? 1, vsync: this);
+    tabController = TabController(
+        length: widget.segments?.length ?? 1,
+        vsync: this,
+        initialIndex: widget.segments?.keys.toList().indexOf(widget.segmentController?.segment) ?? 0);
   }
 
   @override

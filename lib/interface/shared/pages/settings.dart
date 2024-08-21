@@ -17,6 +17,7 @@ import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
+import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
@@ -131,7 +132,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ]),
                     onTap: () => Navigator.push(
                         context,
-                        CupertinoPageRoute(
+                        AdaptivePageRoute(
                             builder: (context) => CupertinoModalPage(title: 'About Me', children: [
                                   CupertinoListSection.insetGrouped(
                                     margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
@@ -431,7 +432,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 CupertinoListTile(
                     onTap: () => Navigator.push(
                         context,
-                        CupertinoPageRoute(
+                        AdaptivePageRoute(
                             builder: (context) => CupertinoModalPage(title: 'App Style', children: [
                                   OptionsForm(
                                       selection: Share.settings.appSettings.useCupertino,
@@ -460,7 +461,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 CupertinoListTile(
                     onTap: () => Navigator.push(
                         context,
-                        CupertinoPageRoute(
+                        AdaptivePageRoute(
                             builder: (context) => CupertinoModalPage(title: 'Accent Color', children: [
                                   OptionsForm(
                                       selection: Resources.cupertinoAccentColors.entries
@@ -498,7 +499,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 CupertinoListTile(
                     onTap: () => Navigator.push(
                         context,
-                        CupertinoPageRoute(
+                        AdaptivePageRoute(
                             builder: (context) => CupertinoModalPage(title: 'Language', children: [
                                   OptionsForm(
                                       selection: Share.settings.appSettings.languageCode,
@@ -535,7 +536,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 CupertinoListTile(
                     onTap: () => Navigator.push(
                         context,
-                        CupertinoPageRoute(
+                        AdaptivePageRoute(
                             builder: (context) => StatefulBuilder(
                                 builder: ((context, setState) => CupertinoModalPage(title: 'Sync Settings', children: [
                                       CupertinoListSection.insetGrouped(
@@ -620,7 +621,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 CupertinoListTile(
                     onTap: () => Navigator.push(
                         context,
-                        CupertinoPageRoute(
+                        AdaptivePageRoute(
                             builder: (context) => StatefulBuilder(
                                 builder: ((context, setState) => CupertinoModalPage(title: 'Shared Events', children: [
                                       CupertinoListSection.insetGrouped(
@@ -676,7 +677,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 CupertinoListTile(
                     onTap: () => Navigator.push(
                         context,
-                        CupertinoPageRoute(
+                        AdaptivePageRoute(
                             builder: (context) => StatefulBuilder(
                                 builder: ((context, setState) => CupertinoModalPage(title: 'Notifications', children: [
                                       CupertinoListSection.insetGrouped(
@@ -784,7 +785,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 CupertinoListTile(
                     onTap: () => Navigator.push(
                         context,
-                        CupertinoPageRoute(
+                        AdaptivePageRoute(
                             builder: (context) => CupertinoModalPage(title: 'Timetable Settings', children: [
                                   CupertinoListSection.insetGrouped(
                                       margin: EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
@@ -906,7 +907,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 CupertinoListTile(
                     onTap: () => Navigator.push(
                         context,
-                        CupertinoPageRoute(
+                        AdaptivePageRoute(
                             builder: (context) => StatefulBuilder(
                                 builder: ((context, setState) => CupertinoModalPage(
                                     title: 'Custom Events',
@@ -973,7 +974,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 CupertinoListTile(
                     onTap: () => Navigator.push(
                         context,
-                        CupertinoPageRoute(
+                        AdaptivePageRoute(
                             builder: (context) => StatefulBuilder(
                                 builder: ((context, setState) => CupertinoModalPage(title: 'Grades Settings', children: [
                                       CupertinoListSection.insetGrouped(
@@ -1045,7 +1046,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                             CupertinoListTile(
                                                 onTap: () => Navigator.push(
                                                     context,
-                                                    CupertinoPageRoute(
+                                                    AdaptivePageRoute(
                                                         builder: (context) => StatefulBuilder(
                                                             builder: ((context, setState) => CupertinoModalPage(
                                                                 title: 'Custom Grades',
@@ -1126,7 +1127,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 CupertinoListTile(
                     onTap: () => Navigator.push(
                         context,
-                        CupertinoPageRoute(
+                        AdaptivePageRoute(
                             builder: (context) => CupertinoModalPage(title: 'Custom Grade Values', children: [
                                   // Custom grade values
                                   EntriesForm<double>(
@@ -1172,7 +1173,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 CupertinoListTile(
                     onTap: () => Navigator.push(
                         context,
-                        CupertinoPageRoute(
+                        AdaptivePageRoute(
                             builder: (context) => CupertinoModalPage(title: 'App Info', children: [
                                   CupertinoListSection.insetGrouped(
                                     margin: EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
@@ -1189,7 +1190,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                           trailing: GestureDetector(
                                               onDoubleTap: () => Navigator.push(
                                                   context,
-                                                  CupertinoPageRoute(
+                                                  AdaptivePageRoute(
                                                       builder: (context) => StatefulBuilder(
                                                           builder: ((context, setState) => CupertinoModalPage(
                                                               title: 'Developers',
