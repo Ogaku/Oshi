@@ -49,7 +49,6 @@ abstract class DataPageBase extends StatefulWidget {
       Map<dynamic, String>? segments,
       List<Widget>? children,
       DateTime? selectedDate}) {
-
     // Segment controller watcher
     if (segmentController != null && setState != null) {
       segmentController.removeListener(() => setState(() => {}));
@@ -104,8 +103,10 @@ enum DataPageType with EnumFlag {
 }
 
 class SegmentController with ChangeNotifier {
-  SegmentController({dynamic segment}) : _segment = segment;
+  SegmentController({dynamic segment, this.scrollable = false}) : _segment = segment;
+
   dynamic _segment;
+  bool scrollable;
 
   get segment => _segment;
 

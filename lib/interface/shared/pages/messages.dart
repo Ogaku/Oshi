@@ -32,8 +32,13 @@ class MessagesPage extends StatefulWidget {
 }
 
 class _MessagesPageState extends State<MessagesPage> {
-  MessageFolders folder = MessageFolders.inbox;
+  MessageFolders _folder = MessageFolders.inbox;
   bool isWorking = false;
+
+  SegmentController segmentController = SegmentController(
+    segment: MessageFolders.inbox,
+    scrollable: true,
+  );
 
   @override
   void dispose() {
@@ -45,7 +50,7 @@ class _MessagesPageState extends State<MessagesPage> {
     if (mounted) setState(() {});
   }
 
-  Widget messagesWidget([String query = '']) {
+  Widget messagesWidget([String query = '', MessageFolders folder = MessageFolders.inbox]) {
     var messagesToDisplay = (switch (folder) {
       MessageFolders.inbox => Share.session.data.messages.received,
       MessageFolders.outbox => Share.session.data.messages.sent,
@@ -247,7 +252,7 @@ class _MessagesPageState extends State<MessagesPage> {
                               .toList(),
                           builder: (BuildContext swipeContext, Animation<double> animation) => GestureDetector(
                               onTap: animation.value < CupertinoContextMenu.animationOpensAt
-                                  ? () => openMessage(message: x.message, announcement: x.announcement)
+                                  ? () => openMessage(message: x.message, announcement: x.announcement, folder: folder)
                                   : null,
                               child: Container(
                                   decoration: BoxDecoration(
@@ -352,25 +357,46 @@ class _MessagesPageState extends State<MessagesPage> {
 
     Share.messagesNavigate.unsubscribeAll();
     Share.messagesNavigate.subscribe((args) {
-      setState(() => folder = ((args?.value.receivers?.isNotEmpty ?? false) ? MessageFolders.outbox : MessageFolders.inbox));
-      openMessage(message: args?.value);
+      setState(
+          () => _folder = ((args?.value.receivers?.isNotEmpty ?? false) ? MessageFolders.outbox : MessageFolders.inbox));
+      openMessage(
+          message: args?.value,
+          folder: ((args?.value.receivers?.isNotEmpty ?? false) ? MessageFolders.outbox : MessageFolders.inbox));
     });
 
     Share.messagesNavigateAnnouncement.unsubscribeAll();
     Share.messagesNavigateAnnouncement.subscribe((args) {
-      setState(() => folder = MessageFolders.announcements);
-      openMessage(message: args?.value.message, announcement: args?.value.parent);
+      setState(() => _folder = MessageFolders.announcements);
+      openMessage(message: args?.value.message, announcement: args?.value.parent, folder: MessageFolders.announcements);
     });
 
+    if (!Share.settings.appSettings.useCupertino) {
+      segmentController.removeListener(() => setState(() => _folder = segmentController.segment));
+      segmentController.addListener(() => setState(() => _folder = segmentController.segment));
+    }
+
     return DataPageBase.adaptive(
-      pageFlags: [DataPageType.searchable, DataPageType.refreshable, DataPageType.boxedPage].flag,
+      pageFlags: [
+        DataPageType.searchable,
+        DataPageType.refreshable,
+        DataPageType.boxedPage,
+        if (!Share.settings.appSettings.useCupertino) DataPageType.segmented,
+      ].flag,
       setState: setState,
-      title: switch (folder) {
+      title: switch (_folder) {
         MessageFolders.announcements => '/Titles/Pages/Messages/Announcements'.localized,
         MessageFolders.outbox => '/Titles/Pages/Messages/Sent'.localized,
         MessageFolders.inbox || _ => '/Titles/Pages/Messages/Inbox'.localized
       },
-      searchBuilder: (_, controller) => [messagesWidget(controller.text)],
+      segments: Share.settings.appSettings.useCupertino
+          ? null
+          : {
+              MessageFolders.inbox: '/Titles/Pages/Messages/Inbox'.localized,
+              MessageFolders.outbox: '/Titles/Pages/Messages/Sent'.localized,
+              MessageFolders.announcements: '/Titles/Pages/Messages/Announcements'.localized
+            },
+      segmentController: segmentController,
+      searchBuilder: (_, controller) => [messagesWidget(controller.text, _folder)],
       trailing: isWorking
           ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
           : Stack(alignment: Alignment.bottomRight, children: [
@@ -394,21 +420,21 @@ class _MessagesPageState extends State<MessagesPage> {
                         (Share.session.data.messages.received.any((x) => !x.read)
                             ? ' (${Share.session.data.messages.received.count((x) => !x.read)})'
                             : ''),
-                    icon: folder == MessageFolders.inbox ? CupertinoIcons.tray_fill : CupertinoIcons.tray,
-                    onTap: () => setState(() => folder = MessageFolders.inbox),
+                    icon: _folder == MessageFolders.inbox ? CupertinoIcons.tray_fill : CupertinoIcons.tray,
+                    onTap: () => setState(() => _folder = MessageFolders.inbox),
                   ),
                   PullDownMenuItem(
                     title: '/Titles/Pages/Messages/Sent'.localized,
-                    icon: folder == MessageFolders.outbox ? CupertinoIcons.paperplane_fill : CupertinoIcons.paperplane,
-                    onTap: () => setState(() => folder = MessageFolders.outbox),
+                    icon: _folder == MessageFolders.outbox ? CupertinoIcons.paperplane_fill : CupertinoIcons.paperplane,
+                    onTap: () => setState(() => _folder = MessageFolders.outbox),
                   ),
                   PullDownMenuItem(
                     title: '/Titles/Pages/Messages/Announcements'.localized +
                         ((Share.session.data.student.mainClass.unit.announcements?.any((x) => !x.read) ?? false)
                             ? ' (${(Share.session.data.student.mainClass.unit.announcements?.count((x) => !x.read) ?? 1)})'
                             : ''),
-                    icon: folder == MessageFolders.announcements ? CupertinoIcons.bell_fill : CupertinoIcons.bell,
-                    onTap: () => setState(() => folder = MessageFolders.announcements),
+                    icon: _folder == MessageFolders.announcements ? CupertinoIcons.bell_fill : CupertinoIcons.bell,
+                    onTap: () => setState(() => _folder = MessageFolders.announcements),
                   )
                 ],
                 buttonBuilder: (context, showMenu) => GestureDetector(
@@ -430,11 +456,11 @@ class _MessagesPageState extends State<MessagesPage> {
                         decoration: BoxDecoration(shape: BoxShape.circle, color: CupertinoTheme.of(context).primaryColor),
                       )))
             ]),
-      children: [messagesWidget()],
+      children: [messagesWidget('', _folder)],
     );
   }
 
-  void openMessage({Message? message, Announcement? announcement}) {
+  void openMessage({Message? message, Announcement? announcement, required MessageFolders folder}) {
     if (message == null || isWorking) return;
     if (Navigator.of(context).canPop()) Navigator.of(context).pop();
 

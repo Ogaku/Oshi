@@ -223,9 +223,8 @@ class _BaseAppState extends State<BaseApp> {
                       bottomNavigationBar: MediaQuery.of(context).size.width < 640
                           ? NavigationBar(
                               onDestinationSelected: (int index) {
-                                setState(() {
-                                  currentPageIndex = index;
-                                });
+                                setState(() => currentPageIndex = index);
+                                Share.refreshAll.broadcast();
                               },
                               selectedIndex: currentPageIndex,
                               destinations: navigationDestinations
@@ -251,7 +250,10 @@ class _BaseAppState extends State<BaseApp> {
                             NavigationRail(
                                 minWidth: 55.0,
                                 selectedIndex: currentPageIndex,
-                                onDestinationSelected: (int index) => setState(() => currentPageIndex = index),
+                                onDestinationSelected: (int index) {
+                                  setState(() => currentPageIndex = index);
+                                  Share.refreshAll.broadcast();
+                                },
                                 labelType: NavigationRailLabelType.all,
                                 leading: SizedBox(height: 5),
                                 unselectedLabelTextStyle: const TextStyle(),
