@@ -91,7 +91,9 @@ class _MessageComposePageState extends State<MessageComposePage> {
                 }
               : null,
           child: isWorking
-              ? CupertinoActivityIndicator()
+              ? (Share.settings.appSettings.useCupertino
+                  ? CupertinoActivityIndicator(radius: 12)
+                  : SizedBox(height: 20, width: 20, child: CircularProgressIndicator()))
               : Icon(CupertinoIcons.paperplane_fill,
                   color: (receivers.isNotEmpty && subjectController.text.isNotEmpty && messageController.text.isNotEmpty)
                       ? CupertinoTheme.of(context).primaryColor

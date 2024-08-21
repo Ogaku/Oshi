@@ -65,7 +65,7 @@ class _CardContainerState extends State<CardContainer> {
       );
     } else {
       return Table(children: [
-        if (widget.header is! String && widget.header != null) widget.header,
+        if (widget.header is! String && widget.header != null) TableRow(children: [widget.header]),
         if (widget.header is String && widget.header.isNotEmpty)
           TableRow(children: [
             Container(
@@ -93,7 +93,7 @@ class _CardContainerState extends State<CardContainer> {
                   ),
                 )
         ]),
-        if (widget.footer is! String && widget.footer != null) widget.footer,
+        if (widget.footer is! String && widget.footer != null) TableRow(children: [widget.footer]),
         if (widget.footer is String && widget.footer.isNotEmpty)
           TableRow(children: [
             Container(

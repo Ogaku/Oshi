@@ -394,7 +394,11 @@ class _MessagesPageState extends State<MessagesPage> {
       segmentController: segmentController,
       searchBuilder: (_, controller) => messagesWidget(controller.text, _folder, false),
       trailing: isWorking
-          ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
+          ? Container(
+              margin: EdgeInsets.only(right: 5, top: 5),
+              child: Share.settings.appSettings.useCupertino
+                  ? CupertinoActivityIndicator(radius: 12)
+                  : SizedBox(height: 20, width: 20, child: CircularProgressIndicator()))
           : Stack(alignment: Alignment.bottomRight, children: [
               PullDownButton(
                 itemBuilder: (context) => [

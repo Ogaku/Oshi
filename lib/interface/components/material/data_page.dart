@@ -23,7 +23,8 @@ class DataPage extends DataPageBase {
       super.leading,
       super.trailing,
       super.segments,
-      super.previousPageTitle});
+      super.previousPageTitle,
+      super.pageBuilder});
 
   @override
   State<DataPage> createState() => DataPageState();
@@ -190,9 +191,17 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
                             )
                           : null,
                     ),
-                  if (!(widget.children?.isEmpty ?? true))
+                  if (!(widget.children?.isEmpty ?? true) && widget.pageBuilder == null)
                     SliverList.list(
                       children: widget.children!,
+                    ),
+                  if (widget.pageFlags.hasFlag(DataPageType.segmented) && widget.pageBuilder != null)
+                    SliverFillRemaining(
+                      child: TabBarView(
+                        controller: tabController,
+                        children: List.generate(widget.segments!.length,
+                            (index) => widget.pageBuilder!(context, widget.segments!.keys.elementAt(index))),
+                      ),
                     ),
                 ],
               ),

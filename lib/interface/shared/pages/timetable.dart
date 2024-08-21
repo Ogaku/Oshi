@@ -2,15 +2,18 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
+import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
 import 'package:oshi/interface/shared/views/message_compose.dart';
 import 'package:oshi/interface/shared/views/new_event.dart';
@@ -67,6 +70,116 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
     if (mounted) setState(() {});
   }
 
+  Widget timetableBuilder(BuildContext context, dynamic index) {
+    // Check the index type
+    if (index is! int) return Text('errors');
+
+    DateTime selectedDate =
+        Share.session.data.student.mainClass.beginSchoolYear.asDate(utc: true).add(Duration(days: index)).asDate();
+    var selectedDay = Share.session.data.timetables.timetable[selectedDate];
+
+    // Events for the selected day/date
+    var eventsToday = Share.session.events
+        .where((x) => x.category != EventCategory.homework && x.category != EventCategory.teacher)
+        .where((x) => (x.date ?? x.timeFrom).asDate() == selectedDate)
+        .where((x) =>
+            x.titleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
+            x.subtitleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
+            x.locationString.contains(RegExp(searchController.text, caseSensitive: false)))
+        .asEventWidgets(selectedDay, searchController.text, 'No events matching the query', setState);
+
+    // Homeworks for the selected day/date
+    var homeworksToday = Share.session.events
+        .where((x) => x.category == EventCategory.homework)
+        .where((x) => x.timeTo?.asDate() == selectedDate)
+        .where((x) =>
+            x.titleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
+            x.subtitleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
+            x.locationString.contains(RegExp(searchController.text, caseSensitive: false)))
+        .orderBy((x) => x.done ? 1 : 0)
+        .asEventWidgets(selectedDay, searchController.text, 'No homeworks matching the query', setState);
+
+    // Teacher absences for the selected day/date
+    var teachersAbsentToday = Share.session.events
+        .where((x) => x.category == EventCategory.teacher)
+        .orderBy((x) => x.sender?.name ?? '')
+        .where((x) =>
+            selectedDate.isBetween(x.timeFrom, x.timeTo ?? DateTime(2000)) ||
+            x.timeFrom.isAfter(selectedDate) && (x.timeTo?.isBefore(selectedDate.add(Duration(days: 1))) ?? false))
+        .distinct((x) => x.sender?.name ?? '')
+        .where((x) =>
+            x.titleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
+            x.subtitleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
+            x.locationString.contains(RegExp(searchController.text, caseSensitive: false)))
+        .asEventWidgets(selectedDay, searchController.text, 'No teachers matching the query', setState);
+
+    // Lessons for the selected day, and those to be displayed
+    var lessonsToDisplay = selectedDay?.lessonsStripped
+            .select((x, index) => x?.firstWhereOrDefault((y) => !y.isCanceled, defaultValue: x.first))
+            .where((x) => x != null) // Filter out all null entries
+            .select((x, index) => x!) // Remove the nullable annotation
+            .toList() ??
+        [];
+
+    var lessonsWidget = CardContainer(
+      largeHeader: true,
+      header: Share.settings.appSettings.useCupertino
+          ? DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(selectedDate)
+          : null,
+      additionalDividerMargin: 5,
+      filled: lessonsToDisplay.isNotEmpty,
+      children: lessonsToDisplay.isEmpty
+          // No messages to display
+          ? [
+              AdaptiveCard(
+                centered: true,
+                secondary: true,
+                child: selectedDay == null ? 'Refresh to synchronize' : 'No lessons, yay!',
+              )
+            ]
+          // Bindable messages layout
+          : lessonsToDisplay
+              .select((x, index) => AdaptiveCard(child: x.asLessonWidget(context, selectedDate, selectedDay, setState)))
+              .toList(),
+    );
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        (searchController.text.isEmpty ? lessonsWidget : Container()),
+        // Homeworks for today
+        Visibility(
+            visible: homeworksToday.isNotEmpty,
+            child: Container(
+                margin: EdgeInsets.only(top: 20),
+                child: CardContainer(
+                  additionalDividerMargin: 5,
+                  children: homeworksToday.isNotEmpty ? homeworksToday : [Text('')],
+                ))),
+        // Events for today
+        Visibility(
+            visible: eventsToday.isNotEmpty,
+            child: Container(
+                margin: EdgeInsets.only(top: 20),
+                child: CardContainer(
+                  additionalDividerMargin: 5,
+                  children: eventsToday.isNotEmpty ? eventsToday : [Text('')],
+                ))),
+        // Teachers absent today
+        Visibility(
+            visible: teachersAbsentToday.isNotEmpty,
+            child: Container(
+                margin: EdgeInsets.only(top: 20),
+                child: CardContainer(
+                  additionalDividerMargin: 5,
+                  children: teachersAbsentToday.isNotEmpty ? teachersAbsentToday : [Text('')],
+                ))),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!(_everySecond?.isActive ?? false)) {
@@ -100,217 +213,127 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
     });
 
     return DataPageBase.adaptive(
-        pageFlags: [
-          DataPageType.refreshable,
-          DataPageType.noTitleSpace,
-        ].flag,
-        setState: setState,
-        selectedDate: selectedDate,
-        leading: GestureDetector(
-            onTap: () => _showDialog(
-                  CupertinoDatePicker(
-                    initialDateTime: selectedDate,
-                    mode: CupertinoDatePickerMode.date,
-                    use24hFormat: true,
-                    showDayOfWeek: true,
-                    minimumDate: Share.session.data.student.mainClass.beginSchoolYear,
-                    maximumDate: Share.session.data.student.mainClass.endSchoolYear,
-                    onDateTimeChanged: (DateTime newDate) {
-                      setState(() => dayDifference =
-                          newDate.asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays);
+      pageFlags: [
+        DataPageType.refreshable,
+        DataPageType.noTitleSpace,
+        if (!Share.settings.appSettings.useCupertino) DataPageType.segmented,
+      ].flag,
+      setState: setState,
+      selectedDate: selectedDate,
+      leading: GestureDetector(
+          onTap: () => _showDialog(
+                CupertinoDatePicker(
+                  initialDateTime: selectedDate,
+                  mode: CupertinoDatePickerMode.date,
+                  use24hFormat: true,
+                  showDayOfWeek: true,
+                  minimumDate: Share.session.data.student.mainClass.beginSchoolYear,
+                  maximumDate: Share.session.data.student.mainClass.endSchoolYear,
+                  onDateTimeChanged: (DateTime newDate) {
+                    setState(() => dayDifference =
+                        newDate.asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays);
 
-                      pageController.animateToPage(dayDifference,
-                          duration: Duration(
-                              milliseconds: 250 *
-                                  ((newDate.asDate().difference(Share.session.data.student.mainClass.beginSchoolYear
-                                              .asDate()
-                                              .add(Duration(days: dayDifference))
-                                              .asDate()))
-                                          .inDays)
-                                      .abs()
-                                      .clamp(1, 30)),
-                          curve: Curves.fastEaseInToSlowEaseOut);
+                    pageController.animateToPage(dayDifference,
+                        duration: Duration(
+                            milliseconds: 250 *
+                                ((newDate.asDate().difference(Share.session.data.student.mainClass.beginSchoolYear
+                                            .asDate()
+                                            .add(Duration(days: dayDifference))
+                                            .asDate()))
+                                        .inDays)
+                                    .abs()
+                                    .clamp(1, 30)),
+                        curve: Curves.fastEaseInToSlowEaseOut);
+                  },
+                ),
+              ),
+          child: Container(
+              margin: EdgeInsets.only(top: 5, bottom: 5, right: Share.settings.appSettings.useCupertino ? 0 : 25),
+              child:
+                  TextChip(width: 110, text: DateFormat.yMd(Share.settings.appSettings.localeCode).format(selectedDate)))),
+      trailing: isWorking
+          ? Container(
+              margin: EdgeInsets.only(right: 5, top: 5),
+              child: Share.settings.appSettings.useCupertino
+                  ? CupertinoActivityIndicator(radius: 12)
+                  : SizedBox(height: 20, width: 20, child: CircularProgressIndicator()))
+          : Stack(alignment: Alignment.bottomRight, children: [
+              PullDownButton(
+                itemBuilder: (context) => [
+                  PullDownMenuItem(
+                    title: 'New event',
+                    icon: CupertinoIcons.add,
+                    onTap: () {
+                      showCupertinoModalBottomSheet(context: context, builder: (context) => EventComposePage())
+                          .then((value) => setState(() {}));
                     },
                   ),
-                ),
-            child: Container(
-                margin: EdgeInsets.only(top: 5, bottom: 5, right: Share.settings.appSettings.useCupertino ? 0 : 25),
-                child:
-                    TextChip(width: 110, text: DateFormat.yMd(Share.settings.appSettings.localeCode).format(selectedDate)))),
-        trailing: isWorking
-            ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
-            : Stack(alignment: Alignment.bottomRight, children: [
-                PullDownButton(
-                  itemBuilder: (context) => [
-                    PullDownMenuItem(
-                      title: 'New event',
-                      icon: CupertinoIcons.add,
-                      onTap: () {
-                        showCupertinoModalBottomSheet(context: context, builder: (context) => EventComposePage())
-                            .then((value) => setState(() {}));
-                      },
-                    ),
-                    PullDownMenuDivider.large(),
-                    PullDownMenuTitle(title: Text('/Titles/Pages/Schedule'.localized)),
-                    PullDownMenuItem(
-                      title: 'Today',
-                      icon: CupertinoIcons.calendar_today,
-                      onTap: () => pageController.animateToPage(
-                          DateTime.now()
-                              .asDate()
-                              .difference(Share.session.data.student.mainClass.beginSchoolYear.asDate())
-                              .inDays,
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.easeInOutExpo),
-                    ),
-                    PullDownMenuItem(
-                      title:
-                          'Agenda${((Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount > 0) ? ' (${(Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount)})' : '')}',
-                      icon: CupertinoIcons.list_bullet_below_rectangle,
-                      onTap: () => Navigator.push(context, AdaptivePageRoute(builder: (context) => EventsPage())),
-                    ),
-                  ],
-                  buttonBuilder: (context, showMenu) => GestureDetector(
-                    onTap: showMenu,
-                    child: const Icon(CupertinoIcons.ellipsis_circle),
+                  PullDownMenuDivider.large(),
+                  PullDownMenuTitle(title: Text('/Titles/Pages/Schedule'.localized)),
+                  PullDownMenuItem(
+                    title: 'Today',
+                    icon: CupertinoIcons.calendar_today,
+                    onTap: () => pageController.animateToPage(
+                        DateTime.now()
+                            .asDate()
+                            .difference(Share.session.data.student.mainClass.beginSchoolYear.asDate())
+                            .inDays,
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeInOutExpo),
                   ),
+                  PullDownMenuItem(
+                    title:
+                        'Agenda${((Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount > 0) ? ' (${(Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount)})' : '')}',
+                    icon: CupertinoIcons.list_bullet_below_rectangle,
+                    onTap: () => Navigator.push(context, AdaptivePageRoute(builder: (context) => EventsPage())),
+                  ),
+                ],
+                buttonBuilder: (context, showMenu) => GestureDetector(
+                  onTap: showMenu,
+                  child: const Icon(CupertinoIcons.ellipsis_circle),
                 ),
-                AnimatedOpacity(
-                    duration: const Duration(milliseconds: 500),
-                    opacity: (Share.session.data.timetables.timetable.entries
-                            .where((x) => x.key.asDate().isAfterOrSame(DateTime.now().asDate()))
-                            .any((x) => x.value.hasUnread))
-                        ? 1.0
-                        : 0.0,
-                    child: Container(
-                        margin: EdgeInsets.only(),
-                        child: Container(
-                          height: 10,
-                          width: 10,
-                          decoration: BoxDecoration(shape: BoxShape.circle, color: CupertinoTheme.of(context).primaryColor),
-                        )))
-              ]),
-        title: '/Titles/Pages/Schedule'.localized,
-        children: [
+              ),
+              AnimatedOpacity(
+                  duration: const Duration(milliseconds: 500),
+                  opacity: (Share.session.data.timetables.timetable.entries
+                          .where((x) => x.key.asDate().isAfterOrSame(DateTime.now().asDate()))
+                          .any((x) => x.value.hasUnread))
+                      ? 1.0
+                      : 0.0,
+                  child: Container(
+                      margin: EdgeInsets.only(),
+                      child: Container(
+                        height: 10,
+                        width: 10,
+                        decoration: BoxDecoration(shape: BoxShape.circle, color: CupertinoTheme.of(context).primaryColor),
+                      )))
+            ]),
+      title: '/Titles/Pages/Schedule'.localized,
+      children: [
+        if (Share.settings.appSettings.useCupertino)
           ExpandablePageView(
-              builder: (context, index) {
-                DateTime selectedDate = Share.session.data.student.mainClass.beginSchoolYear
-                    .asDate(utc: true)
-                    .add(Duration(days: index))
-                    .asDate();
-                var selectedDay = Share.session.data.timetables.timetable[selectedDate];
-
-                // Events for the selected day/date
-                var eventsToday = Share.session.events
-                    .where((x) => x.category != EventCategory.homework && x.category != EventCategory.teacher)
-                    .where((x) => (x.date ?? x.timeFrom).asDate() == selectedDate)
-                    .where((x) =>
-                        x.titleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-                        x.subtitleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-                        x.locationString.contains(RegExp(searchController.text, caseSensitive: false)))
-                    .asEventWidgets(selectedDay, searchController.text, 'No events matching the query', setState);
-
-                // Homeworks for the selected day/date
-                var homeworksToday = Share.session.events
-                    .where((x) => x.category == EventCategory.homework)
-                    .where((x) => x.timeTo?.asDate() == selectedDate)
-                    .where((x) =>
-                        x.titleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-                        x.subtitleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-                        x.locationString.contains(RegExp(searchController.text, caseSensitive: false)))
-                    .orderBy((x) => x.done ? 1 : 0)
-                    .asEventWidgets(selectedDay, searchController.text, 'No homeworks matching the query', setState);
-
-                // Teacher absences for the selected day/date
-                var teachersAbsentToday = Share.session.events
-                    .where((x) => x.category == EventCategory.teacher)
-                    .orderBy((x) => x.sender?.name ?? '')
-                    .where((x) =>
-                        selectedDate.isBetween(x.timeFrom, x.timeTo ?? DateTime(2000)) ||
-                        x.timeFrom.isAfter(selectedDate) &&
-                            (x.timeTo?.isBefore(selectedDate.add(Duration(days: 1))) ?? false))
-                    .distinct((x) => x.sender?.name ?? '')
-                    .where((x) =>
-                        x.titleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-                        x.subtitleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-                        x.locationString.contains(RegExp(searchController.text, caseSensitive: false)))
-                    .asEventWidgets(selectedDay, searchController.text, 'No teachers matching the query', setState);
-
-                // Lessons for the selected day, and those to be displayed
-                var lessonsToDisplay = selectedDay?.lessonsStripped
-                        .select((x, index) => x?.firstWhereOrDefault((y) => !y.isCanceled, defaultValue: x.first))
-                        .where((x) => x != null) // Filter out all null entries
-                        .select((x, index) => x!) // Remove the nullable annotation
-                        .toList() ??
-                    [];
-
-                var lessonsWidget = CupertinoListSection.insetGrouped(
-                  header: Text(DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(selectedDate)),
-                  margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-                  additionalDividerMargin: 5,
-                  children: lessonsToDisplay.isEmpty
-                      // No messages to display
-                      ? [
-                          CupertinoListTile(
-                              title: Opacity(
-                                  opacity: 0.5,
-                                  child: Container(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        selectedDay == null ? 'Refresh to synchronize' : 'No lessons, yay!',
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                                      ))))
-                        ]
-                      // Bindable messages layout
-                      : lessonsToDisplay
-                          .select((x, index) => CupertinoListTile(
-                              padding: EdgeInsets.all(0),
-                              title: x.asLessonWidget(context, selectedDate, selectedDay, setState)))
-                          .toList(),
-                );
-
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    (searchController.text.isEmpty ? lessonsWidget : Container()),
-                    // Homeworks for today
-                    Visibility(
-                        visible: homeworksToday.isNotEmpty,
-                        child: Container(
-                            margin: EdgeInsets.only(top: 20),
-                            child: CupertinoListSection.insetGrouped(
-                              margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-                              additionalDividerMargin: 5,
-                              children: homeworksToday.isNotEmpty ? homeworksToday : [Text('')],
-                            ))),
-                    // Events for today
-                    Visibility(
-                        visible: eventsToday.isNotEmpty,
-                        child: Container(
-                            margin: EdgeInsets.only(top: 20),
-                            child: CupertinoListSection.insetGrouped(
-                              margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-                              additionalDividerMargin: 5,
-                              children: eventsToday.isNotEmpty ? eventsToday : [Text('')],
-                            ))),
-                    // Teachers absent today
-                    Visibility(
-                        visible: teachersAbsentToday.isNotEmpty,
-                        child: Container(
-                            margin: EdgeInsets.only(top: 20),
-                            child: CupertinoListSection.insetGrouped(
-                              margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-                              additionalDividerMargin: 5,
-                              children: teachersAbsentToday.isNotEmpty ? teachersAbsentToday : [Text('')],
-                            ))),
-                  ],
-                );
-              },
+              builder: timetableBuilder,
               controller: pageController,
               pageChanged: (value) => setState(() => dayDifference = value))
-        ]);
+      ],
+      segments: List.generate(
+          max(
+                  Share.session.data.student.mainClass.beginSchoolYear
+                      .difference(Share.session.data.student.mainClass.beginSchoolYear)
+                      .inDays
+                      .abs(),
+                  DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays) +
+              1,
+          (index) =>
+              index).toMap((x) => MapEntry(
+          x,
+          DateFormat('EEEEE, d.MM', Share.settings.appSettings.localeCode)
+              .format(Share.session.data.student.mainClass.beginSchoolYear.add(Duration(days: x))))),
+      segmentController: SegmentController(
+          segment: DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays,
+          scrollable: true),
+      pageBuilder: Share.settings.appSettings.useCupertino ? null : timetableBuilder,
+    );
   }
 
   // This function displays a CupertinoModalPopup with a reasonable fixed height
@@ -343,8 +366,10 @@ extension EventWidgetsExtension on Iterable<Event> {
           TimetableDay? day, String searchQuery, String placeholder, void Function(VoidCallback fn) setState) =>
       isEmpty && searchQuery.isNotEmpty
           ? [
-              CupertinoListTile(
-                  title: Opacity(
+              AdaptiveCard(
+                  centered: true,
+                  secondary: true,
+                  child: Opacity(
                       opacity: 0.5,
                       child: Container(
                           alignment: Alignment.center,
@@ -356,9 +381,8 @@ extension EventWidgetsExtension on Iterable<Event> {
           : this
               .select((x, index) => Visibility(
                   visible: isNotEmpty,
-                  child: CupertinoListTile(
-                      padding: EdgeInsets.all(0),
-                      title: Builder(builder: (context) => x.asEventWidget(context, isNotEmpty, day, setState)))))
+                  child: AdaptiveCard(
+                      child: Builder(builder: (context) => x.asEventWidget(context, isNotEmpty, day, setState)))))
               .toList();
 }
 
@@ -563,12 +587,11 @@ extension EventWidgetExtension on Event {
                                     attachments?.isNotEmpty ?? false)
                                 .appendIf(
                                     TableRow(children: [
-                                      CupertinoListSection.insetGrouped(
-                                          margin: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
+                                      CardContainer(
                                           additionalDividerMargin: 5,
-                                          children: [
-                                            CupertinoListTile(
-                                              title: Row(
+                                          children: <Widget>[
+                                            AdaptiveCard(
+                                              child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text('Title'),
@@ -584,8 +607,8 @@ extension EventWidgetExtension on Event {
                                             ),
                                           ]
                                               .appendIf(
-                                                  CupertinoListTile(
-                                                      title: Row(
+                                                  AdaptiveCard(
+                                                      child: Row(
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: [
                                                       Text('Subtitle'),
@@ -600,8 +623,8 @@ extension EventWidgetExtension on Event {
                                                   )),
                                                   subtitleString.isNotEmpty)
                                               .appendIf(
-                                                  CupertinoListTile(
-                                                      title: Row(
+                                                  AdaptiveCard(
+                                                      child: Row(
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: [
                                                       Container(
@@ -617,8 +640,8 @@ extension EventWidgetExtension on Event {
                                                   )),
                                                   sender?.name.isNotEmpty ?? false)
                                               .appendIf(
-                                                  CupertinoListTile(
-                                                      title: Row(
+                                                  AdaptiveCard(
+                                                      child: Row(
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: [
                                                       Container(margin: EdgeInsets.only(right: 3), child: Text('Date')),
@@ -635,8 +658,8 @@ extension EventWidgetExtension on Event {
                                                   )),
                                                   date != null)
                                               .appendIf(
-                                                  CupertinoListTile(
-                                                      title: Row(
+                                                  AdaptiveCard(
+                                                      child: Row(
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: [
                                                       Container(margin: EdgeInsets.only(right: 3), child: Text('Classroom')),
@@ -649,8 +672,8 @@ extension EventWidgetExtension on Event {
                                                   )),
                                                   classroom?.name.isNotEmpty ?? false)
                                               .appendIf(
-                                                  CupertinoListTile(
-                                                      title: Row(
+                                                  AdaptiveCard(
+                                                      child: Row(
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: [
                                                       Container(
@@ -667,8 +690,8 @@ extension EventWidgetExtension on Event {
                                                   )),
                                                   timeFrom.hour != 0)
                                               .appendIf(
-                                                  CupertinoListTile(
-                                                      title: Row(
+                                                  AdaptiveCard(
+                                                      child: Row(
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: [
                                                       Container(margin: EdgeInsets.only(right: 3), child: Text('End time')),
@@ -986,13 +1009,12 @@ extension LessonWidgetExtension on TimetableLesson {
                           ])
                         ].appendAllIf(events, events.isNotEmpty).appendIf(
                                 TableRow(children: [
-                                  CupertinoListSection.insetGrouped(
-                                      margin: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
+                                  CardContainer(
                                       additionalDividerMargin: 5,
-                                      children: <CupertinoListTile>[]
+                                      children: <Widget>[]
                                           .appendIf(
-                                              CupertinoListTile(
-                                                  title: Row(
+                                              AdaptiveCard(
+                                                  child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text('Subject'),
@@ -1009,8 +1031,8 @@ extension LessonWidgetExtension on TimetableLesson {
                                               )),
                                               subject?.name.isNotEmpty ?? false)
                                           .appendIf(
-                                              CupertinoListTile(
-                                                  title: Row(
+                                              AdaptiveCard(
+                                                  child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text('Teacher'),
@@ -1025,8 +1047,8 @@ extension LessonWidgetExtension on TimetableLesson {
                                               )),
                                               teacher?.name.isNotEmpty ?? false)
                                           .appendIf(
-                                              CupertinoListTile(
-                                                  title: Row(
+                                              AdaptiveCard(
+                                                  child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text('Classroom'),
@@ -1041,8 +1063,8 @@ extension LessonWidgetExtension on TimetableLesson {
                                               )),
                                               classroom?.name.isNotEmpty ?? false)
                                           .appendIf(
-                                              CupertinoListTile(
-                                                  title: Row(
+                                              AdaptiveCard(
+                                                  child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text('Lesson no.'),
@@ -1060,8 +1082,8 @@ extension LessonWidgetExtension on TimetableLesson {
                                               lessonNo >= 0)
                                           // Substitution details - original lesson
                                           .appendIf(
-                                              CupertinoListTile(
-                                                  title: Row(
+                                              AdaptiveCard(
+                                                  child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text('Original lesson'),
@@ -1079,8 +1101,8 @@ extension LessonWidgetExtension on TimetableLesson {
                                                   (substitutionDetails?.originalSubject?.name.isNotEmpty ?? false))
                                           // Substitution details - original teacher
                                           .appendIf(
-                                              CupertinoListTile(
-                                                  title: Row(
+                                              AdaptiveCard(
+                                                  child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text('Original teacher'),
@@ -1098,8 +1120,8 @@ extension LessonWidgetExtension on TimetableLesson {
                                                   (substitutionDetails?.originalTeacher?.name.isNotEmpty ?? false))
                                           // Substitution details - moved lesson
                                           .appendIf(
-                                              CupertinoListTile(
-                                                  title: Row(
+                                              AdaptiveCard(
+                                                  child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text(isCanceled ? 'Moved to' : 'Moved from'),
@@ -1117,8 +1139,8 @@ extension LessonWidgetExtension on TimetableLesson {
                                               isMovedLesson)
                                           // Substitution details - cancelled
                                           .appendIf(
-                                              CupertinoListTile(
-                                                  title: Row(
+                                              AdaptiveCard(
+                                                  child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.center,
                                                 children: [
                                                   Flexible(
@@ -1346,8 +1368,10 @@ extension TimelineWidgetsExtension on Iterable<AgendaEvent> {
           TimetableDay? day, String searchQuery, String placeholder, void Function(VoidCallback fn) setState) =>
       isEmpty && searchQuery.isNotEmpty
           ? [
-              CupertinoListTile(
-                  title: Opacity(
+              AdaptiveCard(
+                  centered: true,
+                  secondary: true,
+                  child: Opacity(
                       opacity: 0.5,
                       child: Container(
                           alignment: Alignment.center,
@@ -1359,9 +1383,8 @@ extension TimelineWidgetsExtension on Iterable<AgendaEvent> {
           : this
               .select((x, index) => Visibility(
                   visible: isNotEmpty,
-                  child: CupertinoListTile(
-                      padding: EdgeInsets.all(0),
-                      title: Builder(
+                  child: AdaptiveCard(
+                      child: Builder(
                           builder: (context) =>
                               x.event?.asEventWidget(context, isNotEmpty, day, setState) ??
                               x.lesson?.asLessonWidget(context, null, day, setState) ??

@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
@@ -104,7 +105,11 @@ class _AbsencesPageState extends State<AbsencesPage> {
         title: '/Page/Absences/Attendance'.localized,
         segmentController: segmentController,
         trailing: isWorking
-            ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
+            ? Container(
+                margin: EdgeInsets.only(right: 5, top: 5),
+                child: Share.settings.appSettings.useCupertino
+                    ? CupertinoActivityIndicator(radius: 12)
+                    : SizedBox(height: 20, width: 20, child: CircularProgressIndicator()))
             : PullDownButton(
                 itemBuilder: (context) => [
                   PullDownMenuItem(

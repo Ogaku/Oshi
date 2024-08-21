@@ -20,7 +20,8 @@ abstract class DataPageBase extends StatefulWidget {
       this.leading,
       this.trailing,
       this.segments,
-      this.previousPageTitle});
+      this.previousPageTitle,
+      this.pageBuilder});
 
   final String title; // Page title
   final String? previousPageTitle;
@@ -31,6 +32,7 @@ abstract class DataPageBase extends StatefulWidget {
   final void Function(VoidCallback fn)? setState;
 
   final FutureOr<Iterable<Widget>> Function(BuildContext, SearchController)? searchBuilder;
+  final Widget Function(BuildContext, dynamic)? pageBuilder;
   final SegmentController? segmentController; // Segmentable
   final Map<dynamic, String>? segments; // For segmented control
 
@@ -48,7 +50,8 @@ abstract class DataPageBase extends StatefulWidget {
       SegmentController? segmentController,
       Map<dynamic, String>? segments,
       List<Widget>? children,
-      DateTime? selectedDate}) {
+      DateTime? selectedDate,
+      Widget Function(BuildContext, dynamic)? pageBuilder}) {
     // Segment controller watcher
     if (segmentController != null && setState != null) {
       segmentController.removeListener(() => setState(() => {}));
@@ -67,7 +70,8 @@ abstract class DataPageBase extends StatefulWidget {
             segmentController: segmentController,
             segments: segments,
             selectedDate: selectedDate,
-            children: children)
+            children: children,
+          )
         : material.DataPage(
             title: title,
             previousPageTitle: previousPageTitle,
@@ -79,7 +83,9 @@ abstract class DataPageBase extends StatefulWidget {
             segmentController: segmentController,
             segments: segments,
             selectedDate: selectedDate,
-            children: children);
+            pageBuilder: pageBuilder,
+            children: children,
+          );
   }
 }
 
