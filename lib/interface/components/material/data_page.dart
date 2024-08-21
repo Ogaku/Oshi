@@ -15,9 +15,8 @@ class DataPage extends DataPageBase {
       required super.title,
       super.pageFlags = 0,
       super.setState,
-      super.searchController,
+      super.segmentController,
       super.searchBuilder,
-      super.segmentController, // Not used
       super.children,
       super.selectedDate,
       super.leading,

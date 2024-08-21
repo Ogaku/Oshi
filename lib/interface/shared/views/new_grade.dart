@@ -80,7 +80,6 @@ class _GradeComposePageState extends State<GradeComposePage> {
         DataPageType.noTransitions,
         DataPageType.alternativeBackground,
       ].flag,
-      searchController: TextEditingController(),
       title: nameController.text.isEmpty ? 'New custom grade' : nameController.text,
       leading: CupertinoButton(
           padding: EdgeInsets.all(0),

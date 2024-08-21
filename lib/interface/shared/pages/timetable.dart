@@ -42,7 +42,7 @@ class TimetablePage extends StatefulWidget {
 }
 
 class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
-  final searchController = TextEditingController();
+  final searchController = TextEditingController(); // Notg even used anymore
   final pageController = PageController(
       initialPage: DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays);
 
@@ -189,7 +189,6 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                           decoration: BoxDecoration(shape: BoxShape.circle, color: CupertinoTheme.of(context).primaryColor),
                         )))
               ]),
-        searchController: searchController,
         title: '/Titles/Pages/Schedule'.localized,
         children: [
           ExpandablePageView(

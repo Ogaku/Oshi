@@ -13,7 +13,6 @@ abstract class DataPageBase extends StatefulWidget {
       required this.title,
       this.pageFlags = 0,
       this.setState,
-      this.searchController,
       this.searchBuilder,
       this.segmentController,
       this.children,
@@ -31,9 +30,7 @@ abstract class DataPageBase extends StatefulWidget {
   final int pageFlags; // Page flags
   final void Function(VoidCallback fn)? setState;
 
-  final FutureOr<Iterable<Widget>> Function(BuildContext, SearchController)? searchBuilder; // Searchable <- for material
-  final TextEditingController? searchController; // Searchable <- for cupertino only, manual search
-
+  final FutureOr<Iterable<Widget>> Function(BuildContext, SearchController)? searchBuilder;
   final SegmentController? segmentController; // Segmentable
   final Map<dynamic, String>? segments; // For segmented control
 
@@ -47,16 +44,11 @@ abstract class DataPageBase extends StatefulWidget {
       Widget? trailing,
       int pageFlags = 0,
       void Function(VoidCallback fn)? setState,
-      TextEditingController? searchController,
+      FutureOr<Iterable<Widget>> Function(BuildContext, SearchController)? searchBuilder,
       SegmentController? segmentController,
       Map<dynamic, String>? segments,
       List<Widget>? children,
       DateTime? selectedDate}) {
-    // Search controller watcher
-    if (searchController != null && setState != null) {
-      searchController.removeListener(() => setState(() => {}));
-      searchController.addListener(() => setState(() => {}));
-    }
 
     // Segment controller watcher
     if (segmentController != null && setState != null) {
@@ -72,7 +64,7 @@ abstract class DataPageBase extends StatefulWidget {
             trailing: trailing,
             pageFlags: pageFlags,
             setState: setState,
-            searchController: searchController,
+            searchBuilder: searchBuilder,
             segmentController: segmentController,
             segments: segments,
             selectedDate: selectedDate,
@@ -84,7 +76,7 @@ abstract class DataPageBase extends StatefulWidget {
             trailing: trailing,
             pageFlags: pageFlags,
             setState: setState,
-            searchController: searchController,
+            searchBuilder: searchBuilder,
             segmentController: segmentController,
             segments: segments,
             selectedDate: selectedDate,

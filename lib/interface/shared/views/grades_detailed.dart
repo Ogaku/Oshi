@@ -29,25 +29,21 @@ class GradesDetailedPage extends StatefulWidget {
 }
 
 class _GradesDetailedPageState extends State<GradesDetailedPage> {
-  final searchController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
+  Widget gradesWidget([String query = '']) {
     var gradesToDisplay = widget.lesson.allGrades
         .where((x) => x.semester == 2)
         .appendAllIfEmpty(widget.lesson.allGrades)
         .where((x) => !x.major)
         .where((x) =>
-            x.name.contains(RegExp(searchController.text, caseSensitive: false)) ||
-            x.detailsDateString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-            x.commentsString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-            x.addedByString.contains(RegExp(searchController.text, caseSensitive: false)))
+            x.name.contains(RegExp(query, caseSensitive: false)) ||
+            x.detailsDateString.contains(RegExp(query, caseSensitive: false)) ||
+            x.commentsString.contains(RegExp(query, caseSensitive: false)) ||
+            x.addedByString.contains(RegExp(query, caseSensitive: false)))
         .orderByDescending((x) => x.addDate)
         .distinct((x) => mapPropsToHashCode([x.resitPart ? 0 : UniqueKey(), x.name]))
         .toList();
 
-    var secondSemester = widget.lesson.allGrades.any((x) => x.semester == 2 || x.isFinal || x.isFinalProposition);
-    var gradesWidget = CupertinoListSection.insetGrouped(
+    return CupertinoListSection.insetGrouped(
       margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
       additionalDividerMargin: 5,
       children: gradesToDisplay.isEmpty
@@ -59,7 +55,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                       child: Container(
                           alignment: Alignment.center,
                           child: Text(
-                            searchController.text.isNotEmpty ? 'No grades matching the query' : 'No grades',
+                            query.isNotEmpty ? 'No grades matching the query' : 'No grades',
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                           ))))
             ]
@@ -73,7 +69,11 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                           defaultValue: null)));
             }).toList(),
     );
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    var secondSemester = widget.lesson.allGrades.any((x) => x.semester == 2 || x.isFinal || x.isFinalProposition);
     var gradesBottomWidgets = <Widget>[].appendIf(
         // Average (yearly)
         Visibility(
@@ -534,9 +534,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
         ].flag,
         setState: setState,
         title: widget.lesson.name,
-        searchController: searchController,
+        searchBuilder: (_, controller) => [gradesWidget(controller.text)],
         children: <Widget>[
-          gradesWidget,
+          gradesWidget(),
         ]
             .appendIf(
                 Container(

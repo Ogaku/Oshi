@@ -32,8 +32,6 @@ class MessagesPage extends StatefulWidget {
 }
 
 class _MessagesPageState extends State<MessagesPage> {
-  final searchController = TextEditingController();
-
   MessageFolders folder = MessageFolders.inbox;
   bool isWorking = false;
 
@@ -47,35 +45,18 @@ class _MessagesPageState extends State<MessagesPage> {
     if (mounted) setState(() {});
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // Re-subscribe to all events
-    Share.refreshAll.unsubscribe(refresh);
-    Share.refreshAll.subscribe(refresh);
-
-    Share.messagesNavigate.unsubscribeAll();
-    Share.messagesNavigate.subscribe((args) {
-      setState(() => folder = ((args?.value.receivers?.isNotEmpty ?? false) ? MessageFolders.outbox : MessageFolders.inbox));
-      openMessage(message: args?.value);
-    });
-
-    Share.messagesNavigateAnnouncement.unsubscribeAll();
-    Share.messagesNavigateAnnouncement.subscribe((args) {
-      setState(() => folder = MessageFolders.announcements);
-      openMessage(message: args?.value.message, announcement: args?.value.parent);
-    });
-
+  Widget messagesWidget([String query = '']) {
     var messagesToDisplay = (switch (folder) {
       MessageFolders.inbox => Share.session.data.messages.received,
       MessageFolders.outbox => Share.session.data.messages.sent,
       _ => <Message>[]
     })
         .where((x) =>
-            x.topic.contains(RegExp(searchController.text, caseSensitive: false)) ||
-            x.sendDateString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-            x.previewString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-            (x.content?.contains(RegExp(searchController.text, caseSensitive: false)) ?? false) ||
-            x.senderName.contains(RegExp(searchController.text, caseSensitive: false)))
+            x.topic.contains(RegExp(query, caseSensitive: false)) ||
+            x.sendDateString.contains(RegExp(query, caseSensitive: false)) ||
+            x.previewString.contains(RegExp(query, caseSensitive: false)) ||
+            (x.content?.contains(RegExp(query, caseSensitive: false)) ?? false) ||
+            x.senderName.contains(RegExp(query, caseSensitive: false)))
         .orderByDescending((element) => element.sendDate)
         .toList()
         .select((element, index) => (message: element, announcement: null as Announcement?));
@@ -83,9 +64,9 @@ class _MessagesPageState extends State<MessagesPage> {
     if (folder == MessageFolders.announcements) {
       messagesToDisplay = Share.session.data.student.mainClass.unit.announcements
               ?.where((x) =>
-                  x.subject.contains(RegExp(searchController.text, caseSensitive: false)) ||
-                  x.content.contains(RegExp(searchController.text, caseSensitive: false)) ||
-                  (x.contact?.name.contains(RegExp(searchController.text, caseSensitive: false)) ?? false))
+                  x.subject.contains(RegExp(query, caseSensitive: false)) ||
+                  x.content.contains(RegExp(query, caseSensitive: false)) ||
+                  (x.contact?.name.contains(RegExp(query, caseSensitive: false)) ?? false))
               .orderByDescending((x) => x.startDate)
               .select((x, index) => (
                     message: Message(
@@ -101,7 +82,7 @@ class _MessagesPageState extends State<MessagesPage> {
           [];
     }
 
-    var messagesWidget = CupertinoListSection.insetGrouped(
+    return CupertinoListSection.insetGrouped(
       margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
       additionalDividerMargin: 5,
       children: messagesToDisplay.isEmpty
@@ -114,10 +95,8 @@ class _MessagesPageState extends State<MessagesPage> {
                           alignment: Alignment.center,
                           child: Text(
                             folder == MessageFolders.announcements
-                                ? (searchController.text.isEmpty
-                                    ? 'No announcements, yet...'
-                                    : 'No announcements matching the query')
-                                : (searchController.text.isEmpty ? 'No messages, yet...' : 'No messages matching the query'),
+                                ? (query.isEmpty ? 'No announcements, yet...' : 'No announcements matching the query')
+                                : (query.isEmpty ? 'No messages, yet...' : 'No messages matching the query'),
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                           ))))
             ]
@@ -363,6 +342,25 @@ class _MessagesPageState extends State<MessagesPage> {
                                           ]))))))))
               .toList(),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Re-subscribe to all events
+    Share.refreshAll.unsubscribe(refresh);
+    Share.refreshAll.subscribe(refresh);
+
+    Share.messagesNavigate.unsubscribeAll();
+    Share.messagesNavigate.subscribe((args) {
+      setState(() => folder = ((args?.value.receivers?.isNotEmpty ?? false) ? MessageFolders.outbox : MessageFolders.inbox));
+      openMessage(message: args?.value);
+    });
+
+    Share.messagesNavigateAnnouncement.unsubscribeAll();
+    Share.messagesNavigateAnnouncement.subscribe((args) {
+      setState(() => folder = MessageFolders.announcements);
+      openMessage(message: args?.value.message, announcement: args?.value.parent);
+    });
 
     return DataPageBase.adaptive(
       pageFlags: [DataPageType.searchable, DataPageType.refreshable, DataPageType.boxedPage].flag,
@@ -372,7 +370,7 @@ class _MessagesPageState extends State<MessagesPage> {
         MessageFolders.outbox => '/Titles/Pages/Messages/Sent'.localized,
         MessageFolders.inbox || _ => '/Titles/Pages/Messages/Inbox'.localized
       },
-      searchController: searchController,
+      searchBuilder: (_, controller) => [messagesWidget(controller.text)],
       trailing: isWorking
           ? Container(margin: EdgeInsets.only(right: 5, top: 5), child: CupertinoActivityIndicator(radius: 12))
           : Stack(alignment: Alignment.bottomRight, children: [
@@ -432,7 +430,7 @@ class _MessagesPageState extends State<MessagesPage> {
                         decoration: BoxDecoration(shape: BoxShape.circle, color: CupertinoTheme.of(context).primaryColor),
                       )))
             ]),
-      children: [messagesWidget],
+      children: [messagesWidget()],
     );
   }
 

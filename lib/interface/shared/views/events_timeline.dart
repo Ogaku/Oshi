@@ -23,21 +23,18 @@ class EventsPage extends StatefulWidget {
 }
 
 class _EventsPageState extends State<EventsPage> {
-  final searchController = TextEditingController();
-
   bool showTeachers = false;
   bool showHomeworks = true;
 
-  @override
-  Widget build(BuildContext context) {
+  List<Widget> eventWidgets([String query = '']) {
     // Group by date, I know IT'S A DAMN STRING, but we're saving on custom controls
     var thingsToDisplayByDate = Share.session.events
         .where((x) => (showTeachers ? true : x.category != EventCategory.teacher))
         .where((x) => (x.date ?? x.timeFrom).isAfter(DateTime.now().add(Duration(days: -1)).asDate()))
         .where((x) =>
-            x.titleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-            x.subtitleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-            x.locationString.contains(RegExp(searchController.text, caseSensitive: false)))
+            x.titleString.contains(RegExp(query, caseSensitive: false)) ||
+            x.subtitleString.contains(RegExp(query, caseSensitive: false)) ||
+            x.locationString.contains(RegExp(query, caseSensitive: false)))
         .select((x, index) => AgendaEvent(event: x))
         .appendAll(Share.session.data.timetables.timetable.entries
             .select((x, index) => x.value.lessons
@@ -46,16 +43,16 @@ class _EventsPageState extends State<EventsPage> {
             .selectMany((w, index) => w)
             .where((x) => x.date.asDate().isAfterOrSame(DateTime.now().asDate()))
             .where((x) =>
-                (x.subject?.name.contains(RegExp(searchController.text, caseSensitive: false)) ?? false) ||
-                (x.teacher?.name.contains(RegExp(searchController.text, caseSensitive: false)) ?? false) ||
-                x.classroomString.contains(RegExp(searchController.text, caseSensitive: false)))
+                (x.subject?.name.contains(RegExp(query, caseSensitive: false)) ?? false) ||
+                (x.teacher?.name.contains(RegExp(query, caseSensitive: false)) ?? false) ||
+                x.classroomString.contains(RegExp(query, caseSensitive: false)))
             .select((x, index) => AgendaEvent(lesson: x))
             .toList())
         .orderBy((x) => x.date)
         .groupBy((x) => DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(x.date))
         .toList();
 
-    var eventWidgets = thingsToDisplayByDate
+    return thingsToDisplayByDate
         .select((element, index) => CupertinoListSection.insetGrouped(
             margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
             header: Text(element.key),
@@ -74,9 +71,12 @@ class _EventsPageState extends State<EventsPage> {
                                 ))))
                   ]
                 // Bindable messages layout
-                : element.toList().asEventWidgets(null, searchController.text, 'No events matching the query', setState)))
+                : element.toList().asEventWidgets(null, query, 'No events matching the query', setState)))
         .toList();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return DataPageBase.adaptive(
         pageFlags: [
           DataPageType.searchable,
@@ -114,8 +114,8 @@ class _EventsPageState extends State<EventsPage> {
           ),
         ),
         title: 'Agenda',
-        searchController: searchController,
-        children: [SingleChildScrollView(child: Column(children: eventWidgets))]);
+        searchBuilder: (_, controller) => eventWidgets(controller.text),
+        children: [SingleChildScrollView(child: Column(children: eventWidgets()))]);
   }
 }
 

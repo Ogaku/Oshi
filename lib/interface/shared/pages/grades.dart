@@ -12,6 +12,7 @@ import 'package:oshi/interface/components/cupertino/application.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
 import 'package:oshi/interface/shared/views/grades_detailed.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
+import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
@@ -28,8 +29,6 @@ class GradesPage extends StatefulWidget {
 }
 
 class _GradesPageState extends State<GradesPage> {
-  final searchController = TextEditingController();
-
   @override
   void dispose() {
     Share.refreshAll.unsubscribe(refresh);
@@ -40,33 +39,9 @@ class _GradesPageState extends State<GradesPage> {
     if (mounted) setState(() {});
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // Re-subscribe to all events
-    Share.refreshAll.unsubscribe(refresh);
-    Share.refreshAll.subscribe(refresh);
-
-    Share.gradesNavigate.unsubscribeAll();
-    Share.gradesNavigate.subscribe((args) {
-      if (args?.value == null) return;
-      if (Navigator.of(context).canPop()) Navigator.of(context).pop();
-      Navigator.push(
-          context,
-          CupertinoPageRoute(
-              builder: (context) => GradesDetailedPage(
-                    lesson: args!.value,
-                  )));
-    });
-
-    var subjectsToDisplay = Share.session.data.student.subjects
-        .where((x) =>
-            x.name.contains(RegExp(searchController.text, caseSensitive: false)) ||
-            x.teacher.name.contains(RegExp(searchController.text, caseSensitive: false)))
-        .orderBy((x) => x.name)
-        .toList();
-
+  Widget subjectsWidget(List<Lesson> subjectsToDisplay) {
     var hasSecondSemester = subjectsToDisplay.any((x) => x.allGrades.any((y) => y.semester == 2));
-    var subjectsWidget = CupertinoListSection.insetGrouped(
+    return CupertinoListSection.insetGrouped(
       margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
       additionalDividerMargin: 5,
       children: subjectsToDisplay.isEmpty
@@ -218,50 +193,72 @@ class _GradesPageState extends State<GradesPage> {
                               ]))));
             }).toList(),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Re-subscribe to all events
+    Share.refreshAll.unsubscribe(refresh);
+    Share.refreshAll.subscribe(refresh);
+
+    Share.gradesNavigate.unsubscribeAll();
+    Share.gradesNavigate.subscribe((args) {
+      if (args?.value == null) return;
+      if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+      Navigator.push(
+          context,
+          CupertinoPageRoute(
+              builder: (context) => GradesDetailedPage(
+                    lesson: args!.value,
+                  )));
+    });
 
     return DataPageBase.adaptive(
-      pageFlags: [DataPageType.searchable, DataPageType.refreshable].flag,
-      setState: setState,
-      title: '/Grades'.localized,
-      searchController: searchController,
-      children: [subjectsWidget]
-          .appendIf(
-              CupertinoListSection.insetGrouped(
-                margin: EdgeInsets.only(left: 15, right: 15, top: 5),
-                additionalDividerMargin: 5,
-                children: [
-                  CupertinoListTile(
-                      title: Text('/Average'.localized, overflow: TextOverflow.ellipsis),
-                      trailing: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5),
-                          child: Opacity(
-                              opacity: 0.5,
-                              child: Text(() {
-                                var majors = Share.session.data.student.subjects
-                                    .where((x) => x.hasMajor)
-                                    .select((x, _) => x.topMajor!.asValue);
-                                return majors.isNotEmpty ? majors.average().toStringAsFixed(2) : 'Unavailable';
-                              }()))))
-                ],
-              ),
-              searchController.text.isEmpty && Share.session.data.student.subjects.any((x) => x.hasMajor))
-          // The average graph
-          .appendIf(
-              CupertinoListSection.insetGrouped(
-                margin: EdgeInsets.only(left: 15, right: 15, top: 15),
-                additionalDividerMargin: 5,
-                children: [
-                  CupertinoListTile(
-                      title: Container(
-                          transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
-                          margin: EdgeInsets.only(top: 20, bottom: 10),
-                          child: FittedBox(
-                              alignment: Alignment.topLeft,
-                              child: SizedBox(width: 400, height: 220, child: LineChartSample1()))))
-                ],
-              ),
-              searchController.text.isEmpty && Share.session.data.student.mainClass.averages.isNotEmpty),
-    );
+        pageFlags: [DataPageType.searchable, DataPageType.refreshable].flag,
+        setState: setState,
+        title: '/Grades'.localized,
+        searchBuilder: (context, controller) => [
+              subjectsWidget(Share.session.data.student.subjects
+                  .where((x) =>
+                      x.name.contains(RegExp(controller.text, caseSensitive: false)) ||
+                      x.teacher.name.contains(RegExp(controller.text, caseSensitive: false)))
+                  .orderBy((x) => x.name)
+                  .toList())
+            ],
+        children: [
+          subjectsWidget(Share.session.data.student.subjects.orderBy((x) => x.name).toList()),
+          CupertinoListSection.insetGrouped(
+            margin: EdgeInsets.only(left: 15, right: 15, top: 5),
+            additionalDividerMargin: 5,
+            children: [
+              CupertinoListTile(
+                  title: Text('/Average'.localized, overflow: TextOverflow.ellipsis),
+                  trailing: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 5),
+                      child: Opacity(
+                          opacity: 0.5,
+                          child: Text(() {
+                            var majors = Share.session.data.student.subjects
+                                .where((x) => x.hasMajor)
+                                .select((x, _) => x.topMajor!.asValue);
+                            return majors.isNotEmpty ? majors.average().toStringAsFixed(2) : 'Unavailable';
+                          }()))))
+            ],
+          ),
+          CupertinoListSection.insetGrouped(
+            margin: EdgeInsets.only(left: 15, right: 15, top: 15),
+            additionalDividerMargin: 5,
+            children: [
+              CupertinoListTile(
+                  title: Container(
+                      transform: Matrix4.translationValues(-10.0, 0.0, 0.0),
+                      margin: EdgeInsets.only(top: 20, bottom: 10),
+                      child: FittedBox(
+                          alignment: Alignment.topLeft,
+                          child: SizedBox(width: 400, height: 220, child: LineChartSample1()))))
+            ],
+          ),
+        ]);
   }
 }
 

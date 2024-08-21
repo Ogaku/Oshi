@@ -92,7 +92,6 @@ class _EventComposePageState extends State<EventComposePage> {
         DataPageType.noTransitions,
         DataPageType.alternativeBackground,
       ].flag,
-      searchController: TextEditingController(),
       title: (shareEvent ? messageController : subjectController).text.isEmpty
           ? 'New event'
           : (shareEvent ? messageController : subjectController).text,

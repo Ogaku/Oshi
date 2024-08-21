@@ -51,7 +51,6 @@ class _MessageComposePageState extends State<MessageComposePage> {
         DataPageType.noTransitions,
         DataPageType.alternativeBackground,
       ].flag,
-      searchController: TextEditingController(),
       title: subjectController.text.isEmpty ? 'New message' : subjectController.text,
       leading: CupertinoButton(
           padding: EdgeInsets.all(0),

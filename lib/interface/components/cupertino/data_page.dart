@@ -2,6 +2,7 @@
 
 import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:oshi/interface/components/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/share/share.dart';
@@ -12,7 +13,6 @@ class DataPage extends DataPageBase {
       required super.title,
       super.pageFlags = 0,
       super.setState,
-      super.searchController,
       super.searchBuilder,
       super.segmentController,
       super.children,
@@ -27,6 +27,9 @@ class DataPage extends DataPageBase {
 }
 
 class DataPageState extends State<DataPage> {
+  var searchController = SearchController();
+  List<Widget> searchChildren = [];
+
   @override
   void dispose() {
     Share.refreshAll.unsubscribe(refresh);
@@ -44,9 +47,19 @@ class DataPageState extends State<DataPage> {
     Share.refreshAll.unsubscribe(refresh);
     Share.refreshAll.subscribe(refresh);
 
+    searchController.addListener(() async {
+      if (mounted) {
+        searchChildren =
+            widget.searchBuilder != null ? (await widget.searchBuilder!(context, searchController)).toList() : [];
+        setState(() {});
+      }
+    });
+
     // onChanged, onSubmitted -> already handled by searchController
     var navigationBar = SearchableSliverNavigationBar(
-      children: widget.pageFlags.hasFlag(DataPageType.singleChild) ? null : widget.children,
+      children: widget.pageFlags.hasFlag(DataPageType.searchable) && searchController.text.isNotEmpty
+          ? searchChildren
+          : (widget.pageFlags.hasFlag(DataPageType.singleChild) ? null : widget.children),
       transitionBetweenRoutes: !widget.pageFlags.hasFlag(DataPageType.noTransitions),
       largeTitle: widget.pageFlags.hasFlag(DataPageType.removeLargeTitle) ? null : Text(widget.title),
       leading: widget.leading,
@@ -54,7 +67,11 @@ class DataPageState extends State<DataPage> {
       previousPageTitle: widget.previousPageTitle,
       middle: widget.pageFlags.hasFlag(DataPageType.removeMiddleTitle) ? null : Text(widget.title),
       trailing: widget.trailing,
-      child: widget.pageFlags.hasFlag(DataPageType.singleChild) ? widget.children?.firstOrNull : null,
+      child: widget.pageFlags.hasFlag(DataPageType.searchable) && searchController.text.isNotEmpty
+          ? searchChildren.firstOrNull
+          : widget.pageFlags.hasFlag(DataPageType.singleChild)
+              ? widget.children?.firstOrNull
+              : null,
       segments: widget.pageFlags.hasFlag(DataPageType.segmented) ? widget.segments : null,
       setState: widget.setState,
       anchor: widget.pageFlags.hasFlag(DataPageType.noTitleSpace) ? 0.0 : null,
@@ -66,7 +83,7 @@ class DataPageState extends State<DataPage> {
       keepBackgroundWatchers: widget.pageFlags.hasFlag(DataPageType.keepBackgroundWatchers),
       alwaysShowAddons: widget.pageFlags.hasFlag(DataPageType.segmentedSticky),
       segmentController: widget.pageFlags.hasFlag(DataPageType.segmented) ? widget.segmentController : null,
-      searchController: widget.pageFlags.hasFlag(DataPageType.searchable) ? widget.searchController : null,
+      searchController: widget.pageFlags.hasFlag(DataPageType.searchable) ? searchController : null,
       backgroundColor: widget.pageFlags.hasFlag(DataPageType.alternativeBackground)
           ? CupertinoDynamicColor.withBrightness(
               color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 28, 28, 30))
