@@ -14,6 +14,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/interface/shared/containers.dart';
+import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
 import 'package:oshi/interface/shared/views/message_compose.dart';
 import 'package:oshi/interface/shared/views/new_event.dart';
@@ -305,9 +306,9 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                   ? CupertinoActivityIndicator(radius: 12)
                   : SizedBox(height: 20, width: 20, child: CircularProgressIndicator()))
           : Stack(alignment: Alignment.bottomRight, children: [
-              PullDownButton(
+              AdaptiveMenuButton(
                 itemBuilder: (context) => [
-                  PullDownMenuItem(
+                  AdaptiveMenuItem(
                     title: 'New event',
                     icon: CupertinoIcons.add,
                     onTap: () {
@@ -317,7 +318,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                   ),
                   PullDownMenuDivider.large(),
                   PullDownMenuTitle(title: Text('/Titles/Pages/Schedule'.localized)),
-                  PullDownMenuItem(
+                  AdaptiveMenuItem(
                     title: 'Today',
                     icon: CupertinoIcons.calendar_today,
                     onTap: () => animateToPage(
@@ -327,17 +328,13 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                             .difference(Share.session.data.student.mainClass.beginSchoolYear.asDate())
                             .inDays),
                   ),
-                  PullDownMenuItem(
+                  AdaptiveMenuItem(
                     title:
                         'Agenda${((Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount > 0) ? ' (${(Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount)})' : '')}',
                     icon: CupertinoIcons.list_bullet_below_rectangle,
                     onTap: () => Navigator.push(context, AdaptivePageRoute(builder: (context) => EventsPage())),
                   ),
                 ],
-                buttonBuilder: (context, showMenu) => GestureDetector(
-                  onTap: showMenu,
-                  child: const Icon(CupertinoIcons.ellipsis_circle),
-                ),
               ),
               AnimatedOpacity(
                   duration: const Duration(milliseconds: 500),

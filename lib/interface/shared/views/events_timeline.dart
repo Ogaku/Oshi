@@ -6,6 +6,7 @@ import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
 import 'package:oshi/interface/shared/pages/timetable.dart';
 import 'package:oshi/interface/shared/views/new_event.dart';
@@ -84,9 +85,9 @@ class _EventsPageState extends State<EventsPage> {
           DataPageType.segmentedSticky,
         ].flag,
         setState: setState,
-        trailing: PullDownButton(
+        trailing: AdaptiveMenuButton(
           itemBuilder: (context) => [
-            PullDownMenuItem(
+            AdaptiveMenuItem(
               title: 'New event',
               icon: CupertinoIcons.add,
               onTap: () {
@@ -96,22 +97,18 @@ class _EventsPageState extends State<EventsPage> {
             ),
             PullDownMenuDivider.large(),
             PullDownMenuTitle(title: Text('Filters')),
-            PullDownMenuItem(
+            AdaptiveMenuItem(
               title:
                   'Homeworks${((Share.session.unreadChanges.homeworksCount > 0) ? ' (${(Share.session.unreadChanges.homeworksCount)})' : '')}',
               icon: showHomeworks ? CupertinoIcons.book_fill : CupertinoIcons.book,
               onTap: () => setState(() => showHomeworks = !showHomeworks),
             ),
-            PullDownMenuItem(
+            AdaptiveMenuItem(
               title: 'Absent teachers',
               icon: showTeachers ? CupertinoIcons.person_badge_minus_fill : CupertinoIcons.person_badge_minus,
               onTap: () => setState(() => showTeachers = !showTeachers),
             ),
           ],
-          buttonBuilder: (context, showMenu) => GestureDetector(
-            onTap: showMenu,
-            child: const Icon(CupertinoIcons.ellipsis_circle),
-          ),
         ),
         title: 'Agenda',
         searchBuilder: (_, controller) => eventWidgets(controller.text),

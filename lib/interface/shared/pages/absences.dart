@@ -12,6 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/interface/shared/containers.dart';
+import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
@@ -19,7 +20,6 @@ import 'package:oshi/share/translator.dart';
 
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/shared/views/message_compose.dart';
-import 'package:pull_down_button/pull_down_button.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
 import 'package:uuid/uuid.dart';
 
@@ -110,14 +110,14 @@ class _AbsencesPageState extends State<AbsencesPage> {
                 child: Share.settings.appSettings.useCupertino
                     ? CupertinoActivityIndicator(radius: 12)
                     : SizedBox(height: 20, width: 20, child: CircularProgressIndicator()))
-            : PullDownButton(
+            : AdaptiveMenuButton(
                 itemBuilder: (context) => [
-                  PullDownMenuItem(
+                  AdaptiveMenuItem(
                     title: 'Mark as read',
                     icon: CupertinoIcons.checkmark_circle,
                     onTap: () => Share.session.unreadChanges.markAsRead(attendaceOnly: true),
                   ),
-                  PullDownMenuItem(
+                  AdaptiveMenuItem(
                     title: 'Excuse all',
                     icon: CupertinoIcons.doc_on_clipboard,
                     onTap: () {
@@ -134,10 +134,6 @@ class _AbsencesPageState extends State<AbsencesPage> {
                     },
                   ),
                 ],
-                buttonBuilder: (context, showMenu) => GestureDetector(
-                  onTap: showMenu,
-                  child: const Icon(CupertinoIcons.ellipsis_circle),
-                ),
               ),
         children: attendances
             .select(

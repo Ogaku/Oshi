@@ -14,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/interface/shared/containers.dart';
+import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/interface/shared/pages/absences.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/interface/shared/session_management.dart';
@@ -1260,30 +1261,27 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       title: segmentController.segment == HomepageSegments.home
           ? '/Titles/Pages/Home'.localized
           : '/Titles/Pages/Timeline'.localized,
-      trailing: PullDownButton(
+      trailing: AdaptiveMenuButton(
         itemBuilder: (context) => [
-          PullDownMenuItem(
+          AdaptiveMenuItem(
               title: 'Settings',
               icon: CupertinoIcons.gear,
               onTap: () =>
                   Navigator.of(context, rootNavigator: true).push(AdaptivePageRoute(builder: (context) => SettingsPage()))),
           PullDownMenuDivider.large(),
           PullDownMenuTitle(title: Text('Accounts')),
-          PullDownMenuItem(
+          AdaptiveMenuItem(
             title: 'Sessions',
             icon: CupertinoIcons.rectangle_stack_person_crop,
             onTap: () => Share.changeBase.broadcast(Value(() => sessionsPage)),
           ),
-          PullDownMenuItem(
+          AdaptiveMenuItem(
             title: 'Mark as read',
             icon: CupertinoIcons.checkmark_circle,
             onTap: () => Share.session.unreadChanges.markAsRead(),
           ),
         ],
-        buttonBuilder: (context, showMenu) => GestureDetector(
-          onTap: showMenu,
-          child: _eventfulMenuButton,
-        ),
+        child: _eventfulMenuButton,
       ),
       children: segmentController.segment == HomepageSegments.home ? homePageChildren : timelineChildren,
     );
@@ -1448,16 +1446,19 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     if (DateTime.now().month == DateTime.october && DateTime.now().day == 31) {
       return const Text('🎃');
     }
+    
     // St. Peter day theme
     if (DateTime.now().month == DateTime.july && DateTime.now().day == 12) {
       return const Text('🍀');
     }
+
     // Christmas theme
     if (DateTime.now().month == DateTime.december && (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
       return const Text('🎄');
     }
+
     // Default theme
-    return const Icon(CupertinoIcons.ellipsis_circle);
+    return Icon(Share.settings.appSettings.useCupertino ? CupertinoIcons.ellipsis_circle : Icons.more_vert);
   }
 
   void _setState(void Function() fn) {

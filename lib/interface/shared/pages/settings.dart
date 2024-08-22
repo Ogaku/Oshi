@@ -18,6 +18,7 @@ import 'package:maps_launcher/maps_launcher.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
+import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
@@ -34,7 +35,6 @@ import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
-import 'package:pull_down_button/pull_down_button.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:duration/duration.dart';
 
@@ -911,9 +911,9 @@ class _SettingsPageState extends State<SettingsPage> {
                             builder: (context) => StatefulBuilder(
                                 builder: ((context, setState) => CupertinoModalPage(
                                     title: 'Custom Events',
-                                    trailing: PullDownButton(
+                                    trailing: AdaptiveMenuButton(
                                       itemBuilder: (context) => [
-                                        PullDownMenuItem(
+                                        AdaptiveMenuItem(
                                           title: 'New event',
                                           icon: CupertinoIcons.add,
                                           onTap: () => showCupertinoModalBottomSheet(
@@ -921,10 +921,6 @@ class _SettingsPageState extends State<SettingsPage> {
                                               builder: (context) => EventComposePage()).then((value) => setState(() {})),
                                         )
                                       ],
-                                      buttonBuilder: (context, showMenu) => GestureDetector(
-                                        onTap: showMenu,
-                                        child: const Icon(CupertinoIcons.ellipsis_circle),
-                                      ),
                                     ),
                                     children: Share.session.customEvents
                                         .where((x) =>
@@ -1051,9 +1047,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                                             builder: ((context, setState) => CupertinoModalPage(
                                                                 title: 'Custom Grades',
                                                                 previousPageTitle: 'Grade Settings',
-                                                                trailing: PullDownButton(
+                                                                trailing: AdaptiveMenuButton(
                                                                   itemBuilder: (context) => [
-                                                                    PullDownMenuItem(
+                                                                    AdaptiveMenuItem(
                                                                       title: 'New custom grade',
                                                                       icon: CupertinoIcons.add,
                                                                       onTap: () => showCupertinoModalBottomSheet(
@@ -1062,10 +1058,6 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                           .then((value) => setState(() {})),
                                                                     )
                                                                   ],
-                                                                  buttonBuilder: (context, showMenu) => GestureDetector(
-                                                                    onTap: showMenu,
-                                                                    child: const Icon(CupertinoIcons.ellipsis_circle),
-                                                                  ),
                                                                 ),
                                                                 children: Share.session.customGrades.entries
                                                                     .selectMany((x, _) =>

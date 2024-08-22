@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/interface/shared/containers.dart';
+import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/interface/shared/views/message_compose.dart';
 import 'package:oshi/interface/shared/views/message_detailed.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
@@ -405,9 +406,9 @@ class _MessagesPageState extends State<MessagesPage> {
                   : SizedBox(height: 20, width: 20, child: CircularProgressIndicator()))
           : Stack(alignment: Alignment.bottomRight, children: [
               (Share.settings.appSettings.useCupertino
-                  ? PullDownButton(
+                  ? AdaptiveMenuButton(
                       itemBuilder: (context) => [
-                        PullDownMenuItem(
+                        AdaptiveMenuItem(
                           title: 'New',
                           icon: CupertinoIcons.add,
                           onTap: () {
@@ -420,7 +421,7 @@ class _MessagesPageState extends State<MessagesPage> {
                         ),
                         PullDownMenuDivider.large(),
                         PullDownMenuTitle(title: Text('Folders')),
-                        PullDownMenuItem(
+                        AdaptiveMenuItem(
                           title: '/Titles/Pages/Messages/Inbox'.localized +
                               (Share.session.data.messages.received.any((x) => !x.read)
                                   ? ' (${Share.session.data.messages.received.count((x) => !x.read)})'
@@ -428,13 +429,13 @@ class _MessagesPageState extends State<MessagesPage> {
                           icon: _folder == MessageFolders.inbox ? CupertinoIcons.tray_fill : CupertinoIcons.tray,
                           onTap: () => setState(() => _folder = MessageFolders.inbox),
                         ),
-                        PullDownMenuItem(
+                        AdaptiveMenuItem(
                           title: '/Titles/Pages/Messages/Sent'.localized,
                           icon:
                               _folder == MessageFolders.outbox ? CupertinoIcons.paperplane_fill : CupertinoIcons.paperplane,
                           onTap: () => setState(() => _folder = MessageFolders.outbox),
                         ),
-                        PullDownMenuItem(
+                        AdaptiveMenuItem(
                           title: '/Titles/Pages/Messages/Announcements'.localized +
                               ((Share.session.data.student.mainClass.unit.announcements?.any((x) => !x.read) ?? false)
                                   ? ' (${(Share.session.data.student.mainClass.unit.announcements?.count((x) => !x.read) ?? 1)})'
@@ -443,10 +444,6 @@ class _MessagesPageState extends State<MessagesPage> {
                           onTap: () => setState(() => _folder = MessageFolders.announcements),
                         )
                       ],
-                      buttonBuilder: (context, showMenu) => GestureDetector(
-                        onTap: showMenu,
-                        child: const Icon(CupertinoIcons.ellipsis_circle),
-                      ),
                     )
                   : SafeArea(
                       child: GestureDetector(

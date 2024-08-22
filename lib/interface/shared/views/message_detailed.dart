@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/shared/containers.dart';
+import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/interface/shared/views/message_compose.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/interface/components/cupertino/widgets/navigation_bar.dart';
@@ -50,9 +51,9 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
             ),
             scrollController: scrollController,
             middle: Text(''),
-            trailing: PullDownButton(
+            trailing: AdaptiveMenuButton(
               itemBuilder: (context) => [
-                PullDownMenuItem(
+                AdaptiveMenuItem(
                   title: 'Share',
                   icon: CupertinoIcons.share,
                   onTap: () {
@@ -62,7 +63,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                   },
                 ),
                 PullDownMenuDivider.large(),
-                PullDownMenuItem(
+                AdaptiveMenuItem(
                   title: widget.isByMe ? 'Forward' : 'Reply',
                   icon: CupertinoIcons.reply,
                   onTap: () => showCupertinoModalBottomSheet(
@@ -74,7 +75,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                               ? '-------\nOn ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(widget.message.sendDate)} ${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name} wrote:\n"${widget.message.topic}\n\n${widget.message.content}"'
                               : '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}\n\n-------\nOn ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(widget.message.sendDate)} ${widget.message.sender?.name} wrote:\n"${widget.message.topic}\n\n${widget.message.content}"')),
                 ),
-                PullDownMenuItem(
+                AdaptiveMenuItem(
                   title: 'Delete',
                   icon: CupertinoIcons.trash,
                   isDestructive: true,
@@ -101,10 +102,6 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                   },
                 ),
               ],
-              buttonBuilder: (context, showMenu) => GestureDetector(
-                onTap: showMenu,
-                child: const Icon(CupertinoIcons.ellipsis_circle),
-              ),
             ),
           ),
           SliverFillRemaining(
