@@ -371,6 +371,10 @@ class _MessagesPageState extends State<MessagesPage> {
       segmentController.addListener(() => setState(() => _folder = segmentController.segment));
     }
 
+    if (segmentController.segment != _folder) {
+      segmentController.segment = _folder;
+    }
+
     return DataPageBase.adaptive(
       pageFlags: [
         DataPageType.searchable,
@@ -400,48 +404,65 @@ class _MessagesPageState extends State<MessagesPage> {
                   ? CupertinoActivityIndicator(radius: 12)
                   : SizedBox(height: 20, width: 20, child: CircularProgressIndicator()))
           : Stack(alignment: Alignment.bottomRight, children: [
-              PullDownButton(
-                itemBuilder: (context) => [
-                  PullDownMenuItem(
-                    title: 'New',
-                    icon: CupertinoIcons.add,
-                    onTap: () {
-                      showCupertinoModalBottomSheet(
-                          context: context,
-                          builder: (context) => MessageComposePage(
-                              signature:
-                                  '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-                    },
-                  ),
-                  PullDownMenuDivider.large(),
-                  PullDownMenuTitle(title: Text('Folders')),
-                  PullDownMenuItem(
-                    title: '/Titles/Pages/Messages/Inbox'.localized +
-                        (Share.session.data.messages.received.any((x) => !x.read)
-                            ? ' (${Share.session.data.messages.received.count((x) => !x.read)})'
-                            : ''),
-                    icon: _folder == MessageFolders.inbox ? CupertinoIcons.tray_fill : CupertinoIcons.tray,
-                    onTap: () => setState(() => _folder = MessageFolders.inbox),
-                  ),
-                  PullDownMenuItem(
-                    title: '/Titles/Pages/Messages/Sent'.localized,
-                    icon: _folder == MessageFolders.outbox ? CupertinoIcons.paperplane_fill : CupertinoIcons.paperplane,
-                    onTap: () => setState(() => _folder = MessageFolders.outbox),
-                  ),
-                  PullDownMenuItem(
-                    title: '/Titles/Pages/Messages/Announcements'.localized +
-                        ((Share.session.data.student.mainClass.unit.announcements?.any((x) => !x.read) ?? false)
-                            ? ' (${(Share.session.data.student.mainClass.unit.announcements?.count((x) => !x.read) ?? 1)})'
-                            : ''),
-                    icon: _folder == MessageFolders.announcements ? CupertinoIcons.bell_fill : CupertinoIcons.bell,
-                    onTap: () => setState(() => _folder = MessageFolders.announcements),
-                  )
-                ],
-                buttonBuilder: (context, showMenu) => GestureDetector(
-                  onTap: showMenu,
-                  child: const Icon(CupertinoIcons.ellipsis_circle),
-                ),
-              ),
+              (Share.settings.appSettings.useCupertino
+                  ? PullDownButton(
+                      itemBuilder: (context) => [
+                        PullDownMenuItem(
+                          title: 'New',
+                          icon: CupertinoIcons.add,
+                          onTap: () {
+                            showCupertinoModalBottomSheet(
+                                context: context,
+                                builder: (context) => MessageComposePage(
+                                    signature:
+                                        '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                          },
+                        ),
+                        PullDownMenuDivider.large(),
+                        PullDownMenuTitle(title: Text('Folders')),
+                        PullDownMenuItem(
+                          title: '/Titles/Pages/Messages/Inbox'.localized +
+                              (Share.session.data.messages.received.any((x) => !x.read)
+                                  ? ' (${Share.session.data.messages.received.count((x) => !x.read)})'
+                                  : ''),
+                          icon: _folder == MessageFolders.inbox ? CupertinoIcons.tray_fill : CupertinoIcons.tray,
+                          onTap: () => setState(() => _folder = MessageFolders.inbox),
+                        ),
+                        PullDownMenuItem(
+                          title: '/Titles/Pages/Messages/Sent'.localized,
+                          icon:
+                              _folder == MessageFolders.outbox ? CupertinoIcons.paperplane_fill : CupertinoIcons.paperplane,
+                          onTap: () => setState(() => _folder = MessageFolders.outbox),
+                        ),
+                        PullDownMenuItem(
+                          title: '/Titles/Pages/Messages/Announcements'.localized +
+                              ((Share.session.data.student.mainClass.unit.announcements?.any((x) => !x.read) ?? false)
+                                  ? ' (${(Share.session.data.student.mainClass.unit.announcements?.count((x) => !x.read) ?? 1)})'
+                                  : ''),
+                          icon: _folder == MessageFolders.announcements ? CupertinoIcons.bell_fill : CupertinoIcons.bell,
+                          onTap: () => setState(() => _folder = MessageFolders.announcements),
+                        )
+                      ],
+                      buttonBuilder: (context, showMenu) => GestureDetector(
+                        onTap: showMenu,
+                        child: const Icon(CupertinoIcons.ellipsis_circle),
+                      ),
+                    )
+                  : SafeArea(
+                      child: GestureDetector(
+                      onTap: () {
+                        showCupertinoModalBottomSheet(
+                            context: context,
+                            builder: (context) => MessageComposePage(
+                                signature:
+                                    '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                      },
+                      child: Icon(
+                        Icons.add,
+                        size: 25,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ))),
               AnimatedOpacity(
                   duration: const Duration(milliseconds: 500),
                   opacity: (Share.session.data.messages.received.any((x) => !x.read) ||

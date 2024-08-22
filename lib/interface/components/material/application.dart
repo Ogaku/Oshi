@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:format/format.dart';
+import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/share/appcenter.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/notifications.dart';
@@ -166,110 +167,117 @@ class _BaseAppState extends State<BaseApp> {
       ),
     ];
 
-    return DynamicColorBuilder(
-        builder: (lightColorScheme, darkColorScheme) => MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              colorScheme: lightColorScheme,
-              useMaterial3: true,
-            ),
-            darkTheme: ThemeData(
-              colorScheme: darkColorScheme,
-              useMaterial3: true,
-            ),
-            home: Builder(builder: (context) {
-              ErrorWidget.builder = errorView;
+    return DynamicColorBuilder(builder: (lightDynamic, darkDynamic) {
+      ColorScheme? lightColorScheme, darkColorScheme;
 
-              // Re-subscribe to all events - update
-              Share.checkUpdates.unsubscribeAll();
-              Share.checkUpdates.subscribe((args) => _checkforUpdates(context));
+      if (lightDynamic != null && darkDynamic != null) {
+        (lightColorScheme, darkColorScheme) = generateDynamicColourSchemes(lightDynamic, darkDynamic);
+      }
 
-              return ShowFPS(
-                alignment: Alignment.topLeft,
-                visible: Share.session.settings.devMode,
-                showChart: Share.session.settings.devMode,
-                borderRadius: BorderRadius.all(Radius.circular(11)),
-                child: Builder(builder: (context) {
-                  // Re-subscribe to all events - modals
-                  Share.showErrorModal.unsubscribeAll();
-                  Share.showErrorModal.subscribe((args) async {
-                    if (args?.value == null) return;
-                    await showDialog<void>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                          title: Text(args!.value.title),
-                          content: Text(args.value.message),
-                          actions: args.value.actions.isEmpty
-                              ? []
-                              : args.value.actions.entries
-                                  .select(
-                                    (x, index) => TextButton(
-                                      child: Text(x.key),
-                                      onPressed: () {
-                                        try {
-                                          x.value();
-                                        } catch (ex) {
-                                          // ignored
-                                        }
-                                        Navigator.of(context, rootNavigator: true).pop();
-                                      },
-                                    ),
-                                  )
-                                  .toList()),
-                    );
-                  });
+      return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme: lightColorScheme,
+            useMaterial3: true,
+          ),
+          darkTheme: ThemeData(
+            colorScheme: darkColorScheme,
+            useMaterial3: true,
+          ),
+          home: Builder(builder: (context) {
+            ErrorWidget.builder = errorView;
 
-                  return Scaffold(
-                      bottomNavigationBar: MediaQuery.of(context).size.width < 640
-                          ? NavigationBar(
+            // Re-subscribe to all events - update
+            Share.checkUpdates.unsubscribeAll();
+            Share.checkUpdates.subscribe((args) => _checkforUpdates(context));
+
+            return ShowFPS(
+              alignment: Alignment.topLeft,
+              visible: Share.session.settings.devMode,
+              showChart: Share.session.settings.devMode,
+              borderRadius: BorderRadius.all(Radius.circular(11)),
+              child: Builder(builder: (context) {
+                // Re-subscribe to all events - modals
+                Share.showErrorModal.unsubscribeAll();
+                Share.showErrorModal.subscribe((args) async {
+                  if (args?.value == null) return;
+                  await showDialog<void>(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                        title: Text(args!.value.title),
+                        content: Text(args.value.message),
+                        actions: args.value.actions.isEmpty
+                            ? []
+                            : args.value.actions.entries
+                                .select(
+                                  (x, index) => TextButton(
+                                    child: Text(x.key),
+                                    onPressed: () {
+                                      try {
+                                        x.value();
+                                      } catch (ex) {
+                                        // ignored
+                                      }
+                                      Navigator.of(context, rootNavigator: true).pop();
+                                    },
+                                  ),
+                                )
+                                .toList()),
+                  );
+                });
+
+                return Scaffold(
+                    bottomNavigationBar: MediaQuery.of(context).size.width < 640
+                        ? NavigationBar(
+                            onDestinationSelected: (int index) {
+                              setState(() => currentPageIndex = index);
+                              Share.refreshAll.broadcast();
+                            },
+                            selectedIndex: currentPageIndex,
+                            destinations: navigationDestinations
+                                .select((x, index) => NavigationDestination(
+                                      selectedIcon: x.selectedIcon,
+                                      icon: x.icon,
+                                      label: x.label,
+                                    ))
+                                .toList(),
+                          )
+                        : null,
+                    body: Row(
+                      children: <Widget>[
+                        Expanded(
+                            child: <Widget>[
+                          homePage,
+                          gradesPage,
+                          timetablePage,
+                          messagesPage,
+                          absencesPage,
+                        ][currentPageIndex]),
+                      ].prependIf(
+                          NavigationRail(
+                              minWidth: 55.0,
+                              selectedIndex: currentPageIndex,
                               onDestinationSelected: (int index) {
                                 setState(() => currentPageIndex = index);
                                 Share.refreshAll.broadcast();
                               },
-                              selectedIndex: currentPageIndex,
-                              destinations: navigationDestinations
-                                  .select((x, index) => NavigationDestination(
-                                        selectedIcon: x.selectedIcon,
-                                        icon: x.icon,
-                                        label: x.label,
-                                      ))
-                                  .toList(),
-                            )
-                          : null,
-                      body: Row(
-                        children: <Widget>[
-                          Expanded(
-                              child: <Widget>[
-                            homePage,
-                            gradesPage,
-                            timetablePage,
-                            messagesPage,
-                            absencesPage,
-                          ][currentPageIndex]),
-                        ].prependIf(
-                            NavigationRail(
-                                minWidth: 55.0,
-                                selectedIndex: currentPageIndex,
-                                onDestinationSelected: (int index) {
-                                  setState(() => currentPageIndex = index);
-                                  Share.refreshAll.broadcast();
-                                },
-                                backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-                                labelType: NavigationRailLabelType.all,
-                                leading: SizedBox(height: 5),
-                                unselectedLabelTextStyle: const TextStyle(),
-                                destinations: navigationDestinations.select((x, index) {
-                                  return NavigationRailDestination(
-                                    icon: x.icon,
-                                    selectedIcon: x.selectedIcon,
-                                    label: Text(x.label),
-                                  );
-                                }).toList()),
-                            MediaQuery.of(context).size.width >= 640),
-                      ));
-                }),
-              );
-            })));
+                              backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                              labelType: NavigationRailLabelType.all,
+                              leading: SizedBox(height: 5),
+                              unselectedLabelTextStyle: const TextStyle(),
+                              destinations: navigationDestinations.select((x, index) {
+                                return NavigationRailDestination(
+                                  icon: x.icon,
+                                  selectedIcon: x.selectedIcon,
+                                  label: Text(x.label),
+                                );
+                              }).toList()),
+                          MediaQuery.of(context).size.width >= 640),
+                    ));
+              }),
+            );
+          }));
+    });
   }
 
   void _showAlertDialog(BuildContext context, Uri url) {

@@ -134,6 +134,7 @@ class _BaseAppState extends State<BaseApp> {
                 });
 
                 return SafeArea(
+                  top: false,
                   child: CupertinoTabScaffold(
                       controller: tabController,
                       tabBar: CupertinoTabBar(

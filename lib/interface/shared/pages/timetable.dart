@@ -192,6 +192,38 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
     );
   }
 
+  void animateToPage([DateTime? newDate, int? page]) {
+    if (Share.settings.appSettings.useCupertino) {
+      pageController.animateToPage(page ?? dayDifference,
+          duration: Duration(
+              milliseconds: newDate != null
+                  ? (250 *
+                      ((newDate.asDate().difference(Share.session.data.student.mainClass.beginSchoolYear
+                                  .asDate()
+                                  .add(Duration(days: dayDifference))
+                                  .asDate()))
+                              .inDays)
+                          .abs()
+                          .clamp(1, 30))
+                  : 300),
+          curve: Curves.fastEaseInToSlowEaseOut);
+    } else if (segmentController.reserved is TabController) {
+      (segmentController.reserved as TabController).animateTo(page ?? dayDifference,
+          duration: Duration(
+              milliseconds: newDate != null
+                  ? (250 *
+                      ((newDate.asDate().difference(Share.session.data.student.mainClass.beginSchoolYear
+                                  .asDate()
+                                  .add(Duration(days: dayDifference))
+                                  .asDate()))
+                              .inDays)
+                          .abs()
+                          .clamp(1, 30))
+                  : 300),
+          curve: Curves.fastEaseInToSlowEaseOut);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!(_everySecond?.isActive ?? false)) {
@@ -211,17 +243,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
       setState(() => dayDifference =
           args!.value.asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays);
 
-      pageController.animateToPage(dayDifference,
-          duration: Duration(
-              milliseconds: 250 *
-                  ((args!.value.asDate().difference(Share.session.data.student.mainClass.beginSchoolYear
-                              .asDate()
-                              .add(Duration(days: dayDifference))
-                              .asDate()))
-                          .inDays)
-                      .abs()
-                      .clamp(1, 30)),
-          curve: Curves.fastEaseInToSlowEaseOut);
+      animateToPage(args!.value.asDate());
     });
 
     return DataPageBase.adaptive(
@@ -233,32 +255,45 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
       setState: setState,
       selectedDate: selectedDate,
       leading: GestureDetector(
-          onTap: () => _showDialog(
-                CupertinoDatePicker(
-                  initialDateTime: selectedDate,
-                  mode: CupertinoDatePickerMode.date,
-                  use24hFormat: true,
-                  showDayOfWeek: true,
-                  minimumDate: Share.session.data.student.mainClass.beginSchoolYear,
-                  maximumDate: Share.session.data.student.mainClass.endSchoolYear,
-                  onDateTimeChanged: (DateTime newDate) {
-                    setState(() => dayDifference =
-                        newDate.asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays);
-
-                    pageController.animateToPage(dayDifference,
-                        duration: Duration(
-                            milliseconds: 250 *
-                                ((newDate.asDate().difference(Share.session.data.student.mainClass.beginSchoolYear
-                                            .asDate()
-                                            .add(Duration(days: dayDifference))
-                                            .asDate()))
-                                        .inDays)
-                                    .abs()
-                                    .clamp(1, 30)),
-                        curve: Curves.fastEaseInToSlowEaseOut);
-                  },
-                ),
-              ),
+          onTap: () => Share.settings.appSettings.useCupertino
+              ? _showDialog(
+                  CupertinoDatePicker(
+                    initialDateTime: selectedDate,
+                    mode: CupertinoDatePickerMode.date,
+                    use24hFormat: true,
+                    showDayOfWeek: true,
+                    minimumDate: Share.session.data.student.mainClass.beginSchoolYear,
+                    maximumDate: DateTime.now()
+                                .asDate()
+                                .difference(Share.session.data.student.mainClass.endSchoolYear.asDate())
+                                .inDays >=
+                            0
+                        ? DateTime.now().asDate()
+                        : Share.session.data.student.mainClass.endSchoolYear,
+                    onDateTimeChanged: (DateTime newDate) {
+                      setState(() => dayDifference =
+                          newDate.asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays);
+                      animateToPage(newDate);
+                    },
+                  ),
+                )
+              : showDatePicker(
+                  context: context,
+                  initialDate: selectedDate,
+                  firstDate: Share.session.data.student.mainClass.beginSchoolYear,
+                  lastDate: DateTime.now()
+                              .asDate()
+                              .difference(Share.session.data.student.mainClass.endSchoolYear.asDate())
+                              .inDays >=
+                          0
+                      ? DateTime.now().asDate()
+                      : Share.session.data.student.mainClass.endSchoolYear,
+                ).then((newDate) {
+                  if (newDate == null) return;
+                  setState(() => dayDifference =
+                      newDate.asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays);
+                  animateToPage(newDate);
+                }),
           child: Container(
               margin: EdgeInsets.only(top: 5, bottom: 5, right: Share.settings.appSettings.useCupertino ? 0 : 25),
               child:
@@ -285,13 +320,12 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                   PullDownMenuItem(
                     title: 'Today',
                     icon: CupertinoIcons.calendar_today,
-                    onTap: () => pageController.animateToPage(
+                    onTap: () => animateToPage(
+                        null,
                         DateTime.now()
                             .asDate()
                             .difference(Share.session.data.student.mainClass.beginSchoolYear.asDate())
-                            .inDays,
-                        duration: Duration(milliseconds: 300),
-                        curve: Curves.easeInOutExpo),
+                            .inDays),
                   ),
                   PullDownMenuItem(
                     title:

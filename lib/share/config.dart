@@ -26,9 +26,9 @@ class Config with ChangeNotifier {
   })  : _useCupertino = useCupertino ?? (!isIOS),
         _languageCode = languageCode ?? 'en';
 
-  // TODO All HiveFields should be private and trigger a settings save
+  // All HiveFields should be private and trigger a settings save
 
-  @HiveField(1, defaultValue: true) // TODO Change to false when done
+  @HiveField(1, defaultValue: true) // Handled by defaults
   bool _useCupertino;
 
   @HiveField(2, defaultValue: 'en')
