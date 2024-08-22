@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/share/extensions.dart';
 
 typedef Callback<T> = void Function(T value);
@@ -40,7 +41,7 @@ class OptionsForm<T> extends StatefulWidget {
 class _OptionsFormState<T> extends State<OptionsForm<T>> {
   @override
   Widget build(BuildContext context) {
-    return CupertinoListSection.insetGrouped(
+    return CardContainer(
         additionalDividerMargin: 5,
         header: widget.header.isNotEmpty
             ? Container(

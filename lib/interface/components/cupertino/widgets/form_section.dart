@@ -4,6 +4,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
+import 'package:oshi/interface/shared/containers.dart';
 
 // Used for iOS "Inset Grouped" margin, determined from SwiftUI's Forms in
 // iOS 14.2 SDK.
@@ -221,24 +222,25 @@ class CupertinoForm extends StatelessWidget {
             ));
 
     return _type == CupertinoListSectionType.base
-        ? CupertinoListSection(
+        ? CardContainer(
+            filled: false,
             header: headerWidget,
             footer: footerWidget,
-            margin: margin,
             backgroundColor: backgroundColor,
-            decoration: decoration,
-            clipBehavior: clipBehavior,
-            hasLeading: false,
+            // margin: margin,
+            // decoration: decoration,
+            // clipBehavior: clipBehavior,
+            // hasLeading: false,
             children: children)
-        : CupertinoListSection.insetGrouped(
+        : CardContainer(
             dividerMargin: 50,
             header: headerWidget,
             footer: footerWidget,
-            margin: margin,
             backgroundColor: backgroundColor,
-            decoration: decoration,
-            clipBehavior: clipBehavior,
-            hasLeading: false,
+            // margin: margin,
+            // decoration: decoration,
+            // clipBehavior: clipBehavior,
+            // hasLeading: false,
             children: children);
   }
 }

@@ -6,6 +6,7 @@ import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
 import 'package:oshi/interface/shared/pages/timetable.dart';
@@ -54,22 +55,17 @@ class _EventsPageState extends State<EventsPage> {
         .toList();
 
     return thingsToDisplayByDate
-        .select((element, index) => CupertinoListSection.insetGrouped(
-            margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+        .select((element, index) => CardContainer(
             header: Text(element.key),
             additionalDividerMargin: 5,
             children: element.isEmpty
                 // No messages to display
                 ? [
-                    CupertinoListTile(
-                        title: Opacity(
-                            opacity: 0.5,
-                            child: Container(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'No events to display',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                                ))))
+                    AdaptiveCard(
+                      secondary: true,
+                      centered: true,
+                      child: 'No events to display',
+                    )
                   ]
                 // Bindable messages layout
                 : element.toList().asEventWidgets(null, query, 'No events matching the query', setState)))

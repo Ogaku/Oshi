@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
+import 'package:oshi/interface/shared/containers.dart';
 
 class EntriesForm<T> extends StatefulWidget {
   const EntriesForm(
@@ -36,7 +37,7 @@ class _EntriesFormState<T> extends State<EntriesForm<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoListSection.insetGrouped(
+    return CardContainer(
         additionalDividerMargin: 5,
         header: widget.header.isNotEmpty
             ? Container(

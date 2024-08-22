@@ -2,8 +2,10 @@
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
 import 'package:oshi/interface/components/cupertino/widgets/text_chip.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
@@ -225,37 +227,35 @@ class _EventComposePageState extends State<EventComposePage> {
                                   }))),
                       // Either the receiver search or the contents
                       categoryController.text.isNotEmpty
-                          ? CupertinoListSection.insetGrouped(
-                              margin: EdgeInsets.only(left: 5, right: 5, bottom: 10),
+                          ? CardContainer(
                               additionalDividerMargin: 5,
+                              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+                              margin: EdgeInsets.only(left: 5, right: 5),
                               children: categoriesToDisplay.isEmpty
                                   // No messages to display
                                   ? [
-                                      CupertinoListTile(
-                                          title: Container(
-                                              alignment: Alignment.center,
-                                              child: GestureDetector(
-                                                  onTap: () => setState(() {
-                                                        category = EventCategory.other;
-                                                        customCategoryName = categoryController.text;
-                                                        categoryController.text = '';
-                                                      }),
-                                                  child: Text(
-                                                    'Custom category: ${categoryController.text}',
-                                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                                                  ))))
+                                      AdaptiveCard(
+                                        secondary: true,
+                                        click: () => setState(() {
+                                          category = EventCategory.other;
+                                          customCategoryName = categoryController.text;
+                                          categoryController.text = '';
+                                        }),
+                                        child: 'Custom category: ${categoryController.text}',
+                                      )
                                     ]
                                   // Bindable messages layout
                                   : categoriesToDisplay
-                                      .select((x, index) => CupertinoListTile(
-                                          onTap: category == x
+                                      .select((x, index) => AdaptiveCard(
+                                          secondary: true,
+                                          click: category == x
                                               ? null
                                               : () => setState(() {
                                                     category = x;
                                                     customCategoryName = '';
                                                     categoryController.text = '';
                                                   }),
-                                          title: Opacity(opacity: category == x ? 0.3 : 1.0, child: Text(x.asString()))))
+                                          child: Opacity(opacity: category == x ? 0.3 : 1.0, child: Text(x.asString()))))
                                       .toList())
                           : Column(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -281,7 +281,8 @@ class _EventComposePageState extends State<EventComposePage> {
                                       !shareEvent)
                                   .appendIf(
                                       // Shared event switch
-                                      CupertinoFormSection.insetGrouped(
+                                      CardContainer(
+                                          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
                                           margin: EdgeInsets.only(left: 5, right: 5, top: 25),
                                           children: [
                                             CupertinoFormRow(

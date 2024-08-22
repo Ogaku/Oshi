@@ -19,6 +19,7 @@ class CardContainer extends StatefulWidget {
     this.noDivider = false,
     this.filled = true,
     this.backgroundColor,
+    this.margin,
   });
 
   final bool largeHeader;
@@ -32,6 +33,7 @@ class CardContainer extends StatefulWidget {
   final bool filled;
 
   final Color? backgroundColor;
+  final EdgeInsets? margin;
 
   @override
   State<CardContainer> createState() => _CardContainerState();
@@ -42,7 +44,7 @@ class _CardContainerState extends State<CardContainer> {
   Widget build(BuildContext context) {
     if (Share.settings.appSettings.useCupertino) {
       return CupertinoListSection.insetGrouped(
-        margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10),
+        margin: widget.margin ?? const EdgeInsets.only(left: 15, right: 15, bottom: 10),
         additionalDividerMargin: widget.additionalDividerMargin,
         dividerMargin: widget.dividerMargin,
         separatorColor: widget.noDivider ? Colors.transparent : null,
@@ -70,7 +72,7 @@ class _CardContainerState extends State<CardContainer> {
         if (widget.header is String && widget.header.isNotEmpty)
           TableRow(children: [
             Container(
-              margin: EdgeInsets.only(left: 20, bottom: 6, top: 10),
+              margin: EdgeInsets.only(left: widget.margin?.left ?? 20, bottom: 6, top: 10),
               child: Text(
                 widget.header,
                 style: TextStyle(color: Theme.of(context).colorScheme.secondary),
@@ -82,13 +84,13 @@ class _CardContainerState extends State<CardContainer> {
               ? Card(
                   clipBehavior: Clip.antiAlias,
                   color: widget.backgroundColor ?? Theme.of(context).colorScheme.surfaceContainerLow,
-                  margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
+                  margin: widget.margin ?? const EdgeInsets.only(left: 15, right: 15, bottom: 10),
                   child: Column(
                     children: widget.children,
                   ),
                 )
               : Container(
-                  margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
+                  margin: widget.margin ?? const EdgeInsets.only(left: 15, right: 15, bottom: 10),
                   child: Column(
                     children: widget.children,
                   ),
@@ -98,7 +100,7 @@ class _CardContainerState extends State<CardContainer> {
         if (widget.footer is String && widget.footer.isNotEmpty)
           TableRow(children: [
             Container(
-              margin: EdgeInsets.only(left: 20, bottom: 6, top: 10),
+              margin: EdgeInsets.only(left: widget.margin?.left ?? 20, bottom: 6, top: 10),
               child: Text(
                 widget.footer,
                 style: TextStyle(color: Theme.of(context).dividerColor),
@@ -194,36 +196,36 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
 }
 
 (ColorScheme light, ColorScheme dark) generateDynamicColourSchemes(ColorScheme lightDynamic, ColorScheme darkDynamic) {
-    var lightBase = ColorScheme.fromSeed(seedColor: lightDynamic.primary);
-    var darkBase = ColorScheme.fromSeed(seedColor: darkDynamic.primary, brightness: Brightness.dark);
+  var lightBase = ColorScheme.fromSeed(seedColor: lightDynamic.primary);
+  var darkBase = ColorScheme.fromSeed(seedColor: darkDynamic.primary, brightness: Brightness.dark);
 
-    var lightAdditionalColours = _extractAdditionalColours(lightBase);
-    var darkAdditionalColours = _extractAdditionalColours(darkBase);
+  var lightAdditionalColours = _extractAdditionalColours(lightBase);
+  var darkAdditionalColours = _extractAdditionalColours(darkBase);
 
-    var lightScheme = _insertAdditionalColours(lightBase, lightAdditionalColours);
-    var darkScheme = _insertAdditionalColours(darkBase, darkAdditionalColours);
+  var lightScheme = _insertAdditionalColours(lightBase, lightAdditionalColours);
+  var darkScheme = _insertAdditionalColours(darkBase, darkAdditionalColours);
 
-    return (lightScheme.harmonized(), darkScheme.harmonized());
-  }
+  return (lightScheme.harmonized(), darkScheme.harmonized());
+}
 
-  List<Color> _extractAdditionalColours(ColorScheme scheme) => [
-        scheme.surface,
-        scheme.surfaceDim,
-        scheme.surfaceBright,
-        scheme.surfaceContainerLowest,
-        scheme.surfaceContainerLow,
-        scheme.surfaceContainer,
-        scheme.surfaceContainerHigh,
-        scheme.surfaceContainerHighest,
-      ];
+List<Color> _extractAdditionalColours(ColorScheme scheme) => [
+      scheme.surface,
+      scheme.surfaceDim,
+      scheme.surfaceBright,
+      scheme.surfaceContainerLowest,
+      scheme.surfaceContainerLow,
+      scheme.surfaceContainer,
+      scheme.surfaceContainerHigh,
+      scheme.surfaceContainerHighest,
+    ];
 
-  ColorScheme _insertAdditionalColours(ColorScheme scheme, List<Color> additionalColours) => scheme.copyWith(
-        surface: additionalColours[0],
-        surfaceDim: additionalColours[1],
-        surfaceBright: additionalColours[2],
-        surfaceContainerLowest: additionalColours[3],
-        surfaceContainerLow: additionalColours[4],
-        surfaceContainer: additionalColours[5],
-        surfaceContainerHigh: additionalColours[6],
-        surfaceContainerHighest: additionalColours[7],
-      );
+ColorScheme _insertAdditionalColours(ColorScheme scheme, List<Color> additionalColours) => scheme.copyWith(
+      surface: additionalColours[0],
+      surfaceDim: additionalColours[1],
+      surfaceBright: additionalColours[2],
+      surfaceContainerLowest: additionalColours[3],
+      surfaceContainerLow: additionalColours[4],
+      surfaceContainer: additionalColours[5],
+      surfaceContainerHigh: additionalColours[6],
+      surfaceContainerHighest: additionalColours[7],
+    );

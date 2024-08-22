@@ -153,33 +153,48 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
                           duration: Duration(milliseconds: 250),
                           opacity: (top > 110 || widget.leading == null) ? 1.0 : 0.0,
                           child: Text(widget.title)),
-                      background: (widget.pageFlags.hasFlag(DataPageType.searchable) &&
-                              (Share.session.refreshStatus.progressStatus?.isEmpty ?? true)
-                          ? SearchAnchor(
-                              isFullScreen: true,
-                              builder: (context, controller) => Padding(
-                                padding: (isChildPage ?? false) && widget.trailing != null
-                                    ? const EdgeInsets.only(left: 65, top: 17)
-                                    : const EdgeInsets.all(15.0),
+                      background: (isChildPage ?? false)
+                          ? GestureDetector(
+                              onTap: () => Navigator.of(context).pop(),
+                              child: Padding(
+                                padding: const EdgeInsets.all(15.0),
                                 child: Align(
-                                    alignment: (isChildPage ?? false) && widget.trailing == null
-                                        ? Alignment.topRight
-                                        : Alignment.topLeft,
+                                    alignment: Alignment.topLeft,
                                     child: SafeArea(
                                         child: Icon(
-                                      Icons.search,
+                                      Icons.arrow_back,
                                       size: 25,
                                       color: Theme.of(context).colorScheme.onSurface,
                                     ))),
                               ),
-                              suggestionsBuilder: widget.searchBuilder ??
-                                  (context, controller) => (widget.children ?? []).prepend(SizedBox(height: 15)),
                             )
-                          : null));
+                          : ((widget.pageFlags.hasFlag(DataPageType.searchable) &&
+                                  (Share.session.refreshStatus.progressStatus?.isEmpty ?? true)
+                              ? SearchAnchor(
+                                  isFullScreen: true,
+                                  builder: (context, controller) => Padding(
+                                    padding: (isChildPage ?? false) && widget.trailing != null
+                                        ? const EdgeInsets.only(left: 65, top: 17)
+                                        : const EdgeInsets.all(15.0),
+                                    child: Align(
+                                        alignment: (isChildPage ?? false) && widget.trailing == null
+                                            ? Alignment.topRight
+                                            : Alignment.topLeft,
+                                        child: SafeArea(
+                                            child: Icon(
+                                          Icons.search,
+                                          size: 25,
+                                          color: Theme.of(context).colorScheme.onSurface,
+                                        ))),
+                                  ),
+                                  suggestionsBuilder: widget.searchBuilder ??
+                                      (context, controller) => (widget.children ?? []).prepend(SizedBox(height: 15)),
+                                )
+                              : null)));
                 }),
                 leadingWidth: (isChildPage ?? false) ? null : 150,
                 leading: (isChildPage ?? false)
-                    ? null
+                    ? Container() // Don't show the funny arrow
                     : ((Share.session.refreshStatus.progressStatus?.isNotEmpty ?? false)
                         ? Container(
                             margin: const EdgeInsets.only(top: 7, left: 10),

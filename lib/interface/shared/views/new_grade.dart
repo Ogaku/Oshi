@@ -2,8 +2,10 @@
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
 import 'package:oshi/interface/components/cupertino/widgets/text_chip.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
@@ -217,30 +219,30 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                       })))),
                       // Either the receiver search or the contents
                       categoryController.text.isNotEmpty
-                          ? CupertinoListSection.insetGrouped(
-                              margin: EdgeInsets.only(left: 5, right: 5, bottom: 10),
+                          ? CardContainer(
                               additionalDividerMargin: 5,
+                              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+                              margin: EdgeInsets.only(left: 5, right: 5),
                               children: categoriesToDisplay.isEmpty
                                   // No messages to display
                                   ? [
-                                      CupertinoListTile(
-                                          title: Container(
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                'Not found: ${categoryController.text}',
-                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                                              )))
+                                      AdaptiveCard(
+                                        secondary: true,
+                                        centered: true,
+                                        child: 'Not found: ${categoryController.text}',
+                                      )
                                     ]
                                   // Bindable messages layout
                                   : categoriesToDisplay
-                                      .select((x, index) => CupertinoListTile(
-                                          onTap: category == x
+                                      .select((x, index) => AdaptiveCard(
+                                          secondary: true,
+                                          click: category == x
                                               ? null
                                               : () => setState(() {
                                                     category = x;
                                                     categoryController.text = '';
                                                   }),
-                                          title: Opacity(opacity: category == x ? 0.3 : 1.0, child: Text(x.nameExtra))))
+                                          child: Opacity(opacity: category == x ? 0.3 : 1.0, child: Text(x.nameExtra))))
                                       .toList())
                           : Column(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -454,9 +456,9 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                                             )
                                                           ])),
                                                   // Toggles | form
-                                                  CupertinoListSection.insetGrouped(
+                                                  CardContainer(
+                                                      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
                                                       additionalDividerMargin: 5,
-                                                      margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 8),
                                                       children: [
                                                         // Average
                                                         CupertinoFormRow(

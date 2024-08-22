@@ -18,6 +18,7 @@ import 'package:maps_launcher/maps_launcher.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
+import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/platform.dart';
@@ -91,8 +92,7 @@ class _SettingsPageState extends State<SettingsPage> {
           previousPageTitle: 'Home',
           children: [
             // Name and school, avatar picker
-            CupertinoListSection.insetGrouped(
-              margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+            CardContainer(
               children: [
                 CupertinoListTile(
                     padding: EdgeInsets.only(right: 15),
@@ -134,8 +134,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         context,
                         AdaptivePageRoute(
                             builder: (context) => CupertinoModalPage(title: 'About Me', children: [
-                                  CupertinoListSection.insetGrouped(
-                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                                  CardContainer(
                                     additionalDividerMargin: 5,
                                     header: Container(
                                         margin: EdgeInsets.symmetric(horizontal: 20),
@@ -166,8 +165,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                   child: Text(Share.session.data.student.mainClass.classTutor.name)))),
                                     ],
                                   ),
-                                  CupertinoListSection.insetGrouped(
-                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                                  CardContainer(
                                     additionalDividerMargin: 5,
                                     header: Container(
                                         margin: EdgeInsets.symmetric(horizontal: 20),
@@ -244,8 +242,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                           ])),
                                     ],
                                   ),
-                                  CupertinoListSection.insetGrouped(
-                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                                  CardContainer(
                                     additionalDividerMargin: 5,
                                     header: Container(
                                         margin: EdgeInsets.symmetric(horizontal: 20),
@@ -323,8 +320,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                       '${(100 * (Share.session.data.student.attendances?.count((x) => x.type == AttendanceType.present) ?? 0) / (Share.session.data.student.attendances?.count() ?? 1)).toStringAsFixed(1)}%')))),
                                     ],
                                   ),
-                                  CupertinoListSection.insetGrouped(
-                                      margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                                  CardContainer(
                                       additionalDividerMargin: 5,
                                       header: Container(
                                           margin: EdgeInsets.symmetric(horizontal: 20),
@@ -369,8 +365,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                     child:
                                                         Text('No attendances to displasy', textAlign: TextAlign.center)))),
                                       )),
-                                  CupertinoListSection.insetGrouped(
-                                      margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                                  CardContainer(
                                       additionalDividerMargin: 5,
                                       header: Container(
                                           margin: EdgeInsets.symmetric(horizontal: 20),
@@ -425,7 +420,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
             // Settings - appearance settings
-            CupertinoListSection.insetGrouped(
+            CardContainer(
               margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
               additionalDividerMargin: 5,
               children: [
@@ -529,7 +524,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
             // Settings - app settings
-            CupertinoListSection.insetGrouped(
+            CardContainer(
               margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
               additionalDividerMargin: 5,
               children: [
@@ -539,7 +534,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         AdaptivePageRoute(
                             builder: (context) => StatefulBuilder(
                                 builder: ((context, setState) => CupertinoModalPage(title: 'Sync Settings', children: [
-                                      CupertinoListSection.insetGrouped(
+                                      CardContainer(
                                           additionalDividerMargin: 5,
                                           margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
                                           children: [
@@ -553,9 +548,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                                     onChanged: (s) =>
                                                         setState(() => Share.session.settings.enableBackgroundSync = s))),
                                           ]),
-                                      CupertinoListSection.insetGrouped(
+                                      CardContainer(
                                           additionalDividerMargin: 5,
-                                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
                                           footer: Container(
                                               margin: EdgeInsets.symmetric(horizontal: 20),
                                               child: Opacity(
@@ -624,10 +618,9 @@ class _SettingsPageState extends State<SettingsPage> {
                         AdaptivePageRoute(
                             builder: (context) => StatefulBuilder(
                                 builder: ((context, setState) => CupertinoModalPage(title: 'Shared Events', children: [
-                                      CupertinoListSection.insetGrouped(
+                                      CardContainer(
                                           additionalDividerMargin: 5,
-                                          margin: EdgeInsets.only(left: 15, right: 15, top: 15),
-                                          separatorColor: Colors.transparent,
+                                          noDivider: true,
                                           footer: Container(margin: EdgeInsets.symmetric(horizontal: 20)),
                                           children: [
                                             GestureDetector(
@@ -636,7 +629,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                 child: Image.network(
                                                     'https://github.com/szkolny-eu/szkolny-android/blob/develop/.github/readme-banner.png?raw=true')),
                                           ]),
-                                      CupertinoListSection.insetGrouped(
+                                      CardContainer(
                                           additionalDividerMargin: 5,
                                           margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
                                           footer: Container(
@@ -680,7 +673,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         AdaptivePageRoute(
                             builder: (context) => StatefulBuilder(
                                 builder: ((context, setState) => CupertinoModalPage(title: 'Notifications', children: [
-                                      CupertinoListSection.insetGrouped(
+                                      CardContainer(
                                           additionalDividerMargin: 5,
                                           margin: EdgeInsets.only(left: 15, right: 15),
                                           header: Container(
@@ -695,7 +688,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                               trailing: CupertinoListTileChevron(),
                                             )
                                           ]),
-                                      CupertinoListSection.insetGrouped(
+                                      CardContainer(
                                           additionalDividerMargin: 5,
                                           margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
                                           children: [
@@ -711,9 +704,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                                         content: 'You thought you could escape?',
                                                         category: NotificationCategories.other)))
                                           ]),
-                                      CupertinoListSection.insetGrouped(
+                                      CardContainer(
                                           additionalDividerMargin: 5,
-                                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 15),
                                           footer: Container(
                                               margin: EdgeInsets.symmetric(horizontal: 20),
                                               child: Opacity(
@@ -778,7 +770,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
             // Settings - timetable settings
-            CupertinoListSection.insetGrouped(
+            CardContainer(
               margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
               additionalDividerMargin: 5,
               children: [
@@ -787,8 +779,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         context,
                         AdaptivePageRoute(
                             builder: (context) => CupertinoModalPage(title: 'Timetable Settings', children: [
-                                  CupertinoListSection.insetGrouped(
-                                      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
+                                  CardContainer(
                                       additionalDividerMargin: 5,
                                       header: Container(
                                           margin: EdgeInsets.symmetric(horizontal: 20),
@@ -845,8 +836,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                           ],
                                         )),
                                       ]),
-                                  CupertinoListSection.insetGrouped(
-                                      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
+                                  CardContainer(
                                       additionalDividerMargin: 5,
                                       header: Container(
                                           margin: EdgeInsets.symmetric(horizontal: 20),
@@ -928,8 +918,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                         .orderBy((x) => x.date ?? x.timeFrom)
                                         .groupBy((x) => DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode)
                                             .format(x.date ?? x.timeFrom))
-                                        .select((element, index) => CupertinoListSection.insetGrouped(
-                                            margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                                        .select((element, index) => CardContainer(
                                             header: Text(element.key),
                                             additionalDividerMargin: 5,
                                             children: element.isEmpty
@@ -950,20 +939,17 @@ class _SettingsPageState extends State<SettingsPage> {
                                                 : element
                                                     .toList()
                                                     .asEventWidgets(null, '', 'No events matching the query', setState)))
-                                        .appendIfEmpty(CupertinoListSection.insetGrouped(
-                                            margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-                                            additionalDividerMargin: 5,
-                                            children: [
-                                              CupertinoListTile(
-                                                  title: Opacity(
-                                                      opacity: 0.5,
-                                                      child: Container(
-                                                          alignment: Alignment.center,
-                                                          child: Text(
-                                                            'No events to display',
-                                                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                                                          ))))
-                                            ]))
+                                        .appendIfEmpty(CardContainer(additionalDividerMargin: 5, children: [
+                                          CupertinoListTile(
+                                              title: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Container(
+                                                      alignment: Alignment.center,
+                                                      child: Text(
+                                                        'No events to display',
+                                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                                                      ))))
+                                        ]))
                                         .toList()))))),
                     title: Text('Custom Events', overflow: TextOverflow.ellipsis),
                     trailing: CupertinoListTileChevron()),
@@ -973,8 +959,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         AdaptivePageRoute(
                             builder: (context) => StatefulBuilder(
                                 builder: ((context, setState) => CupertinoModalPage(title: 'Grades Settings', children: [
-                                      CupertinoListSection.insetGrouped(
-                                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
+                                      CardContainer(
                                           additionalDividerMargin: 5,
                                           header: Container(
                                               margin: EdgeInsets.symmetric(horizontal: 20),
@@ -1022,8 +1007,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                             Share.session.settings.yearlyAverageMethod = v; // Set
                                             Share.refreshBase.broadcast(); // Refresh
                                           }),
-                                      CupertinoListSection.insetGrouped(
-                                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
+                                      CardContainer(
                                           additionalDividerMargin: 5,
                                           header: Container(
                                               margin: EdgeInsets.symmetric(horizontal: 20),
@@ -1064,51 +1048,45 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                         x.value.select((y, _) => (lesson: x.key, grade: y)))
                                                                     .orderBy((x) => x.grade.date)
                                                                     .groupBy((x) => x.lesson)
-                                                                    .select((element, index) =>
-                                                                        CupertinoListSection.insetGrouped(
-                                                                            margin: EdgeInsets.only(
-                                                                                left: 15, right: 15, bottom: 10),
-                                                                            header: Text(element.key.nameExtra),
-                                                                            additionalDividerMargin: 5,
-                                                                            children: element.isEmpty
-                                                                                // No messages to display
-                                                                                ? [
-                                                                                    CupertinoListTile(
-                                                                                        title: Opacity(
-                                                                                            opacity: 0.5,
-                                                                                            child: Container(
-                                                                                                alignment: Alignment.center,
-                                                                                                child: Text(
-                                                                                                  'No grades to display',
-                                                                                                  style: TextStyle(
-                                                                                                      fontSize: 16,
-                                                                                                      fontWeight:
-                                                                                                          FontWeight.normal),
-                                                                                                ))))
-                                                                                  ]
-                                                                                // Bindable messages layout
-                                                                                : element
-                                                                                    .toList()
-                                                                                    .select((x, _) =>
-                                                                                        x.grade.asGrade(context, setState))
-                                                                                    .toList()))
-                                                                    .appendIfEmpty(CupertinoListSection.insetGrouped(
-                                                                        margin:
-                                                                            EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                                                                    .select((element, index) => CardContainer(
+                                                                        header: Text(element.key.nameExtra),
                                                                         additionalDividerMargin: 5,
-                                                                        children: [
-                                                                          CupertinoListTile(
-                                                                              title: Opacity(
-                                                                                  opacity: 0.5,
-                                                                                  child: Container(
-                                                                                      alignment: Alignment.center,
-                                                                                      child: Text(
-                                                                                        'No grades to display',
-                                                                                        style: TextStyle(
-                                                                                            fontSize: 16,
-                                                                                            fontWeight: FontWeight.normal),
-                                                                                      ))))
-                                                                        ]))
+                                                                        children: element.isEmpty
+                                                                            // No messages to display
+                                                                            ? [
+                                                                                CupertinoListTile(
+                                                                                    title: Opacity(
+                                                                                        opacity: 0.5,
+                                                                                        child: Container(
+                                                                                            alignment: Alignment.center,
+                                                                                            child: Text(
+                                                                                              'No grades to display',
+                                                                                              style: TextStyle(
+                                                                                                  fontSize: 16,
+                                                                                                  fontWeight:
+                                                                                                      FontWeight.normal),
+                                                                                            ))))
+                                                                              ]
+                                                                            // Bindable messages layout
+                                                                            : element
+                                                                                .toList()
+                                                                                .select((x, _) =>
+                                                                                    x.grade.asGrade(context, setState))
+                                                                                .toList()))
+                                                                    .appendIfEmpty(
+                                                                        CardContainer(additionalDividerMargin: 5, children: [
+                                                                      CupertinoListTile(
+                                                                          title: Opacity(
+                                                                              opacity: 0.5,
+                                                                              child: Container(
+                                                                                  alignment: Alignment.center,
+                                                                                  child: Text(
+                                                                                    'No grades to display',
+                                                                                    style: TextStyle(
+                                                                                        fontSize: 16,
+                                                                                        fontWeight: FontWeight.normal),
+                                                                                  ))))
+                                                                    ]))
                                                                     .toList()))))),
                                                 title: Text('Custom Grades', overflow: TextOverflow.ellipsis),
                                                 trailing: CupertinoListTileChevron()),
@@ -1158,7 +1136,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
             // Settings - credits
-            CupertinoListSection.insetGrouped(
+            CardContainer(
               margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
               additionalDividerMargin: 5,
               children: [
@@ -1167,8 +1145,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         context,
                         AdaptivePageRoute(
                             builder: (context) => CupertinoModalPage(title: 'App Info', children: [
-                                  CupertinoListSection.insetGrouped(
-                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
+                                  CardContainer(
                                     additionalDividerMargin: 5,
                                     header: Container(
                                         margin: EdgeInsets.symmetric(horizontal: 20),
@@ -1189,8 +1166,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                               previousPageTitle: 'App Info',
                                                               children: [
                                                                 // Developer mode
-                                                                CupertinoListSection.insetGrouped(
-                                                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                                                                CardContainer(
                                                                     additionalDividerMargin: 5,
                                                                     header: Container(
                                                                         margin: EdgeInsets.symmetric(horizontal: 20),
@@ -1216,8 +1192,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                                     .broadcast(); // Refresh everything
                                                                               }))
                                                                     ]),
-                                                                CupertinoListSection.insetGrouped(
-                                                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                                                                CardContainer(
                                                                     additionalDividerMargin: 5,
                                                                     header: Container(
                                                                         margin: EdgeInsets.symmetric(horizontal: 20),
@@ -1414,8 +1389,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                           ])),
                                                                     ]),
                                                                 // Codes - user
-                                                                CupertinoListSection.insetGrouped(
-                                                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                                                                CardContainer(
                                                                     additionalDividerMargin: 5,
                                                                     header: Container(
                                                                         margin: EdgeInsets.symmetric(horizontal: 20),
@@ -1444,8 +1418,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                     ]),
                                                               ].appendAllIf([
                                                                 // Codes - classes
-                                                                CupertinoListSection.insetGrouped(
-                                                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                                                                CardContainer(
                                                                     additionalDividerMargin: 5,
                                                                     header: Container(
                                                                         margin: EdgeInsets.symmetric(horizontal: 20),
@@ -1482,8 +1455,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                               child: Opacity(opacity: 0.5, child: Text(Share.buildNumber.split('.').last))))
                                     ],
                                   ),
-                                  CupertinoListSection.insetGrouped(
-                                    margin: EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
+                                  CardContainer(
                                     additionalDividerMargin: 5,
                                     header: Container(
                                         margin: EdgeInsets.symmetric(horizontal: 20),
