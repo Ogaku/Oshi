@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:oshi/share/share.dart';
@@ -80,7 +81,7 @@ class _CardContainerState extends State<CardContainer> {
           (widget.filled || widget.backgroundColor != null)
               ? Card(
                   clipBehavior: Clip.antiAlias,
-                  color: widget.backgroundColor,
+                  color: widget.backgroundColor ?? Theme.of(context).colorScheme.surfaceContainerLow,
                   margin: const EdgeInsets.only(left: 15, right: 15, bottom: 10, top: 0),
                   child: Column(
                     children: widget.children,
@@ -191,3 +192,38 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
     }
   }
 }
+
+(ColorScheme light, ColorScheme dark) generateDynamicColourSchemes(ColorScheme lightDynamic, ColorScheme darkDynamic) {
+    var lightBase = ColorScheme.fromSeed(seedColor: lightDynamic.primary);
+    var darkBase = ColorScheme.fromSeed(seedColor: darkDynamic.primary, brightness: Brightness.dark);
+
+    var lightAdditionalColours = _extractAdditionalColours(lightBase);
+    var darkAdditionalColours = _extractAdditionalColours(darkBase);
+
+    var lightScheme = _insertAdditionalColours(lightBase, lightAdditionalColours);
+    var darkScheme = _insertAdditionalColours(darkBase, darkAdditionalColours);
+
+    return (lightScheme.harmonized(), darkScheme.harmonized());
+  }
+
+  List<Color> _extractAdditionalColours(ColorScheme scheme) => [
+        scheme.surface,
+        scheme.surfaceDim,
+        scheme.surfaceBright,
+        scheme.surfaceContainerLowest,
+        scheme.surfaceContainerLow,
+        scheme.surfaceContainer,
+        scheme.surfaceContainerHigh,
+        scheme.surfaceContainerHighest,
+      ];
+
+  ColorScheme _insertAdditionalColours(ColorScheme scheme, List<Color> additionalColours) => scheme.copyWith(
+        surface: additionalColours[0],
+        surfaceDim: additionalColours[1],
+        surfaceBright: additionalColours[2],
+        surfaceContainerLowest: additionalColours[3],
+        surfaceContainerLow: additionalColours[4],
+        surfaceContainer: additionalColours[5],
+        surfaceContainerHigh: additionalColours[6],
+        surfaceContainerHighest: additionalColours[7],
+      );

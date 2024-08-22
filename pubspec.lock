@@ -313,6 +313,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.7.0"
+  dynamic_tabbar:
+    dependency: "direct main"
+    description:
+      name: dynamic_tabbar
+      sha256: "3e3cd28de6d4d9002623f630e0b86218b8b88d22864f30a1bf79b5edb6c615d0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.7"
   enum_flag:
     dependency: "direct main"
     description:

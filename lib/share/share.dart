@@ -113,8 +113,8 @@ class Settings {
       await Share.settingsMutex.protect<void>(() async {
         // Load saved settings
         sessions = (await Hive.openBox('sessions')).get('sessions', defaultValue: SessionsData());
-        appSettings = (await Hive.openBox('config'))
-            .get('config', defaultValue: Config(languageCode: Platform.localeName.substring(0, 2)));
+        appSettings = (await Hive.openBox('config')).get('config',
+            defaultValue: Config(languageCode: Platform.localeName.substring(0, 2), useCupertino: !isAndroid));
       });
     } on Exception catch (ex, stack) {
       try {

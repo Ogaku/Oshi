@@ -109,9 +109,10 @@ enum DataPageType with EnumFlag {
 }
 
 class SegmentController with ChangeNotifier {
-  SegmentController({dynamic segment, this.scrollable = false}) : _segment = segment;
+  SegmentController({dynamic segment, this.reserved, this.scrollable = false}) : _segment = segment;
 
   dynamic _segment;
+  dynamic reserved;
   bool scrollable;
 
   get segment => _segment;

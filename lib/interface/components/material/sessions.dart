@@ -14,6 +14,7 @@ import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:format/format.dart';
 import 'package:oshi/interface/components/material/application.dart';
 import 'package:oshi/interface/components/shim/session_management.dart';
+import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/session_management.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/share/appcenter.dart';
@@ -51,285 +52,292 @@ class _SessionsPageState extends State<SessionsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return DynamicColorBuilder(
-        builder: (lightColorScheme, darkColorScheme) => Builder(builder: (context) {
-              var sessionsList = Share.settings.sessions.sessions.keys
-                  .select(
-                    (x, index) => Container(
-                        margin: EdgeInsets.only(left: 20, right: 20, top: 5),
-                        child: Builder(
-                            builder: (context) => Visibility(
-                                visible: Share.settings.sessions.sessions[x] != null,
-                                child: MaterialButton(
-                                    padding: EdgeInsets.only(),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                    onPressed: () async {
-                                      if (isWorking) return; // Already handling something, give up
-                                      setState(() {
-                                        // Mark as working, the 1st refresh is gonna take a while
-                                        isWorking = true;
-                                      });
+    return DynamicColorBuilder(builder: (lightDynamic, darkDynamic) {
+      ColorScheme? lightColorScheme, darkColorScheme;
 
-                                      var progress = Progress<({double? progress, String? message})>();
-                                      progress.progressChanged
-                                          .subscribe((args) => setState(() => _progressMessage = args?.value.message));
+      if (lightDynamic != null && darkDynamic != null) {
+        (lightColorScheme, darkColorScheme) = generateDynamicColourSchemes(lightDynamic, darkDynamic);
+      }
 
-                                      // showCupertinoModalBottomSheet(context: context, builder: (context) => LoginPage(provider: x));
-                                      Share.settings.sessions.lastSessionId = x; // Update
-                                      Share.session = Share.settings.sessions.lastSession!;
-                                      await Share.settings.save(); // Save our settings now
+      return Builder(builder: (context) {
+        var sessionsList = Share.settings.sessions.sessions.keys
+            .select(
+              (x, index) => Container(
+                  margin: EdgeInsets.only(left: 20, right: 20, top: 5),
+                  child: Builder(
+                      builder: (context) => Visibility(
+                          visible: Share.settings.sessions.sessions[x] != null,
+                          child: MaterialButton(
+                              padding: EdgeInsets.only(),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              onPressed: () async {
+                                if (isWorking) return; // Already handling something, give up
+                                setState(() {
+                                  // Mark as working, the 1st refresh is gonna take a while
+                                  isWorking = true;
+                                });
 
-                                      // Suppress all errors, we must have already logged in at least once
-                                      await Share.session.tryLogin(progress: progress, showErrors: false);
-                                      await Share.session.refreshAll(progress: progress, showErrors: false);
+                                var progress = Progress<({double? progress, String? message})>();
+                                progress.progressChanged
+                                    .subscribe((args) => setState(() => _progressMessage = args?.value.message));
 
-                                      // Reset the animation in case we go back somehow
-                                      setState(() => isWorking = false);
-                                      progress.progressChanged.unsubscribeAll();
-                                      _progressMessage = null; // Reset the message
+                                // showCupertinoModalBottomSheet(context: context, builder: (context) => LoginPage(provider: x));
+                                Share.settings.sessions.lastSessionId = x; // Update
+                                Share.session = Share.settings.sessions.lastSession!;
+                                await Share.settings.save(); // Save our settings now
 
-                                      // Change the main page to the base application
-                                      Share.changeBase.broadcast(Value(() => baseApplication));
-                                    },
+                                // Suppress all errors, we must have already logged in at least once
+                                await Share.session.tryLogin(progress: progress, showErrors: false);
+                                await Share.session.refreshAll(progress: progress, showErrors: false);
+
+                                // Reset the animation in case we go back somehow
+                                setState(() => isWorking = false);
+                                progress.progressChanged.unsubscribeAll();
+                                _progressMessage = null; // Reset the message
+
+                                // Change the main page to the base application
+                                Share.changeBase.broadcast(Value(() => baseApplication));
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                ),
+                                child: SwipeActionCell(
+                                    key: UniqueKey(),
+                                    backgroundColor: Colors.transparent,
+                                    trailingActions: <SwipeAction>[
+                                      SwipeAction(
+                                          performsFirstActionWithFullSwipe: true,
+                                          content: Container(
+                                            width: 50,
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(25),
+                                              color: Colors.red,
+                                            ),
+                                            child: Icon(
+                                              Icons.delete,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          onTap: (CompletionHandler handler) async {
+                                            // Remove the session
+                                            Share.settings.sessions.sessions.remove(x);
+                                            if (Share.settings.sessions.lastSessionId == x) {
+                                              Share.settings.sessions.lastSessionId =
+                                                  Share.settings.sessions.sessions.keys.firstOrDefault(defaultValue: null);
+                                            }
+
+                                            // Save our session changes
+                                            await Share.settings.save();
+                                            setState(() {}); // Reload
+                                          },
+                                          color: CupertinoColors.destructiveRed)
+                                    ],
                                     child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                                      ),
-                                      child: SwipeActionCell(
-                                          key: UniqueKey(),
-                                          backgroundColor: Colors.transparent,
-                                          trailingActions: <SwipeAction>[
-                                            SwipeAction(
-                                                performsFirstActionWithFullSwipe: true,
-                                                content: Container(
-                                                  width: 50,
-                                                  height: 50,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(25),
-                                                    color: Colors.red,
-                                                  ),
-                                                  child: Icon(
-                                                    Icons.delete,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                                onTap: (CompletionHandler handler) async {
-                                                  // Remove the session
-                                                  Share.settings.sessions.sessions.remove(x);
-                                                  if (Share.settings.sessions.lastSessionId == x) {
-                                                    Share.settings.sessions.lastSessionId = Share
-                                                        .settings.sessions.sessions.keys
-                                                        .firstOrDefault(defaultValue: null);
-                                                  }
+                                      padding: EdgeInsets.only(right: 10, left: 22),
+                                      child: ConstrainedBox(
+                                          constraints: BoxConstraints(maxHeight: 100, maxWidth: 300),
+                                          child: Row(children: [
+                                            ConstrainedBox(
+                                                constraints: BoxConstraints(
+                                                    maxWidth: 120, maxHeight: 80, minWidth: 120, minHeight: 80),
+                                                child: Container(
+                                                    margin: EdgeInsets.only(top: 20, bottom: 20),
+                                                    child: Visibility(
+                                                        visible: Share
+                                                                .settings.sessions.sessions[x]?.provider.providerBannerUri !=
+                                                            null,
+                                                        child: FadeInImage.memoryNetwork(
+                                                            height: 37,
+                                                            placeholder: kTransparentImage,
+                                                            image: Share.settings.sessions.sessions[x]?.provider
+                                                                    .providerBannerUri
+                                                                    ?.toString() ??
+                                                                'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg')))),
+                                            Visibility(
+                                                visible:
+                                                    Share.settings.sessions.sessions[x]?.provider.providerBannerUri != null,
+                                                child: Container(
+                                                  width: 1,
+                                                  height: 40,
+                                                  margin: EdgeInsets.only(left: 20, right: 20),
+                                                  decoration: const BoxDecoration(
+                                                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                                                      color: Color(0x33AAAAAA)),
+                                                )),
+                                            Flexible(
+                                                child: Container(
+                                                    margin: EdgeInsets.only(right: 20),
+                                                    child: Text(
+                                                      Share.settings.sessions.sessions[x]?.sessionName ?? '',
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight.w600,
+                                                          fontSize: 15,
+                                                          color: CupertinoDynamicColor.resolve(
+                                                              CupertinoDynamicColor.withBrightness(
+                                                                  color: CupertinoColors.black,
+                                                                  darkColor: CupertinoColors.white),
+                                                              context)),
+                                                    )))
+                                          ])),
+                                    )),
+                              ))))),
+            )
+            .toList();
 
-                                                  // Save our session changes
-                                                  await Share.settings.save();
-                                                  setState(() {}); // Reload
-                                                },
-                                                color: CupertinoColors.destructiveRed)
-                                          ],
-                                          child: Container(
-                                            padding: EdgeInsets.only(right: 10, left: 22),
-                                            child: ConstrainedBox(
-                                                constraints: BoxConstraints(maxHeight: 100, maxWidth: 300),
-                                                child: Row(children: [
-                                                  ConstrainedBox(
-                                                      constraints: BoxConstraints(
-                                                          maxWidth: 120, maxHeight: 80, minWidth: 120, minHeight: 80),
-                                                      child: Container(
-                                                          margin: EdgeInsets.only(top: 20, bottom: 20),
-                                                          child: Visibility(
-                                                              visible: Share.settings.sessions.sessions[x]?.provider
-                                                                      .providerBannerUri !=
-                                                                  null,
-                                                              child: FadeInImage.memoryNetwork(
-                                                                  height: 37,
-                                                                  placeholder: kTransparentImage,
-                                                                  image: Share.settings.sessions.sessions[x]?.provider
-                                                                          .providerBannerUri
-                                                                          ?.toString() ??
-                                                                      'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg')))),
-                                                  Visibility(
-                                                      visible:
-                                                          Share.settings.sessions.sessions[x]?.provider.providerBannerUri !=
-                                                              null,
-                                                      child: Container(
-                                                        width: 1,
-                                                        height: 40,
-                                                        margin: EdgeInsets.only(left: 20, right: 20),
-                                                        decoration: const BoxDecoration(
-                                                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                                                            color: Color(0x33AAAAAA)),
-                                                      )),
-                                                  Flexible(
-                                                      child: Container(
-                                                          margin: EdgeInsets.only(right: 20),
-                                                          child: Text(
-                                                            Share.settings.sessions.sessions[x]?.sessionName ?? '',
-                                                            overflow: TextOverflow.ellipsis,
-                                                            style: TextStyle(
-                                                                fontWeight: FontWeight.w600,
-                                                                fontSize: 15,
-                                                                color: CupertinoDynamicColor.resolve(
-                                                                    CupertinoDynamicColor.withBrightness(
-                                                                        color: CupertinoColors.black,
-                                                                        darkColor: CupertinoColors.white),
-                                                                    context)),
-                                                          )))
-                                                ])),
-                                          )),
-                                    ))))),
-                  )
-                  .toList();
+        return MaterialApp(
+          theme: ThemeData(
+            colorScheme: lightColorScheme,
+            useMaterial3: true,
+          ),
+          darkTheme: ThemeData(
+            colorScheme: darkColorScheme,
+            useMaterial3: true,
+          ),
+          home: Builder(builder: (context) {
+            ErrorWidget.builder = errorView;
 
-              return MaterialApp(
-                theme: ThemeData(
-                  colorScheme: lightColorScheme,
-                  useMaterial3: true,
-                ),
-                darkTheme: ThemeData(
-                  colorScheme: darkColorScheme,
-                  useMaterial3: true,
-                ),
-                home: Builder(builder: (context) {
-                  ErrorWidget.builder = errorView;
-
-                  // Re-subscribe to all events - modals
-                  Share.showErrorModal.unsubscribeAll();
-                  Share.showErrorModal.subscribe((args) async {
-                    if (args?.value == null) return;
-                    await showDialog<void>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                          title: Text(args!.value.title),
-                          content: Text(args.value.message),
-                          actions: args.value.actions.isEmpty
-                              ? []
-                              : args.value.actions.entries
-                                  .select(
-                                    (x, index) => TextButton(
-                                      child: Text(x.key),
-                                      onPressed: () {
-                                        try {
-                                          x.value();
-                                        } catch (ex) {
-                                          // ignored
-                                        }
-                                        Navigator.of(context, rootNavigator: true).pop();
-                                      },
-                                    ),
-                                  )
-                                  .toList()),
-                    );
-                  });
-
-                  AppCenter.checkForUpdates().then((value) {
-                    if (value.result) _showAlertDialog(context, value.download);
-                  }).catchError((ex) {});
-
-                  return Scaffold(
-                    body: CustomScrollView(
-                      slivers: <Widget>[
-                        SliverAppBar(
-                          title: _progressMessage != null
-                              ? Text(
-                                  _progressMessage!,
-                                  style: TextStyle(fontSize: 14),
-                                )
-                              : null,
-                          actions: [
-                            Container(
-                              padding: EdgeInsets.only(right: 10),
-                              child: TextButton(
-                                onPressed: isWorking
-                                    ? null
-                                    : () async {
-                                        try {
-                                          await launchUrlString('https://github.com/Ogaku');
-                                        } catch (ex) {
-                                          // ignored
-                                        }
-                                      },
-                                child: isWorking ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator()) : Icon(Icons.help_outline_rounded),
+            // Re-subscribe to all events - modals
+            Share.showErrorModal.unsubscribeAll();
+            Share.showErrorModal.subscribe((args) async {
+              if (args?.value == null) return;
+              await showDialog<void>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                    title: Text(args!.value.title),
+                    content: Text(args.value.message),
+                    actions: args.value.actions.isEmpty
+                        ? []
+                        : args.value.actions.entries
+                            .select(
+                              (x, index) => TextButton(
+                                child: Text(x.key),
+                                onPressed: () {
+                                  try {
+                                    x.value();
+                                  } catch (ex) {
+                                    // ignored
+                                  }
+                                  Navigator.of(context, rootNavigator: true).pop();
+                                },
                               ),
                             )
-                          ],
-                          pinned: true,
-                          snap: false,
-                          floating: false,
-                          expandedHeight: 130.0,
-                          flexibleSpace: FlexibleSpaceBar(
-                              centerTitle: false,
-                              titlePadding: EdgeInsets.only(left: 20, bottom: 15, right: 20),
-                              title: Text('/Session/Page/RegisterAcc'.localized)),
-                        ),
-                        SliverToBoxAdapter(
-                          child: Container(
-                            margin: EdgeInsets.only(left: 20, bottom: 10, right: 20),
-                            child: Text(
-                              '/Session/Page/RegisterLog'.localized,
-                            ),
-                          ),
-                        ),
-                        SliverList.list(
-                          children: sessionsList
-                              .append(Container(
-                                  margin: EdgeInsets.only(left: 20, right: 20, top: 5),
-                                  child: Builder(
-                                      builder: (context) => MaterialButton(
-                                            padding: EdgeInsets.only(left: 20),
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                            child: Align(
-                                                alignment: Alignment.center,
-                                                child: Container(
-                                                  margin: EdgeInsets.all(25),
-                                                  child: Icon(
-                                                    CupertinoIcons.add_circled,
-                                                    color: Theme.of(context).colorScheme.primary,
-                                                  ),
-                                                )),
-                                            onPressed: () {
-                                              Navigator.push(context,
-                                                  MaterialPageRoute(builder: (context) => NewSessionPage(routed: true)));
-                                            },
-                                          ))))
-                              .toList(),
-                        ),
-                      ],
-                    ),
-                    bottomNavigationBar: Container(
-                      padding: EdgeInsets.only(bottom: 20),
-                      child: Table(children: <TableRow>[
-                        TableRow(children: [
-                          Expanded(
-                              child: Align(
-                                  alignment: Alignment.bottomCenter,
-                                  child: Opacity(
-                                      opacity: 0.5,
-                                      child: Container(
-                                          margin: EdgeInsets.only(right: 30, left: 30, bottom: 10),
-                                          child: Text(
-                                            '/TrademarkInfo'.localized,
-                                            style: TextStyle(fontSize: 12),
-                                            textAlign: TextAlign.center,
-                                          ))))),
-                        ]),
-                        TableRow(children: [
-                          Center(
-                            child: Opacity(
-                                opacity: 0.25,
-                                child: Text(
-                                  Share.buildNumber,
-                                  style: TextStyle(fontSize: 12),
-                                )),
-                          ),
-                        ])
-                      ]),
-                    ),
-                  );
-                }),
+                            .toList()),
               );
-            }));
+            });
+
+            AppCenter.checkForUpdates().then((value) {
+              if (value.result) _showAlertDialog(context, value.download);
+            }).catchError((ex) {});
+
+            return Scaffold(
+              body: CustomScrollView(
+                slivers: <Widget>[
+                  SliverAppBar(
+                    title: _progressMessage != null
+                        ? Text(
+                            _progressMessage!,
+                            style: TextStyle(fontSize: 14),
+                          )
+                        : null,
+                    actions: [
+                      Container(
+                        padding: EdgeInsets.only(right: 10),
+                        child: TextButton(
+                          onPressed: isWorking
+                              ? null
+                              : () async {
+                                  try {
+                                    await launchUrlString('https://github.com/Ogaku');
+                                  } catch (ex) {
+                                    // ignored
+                                  }
+                                },
+                          child: isWorking
+                              ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
+                              : Icon(Icons.help_outline_rounded),
+                        ),
+                      )
+                    ],
+                    pinned: true,
+                    snap: false,
+                    floating: false,
+                    expandedHeight: 130.0,
+                    flexibleSpace: FlexibleSpaceBar(
+                        centerTitle: false,
+                        titlePadding: EdgeInsets.only(left: 20, bottom: 15, right: 20),
+                        title: Text('/Session/Page/RegisterAcc'.localized)),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Container(
+                      margin: EdgeInsets.only(left: 20, bottom: 10, right: 20),
+                      child: Text(
+                        '/Session/Page/RegisterLog'.localized,
+                      ),
+                    ),
+                  ),
+                  SliverList.list(
+                    children: sessionsList
+                        .append(Container(
+                            margin: EdgeInsets.only(left: 20, right: 20, top: 5),
+                            child: Builder(
+                                builder: (context) => MaterialButton(
+                                      padding: EdgeInsets.only(left: 20),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                      child: Align(
+                                          alignment: Alignment.center,
+                                          child: Container(
+                                            margin: EdgeInsets.all(25),
+                                            child: Icon(
+                                              CupertinoIcons.add_circled,
+                                              color: Theme.of(context).colorScheme.primary,
+                                            ),
+                                          )),
+                                      onPressed: () {
+                                        Navigator.push(
+                                            context, MaterialPageRoute(builder: (context) => NewSessionPage(routed: true)));
+                                      },
+                                    ))))
+                        .toList(),
+                  ),
+                ],
+              ),
+              bottomNavigationBar: Container(
+                padding: EdgeInsets.only(bottom: 20),
+                child: Table(children: <TableRow>[
+                  TableRow(children: [
+                    Expanded(
+                        child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Opacity(
+                                opacity: 0.5,
+                                child: Container(
+                                    margin: EdgeInsets.only(right: 30, left: 30, bottom: 10),
+                                    child: Text(
+                                      '/TrademarkInfo'.localized,
+                                      style: TextStyle(fontSize: 12),
+                                      textAlign: TextAlign.center,
+                                    ))))),
+                  ]),
+                  TableRow(children: [
+                    Center(
+                      child: Opacity(
+                          opacity: 0.25,
+                          child: Text(
+                            Share.buildNumber,
+                            style: TextStyle(fontSize: 12),
+                          )),
+                    ),
+                  ])
+                ]),
+              ),
+            );
+          }),
+        );
+      });
+    });
   }
 
   void _showAlertDialog(BuildContext context, Uri url) {
@@ -532,19 +540,26 @@ class _NewSessionPageState extends State<NewSessionPage> {
       ),
     );
 
-    return DynamicColorBuilder(
-        builder: (lightColorScheme, darkColorScheme) => widget.routed
-            ? body
-            : MaterialApp(
-                theme: ThemeData(
-                  colorScheme: lightColorScheme,
-                  useMaterial3: true,
-                ),
-                darkTheme: ThemeData(
-                  colorScheme: darkColorScheme,
-                  useMaterial3: true,
-                ),
-                home: body));
+    return DynamicColorBuilder(builder: (lightDynamic, darkDynamic) {
+      ColorScheme? lightColorScheme, darkColorScheme;
+
+      if (lightDynamic != null && darkDynamic != null) {
+        (lightColorScheme, darkColorScheme) = generateDynamicColourSchemes(lightDynamic, darkDynamic);
+      }
+
+      return widget.routed
+          ? body
+          : MaterialApp(
+              theme: ThemeData(
+                colorScheme: lightColorScheme,
+                useMaterial3: true,
+              ),
+              darkTheme: ThemeData(
+                colorScheme: darkColorScheme,
+                useMaterial3: true,
+              ),
+              home: body);
+    });
   }
 }
 
