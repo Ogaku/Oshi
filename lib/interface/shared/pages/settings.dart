@@ -17,6 +17,7 @@ import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
+import 'package:oshi/interface/components/shim/modal_page.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/input.dart';
@@ -28,7 +29,6 @@ import 'package:oshi/interface/shared/views/new_event.dart';
 import 'package:oshi/interface/shared/views/grades_detailed.dart' show GradeBodyExtension;
 import 'package:oshi/interface/shared/views/new_grade.dart';
 import 'package:oshi/interface/components/cupertino/widgets/entries_form.dart';
-import 'package:oshi/interface/components/cupertino/widgets/modal_page.dart';
 import 'package:oshi/interface/components/cupertino/widgets/options_form.dart';
 import 'package:oshi/models/data/announcement.dart';
 import 'package:oshi/models/data/attendances.dart';
@@ -93,10 +93,12 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             // Name and school, avatar picker
             CardContainer(
+              margin: EdgeInsets.symmetric(horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+              filled: true,
               children: [
-                CupertinoListTile(
-                    padding: EdgeInsets.only(right: 15),
-                    title: Row(children: [
+                AdaptiveCard(
+                    regular: true,
+                    child: Row(children: [
                       Container(
                           margin: EdgeInsets.all(15),
                           child: GestureDetector(
@@ -130,204 +132,152 @@ class _SettingsPageState extends State<SettingsPage> {
                         ],
                       ))
                     ]),
-                    onTap: () => Navigator.push(
+                    click: () => Navigator.push(
                         context,
                         AdaptivePageRoute(
-                            builder: (context) => CupertinoModalPage(title: 'About Me', children: [
+                            builder: (context) => ModalPageBase.adaptive(title: 'About Me', children: [
                                   CardContainer(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                    filled: false,
                                     additionalDividerMargin: 5,
-                                    header: Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 20),
-                                        child: Opacity(
-                                            opacity: 0.5,
-                                            child: Text('ACCOUNT DATA',
-                                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
+                                    largeHeader: false,
+                                    header: 'ACCOUNT DATA',
                                     children: [
-                                      CupertinoListTile(
-                                          title: Text('Name', overflow: TextOverflow.ellipsis),
-                                          trailing: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 5),
-                                              child: Opacity(
-                                                  opacity: 0.5, child: Text(Share.session.data.student.account.name)))),
-                                      CupertinoListTile(
-                                          title: Text('Class', overflow: TextOverflow.ellipsis),
-                                          trailing: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 5),
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Text(Share.session.data.student.mainClass.className)))),
-                                      CupertinoListTile(
-                                          title: Text('Home teacher', overflow: TextOverflow.ellipsis),
-                                          trailing: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 5),
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Text(Share.session.data.student.mainClass.classTutor.name)))),
+                                      AdaptiveCard(
+                                          regular: true, child: 'Name', after: Share.session.data.student.account.name),
+                                      AdaptiveCard(
+                                        regular: true,
+                                        child: 'Class',
+                                        after: Share.session.data.student.mainClass.className,
+                                      ),
+                                      AdaptiveCard(
+                                        regular: true,
+                                        child: 'Home teacher',
+                                        after: Share.session.data.student.mainClass.classTutor.name,
+                                      ),
                                     ],
                                   ),
                                   CardContainer(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                    filled: false,
                                     additionalDividerMargin: 5,
-                                    header: Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 20),
-                                        child: Opacity(
-                                            opacity: 0.5,
-                                            child: Text('SCHOOL DATA',
-                                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
+                                    largeHeader: false,
+                                    header: 'SCHOOL DATA',
                                     children: [
-                                      CupertinoListTile(
-                                          title: Text('Name', overflow: TextOverflow.ellipsis),
-                                          trailing: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 5),
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Text(Share.session.data.student.mainClass.unit.name)))),
-                                      CupertinoListTile(
-                                          title: Text('Head teacher', overflow: TextOverflow.ellipsis),
-                                          trailing: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 5),
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Text(Share.session.data.student.mainClass.unit.principalName)))),
-                                      CupertinoListTile(
-                                          title: Text('Address', overflow: TextOverflow.ellipsis),
-                                          onTap: () {
-                                            try {
-                                              MapsLauncher.launchQuery(
-                                                  '${Share.session.data.student.mainClass.unit.name}, ${Share.session.data.student.mainClass.unit.address}');
-                                            } catch (ex) {
-                                              // ignored
-                                            }
-                                          },
-                                          trailing: Row(children: [
-                                            Container(
-                                                margin: EdgeInsets.symmetric(horizontal: 5),
-                                                child: Opacity(
-                                                    opacity: 0.5,
-                                                    child: Text(Share.session.data.student.mainClass.unit.address))),
-                                            CupertinoListTileChevron()
-                                          ])),
-                                      CupertinoListTile(
-                                          title: Text('Phone', overflow: TextOverflow.ellipsis),
-                                          onTap: () {
-                                            try {
-                                              launchUrlString('tel:${Share.session.data.student.mainClass.unit.phone}');
-                                            } catch (ex) {
-                                              // ignored
-                                            }
-                                          },
-                                          trailing: Row(children: [
-                                            Container(
-                                                margin: EdgeInsets.symmetric(horizontal: 5),
-                                                child: Opacity(
-                                                    opacity: 0.5,
-                                                    child: Text(Share.session.data.student.mainClass.unit.phone))),
-                                            CupertinoListTileChevron()
-                                          ])),
-                                      CupertinoListTile(
-                                          title: Text('E-mail', overflow: TextOverflow.ellipsis),
-                                          onTap: () {
-                                            try {
-                                              launchUrlString('mailto:${Share.session.data.student.mainClass.unit.email}');
-                                            } catch (ex) {
-                                              // ignored
-                                            }
-                                          },
-                                          trailing: Row(children: [
-                                            Container(
-                                                margin: EdgeInsets.symmetric(horizontal: 5),
-                                                child: Opacity(
-                                                    opacity: 0.5,
-                                                    child: Text(Share.session.data.student.mainClass.unit.email))),
-                                            CupertinoListTileChevron()
-                                          ])),
+                                      AdaptiveCard(
+                                        regular: true,
+                                        child: 'Name',
+                                        after: Share.session.data.student.mainClass.unit.name,
+                                      ),
+                                      AdaptiveCard(
+                                        regular: true,
+                                        child: 'Head teacher',
+                                        after: Share.session.data.student.mainClass.unit.principalName,
+                                      ),
+                                      AdaptiveCard(
+                                        regular: true,
+                                        child: 'Address',
+                                        click: () {
+                                          try {
+                                            MapsLauncher.launchQuery(
+                                                '${Share.session.data.student.mainClass.unit.name}, ${Share.session.data.student.mainClass.unit.address}');
+                                          } catch (ex) {
+                                            // ignored
+                                          }
+                                        },
+                                        after: Share.session.data.student.mainClass.unit.address,
+                                      ),
+                                      AdaptiveCard(
+                                        regular: true,
+                                        child: 'Phone',
+                                        click: () {
+                                          try {
+                                            launchUrlString('tel:${Share.session.data.student.mainClass.unit.phone}');
+                                          } catch (ex) {
+                                            // ignored
+                                          }
+                                        },
+                                        after: Share.session.data.student.mainClass.unit.phone,
+                                      ),
+                                      AdaptiveCard(
+                                        regular: true,
+                                        child: 'E-mail',
+                                        click: () {
+                                          try {
+                                            launchUrlString('mailto:${Share.session.data.student.mainClass.unit.email}');
+                                          } catch (ex) {
+                                            // ignored
+                                          }
+                                        },
+                                        after: Share.session.data.student.mainClass.unit.email,
+                                      ),
                                     ],
                                   ),
                                   CardContainer(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                    filled: false,
                                     additionalDividerMargin: 5,
-                                    header: Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 20),
-                                        child: Opacity(
-                                            opacity: 0.5,
-                                            child: Text('SUMMARY',
-                                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
-                                    footer: Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 20),
-                                        child: Opacity(
-                                            opacity: 0.5,
-                                            child: Text(
-                                                'Presence times are calculated using only the registered attendances, assuming a lesson is 45 minutes long. The shown average is an average of all subjects\' averages.',
-                                                style: TextStyle(fontSize: 13)))),
+                                    largeHeader: false,
+                                    header: 'SUMMARY',
+                                    footer:
+                                        'Presence times are calculated using only the registered attendances, assuming a lesson is 45 minutes long. The shown average is an average of all subjects\' averages.',
                                     children: [
-                                      CupertinoListTile(
-                                          title: Text('Average', overflow: TextOverflow.ellipsis),
-                                          trailing: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 5),
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Text(() {
-                                                    var majors = Share.session.data.student.subjects
-                                                        .where((x) => x.hasMajor)
-                                                        .select((x, _) => x.topMajor!.asValue);
-                                                    return majors.isNotEmpty
-                                                        ? majors.average().toStringAsFixed(2)
-                                                        : 'Unavailable';
-                                                  }())))),
-                                      CupertinoListTile(
-                                          title: Text('Wasted time', overflow: TextOverflow.ellipsis),
-                                          trailing: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 5),
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Text(prettyDuration(
-                                                      tersity: DurationTersity.minute,
-                                                      upperTersity: DurationTersity.day,
-                                                      conjunction: ', ',
-                                                      Duration(
-                                                          minutes: Share.session.data.student.attendances
-                                                                  ?.where((x) =>
-                                                                      x.lesson.subject?.name.toLowerCase() != 'religia')
-                                                                  .sum((x) => 45) ??
-                                                              0),
-                                                      locale: DurationLocale.fromLanguageCode(
-                                                              Share.settings.appSettings.localeCode) ??
-                                                          EnglishDurationLocale()))))),
-                                      CupertinoListTile(
-                                          title: Text('Gained time', overflow: TextOverflow.ellipsis),
-                                          trailing: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 5),
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Text(prettyDuration(
-                                                      tersity: DurationTersity.minute,
-                                                      upperTersity: DurationTersity.day,
-                                                      conjunction: ', ',
-                                                      Duration(
-                                                          minutes: Share.session.data.student.attendances
-                                                                  ?.where((x) =>
-                                                                      x.lesson.subject?.name.toLowerCase() == 'religia')
-                                                                  .sum((x) => 45) ??
-                                                              0),
-                                                      locale: DurationLocale.fromLanguageCode(
-                                                              Share.settings.appSettings.localeCode) ??
-                                                          EnglishDurationLocale()))))),
-                                      CupertinoListTile(
-                                          title: Text('Total presence', overflow: TextOverflow.ellipsis),
-                                          trailing: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 5),
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Text(
-                                                      '${(100 * (Share.session.data.student.attendances?.count((x) => x.type == AttendanceType.present) ?? 0) / (Share.session.data.student.attendances?.count() ?? 1)).toStringAsFixed(1)}%')))),
+                                      AdaptiveCard(
+                                          regular: true,
+                                          child: 'Average',
+                                          after: () {
+                                            var majors = Share.session.data.student.subjects
+                                                .where((x) => x.hasMajor)
+                                                .select((x, _) => x.topMajor!.asValue);
+                                            return majors.isNotEmpty ? majors.average().toStringAsFixed(2) : 'Unavailable';
+                                          }()),
+                                      AdaptiveCard(
+                                          regular: true,
+                                          child: 'Wasted time',
+                                          after: prettyDuration(
+                                              tersity: DurationTersity.minute,
+                                              upperTersity: DurationTersity.day,
+                                              conjunction: ', ',
+                                              Duration(
+                                                  minutes: Share.session.data.student.attendances
+                                                          ?.where((x) => x.lesson.subject?.name.toLowerCase() != 'religia')
+                                                          .sum((x) => 45) ??
+                                                      0),
+                                              locale:
+                                                  DurationLocale.fromLanguageCode(Share.settings.appSettings.localeCode) ??
+                                                      EnglishDurationLocale())),
+                                      AdaptiveCard(
+                                          regular: true,
+                                          child: 'Gained time',
+                                          after: prettyDuration(
+                                              tersity: DurationTersity.minute,
+                                              upperTersity: DurationTersity.day,
+                                              conjunction: ', ',
+                                              Duration(
+                                                  minutes: Share.session.data.student.attendances
+                                                          ?.where((x) => x.lesson.subject?.name.toLowerCase() == 'religia')
+                                                          .sum((x) => 45) ??
+                                                      0),
+                                              locale:
+                                                  DurationLocale.fromLanguageCode(Share.settings.appSettings.localeCode) ??
+                                                      EnglishDurationLocale())),
+                                      AdaptiveCard(
+                                          regular: true,
+                                          child: 'Total presence',
+                                          after:
+                                              '${(100 * (Share.session.data.student.attendances?.count((x) => x.type == AttendanceType.present) ?? 0) / (Share.session.data.student.attendances?.count() ?? 1)).toStringAsFixed(1)}%'),
                                     ],
                                   ),
                                   CardContainer(
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                      filled: false,
                                       additionalDividerMargin: 5,
-                                      header: Container(
-                                          margin: EdgeInsets.symmetric(horizontal: 20),
-                                          child: Opacity(
-                                              opacity: 0.5,
-                                              child: Text('ATTENDANCE',
-                                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
+                                      largeHeader: false,
+                                      header: 'ATTENDANCE',
                                       children: (Share.session.data.student.attendances
                                                   ?.groupBy((element) => element.lesson.subject?.name ?? 'Unknown')
                                                   .select((element, index) => (
@@ -338,97 +288,94 @@ class _SettingsPageState extends State<SettingsPage> {
                                                       ))
                                                   .orderBy((element) => element.lesson)
                                                   .select(
-                                                    (element, index) => CupertinoListTile(
-                                                        title: Text(element.lesson, overflow: TextOverflow.ellipsis),
-                                                        trailing: Container(
-                                                            margin: EdgeInsets.symmetric(horizontal: 5),
-                                                            child: Opacity(
-                                                                opacity: element.value >= 0.6 ? 0.5 : 1.0,
-                                                                child: Text('${(100 * element.value).toStringAsFixed(2)}%',
-                                                                    style: TextStyle(
-                                                                        color: switch (element.value) {
-                                                                      < 0.5 => CupertinoColors.systemRed,
-                                                                      < 0.6 => CupertinoColors.activeOrange,
-                                                                      _ => null // Default
-                                                                    }))))),
+                                                    (element, index) => AdaptiveCard(
+                                                        regular: true,
+                                                        child: element.lesson,
+                                                        after: Share.settings.appSettings.useCupertino
+                                                            ? Container(
+                                                                margin: EdgeInsets.symmetric(horizontal: 5),
+                                                                child: Opacity(
+                                                                    opacity: element.value >= 0.6 ? 0.5 : 1.0,
+                                                                    child:
+                                                                        Text('${(100 * element.value).toStringAsFixed(2)}%',
+                                                                            style: TextStyle(
+                                                                                color: switch (element.value) {
+                                                                              < 0.5 => CupertinoColors.systemRed,
+                                                                              < 0.6 => CupertinoColors.activeOrange,
+                                                                              _ => null // Default
+                                                                            }))))
+                                                            : Text('${(100 * element.value).toStringAsFixed(2)}%')),
                                                   )
                                                   .toList() ??
                                               [])
                                           .appendIfEmpty(
-                                        CupertinoListTile(
-                                            title: Text('', overflow: TextOverflow.ellipsis),
-                                            trailing: Container(
-                                                alignment: Alignment.center,
-                                                margin: EdgeInsets.symmetric(horizontal: 5),
-                                                child: Opacity(
-                                                    opacity: 0.5,
-                                                    child:
-                                                        Text('No attendances to displasy', textAlign: TextAlign.center)))),
+                                        AdaptiveCard(regular: true, child: '', after: 'No attendances to display'),
                                       )),
                                   CardContainer(
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                      filled: false,
                                       additionalDividerMargin: 5,
-                                      header: Container(
-                                          margin: EdgeInsets.symmetric(horizontal: 20),
-                                          child: Opacity(
-                                              opacity: 0.5,
-                                              child: Text('AVERAGE',
-                                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
+                                      largeHeader: false,
+                                      header: 'AVERAGE',
                                       children: (Share.session.data.student.subjects
                                               .select(
                                                   (element, index) => (lesson: element.name, value: element.gradesAverage))
                                               .orderBy((element) => element.lesson)
                                               .select(
-                                                (element, index) => CupertinoListTile(
-                                                    title: Text(element.lesson, overflow: TextOverflow.ellipsis),
-                                                    trailing: Container(
-                                                        margin: EdgeInsets.symmetric(horizontal: 5),
-                                                        child: Opacity(
-                                                            opacity: element.value >= 0 ? 1.0 : 0.0,
-                                                            child: Text(
-                                                                element.value >= 0 ? element.value.toStringAsFixed(2) : '-',
-                                                                style: TextStyle(
-                                                                    color: switch (Share.session.settings
-                                                                            .customGradeMarginValuesMap.entries
-                                                                            .firstWhereOrDefault((x) =>
-                                                                                (x.value < element.value) &&
-                                                                                (x.value.floor() == element.value.floor()))
-                                                                            ?.key ??
-                                                                        (element.value - 0.25).round()) {
-                                                                  6 => CupertinoColors.systemTeal,
-                                                                  5 => CupertinoColors.systemGreen,
-                                                                  4 => Color(0xFF76FF03),
-                                                                  3 => CupertinoColors.systemOrange,
-                                                                  2 => CupertinoColors.systemRed,
-                                                                  1 => CupertinoColors.destructiveRed,
-                                                                  _ => CupertinoColors.inactiveGray
-                                                                }))))),
+                                                (element, index) => AdaptiveCard(
+                                                    regular: true,
+                                                    child: element.lesson,
+                                                    after: Share.settings.appSettings.useCupertino
+                                                        ? Container(
+                                                            margin: EdgeInsets.symmetric(horizontal: 5),
+                                                            child: Opacity(
+                                                                opacity: element.value >= 0 ? 1.0 : 0.0,
+                                                                child: Text(
+                                                                    element.value >= 0
+                                                                        ? element.value.toStringAsFixed(2)
+                                                                        : '-',
+                                                                    style: TextStyle(
+                                                                        color: switch (Share.session.settings
+                                                                                .customGradeMarginValuesMap.entries
+                                                                                .firstWhereOrDefault((x) =>
+                                                                                    (x.value < element.value) &&
+                                                                                    (x.value.floor() ==
+                                                                                        element.value.floor()))
+                                                                                ?.key ??
+                                                                            (element.value - 0.25).round()) {
+                                                                      6 => CupertinoColors.systemTeal,
+                                                                      5 => CupertinoColors.systemGreen,
+                                                                      4 => Color(0xFF76FF03),
+                                                                      3 => CupertinoColors.systemOrange,
+                                                                      2 => CupertinoColors.systemRed,
+                                                                      1 => CupertinoColors.destructiveRed,
+                                                                      _ => CupertinoColors.inactiveGray
+                                                                    }))))
+                                                        : element.value >= 0
+                                                            ? element.value.toStringAsFixed(2)
+                                                            : 'Unavailable'),
                                               )
                                               .toList())
                                           .appendIfEmpty(
-                                        CupertinoListTile(
-                                            title: Text('', overflow: TextOverflow.ellipsis),
-                                            trailing: Container(
-                                                alignment: Alignment.center,
-                                                margin: EdgeInsets.symmetric(horizontal: 5),
-                                                child: Opacity(
-                                                    opacity: 0.5,
-                                                    child:
-                                                        Text('No attendances to displasy', textAlign: TextAlign.center)))),
+                                        AdaptiveCard(regular: true, child: '', after: 'No attendances to display'),
                                       ))
-                                ]))),
-                    trailing: CupertinoListTileChevron())
+                                ]))))
               ],
             ),
             // Settings - appearance settings
             CardContainer(
-              margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
+              margin: EdgeInsets.symmetric(horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+              filled: false,
               additionalDividerMargin: 5,
+              header: Share.settings.appSettings.useCupertino ? '' : 'Appearance settings',
               children: [
-                CupertinoListTile(
-                    onTap: () => Navigator.push(
+                AdaptiveCard(
+                    regular: true,
+                    click: () => Navigator.push(
                         context,
                         AdaptivePageRoute(
-                            builder: (context) => CupertinoModalPage(title: 'App Style', children: [
+                            builder: (context) => ModalPageBase.adaptive(title: 'App Style', children: [
                                   OptionsForm(
                                       selection: Share.settings.appSettings.useCupertino,
                                       description:
@@ -444,20 +391,14 @@ class _SettingsPageState extends State<SettingsPage> {
                                         Navigator.of(context).pop();
                                       })
                                 ]))),
-                    title: Text('App Style', overflow: TextOverflow.ellipsis),
-                    trailing: Row(children: [
-                      Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5),
-                          child: Opacity(
-                              opacity: 0.5,
-                              child: Text(Share.settings.appSettings.useCupertino ? 'Cupertino' : 'Material'))),
-                      CupertinoListTileChevron()
-                    ])),
-                CupertinoListTile(
-                    onTap: () => Navigator.push(
+                    child: 'App Style',
+                    after: Share.settings.appSettings.useCupertino ? 'Cupertino' : 'Material'),
+                AdaptiveCard(
+                    regular: true,
+                    click: () => Navigator.push(
                         context,
                         AdaptivePageRoute(
-                            builder: (context) => CupertinoModalPage(title: 'Accent Color', children: [
+                            builder: (context) => ModalPageBase.adaptive(title: 'Accent Color', children: [
                                   OptionsForm(
                                       selection: Resources.cupertinoAccentColors.entries
                                               .firstWhereOrDefault((value) =>
@@ -484,18 +425,14 @@ class _SettingsPageState extends State<SettingsPage> {
                                         Share.refreshBase.broadcast(); // Refresh
                                       })
                                 ]))),
-                    title: Text('Accent Color', overflow: TextOverflow.ellipsis),
-                    trailing: Row(children: [
-                      Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5),
-                          child: Opacity(opacity: 0.5, child: Text(Share.session.settings.cupertinoAccentColor.name))),
-                      CupertinoListTileChevron()
-                    ])),
-                CupertinoListTile(
-                    onTap: () => Navigator.push(
+                    child: 'Accent Color',
+                    after: Share.session.settings.cupertinoAccentColor.name),
+                AdaptiveCard(
+                    regular: true,
+                    click: () => Navigator.push(
                         context,
                         AdaptivePageRoute(
-                            builder: (context) => CupertinoModalPage(title: 'Language', children: [
+                            builder: (context) => ModalPageBase.adaptive(title: 'Language', children: [
                                   OptionsForm(
                                       selection: Share.settings.appSettings.languageCode,
                                       description:
@@ -514,668 +451,667 @@ class _SettingsPageState extends State<SettingsPage> {
                                         }); // Refresh
                                       })
                                 ]))),
-                    title: Text('Language', overflow: TextOverflow.ellipsis),
-                    trailing: Row(children: [
-                      Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5),
-                          child: Opacity(opacity: 0.5, child: Text(Share.translator.localeName))),
-                      CupertinoListTileChevron()
-                    ])),
+                    child: 'Language',
+                    after: Share.translator.localeName),
               ],
             ),
             // Settings - app settings
             CardContainer(
-              margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
+              margin: EdgeInsets.symmetric(horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+              filled: false,
               additionalDividerMargin: 5,
+              header: Share.settings.appSettings.useCupertino ? '' : 'Sharing and sync',
               children: [
-                CupertinoListTile(
-                    onTap: () => Navigator.push(
-                        context,
-                        AdaptivePageRoute(
-                            builder: (context) => StatefulBuilder(
-                                builder: ((context, setState) => CupertinoModalPage(title: 'Sync Settings', children: [
-                                      CardContainer(
-                                          additionalDividerMargin: 5,
-                                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
-                                          children: [
-                                            CupertinoFormRow(
-                                                prefix: Flexible(
-                                                    flex: 3,
-                                                    child: Text('Background synchronization',
-                                                        maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                                child: CupertinoSwitch(
-                                                    value: Share.session.settings.enableBackgroundSync,
-                                                    onChanged: (s) =>
-                                                        setState(() => Share.session.settings.enableBackgroundSync = s))),
-                                          ]),
-                                      CardContainer(
-                                          additionalDividerMargin: 5,
-                                          footer: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 20),
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Text(
-                                                      'Synchronization will only happen when you have a working internet connection and Oshi is closed.',
-                                                      style: TextStyle(fontSize: 13)))),
-                                          children: [
-                                            CupertinoFormRow(
-                                                prefix: Flexible(
-                                                    flex: 3,
-                                                    child: Text('Synchronize on Wi-Fi only',
-                                                        maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                                child: CupertinoSwitch(
-                                                    value: Share.session.settings.backgroundSyncWiFiOnly,
-                                                    onChanged: (s) =>
-                                                        setState(() => Share.session.settings.backgroundSyncWiFiOnly = s))),
-                                            CupertinoListTile(
-                                                title: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Flexible(
-                                                    child: Text('Refresh interval',
-                                                        maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                                ConstrainedBox(
-                                                    constraints: BoxConstraints(maxWidth: 100),
-                                                    child: CupertinoTextField.borderless(
-                                                        onChanged: (s) => setState(() {}),
-                                                        onSubmitted: (value) {
-                                                          var result = tryParseDuration(value);
-                                                          if (result != null &&
-                                                              (result < Duration(minutes: 15) ||
-                                                                  result > Duration(minutes: 180))) {
-                                                            result = null;
-                                                          }
-                                                          Share.session.settings.backgroundSyncInterval =
-                                                              result?.inMinutes ?? 15;
-                                                          setState(() => _syncTimeController.text = result != null
-                                                              ? prettyDuration(result,
-                                                                  tersity: DurationTersity.second,
-                                                                  upperTersity: DurationTersity.minute,
-                                                                  abbreviated: true,
-                                                                  conjunction: ', ',
-                                                                  spacer: '',
-                                                                  locale: DurationLocale.fromLanguageCode(
-                                                                          Share.settings.appSettings.localeCode) ??
-                                                                      EnglishDurationLocale())
-                                                              : '');
-                                                        },
-                                                        controller: _syncTimeController,
-                                                        placeholder: '15 minutes',
-                                                        expands: false,
-                                                        textAlign: TextAlign.end,
-                                                        maxLength: 10,
-                                                        showCursor: _syncTimeController.text.isNotEmpty,
-                                                        maxLengthEnforcement: MaxLengthEnforcement.enforced)),
-                                              ],
-                                            )),
-                                          ])
-                                    ]))))),
-                    title: Text('Sync Settings', overflow: TextOverflow.ellipsis),
-                    trailing: CupertinoListTileChevron()),
-                CupertinoListTile(
-                    onTap: () => Navigator.push(
-                        context,
-                        AdaptivePageRoute(
-                            builder: (context) => StatefulBuilder(
-                                builder: ((context, setState) => CupertinoModalPage(title: 'Shared Events', children: [
-                                      CardContainer(
-                                          additionalDividerMargin: 5,
-                                          noDivider: true,
-                                          footer: Container(margin: EdgeInsets.symmetric(horizontal: 20)),
-                                          children: [
-                                            GestureDetector(
-                                                onTap: () =>
-                                                    launchUrlString('https://github.com/szkolny-eu/szkolny-android'),
-                                                child: Image.network(
-                                                    'https://github.com/szkolny-eu/szkolny-android/blob/develop/.github/readme-banner.png?raw=true')),
-                                          ]),
-                                      CardContainer(
-                                          additionalDividerMargin: 5,
-                                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
-                                          footer: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 20),
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Text(
-                                                      'By courtesy of Szkolny.eu developers, Szkolny.eu apps and Oshi can now share events, notes, and notifications!',
-                                                      style: TextStyle(fontSize: 13)))),
-                                          children: [
-                                            CupertinoFormRow(
-                                                prefix: Flexible(
-                                                    flex: 3,
-                                                    child: Text('Allow registration',
-                                                        maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                                child: CupertinoSwitch(
-                                                    value: Share.session.settings.allowSzkolnyIntegration,
-                                                    onChanged: (s) =>
-                                                        setState(() => Share.session.settings.allowSzkolnyIntegration = s))),
-                                            CupertinoFormRow(
-                                                prefix: Flexible(
-                                                    flex: 3,
-                                                    child: Opacity(
-                                                        opacity: Share.session.settings.allowSzkolnyIntegration ? 1.0 : 0.5,
-                                                        child: Text('Share events by default',
-                                                            maxLines: 1, overflow: TextOverflow.ellipsis))),
-                                                child: CupertinoSwitch(
-                                                    value: Share.session.settings.allowSzkolnyIntegration &&
-                                                        Share.session.settings.shareEventsByDefault,
-                                                    onChanged: Share.session.settings.allowSzkolnyIntegration
-                                                        ? (s) =>
-                                                            setState(() => Share.session.settings.shareEventsByDefault = s)
-                                                        : null)),
-                                          ])
-                                    ]))))),
-                    title: Text('Shared Events', overflow: TextOverflow.ellipsis),
-                    trailing: CupertinoListTileChevron()),
-                CupertinoListTile(
-                    onTap: () => Navigator.push(
-                        context,
-                        AdaptivePageRoute(
-                            builder: (context) => StatefulBuilder(
-                                builder: ((context, setState) => CupertinoModalPage(title: 'Notifications', children: [
-                                      CardContainer(
-                                          additionalDividerMargin: 5,
-                                          margin: EdgeInsets.only(left: 15, right: 15),
-                                          header: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 20),
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Text('NOTIFICATION FILTERS',
-                                                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
-                                          children: [
-                                            CupertinoListTile(
-                                              title: Text('Request notification access'),
-                                              trailing: CupertinoListTileChevron(),
-                                            )
-                                          ]),
-                                      CardContainer(
-                                          additionalDividerMargin: 5,
-                                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
-                                          children: [
-                                            CupertinoFormRow(
-                                                prefix: Flexible(
-                                                    flex: 2,
-                                                    child:
-                                                        Text('App updates', maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                                child: CupertinoSwitch(
-                                                    value: true,
-                                                    onChanged: (s) => NotificationController.sendNotification(
-                                                        title: 'Pathetic.',
-                                                        content: 'You thought you could escape?',
-                                                        category: NotificationCategories.other)))
-                                          ]),
-                                      CardContainer(
-                                          additionalDividerMargin: 5,
-                                          footer: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 20),
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Text(
-                                                      'Notifications will be sent for the selected categories once the new data is downloaded and there are any changes.',
-                                                      style: TextStyle(fontSize: 13)))),
-                                          children: [
-                                            CupertinoFormRow(
-                                                prefix: Flexible(
-                                                    flex: 2,
-                                                    child: Text('Timetables', maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                                child: CupertinoSwitch(
-                                                    value: Share.session.settings.enableTimetableNotifications,
-                                                    onChanged: (s) => setState(
-                                                        () => Share.session.settings.enableTimetableNotifications = s))),
-                                            CupertinoFormRow(
-                                                prefix: Flexible(
-                                                    flex: 2,
-                                                    child: Text('Grades', maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                                child: CupertinoSwitch(
-                                                    value: Share.session.settings.enableGradesNotifications,
-                                                    onChanged: (s) => setState(
-                                                        () => Share.session.settings.enableGradesNotifications = s))),
-                                            CupertinoFormRow(
-                                                prefix: Flexible(
-                                                    flex: 2,
-                                                    child: Text('Events', maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                                child: CupertinoSwitch(
-                                                    value: Share.session.settings.enableEventsNotifications,
-                                                    onChanged: (s) => setState(
-                                                        () => Share.session.settings.enableEventsNotifications = s))),
-                                            CupertinoFormRow(
-                                                prefix: Flexible(
-                                                    flex: 2,
-                                                    child: Text('Attendance', maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                                child: CupertinoSwitch(
-                                                    value: Share.session.settings.enableAttendanceNotifications,
-                                                    onChanged: (s) => setState(
-                                                        () => Share.session.settings.enableAttendanceNotifications = s))),
-                                            CupertinoFormRow(
-                                                prefix: Flexible(
-                                                    flex: 2,
-                                                    child:
-                                                        Text('Announcements', maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                                child: CupertinoSwitch(
-                                                    value: Share.session.settings.enableAnnouncementsNotifications,
-                                                    onChanged: (s) => setState(
-                                                        () => Share.session.settings.enableAnnouncementsNotifications = s))),
-                                            CupertinoFormRow(
-                                                prefix: Flexible(
-                                                    flex: 2,
-                                                    child: Text('Messages', maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                                child: CupertinoSwitch(
-                                                    value: Share.session.settings.enableMessagesNotifications,
-                                                    onChanged: (s) => setState(
-                                                        () => Share.session.settings.enableMessagesNotifications = s))),
-                                          ])
-                                    ]))))),
-                    title: Text('Notifications', overflow: TextOverflow.ellipsis),
-                    trailing: CupertinoListTileChevron())
+                AdaptiveCard(
+                  regular: true,
+                  click: () => Navigator.push(
+                      context,
+                      AdaptivePageRoute(
+                          builder: (context) => StatefulBuilder(
+                              builder: ((context, setState) => ModalPageBase.adaptive(title: 'Sync Settings', children: [
+                                    CardContainer(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                        filled: false,
+                                        additionalDividerMargin: 5,
+                                        children: [
+                                          CupertinoFormRow(
+                                              prefix: Flexible(
+                                                  flex: 3,
+                                                  child: Text('Background synchronization',
+                                                      maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                              child: CupertinoSwitch(
+                                                  value: Share.session.settings.enableBackgroundSync,
+                                                  onChanged: (s) =>
+                                                      setState(() => Share.session.settings.enableBackgroundSync = s))),
+                                        ]),
+                                    CardContainer(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                        filled: false,
+                                        additionalDividerMargin: 5,
+                                        footer:
+                                            'Synchronization will only happen when you have a working internet connection and Oshi is closed.',
+                                        children: [
+                                          CupertinoFormRow(
+                                              prefix: Flexible(
+                                                  flex: 3,
+                                                  child: Text('Synchronize on Wi-Fi only',
+                                                      maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                              child: CupertinoSwitch(
+                                                  value: Share.session.settings.backgroundSyncWiFiOnly,
+                                                  onChanged: (s) =>
+                                                      setState(() => Share.session.settings.backgroundSyncWiFiOnly = s))),
+                                          CupertinoListTile(
+                                              title: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Flexible(
+                                                  child: Text('Refresh interval',
+                                                      maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                              ConstrainedBox(
+                                                  constraints: BoxConstraints(maxWidth: 100),
+                                                  child: CupertinoTextField.borderless(
+                                                      onChanged: (s) => setState(() {}),
+                                                      onSubmitted: (value) {
+                                                        var result = tryParseDuration(value);
+                                                        if (result != null &&
+                                                            (result < Duration(minutes: 15) ||
+                                                                result > Duration(minutes: 180))) {
+                                                          result = null;
+                                                        }
+                                                        Share.session.settings.backgroundSyncInterval =
+                                                            result?.inMinutes ?? 15;
+                                                        setState(() => _syncTimeController.text = result != null
+                                                            ? prettyDuration(result,
+                                                                tersity: DurationTersity.second,
+                                                                upperTersity: DurationTersity.minute,
+                                                                abbreviated: true,
+                                                                conjunction: ', ',
+                                                                spacer: '',
+                                                                locale: DurationLocale.fromLanguageCode(
+                                                                        Share.settings.appSettings.localeCode) ??
+                                                                    EnglishDurationLocale())
+                                                            : '');
+                                                      },
+                                                      controller: _syncTimeController,
+                                                      placeholder: '15 minutes',
+                                                      expands: false,
+                                                      textAlign: TextAlign.end,
+                                                      maxLength: 10,
+                                                      showCursor: _syncTimeController.text.isNotEmpty,
+                                                      maxLengthEnforcement: MaxLengthEnforcement.enforced)),
+                                            ],
+                                          )),
+                                        ])
+                                  ]))))),
+                  child: 'Sync Settings',
+                  after: Share.settings.appSettings.useCupertino ? '' : 'Background synchronization',
+                ),
+                AdaptiveCard(
+                  regular: true,
+                  click: () => Navigator.push(
+                      context,
+                      AdaptivePageRoute(
+                          builder: (context) => StatefulBuilder(
+                              builder: ((context, setState) => ModalPageBase.adaptive(title: 'Shared Events', children: [
+                                    CardContainer(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                        filled: false,
+                                        additionalDividerMargin: 5,
+                                        noDivider: true,
+                                        footer: Container(margin: EdgeInsets.symmetric(horizontal: 20)),
+                                        children: [
+                                          GestureDetector(
+                                              onTap: () => launchUrlString('https://github.com/szkolny-eu/szkolny-android'),
+                                              child: Image.network(
+                                                  'https://github.com/szkolny-eu/szkolny-android/blob/develop/.github/readme-banner.png?raw=true')),
+                                        ]),
+                                    CardContainer(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                        filled: false,
+                                        additionalDividerMargin: 5,
+                                        footer:
+                                            'By courtesy of Szkolny.eu developers, Szkolny.eu apps and Oshi can now share events, notes, and notifications!',
+                                        children: [
+                                          CupertinoFormRow(
+                                              prefix: Flexible(
+                                                  flex: 3,
+                                                  child: Text('Allow registration',
+                                                      maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                              child: CupertinoSwitch(
+                                                  value: Share.session.settings.allowSzkolnyIntegration,
+                                                  onChanged: (s) =>
+                                                      setState(() => Share.session.settings.allowSzkolnyIntegration = s))),
+                                          CupertinoFormRow(
+                                              prefix: Flexible(
+                                                  flex: 3,
+                                                  child: Opacity(
+                                                      opacity: Share.session.settings.allowSzkolnyIntegration ? 1.0 : 0.5,
+                                                      child: Text('Share events by default',
+                                                          maxLines: 1, overflow: TextOverflow.ellipsis))),
+                                              child: CupertinoSwitch(
+                                                  value: Share.session.settings.allowSzkolnyIntegration &&
+                                                      Share.session.settings.shareEventsByDefault,
+                                                  onChanged: Share.session.settings.allowSzkolnyIntegration
+                                                      ? (s) =>
+                                                          setState(() => Share.session.settings.shareEventsByDefault = s)
+                                                      : null)),
+                                        ])
+                                  ]))))),
+                  child: 'Shared Events',
+                  after: Share.settings.appSettings.useCupertino ? '' : 'Thanks to szkolny.eu',
+                ),
+                AdaptiveCard(
+                  regular: true,
+                  click: () => Navigator.push(
+                      context,
+                      AdaptivePageRoute(
+                          builder: (context) => StatefulBuilder(
+                              builder: ((context, setState) => ModalPageBase.adaptive(title: 'Notifications', children: [
+                                    CardContainer(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                        filled: false,
+                                        additionalDividerMargin: 5,
+                                        largeHeader: false,
+                                        header: 'NOTIFICATION FILTERS',
+                                        children: [
+                                          CupertinoListTile(
+                                            title: Text('Request notification access'),
+                                            trailing: CupertinoListTileChevron(),
+                                          )
+                                        ]),
+                                    CardContainer(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                        filled: false,
+                                        additionalDividerMargin: 5,
+                                        children: [
+                                          CupertinoFormRow(
+                                              prefix: Flexible(
+                                                  flex: 2,
+                                                  child: Text('App updates', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                              child: CupertinoSwitch(
+                                                  value: true,
+                                                  onChanged: (s) => NotificationController.sendNotification(
+                                                      title: 'Pathetic.',
+                                                      content: 'You thought you could escape?',
+                                                      category: NotificationCategories.other)))
+                                        ]),
+                                    CardContainer(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                        filled: false,
+                                        additionalDividerMargin: 5,
+                                        footer:
+                                            'Notifications will be sent for the selected categories once the new data is downloaded and there are any changes.',
+                                        children: [
+                                          CupertinoFormRow(
+                                              prefix: Flexible(
+                                                  flex: 2,
+                                                  child: Text('Timetables', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                              child: CupertinoSwitch(
+                                                  value: Share.session.settings.enableTimetableNotifications,
+                                                  onChanged: (s) => setState(
+                                                      () => Share.session.settings.enableTimetableNotifications = s))),
+                                          CupertinoFormRow(
+                                              prefix: Flexible(
+                                                  flex: 2,
+                                                  child: Text('Grades', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                              child: CupertinoSwitch(
+                                                  value: Share.session.settings.enableGradesNotifications,
+                                                  onChanged: (s) =>
+                                                      setState(() => Share.session.settings.enableGradesNotifications = s))),
+                                          CupertinoFormRow(
+                                              prefix: Flexible(
+                                                  flex: 2,
+                                                  child: Text('Events', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                              child: CupertinoSwitch(
+                                                  value: Share.session.settings.enableEventsNotifications,
+                                                  onChanged: (s) =>
+                                                      setState(() => Share.session.settings.enableEventsNotifications = s))),
+                                          CupertinoFormRow(
+                                              prefix: Flexible(
+                                                  flex: 2,
+                                                  child: Text('Attendance', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                              child: CupertinoSwitch(
+                                                  value: Share.session.settings.enableAttendanceNotifications,
+                                                  onChanged: (s) => setState(
+                                                      () => Share.session.settings.enableAttendanceNotifications = s))),
+                                          CupertinoFormRow(
+                                              prefix: Flexible(
+                                                  flex: 2,
+                                                  child:
+                                                      Text('Announcements', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                              child: CupertinoSwitch(
+                                                  value: Share.session.settings.enableAnnouncementsNotifications,
+                                                  onChanged: (s) => setState(
+                                                      () => Share.session.settings.enableAnnouncementsNotifications = s))),
+                                          CupertinoFormRow(
+                                              prefix: Flexible(
+                                                  flex: 2,
+                                                  child: Text('Messages', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                              child: CupertinoSwitch(
+                                                  value: Share.session.settings.enableMessagesNotifications,
+                                                  onChanged: (s) => setState(
+                                                      () => Share.session.settings.enableMessagesNotifications = s))),
+                                        ])
+                                  ]))))),
+                  child: 'Notifications',
+                  after: Share.settings.appSettings.useCupertino ? '' : 'Select categories',
+                )
               ],
             ),
             // Settings - timetable settings
             CardContainer(
-              margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
+              margin: EdgeInsets.symmetric(horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+              filled: false,
               additionalDividerMargin: 5,
+              header: Share.settings.appSettings.useCupertino ? '' : 'User data',
               children: [
-                CupertinoListTile(
-                    onTap: () => Navigator.push(
-                        context,
-                        AdaptivePageRoute(
-                            builder: (context) => CupertinoModalPage(title: 'Timetable Settings', children: [
-                                  CardContainer(
-                                      additionalDividerMargin: 5,
-                                      header: Container(
-                                          margin: EdgeInsets.symmetric(horizontal: 20),
-                                          child: Opacity(
-                                              opacity: 0.5,
-                                              child: Text('BELL SYNCHRONIZATION',
-                                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
-                                      footer: Container(
-                                          margin: EdgeInsets.symmetric(horizontal: 20),
-                                          child: Opacity(
-                                              opacity: 0.5,
-                                              child: Text(
-                                                  'Used to calibrate bell times in the app to offsets used by particular schools, format i.e. \'10s\', \'1min, 5s\' Don\'t forget to confirm your input!',
-                                                  style: TextStyle(fontSize: 13)))),
-                                      children: [
-                                        CupertinoListTile(
-                                            title: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Flexible(
-                                                child: Text('School bell offset',
-                                                    maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                            ConstrainedBox(
-                                                constraints: BoxConstraints(maxWidth: 100),
-                                                child: CupertinoTextField.borderless(
-                                                    onChanged: (s) => setState(() {}),
-                                                    onSubmitted: (value) {
-                                                      var result = tryParseDuration(value);
-                                                      if (result != null &&
-                                                          (result > Duration(minutes: 15) ||
-                                                              result < Duration(minutes: -15))) {
-                                                        result = null;
-                                                      }
-                                                      Share.session.settings.bellOffset = result ?? Duration.zero;
-                                                      setState(() => _bellTimeController.text = result != null
-                                                          ? prettyDuration(result,
-                                                              tersity: DurationTersity.second,
-                                                              upperTersity: DurationTersity.minute,
-                                                              abbreviated: true,
-                                                              conjunction: ', ',
-                                                              spacer: '',
-                                                              locale: DurationLocale.fromLanguageCode(
-                                                                      Share.settings.appSettings.localeCode) ??
-                                                                  EnglishDurationLocale())
-                                                          : '');
-                                                    },
-                                                    controller: _bellTimeController,
-                                                    placeholder: '0 seconds',
-                                                    expands: false,
-                                                    textAlign: TextAlign.end,
-                                                    maxLength: 10,
-                                                    showCursor: _bellTimeController.text.isNotEmpty,
-                                                    maxLengthEnforcement: MaxLengthEnforcement.enforced)),
-                                          ],
-                                        )),
-                                      ]),
-                                  CardContainer(
-                                      additionalDividerMargin: 5,
-                                      header: Container(
-                                          margin: EdgeInsets.symmetric(horizontal: 20),
-                                          child: Opacity(
-                                              opacity: 0.5,
-                                              child: Text('LESSON CALL TIME',
-                                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
-                                      footer: Container(
-                                          margin: EdgeInsets.symmetric(horizontal: 20),
-                                          child: Opacity(
-                                              opacity: 0.5,
-                                              child: Text(
-                                                  'In minutes, will be used for "calling" last X minutes of a lesson. Falls back 15 minutes by default.',
-                                                  style: TextStyle(fontSize: 13)))),
-                                      children: [
-                                        CupertinoListTile(
-                                            title: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Flexible(
-                                                child:
-                                                    Text('Lesson call time', maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                            ConstrainedBox(
-                                                constraints: BoxConstraints(maxWidth: 70),
-                                                child: CupertinoTextField.borderless(
-                                                    onChanged: (value) {
-                                                      var result = int.tryParse(value);
-                                                      if (result != null && (result > 45 || result <= 0)) result = null;
-                                                      Share.session.settings.lessonCallTime = result ?? 15;
-                                                      setState(() => _callTimeController.text = result?.toString() ?? '');
-                                                    },
-                                                    controller: _callTimeController,
-                                                    placeholder: '15 min',
-                                                    expands: false,
-                                                    textAlign: TextAlign.end,
-                                                    maxLength: 2,
-                                                    showCursor: _callTimeController.text.isNotEmpty,
-                                                    maxLengthEnforcement: MaxLengthEnforcement.enforced)),
-                                          ],
-                                        )),
-                                      ]),
-                                  OptionsForm(
-                                      pop: false,
-                                      header: 'CALL SETTINGS',
-                                      selection: Share.session.settings.lessonCallType,
-                                      description:
-                                          'Note, this is used only for auto-generating preset messages, which may not always be accurate.',
-                                      options: LessonCallTypes.values
-                                          .select((x, index) => OptionEntry(name: x.name, value: x))
-                                          .toList(),
-                                      update: <T>(v) {
-                                        Share.session.settings.lessonCallType = v; // Set
-                                        Share.refreshBase.broadcast(); // Refresh
-                                      })
-                                ]))),
-                    title: Text('Timetable Settings', overflow: TextOverflow.ellipsis),
-                    trailing: CupertinoListTileChevron()),
-                CupertinoListTile(
-                    onTap: () => Navigator.push(
-                        context,
-                        AdaptivePageRoute(
-                            builder: (context) => StatefulBuilder(
-                                builder: ((context, setState) => CupertinoModalPage(
-                                    title: 'Custom Events',
-                                    trailing: AdaptiveMenuButton(
-                                      itemBuilder: (context) => [
-                                        AdaptiveMenuItem(
-                                          title: 'New event',
-                                          icon: CupertinoIcons.add,
-                                          onTap: () => showCupertinoModalBottomSheet(
-                                              context: context,
-                                              builder: (context) => EventComposePage()).then((value) => setState(() {})),
-                                        )
-                                      ],
-                                    ),
-                                    children: Share.session.customEvents
-                                        .where((x) =>
-                                            (x.date ?? x.timeFrom).isAfter(DateTime.now().add(Duration(days: -1)).asDate()))
-                                        .orderBy((x) => x.date ?? x.timeFrom)
-                                        .groupBy((x) => DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode)
-                                            .format(x.date ?? x.timeFrom))
-                                        .select((element, index) => CardContainer(
-                                            header: Text(element.key),
-                                            additionalDividerMargin: 5,
-                                            children: element.isEmpty
-                                                // No messages to display
-                                                ? [
-                                                    CupertinoListTile(
-                                                        title: Opacity(
-                                                            opacity: 0.5,
-                                                            child: Container(
-                                                                alignment: Alignment.center,
-                                                                child: Text(
-                                                                  'No events to display',
-                                                                  style:
-                                                                      TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                                                                ))))
-                                                  ]
-                                                // Bindable messages layout
-                                                : element
-                                                    .toList()
-                                                    .asEventWidgets(null, '', 'No events matching the query', setState)))
-                                        .appendIfEmpty(CardContainer(additionalDividerMargin: 5, children: [
-                                          CupertinoListTile(
-                                              title: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Container(
-                                                      alignment: Alignment.center,
-                                                      child: Text(
-                                                        'No events to display',
-                                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                                                      ))))
-                                        ]))
-                                        .toList()))))),
-                    title: Text('Custom Events', overflow: TextOverflow.ellipsis),
-                    trailing: CupertinoListTileChevron()),
-                CupertinoListTile(
-                    onTap: () => Navigator.push(
-                        context,
-                        AdaptivePageRoute(
-                            builder: (context) => StatefulBuilder(
-                                builder: ((context, setState) => CupertinoModalPage(title: 'Grades Settings', children: [
-                                      CardContainer(
+                AdaptiveCard(
+                  regular: true,
+                  click: () => Navigator.push(
+                      context,
+                      AdaptivePageRoute(
+                          builder: (context) => ModalPageBase.adaptive(title: 'Timetable Settings', children: [
+                                CardContainer(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                    filled: false,
+                                    additionalDividerMargin: 5,
+                                    largeHeader: false,
+                                    header: 'BELL SYNCHRONIZATION',
+                                    footer:
+                                        'Used to calibrate bell times in the app to offsets used by particular schools, format i.e. \'10s\', \'1min, 5s\' Don\'t forget to confirm your input!',
+                                    children: [
+                                      CupertinoListTile(
+                                          title: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Flexible(
+                                              child:
+                                                  Text('School bell offset', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                          ConstrainedBox(
+                                              constraints: BoxConstraints(maxWidth: 100),
+                                              child: CupertinoTextField.borderless(
+                                                  onChanged: (s) => setState(() {}),
+                                                  onSubmitted: (value) {
+                                                    var result = tryParseDuration(value);
+                                                    if (result != null &&
+                                                        (result > Duration(minutes: 15) ||
+                                                            result < Duration(minutes: -15))) {
+                                                      result = null;
+                                                    }
+                                                    Share.session.settings.bellOffset = result ?? Duration.zero;
+                                                    setState(() => _bellTimeController.text = result != null
+                                                        ? prettyDuration(result,
+                                                            tersity: DurationTersity.second,
+                                                            upperTersity: DurationTersity.minute,
+                                                            abbreviated: true,
+                                                            conjunction: ', ',
+                                                            spacer: '',
+                                                            locale: DurationLocale.fromLanguageCode(
+                                                                    Share.settings.appSettings.localeCode) ??
+                                                                EnglishDurationLocale())
+                                                        : '');
+                                                  },
+                                                  controller: _bellTimeController,
+                                                  placeholder: '0 seconds',
+                                                  expands: false,
+                                                  textAlign: TextAlign.end,
+                                                  maxLength: 10,
+                                                  showCursor: _bellTimeController.text.isNotEmpty,
+                                                  maxLengthEnforcement: MaxLengthEnforcement.enforced)),
+                                        ],
+                                      )),
+                                    ]),
+                                CardContainer(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                    filled: false,
+                                    additionalDividerMargin: 5,
+                                    largeHeader: false,
+                                    header: 'LESSON CALL TIME',
+                                    footer:
+                                        'In minutes, will be used for "calling" last X minutes of a lesson. Falls back 15 minutes by default.',
+                                    children: [
+                                      CupertinoListTile(
+                                          title: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Flexible(
+                                              child: Text('Lesson call time', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                          ConstrainedBox(
+                                              constraints: BoxConstraints(maxWidth: 70),
+                                              child: CupertinoTextField.borderless(
+                                                  onChanged: (value) {
+                                                    var result = int.tryParse(value);
+                                                    if (result != null && (result > 45 || result <= 0)) result = null;
+                                                    Share.session.settings.lessonCallTime = result ?? 15;
+                                                    setState(() => _callTimeController.text = result?.toString() ?? '');
+                                                  },
+                                                  controller: _callTimeController,
+                                                  placeholder: '15 min',
+                                                  expands: false,
+                                                  textAlign: TextAlign.end,
+                                                  maxLength: 2,
+                                                  showCursor: _callTimeController.text.isNotEmpty,
+                                                  maxLengthEnforcement: MaxLengthEnforcement.enforced)),
+                                        ],
+                                      )),
+                                    ]),
+                                OptionsForm(
+                                    pop: false,
+                                    header: 'CALL SETTINGS',
+                                    selection: Share.session.settings.lessonCallType,
+                                    description:
+                                        'Note, this is used only for auto-generating preset messages, which may not always be accurate.',
+                                    options: LessonCallTypes.values
+                                        .select((x, index) => OptionEntry(name: x.name, value: x))
+                                        .toList(),
+                                    update: <T>(v) {
+                                      Share.session.settings.lessonCallType = v; // Set
+                                      Share.refreshBase.broadcast(); // Refresh
+                                    })
+                              ]))),
+                  child: 'Timetable Settings',
+                  after: Share.settings.appSettings.useCupertino ? '' : 'School bell offset',
+                ),
+                AdaptiveCard(
+                  regular: true,
+                  click: () => Navigator.push(
+                      context,
+                      AdaptivePageRoute(
+                          builder: (context) => StatefulBuilder(
+                              builder: ((context, setState) => ModalPageBase.adaptive(
+                                  title: 'Custom Events',
+                                  trailing: AdaptiveMenuButton(
+                                    itemBuilder: (context) => [
+                                      AdaptiveMenuItem(
+                                        title: 'New event',
+                                        icon: CupertinoIcons.add,
+                                        onTap: () => showCupertinoModalBottomSheet(
+                                            context: context,
+                                            builder: (context) => EventComposePage()).then((value) => setState(() {})),
+                                      )
+                                    ],
+                                  ),
+                                  children: Share.session.customEvents
+                                      .where((x) =>
+                                          (x.date ?? x.timeFrom).isAfter(DateTime.now().add(Duration(days: -1)).asDate()))
+                                      .orderBy((x) => x.date ?? x.timeFrom)
+                                      .groupBy((x) => DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode)
+                                          .format(x.date ?? x.timeFrom))
+                                      .select((element, index) => CardContainer(
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                          filled: false,
+                                          header: Text(element.key),
                                           additionalDividerMargin: 5,
-                                          header: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 20),
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Text('AVERGAE CALCULATION',
-                                                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
-                                          footer: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 20),
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Text(
-                                                      'Average calculation will ignore weights if all of them are 0 for auto-adapt enabled.',
-                                                      style: TextStyle(fontSize: 13)))),
-                                          children: [
-                                            CupertinoFormRow(
-                                                prefix: Flexible(
-                                                    flex: 2,
-                                                    child: Text('Use weighted average',
-                                                        maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                                child: CupertinoSwitch(
-                                                    value: Share.session.settings.weightedAverage,
-                                                    onChanged: (s) =>
-                                                        setState(() => Share.session.settings.weightedAverage = s))),
-                                            CupertinoFormRow(
-                                                prefix: Flexible(
-                                                    flex: 2,
-                                                    child: Text('Auto-adapt to grades',
-                                                        maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                                child: CupertinoSwitch(
-                                                    value: Share.session.settings.autoArithmeticAverage,
-                                                    onChanged: (s) =>
-                                                        setState(() => Share.session.settings.autoArithmeticAverage = s))),
-                                          ]),
-                                      OptionsForm(
-                                          pop: false,
-                                          header: 'YEARLY AVERAGE',
-                                          selection: Share.session.settings.yearlyAverageMethod,
-                                          description:
-                                              'Note, the average displayed by the app is calculated locally, and may not be respected by every school.',
-                                          options: YearlyAverageMethods.values
-                                              .select((x, index) => OptionEntry(name: x.name, value: x))
-                                              .toList(),
-                                          update: <T>(v) {
-                                            Share.session.settings.yearlyAverageMethod = v; // Set
-                                            Share.refreshBase.broadcast(); // Refresh
-                                          }),
-                                      CardContainer(
+                                          children: element.isEmpty
+                                              // No messages to display
+                                              ? [
+                                                  CupertinoListTile(
+                                                      title: Opacity(
+                                                          opacity: 0.5,
+                                                          child: Container(
+                                                              alignment: Alignment.center,
+                                                              child: Text(
+                                                                'No events to display',
+                                                                style:
+                                                                    TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                                                              ))))
+                                                ]
+                                              // Bindable messages layout
+                                              : element
+                                                  .toList()
+                                                  .asEventWidgets(null, '', 'No events matching the query', setState)))
+                                      .appendIfEmpty(CardContainer(
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                          filled: false,
                                           additionalDividerMargin: 5,
-                                          header: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 20),
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Text('GRADES SIMULATOR',
-                                                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
-                                          footer: Container(
-                                              margin: EdgeInsets.symmetric(horizontal: 20),
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Text(
-                                                      'Grades added by you here are not synchronized across devices, and have local effect only.',
-                                                      style: TextStyle(fontSize: 13)))),
                                           children: [
                                             CupertinoListTile(
-                                                onTap: () => Navigator.push(
-                                                    context,
-                                                    AdaptivePageRoute(
-                                                        builder: (context) => StatefulBuilder(
-                                                            builder: ((context, setState) => CupertinoModalPage(
-                                                                title: 'Custom Grades',
-                                                                previousPageTitle: 'Grade Settings',
-                                                                trailing: AdaptiveMenuButton(
-                                                                  itemBuilder: (context) => [
-                                                                    AdaptiveMenuItem(
-                                                                      title: 'New custom grade',
-                                                                      icon: CupertinoIcons.add,
-                                                                      onTap: () => showCupertinoModalBottomSheet(
-                                                                              context: context,
-                                                                              builder: (context) => GradeComposePage())
-                                                                          .then((value) => setState(() {})),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                children: Share.session.customGrades.entries
-                                                                    .selectMany((x, _) =>
-                                                                        x.value.select((y, _) => (lesson: x.key, grade: y)))
-                                                                    .orderBy((x) => x.grade.date)
-                                                                    .groupBy((x) => x.lesson)
-                                                                    .select((element, index) => CardContainer(
-                                                                        header: Text(element.key.nameExtra),
-                                                                        additionalDividerMargin: 5,
-                                                                        children: element.isEmpty
-                                                                            // No messages to display
-                                                                            ? [
-                                                                                CupertinoListTile(
-                                                                                    title: Opacity(
-                                                                                        opacity: 0.5,
-                                                                                        child: Container(
-                                                                                            alignment: Alignment.center,
-                                                                                            child: Text(
-                                                                                              'No grades to display',
-                                                                                              style: TextStyle(
-                                                                                                  fontSize: 16,
-                                                                                                  fontWeight:
-                                                                                                      FontWeight.normal),
-                                                                                            ))))
-                                                                              ]
-                                                                            // Bindable messages layout
-                                                                            : element
-                                                                                .toList()
-                                                                                .select((x, _) =>
-                                                                                    x.grade.asGrade(context, setState))
-                                                                                .toList()))
-                                                                    .appendIfEmpty(
-                                                                        CardContainer(additionalDividerMargin: 5, children: [
-                                                                      CupertinoListTile(
-                                                                          title: Opacity(
-                                                                              opacity: 0.5,
-                                                                              child: Container(
-                                                                                  alignment: Alignment.center,
-                                                                                  child: Text(
-                                                                                    'No grades to display',
-                                                                                    style: TextStyle(
-                                                                                        fontSize: 16,
-                                                                                        fontWeight: FontWeight.normal),
-                                                                                  ))))
-                                                                    ]))
-                                                                    .toList()))))),
-                                                title: Text('Custom Grades', overflow: TextOverflow.ellipsis),
-                                                trailing: CupertinoListTileChevron()),
-                                          ]),
-                                    ]))))),
-                    title: Text('Grades Settings', overflow: TextOverflow.ellipsis),
-                    trailing: CupertinoListTileChevron()),
-                CupertinoListTile(
-                    onTap: () => Navigator.push(
-                        context,
-                        AdaptivePageRoute(
-                            builder: (context) => CupertinoModalPage(title: 'Custom Grade Values', children: [
-                                  // Custom grade values
-                                  EntriesForm<double>(
-                                      header: 'CUSTOM GRADE MODIFIERS',
-                                      description:
-                                          'These values will overwite all default grade modifiers for the specified entries, e.g. count \'-\' as \'-0.25\', etc.',
-                                      placeholder: 'Value',
-                                      maxKeyLength: 1,
-                                      update: <T>([v]) => (Share.session.settings.customGradeModifierValues =
-                                              v?.cast() ?? Share.session.settings.customGradeModifierValues)
-                                          .cast(),
-                                      validate: (v) => double.tryParse(v)),
-                                  // Custom grade values
-                                  EntriesForm<double>(
-                                      header: 'CUSTOM GRADE MARGINS',
-                                      description:
-                                          'These values will overwite the default grade margins, e.g. make values such as \'4.75\' count as \'5\', etc.',
-                                      placeholder: 'Value',
-                                      update: <T>([v]) => (Share.session.settings.customGradeMarginValues =
-                                              v?.cast() ?? Share.session.settings.customGradeMarginValues)
-                                          .cast(),
-                                      validate: (v) => double.tryParse(v)),
-                                  // Custom grade values
-                                  EntriesForm<double>(
-                                      header: 'CUSTOM GRADES',
-                                      description:
-                                          'These values will overwite all default grade values for the specified entries, e.g. from \'nb\' to \'1\', etc.',
-                                      placeholder: 'Value',
-                                      update: <T>([v]) => (Share.session.settings.customGradeValues =
-                                              v?.cast() ?? Share.session.settings.customGradeValues)
-                                          .cast(),
-                                      validate: (v) => double.tryParse(v))
-                                ]))),
-                    title: Text('Custom Grade Values', overflow: TextOverflow.ellipsis),
-                    trailing: CupertinoListTileChevron())
+                                                title: Opacity(
+                                                    opacity: 0.5,
+                                                    child: Container(
+                                                        alignment: Alignment.center,
+                                                        child: Text(
+                                                          'No events to display',
+                                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                                                        ))))
+                                          ]))
+                                      .toList()))))),
+                  child: 'Custom Events',
+                  after: Share.settings.appSettings.useCupertino ? '' : 'Shared with the class',
+                ),
+                AdaptiveCard(
+                  regular: true,
+                  click: () => Navigator.push(
+                      context,
+                      AdaptivePageRoute(
+                          builder: (context) => StatefulBuilder(
+                              builder: ((context, setState) => ModalPageBase.adaptive(title: 'Grades Settings', children: [
+                                    CardContainer(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                        filled: false,
+                                        additionalDividerMargin: 5,
+                                        largeHeader: false,
+                                        header: 'AVERGAE CALCULATION',
+                                        footer:
+                                            'Average calculation will ignore weights if all of them are 0 for auto-adapt enabled.',
+                                        children: [
+                                          CupertinoFormRow(
+                                              prefix: Flexible(
+                                                  flex: 2,
+                                                  child: Text('Use weighted average',
+                                                      maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                              child: CupertinoSwitch(
+                                                  value: Share.session.settings.weightedAverage,
+                                                  onChanged: (s) =>
+                                                      setState(() => Share.session.settings.weightedAverage = s))),
+                                          CupertinoFormRow(
+                                              prefix: Flexible(
+                                                  flex: 2,
+                                                  child: Text('Auto-adapt to grades',
+                                                      maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                              child: CupertinoSwitch(
+                                                  value: Share.session.settings.autoArithmeticAverage,
+                                                  onChanged: (s) =>
+                                                      setState(() => Share.session.settings.autoArithmeticAverage = s))),
+                                        ]),
+                                    OptionsForm(
+                                        pop: false,
+                                        header: 'YEARLY AVERAGE',
+                                        selection: Share.session.settings.yearlyAverageMethod,
+                                        description:
+                                            'Note, the average displayed by the app is calculated locally, and may not be respected by every school.',
+                                        options: YearlyAverageMethods.values
+                                            .select((x, index) => OptionEntry(name: x.name, value: x))
+                                            .toList(),
+                                        update: <T>(v) {
+                                          Share.session.settings.yearlyAverageMethod = v; // Set
+                                          Share.refreshBase.broadcast(); // Refresh
+                                        }),
+                                    CardContainer(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                        filled: false,
+                                        additionalDividerMargin: 5,
+                                        largeHeader: false,
+                                        header: 'GRADES SIMULATOR',
+                                        footer:
+                                            'Grades added by you here are not synchronized across devices, and have local effect only.',
+                                        children: [
+                                          CupertinoListTile(
+                                              onTap: () => Navigator.push(
+                                                  context,
+                                                  AdaptivePageRoute(
+                                                      builder: (context) => StatefulBuilder(
+                                                          builder: ((context, setState) => ModalPageBase.adaptive(
+                                                              title: 'Custom Grades',
+                                                              previousPageTitle: 'Grade Settings',
+                                                              trailing: AdaptiveMenuButton(
+                                                                itemBuilder: (context) => [
+                                                                  AdaptiveMenuItem(
+                                                                    title: 'New custom grade',
+                                                                    icon: CupertinoIcons.add,
+                                                                    onTap: () => showCupertinoModalBottomSheet(
+                                                                            context: context,
+                                                                            builder: (context) => GradeComposePage())
+                                                                        .then((value) => setState(() {})),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                              children: Share.session.customGrades.entries
+                                                                  .selectMany((x, _) =>
+                                                                      x.value.select((y, _) => (lesson: x.key, grade: y)))
+                                                                  .orderBy((x) => x.grade.date)
+                                                                  .groupBy((x) => x.lesson)
+                                                                  .select((element, index) => CardContainer(
+                                                                      margin:
+                                                                          EdgeInsets.symmetric(horizontal: 18, vertical: 15),
+                                                                      filled: false,
+                                                                      header: Text(element.key.nameExtra),
+                                                                      additionalDividerMargin: 5,
+                                                                      children: element.isEmpty
+                                                                          // No messages to display
+                                                                          ? [
+                                                                              CupertinoListTile(
+                                                                                  title: Opacity(
+                                                                                      opacity: 0.5,
+                                                                                      child: Container(
+                                                                                          alignment: Alignment.center,
+                                                                                          child: Text(
+                                                                                            'No grades to display',
+                                                                                            style: TextStyle(
+                                                                                                fontSize: 16,
+                                                                                                fontWeight:
+                                                                                                    FontWeight.normal),
+                                                                                          ))))
+                                                                            ]
+                                                                          // Bindable messages layout
+                                                                          : element
+                                                                              .toList()
+                                                                              .select((x, _) =>
+                                                                                  x.grade.asGrade(context, setState))
+                                                                              .toList()))
+                                                                  .appendIfEmpty(CardContainer(
+                                                                      margin:
+                                                                          EdgeInsets.symmetric(horizontal: 18, vertical: 15),
+                                                                      filled: false,
+                                                                      additionalDividerMargin: 5,
+                                                                      children: [
+                                                                        CupertinoListTile(
+                                                                            title: Opacity(
+                                                                                opacity: 0.5,
+                                                                                child: Container(
+                                                                                    alignment: Alignment.center,
+                                                                                    child: Text(
+                                                                                      'No grades to display',
+                                                                                      style: TextStyle(
+                                                                                          fontSize: 16,
+                                                                                          fontWeight: FontWeight.normal),
+                                                                                    ))))
+                                                                      ]))
+                                                                  .toList()))))),
+                                              title: Text('Custom Grades', overflow: TextOverflow.ellipsis),
+                                              trailing: CupertinoListTileChevron()),
+                                        ]),
+                                  ]))))),
+                  child: 'Grades Settings',
+                  after: Share.settings.appSettings.useCupertino ? '' : 'Average calculation',
+                ),
+                AdaptiveCard(
+                  regular: true,
+                  click: () => Navigator.push(
+                      context,
+                      AdaptivePageRoute(
+                          builder: (context) => ModalPageBase.adaptive(title: 'Custom Grade Values', children: [
+                                // Custom grade values
+                                EntriesForm<double>(
+                                    header: 'CUSTOM GRADE MODIFIERS',
+                                    description:
+                                        'These values will overwite all default grade modifiers for the specified entries, e.g. count \'-\' as \'-0.25\', etc.',
+                                    placeholder: 'Value',
+                                    maxKeyLength: 1,
+                                    update: <T>([v]) => (Share.session.settings.customGradeModifierValues =
+                                            v?.cast() ?? Share.session.settings.customGradeModifierValues)
+                                        .cast(),
+                                    validate: (v) => double.tryParse(v)),
+                                // Custom grade values
+                                EntriesForm<double>(
+                                    header: 'CUSTOM GRADE MARGINS',
+                                    description:
+                                        'These values will overwite the default grade margins, e.g. make values such as \'4.75\' count as \'5\', etc.',
+                                    placeholder: 'Value',
+                                    update: <T>([v]) => (Share.session.settings.customGradeMarginValues =
+                                            v?.cast() ?? Share.session.settings.customGradeMarginValues)
+                                        .cast(),
+                                    validate: (v) => double.tryParse(v)),
+                                // Custom grade values
+                                EntriesForm<double>(
+                                    header: 'CUSTOM GRADES',
+                                    description:
+                                        'These values will overwite all default grade values for the specified entries, e.g. from \'nb\' to \'1\', etc.',
+                                    placeholder: 'Value',
+                                    update: <T>([v]) => (Share.session.settings.customGradeValues =
+                                            v?.cast() ?? Share.session.settings.customGradeValues)
+                                        .cast(),
+                                    validate: (v) => double.tryParse(v))
+                              ]))),
+                  child: 'Custom Grade Values',
+                  after: Share.settings.appSettings.useCupertino ? '' : 'Plus, minus, and other values',
+                )
               ],
             ),
             // Settings - credits
             CardContainer(
-              margin: EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 15),
+              margin: EdgeInsets.symmetric(horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+              filled: false,
               additionalDividerMargin: 5,
+              header: Share.settings.appSettings.useCupertino ? '' : 'About',
               children: [
-                CupertinoListTile(
-                    onTap: () => Navigator.push(
+                AdaptiveCard(
+                    regular: true,
+                    click: () => Navigator.push(
                         context,
                         AdaptivePageRoute(
-                            builder: (context) => CupertinoModalPage(title: 'App Info', children: [
+                            builder: (context) => ModalPageBase.adaptive(title: 'App Info', children: [
                                   CardContainer(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                    filled: false,
                                     additionalDividerMargin: 5,
-                                    header: Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 20),
-                                        child: Opacity(
-                                            opacity: 0.5,
-                                            child: Text('VERSION INFO',
-                                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
+                                    largeHeader: false,
+                                    header: 'VERSION INFO',
                                     children: [
-                                      CupertinoListTile(
-                                          title: Text('Version', overflow: TextOverflow.ellipsis),
-                                          trailing: GestureDetector(
+                                      AdaptiveCard(
+                                          regular: true,
+                                          child: 'Version',
+                                          after: GestureDetector(
                                               onDoubleTap: () => Navigator.push(
                                                   context,
                                                   AdaptivePageRoute(
                                                       builder: (context) => StatefulBuilder(
-                                                          builder: ((context, setState) => CupertinoModalPage(
+                                                          builder: ((context, setState) => ModalPageBase.adaptive(
                                                               title: 'Developers',
                                                               previousPageTitle: 'App Info',
                                                               children: [
                                                                 // Developer mode
                                                                 CardContainer(
+                                                                    margin:
+                                                                        EdgeInsets.symmetric(horizontal: 18, vertical: 15),
+                                                                    filled: false,
                                                                     additionalDividerMargin: 5,
-                                                                    header: Container(
-                                                                        margin: EdgeInsets.symmetric(horizontal: 20),
-                                                                        child: Opacity(
-                                                                            opacity: 0.5,
-                                                                            child: Text('FOR DEVELOPERS',
-                                                                                style: TextStyle(
-                                                                                    fontSize: 13,
-                                                                                    fontWeight: FontWeight.normal)))),
+                                                                    largeHeader: false,
+                                                                    header: 'FOR DEVELOPERS',
                                                                     children: [
                                                                       CupertinoFormRow(
                                                                           prefix: Flexible(
@@ -1193,15 +1129,12 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                               }))
                                                                     ]),
                                                                 CardContainer(
+                                                                    margin:
+                                                                        EdgeInsets.symmetric(horizontal: 18, vertical: 15),
+                                                                    filled: false,
                                                                     additionalDividerMargin: 5,
-                                                                    header: Container(
-                                                                        margin: EdgeInsets.symmetric(horizontal: 20),
-                                                                        child: Opacity(
-                                                                            opacity: 0.5,
-                                                                            child: Text('APPLICATION DIALOG TESTS',
-                                                                                style: TextStyle(
-                                                                                    fontSize: 13,
-                                                                                    fontWeight: FontWeight.normal)))),
+                                                                    largeHeader: false,
+                                                                    header: 'APPLICATION DIALOG TESTS',
                                                                     children: [
                                                                       // Toasts
                                                                       CupertinoFormRow(
@@ -1390,15 +1323,12 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                     ]),
                                                                 // Codes - user
                                                                 CardContainer(
+                                                                    margin:
+                                                                        EdgeInsets.symmetric(horizontal: 18, vertical: 15),
+                                                                    filled: false,
                                                                     additionalDividerMargin: 5,
-                                                                    header: Container(
-                                                                        margin: EdgeInsets.symmetric(horizontal: 20),
-                                                                        child: Opacity(
-                                                                            opacity: 0.5,
-                                                                            child: Text('SHARING CODES',
-                                                                                style: TextStyle(
-                                                                                    fontSize: 13,
-                                                                                    fontWeight: FontWeight.normal)))),
+                                                                    largeHeader: false,
+                                                                    header: 'SHARING CODES',
                                                                     children: [
                                                                       CupertinoFormRow(
                                                                           prefix: Flexible(
@@ -1419,15 +1349,12 @@ class _SettingsPageState extends State<SettingsPage> {
                                                               ].appendAllIf([
                                                                 // Codes - classes
                                                                 CardContainer(
+                                                                    margin:
+                                                                        EdgeInsets.symmetric(horizontal: 18, vertical: 15),
+                                                                    filled: false,
                                                                     additionalDividerMargin: 5,
-                                                                    header: Container(
-                                                                        margin: EdgeInsets.symmetric(horizontal: 20),
-                                                                        child: Opacity(
-                                                                            opacity: 0.5,
-                                                                            child: Text('VIRTUAL CLASS CODES',
-                                                                                style: TextStyle(
-                                                                                    fontSize: 13,
-                                                                                    fontWeight: FontWeight.normal)))),
+                                                                    largeHeader: false,
+                                                                    header: 'VIRTUAL CLASS CODES',
                                                                     children: Share.session.data.student.teamCodes.entries
                                                                         .select((x, _) => CupertinoFormRow(
                                                                             prefix: Flexible(
@@ -1448,21 +1375,21 @@ class _SettingsPageState extends State<SettingsPage> {
                                               child: Container(
                                                   margin: EdgeInsets.symmetric(horizontal: 5),
                                                   child: Opacity(opacity: 0.5, child: Text(Share.buildNumber))))),
-                                      CupertinoListTile(
-                                          title: Text('Build', overflow: TextOverflow.ellipsis),
-                                          trailing: Container(
+                                      AdaptiveCard(
+                                          regular: true,
+                                          child: 'Build',
+                                          after: Container(
                                               margin: EdgeInsets.symmetric(horizontal: 5),
                                               child: Opacity(opacity: 0.5, child: Text(Share.buildNumber.split('.').last))))
                                     ],
                                   ),
                                   CardContainer(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                    filled: false,
                                     additionalDividerMargin: 5,
-                                    header: Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 20),
-                                        child: Opacity(
-                                            opacity: 0.5,
-                                            child: Text('CONTRIBUTORS',
-                                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))),
+                                    largeHeader: false,
+                                    header: 'CONTRIBUTORS',
                                     children: [
                                       CupertinoListTile(
                                           onTap: () {
@@ -1512,55 +1439,41 @@ class _SettingsPageState extends State<SettingsPage> {
                                     ],
                                   )
                                 ]))),
-                    title: Text('App Info', overflow: TextOverflow.ellipsis),
-                    trailing: Row(children: [
-                      Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5),
-                          child: Opacity(opacity: 0.5, child: Text(Share.buildNumber))),
-                      CupertinoListTileChevron()
-                    ])),
-                CupertinoListTile(
-                    onTap: () {
+                    child: 'App Info',
+                    after: Share.buildNumber),
+                AdaptiveCard(
+                    regular: true,
+                    click: () {
                       try {
                         launchUrlString('https://github.com/Ogaku');
                       } catch (ex) {
                         // ignored
                       }
                     },
-                    title: Text('Socials', overflow: TextOverflow.ellipsis),
-                    trailing: Row(children: [
-                      Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5), child: Opacity(opacity: 0.5, child: Text('GitHub'))),
-                      CupertinoListTileChevron()
-                    ])),
-                CupertinoListTile(
-                    onTap: () {
+                    child: 'Socials',
+                    after: 'GitHub'),
+                AdaptiveCard(
+                    regular: true,
+                    click: () {
                       try {
                         launchUrlString('https://ko-fi.com/ogaku_oshi');
                       } catch (ex) {
                         // ignored
                       }
                     },
-                    title: Text('Support Us', overflow: TextOverflow.ellipsis),
-                    trailing: Row(children: [
-                      Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5), child: Opacity(opacity: 0.5, child: Text('Ko-fi'))),
-                      CupertinoListTileChevron()
-                    ])),
-                CupertinoListTile(
-                    onTap: () {
+                    child: 'Support Us',
+                    after: 'Ko-fi'),
+                AdaptiveCard(
+                    regular: true,
+                    click: () {
                       try {
                         launchUrlString('https://discord.gg/7EzU9M3W5H');
                       } catch (ex) {
                         // ignored
                       }
                     },
-                    title: Text('Contact Us', overflow: TextOverflow.ellipsis),
-                    trailing: Row(children: [
-                      Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5), child: Opacity(opacity: 0.5, child: Text('Discord'))),
-                      CupertinoListTileChevron()
-                    ]))
+                    child: 'Contact Us',
+                    after: 'Discord'),
               ],
             ),
           ]);

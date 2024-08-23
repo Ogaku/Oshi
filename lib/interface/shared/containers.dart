@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:oshi/interface/shared/views/grades_detailed.dart';
 import 'package:oshi/share/share.dart';
 
 class CardContainer extends StatefulWidget {
@@ -52,12 +53,13 @@ class _CardContainerState extends State<CardContainer> {
         hasLeading: false,
         header: (widget.header is String && widget.header.isNotEmpty)
             ? (widget.largeHeader
-                ? Text(widget.header)
+                ? Text((widget.header as String).toUpperCase())
                 : Container(
                     margin: EdgeInsets.symmetric(horizontal: 20),
                     child: Opacity(
                         opacity: 0.5,
-                        child: Text(widget.header, style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))))
+                        child: Text((widget.header as String).toUpperCase(),
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))))
             : widget.header,
         footer: (widget.footer is String && widget.footer.isNotEmpty)
             ? (Container(
@@ -76,8 +78,8 @@ class _CardContainerState extends State<CardContainer> {
               Container(
                 margin: EdgeInsets.only(left: 5, top: 10),
                 child: Text(
-                  widget.header,
-                  style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                  (widget.header as String).toLowerCase().capitalize(),
+                  style: TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),
               ),
             ]),
@@ -121,12 +123,14 @@ class AdaptiveCard extends StatefulWidget {
     required this.child,
     this.after,
     this.roundedFocus = true,
+    this.regular = false,
   });
 
   final bool hideChevron;
   final bool secondary;
   final bool centered;
   final bool roundedFocus;
+  final bool regular;
 
   final FutureOr<void> Function()? click;
   final dynamic child;
@@ -166,30 +170,40 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
                       )))
               : widget.child);
     } else {
-      return ListTile(
-          onTap: widget.click,
-          contentPadding: EdgeInsets.symmetric(horizontal: widget.centered ? 0 : 15),
-          shape: widget.roundedFocus
-              ? const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0)))
-              : null,
-          trailing: widget.after != null
-              ? (widget.after is String
-                  ? Text(
+      return Padding(
+        padding: widget.regular ? const EdgeInsets.symmetric(vertical: 6, horizontal: 5) : const EdgeInsets.all(0),
+        child: ListTile(
+            onTap: widget.click,
+            contentPadding: EdgeInsets.symmetric(horizontal: (widget.centered || widget.regular) ? 0 : 15),
+            shape: widget.roundedFocus
+                ? const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0)))
+                : null,
+            trailing: widget.after != null && widget.after is! String ? widget.after : null,
+            title: Table(children: [
+              TableRow(children: [
+                widget.child is String
+                    ? Opacity(
+                        opacity: widget.secondary ? 0.5 : 1.0,
+                        child: Container(
+                            alignment: widget.centered ? Alignment.center : null,
+                            child: Text(
+                              widget.child as String,
+                              style: TextStyle(fontWeight: FontWeight.w400, fontSize: widget.regular ? 20 : 17),
+                            )))
+                    : widget.child
+              ]),
+              if (widget.after is String)
+                TableRow(children: [
+                  Opacity(
+                    opacity: 0.75,
+                    child: Text(
                       widget.after as String,
-                      style: TextStyle(fontWeight: FontWeight.normal),
-                    )
-                  : widget.after)
-              : null,
-          title: widget.child is String
-              ? Opacity(
-                  opacity: widget.secondary ? 0.5 : 1.0,
-                  child: Container(
-                      alignment: widget.centered ? Alignment.center : null,
-                      child: Text(
-                        widget.child as String,
-                        style: TextStyle(fontWeight: FontWeight.normal),
-                      )))
-              : widget.child);
+                      style: TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
+                    ),
+                  ),
+                ])
+            ])),
+      );
     }
   }
 }

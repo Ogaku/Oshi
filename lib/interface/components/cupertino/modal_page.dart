@@ -1,19 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:oshi/interface/components/shim/modal_page.dart';
 
-class CupertinoModalPage<T> extends StatefulWidget {
-  const CupertinoModalPage({super.key, required this.children, required this.title, this.previousPageTitle, this.trailing});
-
-  final String title;
-  final String? previousPageTitle;
-  final List<Widget> children;
-  final Widget? trailing;
+class ModalPage<T> extends ModalPageBase {
+  const ModalPage({
+    super.key,
+    required super.children,
+    required super.title,
+    super.previousPageTitle,
+    super.trailing,
+  });
 
   @override
-  State<CupertinoModalPage> createState() => _CupertinoModalPageState();
+  State<ModalPage> createState() => _ModalPageState();
 }
 
-class _CupertinoModalPageState<T> extends State<CupertinoModalPage<T>> {
+class _ModalPageState<T> extends State<ModalPage<T>> {
   late ScrollController scrollController;
   bool _isCollapsed = false;
 

@@ -226,16 +226,11 @@ class _GradesPageState extends State<GradesPage> {
             children: [
               AdaptiveCard(
                   child: '/Average'.localized,
-                  after: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 5),
-                      child: Opacity(
-                          opacity: 0.5,
-                          child: Text(() {
-                            var majors = Share.session.data.student.subjects
-                                .where((x) => x.hasMajor)
-                                .select((x, _) => x.topMajor!.asValue);
-                            return majors.isNotEmpty ? majors.average().toStringAsFixed(2) : 'Unavailable';
-                          }()))))
+                  after: () {
+                    var majors =
+                        Share.session.data.student.subjects.where((x) => x.hasMajor).select((x, _) => x.topMajor!.asValue);
+                    return majors.isNotEmpty ? majors.average().toStringAsFixed(2) : 'Unavailable';
+                  }())
             ],
           ),
           if (Share.session.data.student.mainClass.averages.isNotEmpty)
