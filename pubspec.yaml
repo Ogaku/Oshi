@@ -61,6 +61,7 @@ dependencies:
   sliver_tools: ^0.2.12
   pull_to_refresh_flutter3: ^2.0.2
   dynamic_tabbar: ^1.0.7
+  dropdown_button2: ^2.3.9
 
 dev_dependencies:
   flutter_test:

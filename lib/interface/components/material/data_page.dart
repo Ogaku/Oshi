@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/interface/shared/containers.dart';
+import 'package:oshi/share/extensions.dart';
 // import 'package:dynamic_tabbar/dynamic_tabbar.dart';
 import 'package:oshi/share/share.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
@@ -153,51 +154,72 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
                           duration: Duration(milliseconds: 250),
                           opacity: (top > 110 || widget.leading == null) ? 1.0 : 0.0,
                           child: Text(widget.title)),
-                      background: (isChildPage ?? false)
-                          ? GestureDetector(
-                              onTap: () => Navigator.of(context).pop(),
-                              child: Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: Align(
-                                    alignment: Alignment.topLeft,
-                                    child: SafeArea(
-                                        child: Icon(
-                                      Icons.arrow_back,
-                                      size: 25,
-                                      color: Theme.of(context).colorScheme.onSurface,
-                                    ))),
-                              ),
-                            )
-                          : ((widget.pageFlags.hasFlag(DataPageType.searchable) &&
-                                  (Share.session.refreshStatus.progressStatus?.isEmpty ?? true)
-                              ? SearchAnchor(
-                                  isFullScreen: true,
-                                  builder: (context, controller) => Padding(
-                                    padding: (isChildPage ?? false) && widget.trailing != null
-                                        ? const EdgeInsets.only(left: 65, top: 17)
-                                        : const EdgeInsets.all(15.0),
-                                    child: Align(
-                                        alignment: (isChildPage ?? false) && widget.trailing == null
-                                            ? Alignment.topRight
-                                            : Alignment.topLeft,
-                                        child: SafeArea(
-                                            child: Icon(
-                                          Icons.search,
-                                          size: 25,
-                                          color: Theme.of(context).colorScheme.onSurface,
-                                        ))),
+                      background: Stack(
+                          children: <Widget>[
+                        if (isChildPage ?? false)
+                          Padding(
+                            padding: const EdgeInsets.all(7.0),
+                            child: Align(
+                              alignment: Alignment.topLeft,
+                              child: SafeArea(
+                                  child: IconButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      icon: Icon(
+                                        Icons.arrow_back,
+                                        size: 25,
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                      ))),
+                            ),
+                          )
+                      ]
+                              .appendIf(
+                                  SearchAnchor(
+                                    isFullScreen: true,
+                                    builder: (context, controller) => Padding(
+                                      padding: (isChildPage ?? false) && widget.trailing != null
+                                          ? const EdgeInsets.only(left: 65, top: 17)
+                                          : const EdgeInsets.all(15.0),
+                                      child: Align(
+                                          alignment: (isChildPage ?? false) && widget.trailing == null
+                                              ? Alignment.topRight
+                                              : Alignment.topLeft,
+                                          child: SafeArea(
+                                              child: Icon(
+                                            Icons.search,
+                                            size: 25,
+                                            color: Theme.of(context).colorScheme.onSurface,
+                                          ))),
+                                    ),
+                                    suggestionsBuilder: widget.searchBuilder ??
+                                        (context, controller) => (widget.children ?? []).prepend(SizedBox(height: 15)),
                                   ),
-                                  suggestionsBuilder: widget.searchBuilder ??
-                                      (context, controller) => (widget.children ?? []).prepend(SizedBox(height: 15)),
-                                )
-                              : null)));
+                                  (widget.pageFlags.hasFlag(DataPageType.searchable) &&
+                                      ((Share.session.refreshStatus.progressStatus?.isEmpty ?? true) ||
+                                          (isChildPage ?? false))))
+                              .toList()));
                 }),
-                leadingWidth: (isChildPage ?? false) ? null : 150,
-                leading: (isChildPage ?? false)
-                    ? Container() // Don't show the funny arrow
-                    : ((Share.session.refreshStatus.progressStatus?.isNotEmpty ?? false)
-                        ? Container(
-                            margin: const EdgeInsets.only(top: 7, left: 10),
+                leadingWidth: switch (isChildPage ?? false) {
+                  false when widget.pageFlags.hasFlag(DataPageType.searchable) => 150 + 45, // Search icon only
+                  false when !widget.pageFlags.hasFlag(DataPageType.searchable) => 150 + 5, // Nothing in the way
+                  true when widget.pageFlags.hasFlag(DataPageType.searchable) && widget.trailing == null => 150 + 45, // Back
+                  true when widget.pageFlags.hasFlag(DataPageType.searchable) && widget.trailing != null => 150 + 100, // Two
+                  _ => 150, // Literally nothing
+                },
+                leading: ((Share.session.refreshStatus.progressStatus?.isNotEmpty ?? false)
+                    ? Padding(
+                        padding: switch (isChildPage ?? false) {
+                          false when widget.pageFlags.hasFlag(DataPageType.searchable) =>
+                            const EdgeInsets.only(left: 45), // Search icon only
+                          false when !widget.pageFlags.hasFlag(DataPageType.searchable) =>
+                            const EdgeInsets.only(left: 5), // Nothing in the way
+                          true when widget.pageFlags.hasFlag(DataPageType.searchable) && widget.trailing == null =>
+                            const EdgeInsets.only(left: 45), // Back icon only
+                          true when widget.pageFlags.hasFlag(DataPageType.searchable) && widget.trailing != null =>
+                            const EdgeInsets.only(left: 100), // Two icons ::before
+                          _ => const EdgeInsets.all(0),
+                        },
+                        child: Container(
+                            margin: const EdgeInsets.only(top: 10, left: 10),
                             child: ConstrainedBox(
                                 constraints: const BoxConstraints(maxWidth: 150),
                                 child: Text(
@@ -206,8 +228,9 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                       color: CupertinoColors.inactiveGray, fontSize: 13, fontWeight: FontWeight.w300),
-                                )))
-                        : Container(margin: EdgeInsets.only(left: 10, top: 3, bottom: 1), child: widget.leading)),
+                                ))),
+                      )
+                    : Container(margin: EdgeInsets.only(left: 10, top: 3, bottom: 1), child: widget.leading)),
                 actions: <Widget>[Container(margin: EdgeInsets.only(right: 10), child: widget.trailing)],
               ),
               if (widget.pageFlags.hasFlag(DataPageType.segmented) && (widget.segments?.isNotEmpty ?? false))

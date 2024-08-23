@@ -142,6 +142,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
           // Bindable homework layout
           : homeworksWeek
               .select((x, index) => AdaptiveCard(
+                  // TODO https://pub.dev/packages/dropdown_button2#:~:text=Example%202%20using%20image%20and%20openWithLongPress%20parameter%3A
                   child: CupertinoContextMenu.builder(
                       enableHapticFeedback: true,
                       actions: [
@@ -1446,7 +1447,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     if (DateTime.now().month == DateTime.october && DateTime.now().day == 31) {
       return const Text('🎃');
     }
-    
+
     // St. Peter day theme
     if (DateTime.now().month == DateTime.july && DateTime.now().day == 12) {
       return const Text('🍀');

@@ -67,47 +67,46 @@ class _CardContainerState extends State<CardContainer> {
         children: widget.children,
       );
     } else {
-      return Table(children: [
-        if (widget.header is! String && widget.header != null) TableRow(children: [widget.header]),
-        if (widget.header is String && widget.header.isNotEmpty)
-          TableRow(children: [
-            Container(
-              margin: EdgeInsets.only(left: widget.margin?.left ?? 20, bottom: 6, top: 10),
-              child: Text(
-                widget.header,
-                style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+      return Container(
+        margin: widget.margin ?? const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+        child: Table(children: [
+          if (widget.header is! String && widget.header != null) TableRow(children: [widget.header]),
+          if (widget.header is String && widget.header.isNotEmpty)
+            TableRow(children: [
+              Container(
+                margin: EdgeInsets.only(left: 5, top: 10),
+                child: Text(
+                  widget.header,
+                  style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                ),
               ),
-            ),
+            ]),
+          TableRow(children: [
+            (widget.filled || widget.backgroundColor != null)
+                ? Card(
+                    clipBehavior: Clip.antiAlias,
+                    color: widget.backgroundColor ?? Theme.of(context).colorScheme.surfaceContainerLow,
+                    child: Column(
+                      children: widget.children,
+                    ),
+                  )
+                : Column(
+                    children: widget.children,
+                  )
           ]),
-        TableRow(children: [
-          (widget.filled || widget.backgroundColor != null)
-              ? Card(
-                  clipBehavior: Clip.antiAlias,
-                  color: widget.backgroundColor ?? Theme.of(context).colorScheme.surfaceContainerLow,
-                  margin: widget.margin ?? const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-                  child: Column(
-                    children: widget.children,
-                  ),
-                )
-              : Container(
-                  margin: widget.margin ?? const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-                  child: Column(
-                    children: widget.children,
-                  ),
-                )
+          if (widget.footer is! String && widget.footer != null) TableRow(children: [widget.footer]),
+          if (widget.footer is String && widget.footer.isNotEmpty)
+            TableRow(children: [
+              Container(
+                margin: EdgeInsets.only(left: 5, bottom: 6),
+                child: Text(
+                  widget.footer,
+                  style: TextStyle(color: Theme.of(context).dividerColor),
+                ),
+              ),
+            ]),
         ]),
-        if (widget.footer is! String && widget.footer != null) TableRow(children: [widget.footer]),
-        if (widget.footer is String && widget.footer.isNotEmpty)
-          TableRow(children: [
-            Container(
-              margin: EdgeInsets.only(left: widget.margin?.left ?? 20, bottom: 6, top: 10),
-              child: Text(
-                widget.footer,
-                style: TextStyle(color: Theme.of(context).dividerColor),
-              ),
-            ),
-          ]),
-      ]);
+      );
     }
   }
 }
