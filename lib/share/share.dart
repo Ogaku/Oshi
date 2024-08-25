@@ -1,6 +1,8 @@
 // ignore_for_file: avoid_function_literals_in_foreach_calls
 
 import 'dart:convert';
+import 'package:oshi/interface/components/shim/elements/attendance.dart';
+import 'package:oshi/share/extensions.dart';
 import 'package:universal_io/io.dart';
 
 import 'package:appcenter_sdk_flutter/appcenter_sdk_flutter.dart';
@@ -14,9 +16,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart' as
 import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:mutex/mutex.dart';
-import 'package:oshi/interface/shared/pages/absences.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
-import 'package:oshi/interface/shared/pages/timetable.dart';
 import 'package:oshi/models/data/announcement.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/models/data/grade.dart';
@@ -34,7 +34,7 @@ import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/interface/shared/pages/home.dart' show DateTimeExtension;
 
-import 'package:oshi/providers/librus/librus_data.dart' hide DateTimeExtension;
+import 'package:oshi/providers/librus/librus_data.dart';
 import 'package:oshi/providers/sample/sample_data.dart';
 import 'package:oshi/share/config.dart';
 import 'package:oshi/share/notifications.dart';

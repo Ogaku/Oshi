@@ -6,14 +6,15 @@ import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/interface/components/shim/elements/event.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
-import 'package:oshi/interface/shared/pages/timetable.dart';
 import 'package:oshi/interface/shared/views/new_event.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/data/timetables.dart';
+import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 

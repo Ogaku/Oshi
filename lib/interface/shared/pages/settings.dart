@@ -11,13 +11,14 @@ import 'package:enum_flag/enum_flag.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
+import 'package:oshi/interface/components/shim/elements/event.dart';
+import 'package:oshi/interface/components/shim/elements/grade.dart';
 import 'package:oshi/interface/components/shim/modal_page.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/interface/shared/containers.dart';
@@ -26,9 +27,7 @@ import 'package:oshi/interface/shared/session_management.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
-import 'package:oshi/interface/shared/pages/timetable.dart';
 import 'package:oshi/interface/shared/views/new_event.dart';
-import 'package:oshi/interface/shared/views/grades_detailed.dart' show GradeBodyExtension;
 import 'package:oshi/interface/shared/views/new_grade.dart';
 import 'package:oshi/interface/components/cupertino/widgets/entries_form.dart';
 import 'package:oshi/interface/components/cupertino/widgets/options_form.dart';
@@ -726,17 +725,20 @@ class _SettingsPageState extends State<SettingsPage> {
                           builder: (context) => StatefulBuilder(
                               builder: ((context, setState) => ModalPageBase.adaptive(
                                   title: 'Custom Events',
-                                  trailing: AdaptiveMenuButton(
-                                    itemBuilder: (context) => [
-                                      AdaptiveMenuItem(
-                                        title: 'New event',
-                                        icon: CupertinoIcons.add,
-                                        onTap: () => showCupertinoModalBottomSheet(
-                                            context: context,
-                                            builder: (context) => EventComposePage()).then((value) => setState(() {})),
-                                      )
-                                    ],
-                                  ),
+                                  trailing: SafeArea(
+                                      child: GestureDetector(
+                                    onTap: () => showCupertinoModalBottomSheet(
+                                        context: context,
+                                        builder: (context) => EventComposePage()).then((value) => setState(() {})),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Icon(
+                                        Share.settings.appSettings.useCupertino ? CupertinoIcons.add : Icons.add,
+                                        size: 25,
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                      ),
+                                    ),
+                                  )),
                                   children: Share.session.customEvents
                                       .where((x) =>
                                           (x.date ?? x.timeFrom).isAfter(DateTime.now().add(Duration(days: -1)).asDate()))
@@ -747,7 +749,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                           margin: EdgeInsets.symmetric(
                                               horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
                                           filled: false,
-                                          header: Text(element.key),
+                                          header: element.key,
                                           additionalDividerMargin: 5,
                                           children: element.isEmpty
                                               // No messages to display
@@ -888,7 +890,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                     margin:
                                                                         EdgeInsets.symmetric(horizontal: 18, vertical: 15),
                                                                     filled: false,
-                                                                    header: Text(element.key.nameExtra),
+                                                                    header: element.key.nameExtra,
                                                                     additionalDividerMargin: 5,
                                                                     children: element.isEmpty
                                                                         // No messages to display

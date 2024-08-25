@@ -1010,14 +1010,6 @@ extension CategoryExtension on Category {
   }
 }
 
-extension DateTimeExtension on DateTime {
-  DateTime asDate() => DateTime(year, month, day);
-  bool isAfterOrSame(DateTime? other) => this == other || isAfter(other ?? DateTime.now());
-  bool isBeforeOrSame(DateTime? other) => this == other || isBefore(other ?? DateTime.now());
-  DateTime withTime(DateTime? other) =>
-      other == null ? this : DateTime(year, month, day, other.hour, other.minute, other.second);
-}
-
 List<T> addOrReplace<T>(List<T>? oldList, List<T> newList) {
   if (oldList != null) {
     oldList.addAll(newList);

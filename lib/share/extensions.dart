@@ -203,3 +203,30 @@ extension Pretty on Duration {
       conjunction: ', ',
       locale: DurationLocale.fromLanguageCode(Share.settings.appSettings.localeCode) ?? EnglishDurationLocale());
 }
+
+extension DateTimeExtension on DateTime {
+  bool isAfterOrSame(DateTime? other) => this == other || isAfter(other ?? DateTime.now());
+  bool isBeforeOrSame(DateTime? other) => this == other || isBefore(other ?? DateTime.now());
+  DateTime withTime(DateTime? other) =>
+      other == null ? this : DateTime(year, month, day, other.hour, other.minute, other.second);
+  DateTime asHour([DateTime? other]) => (other ?? DateTime(2000)).withTime(this);
+
+  bool isAfterOrEqualTo(DateTime dateTime) {
+    final isAtSameMomentAs = dateTime.isAtSameMomentAs(this);
+    return isAtSameMomentAs | isAfter(dateTime);
+  }
+
+  bool isBeforeOrEqualTo(DateTime dateTime) {
+    final isAtSameMomentAs = dateTime.isAtSameMomentAs(this);
+    return isAtSameMomentAs | isBefore(dateTime);
+  }
+
+  bool isBetween(
+    DateTime fromDateTime,
+    DateTime toDateTime,
+  ) {
+    final isAfter = isAfterOrEqualTo(fromDateTime);
+    final isBefore = isBeforeOrEqualTo(toDateTime);
+    return isAfter && isBefore;
+  }
+}

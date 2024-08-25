@@ -137,6 +137,7 @@ class AdaptiveCard extends StatefulWidget {
     this.unreadDot,
     this.trailingElement,
     this.forceTrailing = false,
+    this.margin,
   });
 
   final bool hideChevron;
@@ -145,6 +146,7 @@ class AdaptiveCard extends StatefulWidget {
   final bool roundedFocus;
   final bool regular;
   final bool forceTrailing;
+  final EdgeInsets? margin;
 
   final FutureOr<void> Function()? click;
   final dynamic child;
@@ -188,9 +190,9 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
     } else {
       return ListTile(
           onTap: widget.click,
-          contentPadding: widget.regular
-              ? EdgeInsets.symmetric(horizontal: 23, vertical: 6)
-              : EdgeInsets.symmetric(horizontal: widget.centered ? 0 : 15),
+          contentPadding: widget.margin ?? (widget.regular
+                  ? EdgeInsets.symmetric(horizontal: 23, vertical: 6)
+                  : EdgeInsets.symmetric(horizontal: widget.centered ? 0 : 15)),
           shape: widget.roundedFocus
               ? const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0)))
               : null,

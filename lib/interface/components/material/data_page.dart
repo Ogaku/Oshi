@@ -25,6 +25,7 @@ class DataPage extends DataPageBase {
       super.trailing,
       super.segments,
       super.previousPageTitle,
+      super.childOverride,
       super.pageBuilder});
 
   @override
@@ -72,7 +73,7 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     // Detect if this is a child page (once)
-    isChildPage ??= Navigator.of(context).canPop();
+    isChildPage ??= widget.childOverride ?? Navigator.of(context).canPop();
 
     // Re-subscribe to all events
     Share.refreshAll.unsubscribe(refresh);

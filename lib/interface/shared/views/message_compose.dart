@@ -55,11 +55,10 @@ class _MessageComposePageState extends State<MessageComposePage> {
         DataPageType.alternativeBackground,
       ].flag,
       title: subjectController.text.isEmpty ? 'New message' : subjectController.text,
-      leading: CupertinoButton(
-          padding: EdgeInsets.all(0),
-          child: Text('Cancel',
-              style: TextStyle(color: !isWorking ? CupertinoTheme.of(context).primaryColor : CupertinoColors.inactiveGray)),
-          onPressed: () async => Navigator.pop(context)),
+      childOverride: false,
+      leading: Align(
+          alignment: Alignment.centerLeft,
+          child: AdaptiveButton(title: 'Cancel', click: isWorking ? null : () async => Navigator.pop(context))),
       trailing: CupertinoButton(
           padding: EdgeInsets.only(right: Share.settings.appSettings.useCupertino ? 0 : 10),
           alignment: Alignment.centerRight,

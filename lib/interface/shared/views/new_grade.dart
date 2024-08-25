@@ -5,10 +5,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:oshi/interface/components/cupertino/widgets/options_form.dart';
 import 'package:oshi/interface/shared/containers.dart';
+import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
 import 'package:oshi/interface/components/cupertino/widgets/text_chip.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
+import 'package:oshi/interface/shared/views/grades_detailed.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/models/data/grade.dart';
 import 'package:oshi/models/data/lesson.dart';
@@ -83,12 +86,12 @@ class _GradeComposePageState extends State<GradeComposePage> {
         DataPageType.alternativeBackground,
       ].flag,
       title: nameController.text.isEmpty ? 'New custom grade' : nameController.text,
-      leading: CupertinoButton(
-          padding: EdgeInsets.all(0),
-          child: Text('Cancel', style: TextStyle(color: CupertinoTheme.of(context).primaryColor)),
-          onPressed: () async => Navigator.pop(context)),
+      childOverride: false,
+      leading: Align(
+          alignment: Alignment.centerLeft,
+          child: AdaptiveButton(title: 'Cancel', click: () async => Navigator.pop(context))),
       trailing: CupertinoButton(
-          padding: EdgeInsets.all(0),
+          padding: EdgeInsets.all(5),
           alignment: Alignment.centerRight,
           onPressed: (nameController.text.isNotEmpty && valueController.text.isNotEmpty && category != null)
               ? () {
@@ -195,10 +198,8 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                 child: Text('Lesson:', style: TextStyle(fontWeight: FontWeight.w600))),
                             ConstrainedBox(
                                 constraints: BoxConstraints(maxWidth: 250),
-                                child: CupertinoTextField.borderless(
-                                    onChanged: (s) => setState(() {}),
-                                    controller: categoryController,
-                                    placeholder: 'Start typing...')),
+                                child: AdaptiveTextField(
+                                    setState: setState, controller: categoryController, placeholder: 'Start typing...')),
                           ]),
                       // Receivers
                       Visibility(
@@ -208,10 +209,10 @@ class _GradeComposePageState extends State<GradeComposePage> {
                               child: CupertinoButton(
                                   padding: EdgeInsets.zero,
                                   child: TextChip(
-                                      noMargin: true,
-                                      text: category?.name ?? 'GO FCK YOURSELF',
+                                      noMargin: Share.settings.appSettings.useCupertino,
+                                      text: category?.name ?? 'GO FUCK YOURSELF',
                                       radius: 20,
-                                      fontSize: 14,
+                                      fontSize: Share.settings.appSettings.useCupertino ? 14 : 16,
                                       insets: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                                       fontWeight: FontWeight.w600),
                                   onPressed: () => setState(() {
@@ -250,115 +251,156 @@ class _GradeComposePageState extends State<GradeComposePage> {
                               mainAxisSize: MainAxisSize.max,
                               children: <Widget>[
                                 // Name input
-                                CupertinoTextField.borderless(
-                                    maxLines: null,
-                                    onChanged: (s) => setState(() {}),
-                                    controller: nameController,
-                                    placeholder: 'Name',
-                                    placeholderStyle:
-                                        TextStyle(fontWeight: FontWeight.w600, color: CupertinoColors.tertiaryLabel)),
+                                AdaptiveTextField(
+                                    maxLines: null, setState: setState, controller: nameController, placeholder: 'Name'),
                                 // Value input
-                                CupertinoTextField.borderless(
-                                    maxLines: null,
-                                    onChanged: (s) => setState(() {}),
-                                    controller: valueController,
-                                    placeholder: 'Value',
-                                    placeholderStyle:
-                                        TextStyle(fontWeight: FontWeight.w600, color: CupertinoColors.tertiaryLabel)),
-                                // Weight
-                                Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Opacity(
-                                          opacity: 1,
-                                          child: Container(
-                                              margin: EdgeInsets.only(left: 7),
-                                              child: Text('Weight:', style: TextStyle(fontWeight: FontWeight.w600)))),
-                                      Container(
-                                        margin: EdgeInsets.only(left: 5),
-                                        child: GestureDetector(
-                                            onTap: () => _showDialog(
-                                                  CupertinoPicker(
-                                                    magnification: 1.22,
-                                                    squeeze: 1.2,
-                                                    useMagnifier: true,
-                                                    itemExtent: 32.0,
-                                                    // This sets the initial item.
-                                                    scrollController: FixedExtentScrollController(
-                                                      initialItem: weight,
-                                                    ),
-                                                    // This is called when selected item is changed.
-                                                    onSelectedItemChanged: (int selectedItem) {
-                                                      setState(() {
-                                                        weight = selectedItem;
-                                                      });
-                                                    },
-                                                    children: List<Widget>.generate(10, (int index) {
-                                                      return Center(child: Text(index.toString()));
-                                                    }),
-                                                  ),
-                                                ),
-                                            child: Opacity(
-                                                opacity: 0.5,
-                                                child: Container(
-                                                    margin: EdgeInsets.only(top: 5, bottom: 5),
-                                                    child: Text(weight.toString(),
-                                                        style: TextStyle(fontWeight: FontWeight.w600))))),
-                                      )
-                                    ]),
-                                // Semester
-                                Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Opacity(
-                                          opacity: 1,
-                                          child: Container(
-                                              margin: EdgeInsets.only(left: 7),
-                                              child: Text('Semester:', style: TextStyle(fontWeight: FontWeight.w600)))),
-                                      Container(
-                                        margin: EdgeInsets.only(left: 5),
-                                        child: GestureDetector(
-                                            onTap: () => _showDialog(
-                                                  CupertinoPicker(
-                                                    magnification: 1.22,
-                                                    squeeze: 1.2,
-                                                    useMagnifier: true,
-                                                    itemExtent: 32.0,
-                                                    // This sets the initial item.
-                                                    scrollController: FixedExtentScrollController(
-                                                      initialItem: semester - 1,
-                                                    ),
-                                                    // This is called when selected item is changed.
-                                                    onSelectedItemChanged: (int selectedItem) {
-                                                      setState(() {
-                                                        semester = selectedItem + 1;
-                                                      });
-                                                    },
-                                                    children: List<Widget>.generate(2, (int index) {
-                                                      return Center(
-                                                          child: Text(
-                                                        switch (index + 1) { 1 => "first", 2 => "second", _ => "ERR" },
-                                                      ));
-                                                    }),
-                                                  ),
-                                                ),
-                                            child: Opacity(
-                                                opacity: 0.5,
-                                                child: Container(
-                                                    margin: EdgeInsets.only(top: 5, bottom: 5),
-                                                    child: Text(
-                                                        switch (semester) { 1 => "first", 2 => "second", _ => "ERR" },
-                                                        style: TextStyle(fontWeight: FontWeight.w600))))),
-                                      )
-                                    ]),
+                                AdaptiveTextField(
+                                    maxLines: null, setState: setState, controller: valueController, placeholder: 'Value'),
                                 // Message input
-                                CupertinoTextField.borderless(
-                                    maxLines: null,
-                                    onChanged: (s) => setState(() {}),
-                                    controller: commentController,
-                                    placeholder: 'Type in any grade comments here...'),
+                                if (!Share.settings.appSettings.useCupertino)
+                                  AdaptiveTextField(
+                                      maxLines: null,
+                                      setState: setState,
+                                      controller: commentController,
+                                      placeholder: 'Type in any grade comments here...'),
+                                // Weight
+                                if (Share.settings.appSettings.useCupertino)
+                                  Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Opacity(
+                                            opacity: 1,
+                                            child: Container(
+                                                margin: EdgeInsets.only(left: 7),
+                                                child: Text('Weight:', style: TextStyle(fontWeight: FontWeight.w600)))),
+                                        Container(
+                                          margin: EdgeInsets.only(left: 5),
+                                          child: GestureDetector(
+                                              onTap: () => _showDialog(
+                                                    CupertinoPicker(
+                                                      magnification: 1.22,
+                                                      squeeze: 1.2,
+                                                      useMagnifier: true,
+                                                      itemExtent: 32.0,
+                                                      // This sets the initial item.
+                                                      scrollController: FixedExtentScrollController(
+                                                        initialItem: weight,
+                                                      ),
+                                                      // This is called when selected item is changed.
+                                                      onSelectedItemChanged: (int selectedItem) {
+                                                        setState(() {
+                                                          weight = selectedItem;
+                                                        });
+                                                      },
+                                                      children: List<Widget>.generate(10, (int index) {
+                                                        return Center(child: Text(index.toString()));
+                                                      }),
+                                                    ),
+                                                  ),
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Container(
+                                                      margin: EdgeInsets.only(top: 5, bottom: 5),
+                                                      child: Text(weight.toString(),
+                                                          style: TextStyle(fontWeight: FontWeight.w600))))),
+                                        )
+                                      ]),
+                                if (!Share.settings.appSettings.useCupertino)
+                                  AdaptiveCard(
+                                    regular: true,
+                                    margin: EdgeInsets.symmetric(horizontal: 6),
+                                    click: () => showOptionDialog(
+                                        context: context,
+                                        title: 'Weight',
+                                        icon: Icons.line_weight,
+                                        selection: weight,
+                                        options: List<OptionEntry>.generate(10, (int index) {
+                                          return OptionEntry(name: index.toString(), value: index);
+                                        }),
+                                        onChanged: (v) {
+                                          setState(() => weight = v);
+                                        }),
+                                    child: 'Grade weight',
+                                    after: 'Choose the grade weight',
+                                    trailingElement: weight.toString(),
+                                  ),
+                                // Semester
+                                if (Share.settings.appSettings.useCupertino)
+                                  Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Opacity(
+                                            opacity: 1,
+                                            child: Container(
+                                                margin: EdgeInsets.only(left: 7),
+                                                child: Text('Semester:', style: TextStyle(fontWeight: FontWeight.w600)))),
+                                        Container(
+                                          margin: EdgeInsets.only(left: 5),
+                                          child: GestureDetector(
+                                              onTap: () => _showDialog(
+                                                    CupertinoPicker(
+                                                      magnification: 1.22,
+                                                      squeeze: 1.2,
+                                                      useMagnifier: true,
+                                                      itemExtent: 32.0,
+                                                      // This sets the initial item.
+                                                      scrollController: FixedExtentScrollController(
+                                                        initialItem: semester - 1,
+                                                      ),
+                                                      // This is called when selected item is changed.
+                                                      onSelectedItemChanged: (int selectedItem) {
+                                                        setState(() {
+                                                          semester = selectedItem + 1;
+                                                        });
+                                                      },
+                                                      children: List<Widget>.generate(2, (int index) {
+                                                        return Center(
+                                                            child: Text(
+                                                          switch (index + 1) { 1 => "first", 2 => "second", _ => "ERR" },
+                                                        ));
+                                                      }),
+                                                    ),
+                                                  ),
+                                              child: Opacity(
+                                                  opacity: 0.5,
+                                                  child: Container(
+                                                      margin: EdgeInsets.only(top: 5, bottom: 5),
+                                                      child: Text(
+                                                          switch (semester) { 1 => "first", 2 => "second", _ => "ERR" },
+                                                          style: TextStyle(fontWeight: FontWeight.w600))))),
+                                        )
+                                      ]),
+
+                                if (!Share.settings.appSettings.useCupertino)
+                                  AdaptiveCard(
+                                    regular: true,
+                                    margin: EdgeInsets.symmetric(horizontal: 6),
+                                    click: () => showOptionDialog(
+                                        context: context,
+                                        title: 'Semester',
+                                        icon: Icons.line_weight,
+                                        selection: weight,
+                                        options: [
+                                          OptionEntry(name: 'First', value: 1),
+                                          OptionEntry(name: 'Second', value: 2),
+                                        ],
+                                        onChanged: (v) {
+                                          setState(() => weight = v);
+                                        }),
+                                    child: 'Semester',
+                                    after: 'Select the semester',
+                                    trailingElement:
+                                        switch (semester) { 1 => "first", 2 => "second", _ => "ERR" }.toString(),
+                                  ),
+                                // Message input
+                                if (Share.settings.appSettings.useCupertino)
+                                  AdaptiveTextField(
+                                      maxLines: null,
+                                      setState: setState,
+                                      controller: commentController,
+                                      placeholder: 'Type in any grade comments here...'),
                               ].appendAll([
                                 Container(
                                     margin: EdgeInsets.only(left: 5, top: 15),
@@ -368,11 +410,15 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
-                                              Icon(
-                                                  showOptional
-                                                      ? CupertinoIcons.chevron_up_circle
-                                                      : CupertinoIcons.chevron_down_circle,
-                                                  size: 20),
+                                              if (Share.settings.appSettings.useCupertino)
+                                                Icon(
+                                                    showOptional
+                                                        ? CupertinoIcons.chevron_up_circle
+                                                        : CupertinoIcons.chevron_down_circle,
+                                                    size: 20),
+                                              if (!Share.settings.appSettings.useCupertino)
+                                                Icon(showOptional ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                                                    size: 20),
                                               Container(
                                                   margin: EdgeInsets.only(left: 5),
                                                   child: Opacity(
@@ -392,92 +438,115 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                                 mainAxisSize: MainAxisSize.max,
                                                 children: [
                                                   // Grade type
-                                                  Container(
-                                                      margin: EdgeInsets.only(left: 10),
-                                                      child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.start,
-                                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                                          children: [
-                                                            Opacity(
-                                                                opacity: 1,
-                                                                child: Container(
-                                                                    margin: EdgeInsets.only(left: 7),
-                                                                    child: Text('Grade type:',
-                                                                        style: TextStyle(fontWeight: FontWeight.w600)))),
-                                                            Container(
-                                                              margin: EdgeInsets.only(left: 5),
-                                                              child: GestureDetector(
-                                                                  onTap: () => _showDialog(
-                                                                        CupertinoPicker(
-                                                                          magnification: 1.22,
-                                                                          squeeze: 1.2,
-                                                                          useMagnifier: true,
-                                                                          itemExtent: 32.0,
-                                                                          // This sets the initial item.
-                                                                          scrollController: FixedExtentScrollController(
-                                                                            initialItem: type,
+                                                  if (Share.settings.appSettings.useCupertino)
+                                                    Container(
+                                                        margin: EdgeInsets.only(left: 10),
+                                                        child: Row(
+                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                            children: [
+                                                              Opacity(
+                                                                  opacity: 1,
+                                                                  child: Container(
+                                                                      margin: EdgeInsets.only(left: 7),
+                                                                      child: Text('Grade type:',
+                                                                          style: TextStyle(fontWeight: FontWeight.w600)))),
+                                                              Container(
+                                                                margin: EdgeInsets.only(left: 5),
+                                                                child: GestureDetector(
+                                                                    onTap: () => _showDialog(
+                                                                          CupertinoPicker(
+                                                                            magnification: 1.22,
+                                                                            squeeze: 1.2,
+                                                                            useMagnifier: true,
+                                                                            itemExtent: 32.0,
+                                                                            // This sets the initial item.
+                                                                            scrollController: FixedExtentScrollController(
+                                                                              initialItem: type,
+                                                                            ),
+                                                                            // This is called when selected item is changed.
+                                                                            onSelectedItemChanged: (int selectedItem) {
+                                                                              setState(() {
+                                                                                type = selectedItem;
+                                                                              });
+                                                                            },
+                                                                            children: List<Widget>.generate(5, (int index) {
+                                                                              return Center(
+                                                                                  child: Text(
+                                                                                switch (index) {
+                                                                                  0 => "general",
+                                                                                  1 => "semester proposition",
+                                                                                  2 => "semester",
+                                                                                  3 => "final proposition",
+                                                                                  4 => "final",
+                                                                                  _ => "ERR"
+                                                                                },
+                                                                              ));
+                                                                            }),
                                                                           ),
-                                                                          // This is called when selected item is changed.
-                                                                          onSelectedItemChanged: (int selectedItem) {
-                                                                            setState(() {
-                                                                              type = selectedItem;
-                                                                            });
-                                                                          },
-                                                                          children: List<Widget>.generate(5, (int index) {
-                                                                            return Center(
-                                                                                child: Text(
-                                                                              switch (index) {
-                                                                                0 => "general",
-                                                                                1 => "semester proposition",
-                                                                                2 => "semester",
-                                                                                3 => "final proposition",
-                                                                                4 => "final",
-                                                                                _ => "ERR"
-                                                                              },
-                                                                            ));
-                                                                          }),
                                                                         ),
-                                                                      ),
-                                                                  child: Opacity(
-                                                                      opacity: 0.5,
-                                                                      child: Container(
-                                                                          margin: EdgeInsets.only(top: 5, bottom: 5),
-                                                                          child: Text(
-                                                                              switch (type) {
-                                                                                0 => "general",
-                                                                                1 => "semester proposition",
-                                                                                2 => "semester",
-                                                                                3 => "final proposition",
-                                                                                4 => "final",
-                                                                                _ => "ERR"
-                                                                              },
-                                                                              style:
-                                                                                  TextStyle(fontWeight: FontWeight.w600))))),
-                                                            )
-                                                          ])),
+                                                                    child: Opacity(
+                                                                        opacity: 0.5,
+                                                                        child: Container(
+                                                                            margin: EdgeInsets.only(top: 5, bottom: 5),
+                                                                            child: Text(
+                                                                                switch (type) {
+                                                                                  0 => "general",
+                                                                                  1 => "semester proposition",
+                                                                                  2 => "semester",
+                                                                                  3 => "final proposition",
+                                                                                  4 => "final",
+                                                                                  _ => "ERR"
+                                                                                },
+                                                                                style: TextStyle(
+                                                                                    fontWeight: FontWeight.w600))))),
+                                                              )
+                                                            ])),
+                                                  if (!Share.settings.appSettings.useCupertino)
+                                                    AdaptiveCard(
+                                                      regular: true,
+                                                      click: () => showOptionDialog(
+                                                          context: context,
+                                                          title: 'Grade type',
+                                                          icon: Icons.grade,
+                                                          selection: type,
+                                                          options: [
+                                                            OptionEntry(name: "general".capitalize(), value: 0),
+                                                            OptionEntry(name: "semester proposition".capitalize(), value: 1),
+                                                            OptionEntry(name: "semester".capitalize(), value: 2),
+                                                            OptionEntry(name: "final proposition".capitalize(), value: 3),
+                                                            OptionEntry(name: "final".capitalize(), value: 4),
+                                                          ],
+                                                          onChanged: (v) {
+                                                            setState(() => type = v);
+                                                          }),
+                                                      child: 'Grade tye',
+                                                      after: 'Choose the grade type',
+                                                      trailingElement: switch (type) {
+                                                        0 => "general",
+                                                        1 => "semester proposition",
+                                                        2 => "semester",
+                                                        3 => "final proposition",
+                                                        4 => "final",
+                                                        _ => "ERROR"
+                                                      }
+                                                          .capitalize(),
+                                                    ),
                                                   // Toggles | form
-                                                  CardContainer(
-                                                      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
-                                                      additionalDividerMargin: 5,
-                                                      children: [
-                                                        // Average
-                                                        CupertinoFormRow(
-                                                            prefix: Flexible(
-                                                                flex: 3,
-                                                                child: Text('Counts to the average',
-                                                                    maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                                            child: CupertinoSwitch(
-                                                                value: counts,
-                                                                onChanged: (s) => setState(() => counts = s))),
-                                                        // Resit
-                                                        CupertinoFormRow(
-                                                            prefix: Flexible(
-                                                                flex: 3,
-                                                                child: Text('Resit (corrected grade)',
-                                                                    maxLines: 1, overflow: TextOverflow.ellipsis)),
-                                                            child: CupertinoSwitch(
-                                                                value: resit, onChanged: (s) => setState(() => resit = s))),
-                                                      ]),
+                                                  CardContainer(additionalDividerMargin: 5, filled: false, children: [
+                                                    // Average
+                                                    AdaptiveFormRow(
+                                                        helper: 'Set grade weight to 0 or 1',
+                                                        title: 'Counts to the average',
+                                                        value: counts,
+                                                        onChanged: (s) => setState(() => counts = s)),
+                                                    // Resit
+                                                    AdaptiveFormRow(
+                                                        helper: 'Maek the grade as corrected',
+                                                        title: 'Resit (corrected grade)',
+                                                        value: resit,
+                                                        onChanged: (s) => setState(() => resit = s)),
+                                                  ]),
                                                 ]))
                                         : null),
                               ]).toList()),

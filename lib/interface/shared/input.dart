@@ -16,12 +16,14 @@ class AdaptiveTextField extends StatefulWidget {
     this.enabled = true,
     this.setState,
     this.secondary = false,
+    this.maxLines,
   });
 
   final TextEditingController controller;
   final String placeholder;
   final bool enabled;
   final bool secondary;
+  final int? maxLines;
   final void Function(void Function())? setState;
 
   @override
@@ -33,7 +35,7 @@ class _AdaptiveTextFieldState extends State<AdaptiveTextField> {
   Widget build(BuildContext context) {
     if (Share.settings.appSettings.useCupertino) {
       return CupertinoTextField.borderless(
-          maxLines: null,
+          maxLines: widget.maxLines,
           enabled: widget.enabled,
           onChanged: (s) {
             setState(() {});
@@ -46,7 +48,7 @@ class _AdaptiveTextFieldState extends State<AdaptiveTextField> {
       return Container(
         margin: EdgeInsets.only(left: 5),
         child: TextFormField(
-          maxLines: null,
+          maxLines: widget.maxLines,
           enabled: widget.enabled,
           onChanged: (s) {
             setState(() {});
@@ -277,11 +279,13 @@ class AdaptiveFormRow<T> extends StatelessWidget {
     this.placeholder,
     this.maxLength,
     this.helper,
+    this.noMargin = false,
   });
 
   final String title; // Title of the form row
   final T value; // Initial and updated value
   final dynamic Function(T) onChanged; // With validation
+  final bool noMargin; // No margin
 
   final T? placeholder; // For string-based values
   final int? maxLength; // For string-based values
@@ -332,6 +336,7 @@ class AdaptiveFormRow<T> extends StatelessWidget {
               child: title,
               after: helper,
               regular: true,
+              margin: noMargin ? EdgeInsets.symmetric(horizontal: 6) : null,
               trailingElement: Switch(value: value as bool, onChanged: (s) => setState(() => onChanged(s as T))),
             ),
           // Input field for string-based values
@@ -339,6 +344,7 @@ class AdaptiveFormRow<T> extends StatelessWidget {
               child: title,
               after: helper,
               regular: true,
+              margin: noMargin ? EdgeInsets.symmetric(horizontal: 6) : null,
               trailingElement: ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: 100),
                 child: TextFormField(
@@ -374,4 +380,23 @@ class AdaptiveFormRow<T> extends StatelessWidget {
       }
     });
   }
+}
+
+class AdaptiveButton extends StatelessWidget {
+  const AdaptiveButton({
+    super.key,
+    required this.title,
+    required this.click,
+  });
+
+  final String title;
+  final void Function()? click;
+
+  @override
+  Widget build(BuildContext context) => Share.settings.appSettings.useCupertino
+      ? CupertinoButton(
+          padding: EdgeInsets.all(0),
+          onPressed: click,
+          child: Text(title, style: TextStyle(color: CupertinoTheme.of(context).primaryColor)))
+      : TextButton(onPressed: click, child: Text(title, style: TextStyle(fontSize: 17)));
 }

@@ -21,6 +21,7 @@ abstract class DataPageBase extends StatefulWidget {
       this.trailing,
       this.segments,
       this.previousPageTitle,
+      this.childOverride,
       this.pageBuilder});
 
   final String title; // Page title
@@ -38,6 +39,7 @@ abstract class DataPageBase extends StatefulWidget {
 
   final List<Widget>? children; // Page children
   final DateTime? selectedDate; // For refreshes
+  final bool? childOverride; // For child pages
 
   static DataPageBase adaptive(
       {required String title,
@@ -51,6 +53,7 @@ abstract class DataPageBase extends StatefulWidget {
       Map<dynamic, String>? segments,
       List<Widget>? children,
       DateTime? selectedDate,
+      bool? childOverride,
       Widget Function(BuildContext, dynamic)? pageBuilder}) {
     // Segment controller watcher
     if (segmentController != null && setState != null) {
@@ -84,6 +87,7 @@ abstract class DataPageBase extends StatefulWidget {
             segments: segments,
             selectedDate: selectedDate,
             pageBuilder: pageBuilder,
+            childOverride: childOverride,
             children: children,
           );
   }
