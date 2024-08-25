@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:appcenter_sdk_flutter/appcenter_sdk_flutter.dart' as apps;
@@ -56,6 +57,9 @@ class _BaseAppState extends State<BaseApp> {
       Share.checkUpdates.broadcast(); // Check for updates
       NotificationController.requestNotificationAccess();
     });
+
+    // Future.delayed(const Duration(seconds: 1))
+    //     .then((s) => Timer.periodic(const Duration(milliseconds: 10), (s) => setState(() {})));
   }
 
   @override
@@ -66,6 +70,16 @@ class _BaseAppState extends State<BaseApp> {
 
   void refresh(args) {
     if (mounted) setState(() {});
+  }
+
+  Color getColorBasedOnTime() {
+    DateTime now = DateTime.now();
+    int milliseconds = now.millisecondsSinceEpoch % 2000;
+    double percent = milliseconds / 2000;
+    int red = (percent * 255).floor();
+    int green = ((percent + 1 / 3) * 255).floor() % 256;
+    int blue = ((percent + 2 / 3) * 255).floor() % 256;
+    return Color.fromARGB(255, red, green, blue);
   }
 
   @override
@@ -173,6 +187,9 @@ class _BaseAppState extends State<BaseApp> {
       if (lightDynamic != null && darkDynamic != null) {
         (lightColorScheme, darkColorScheme) = generateDynamicColourSchemes(lightDynamic, darkDynamic);
       }
+
+      // lightColorScheme = ColorScheme.fromSeed(seedColor: getColorBasedOnTime(), brightness: Brightness.light);
+      // darkColorScheme = ColorScheme.fromSeed(seedColor: getColorBasedOnTime(), brightness: Brightness.dark);
 
       return MaterialApp(
           debugShowCheckedModeBanner: false,

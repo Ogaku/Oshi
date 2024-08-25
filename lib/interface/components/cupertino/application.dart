@@ -306,9 +306,9 @@ class _BaseAppState extends State<BaseApp> {
 }
 
 class UnreadDot extends StatefulWidget {
-  const UnreadDot({super.key, required this.unseen, this.markAsSeen, this.margin = EdgeInsets.zero});
+  const UnreadDot({super.key, required this.unseen, this.markAsSeen, this.margin});
 
-  final EdgeInsets margin;
+  final EdgeInsets? margin;
   final bool Function() unseen;
   final void Function()? markAsSeen;
 
@@ -354,7 +354,7 @@ class _UnreadDotState extends State<UnreadDot> {
                       }
                     }),
                 child: Container(
-                    margin: widget.margin,
+                    margin: widget.margin ?? EdgeInsets.only(right: Share.settings.appSettings.useCupertino ? 6 : 10),
                     child: Container(
                       height: 10,
                       width: 10,

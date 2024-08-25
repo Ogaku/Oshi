@@ -36,16 +36,16 @@ class _NavState extends State<TextChip> {
       margin: widget.margin ?? const EdgeInsets.all(0),
       decoration:
           BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(widget.radius ?? 5)), color: const Color(0x33AAAAAA)),
-      child: Container(
-          padding: EdgeInsets.only(top: 3, bottom: widget.noMargin ? 3 : 0),
-          child: Text(
-            widget.text,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: CupertinoTheme.of(context).primaryColor,
-                fontSize: widget.fontSize ?? 17,
-                fontWeight: widget.fontWeight ?? FontWeight.w400),
-          )),
+      child: Center(
+        child: Text(
+          widget.text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              color: CupertinoTheme.of(context).primaryColor,
+              fontSize: widget.fontSize ?? 17,
+              fontWeight: widget.fontWeight ?? FontWeight.w400),
+        ),
+      ),
     );
   }
 }

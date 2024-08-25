@@ -51,7 +51,7 @@ class _ModalPageState<T> extends State<ModalPage<T>> {
   Widget build(BuildContext context) => DataPageBase.adaptive(
       title: widget.title,
       previousPageTitle: widget.previousPageTitle,
-      leading: widget.trailing,
+      // leading: widget.trailing,
       trailing: widget.trailing,
       children: widget.children);
 }

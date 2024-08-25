@@ -1,6 +1,10 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:oshi/interface/components/cupertino/widgets/options_form.dart';
+import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/share/share.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
@@ -193,4 +197,181 @@ class AdaptiveMenuItem extends StatelessWidget implements PullDownMenuEntry {
             ],
           ),
         );
+}
+
+void showOptionDialog<T>(
+        {required BuildContext context,
+        required String title,
+        IconData? icon,
+        required T selection,
+        required List<OptionEntry<T>> options,
+        required void Function(T) onChanged}) =>
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        dynamic group = selection;
+        return Dialog(child: StatefulBuilder(builder: (context, setState) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              if (icon != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 30),
+                  child: Icon(icon, size: 25),
+                ),
+              Padding(
+                padding: EdgeInsets.only(top: (icon != null) ? 20 : 30, bottom: 20.0),
+                child: Text(title, style: TextStyle(fontSize: 27)),
+              ),
+            ]
+                .appendAll(options.select((x, _) => Padding(
+                    padding: const EdgeInsets.only(left: 25, right: 25),
+                    child: ListTile(
+                        onTap: () => setState(() => group = x.value),
+                        contentPadding: EdgeInsets.only(left: 16.0, right: 5.0),
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                        title: Table(
+                            columnWidths:
+                                x.decoration != null ? const {0: FlexColumnWidth(2), 1: IntrinsicColumnWidth()} : null,
+                            children: [
+                              TableRow(children: [
+                                Text(x.name, style: TextStyle(fontSize: 17), overflow: TextOverflow.ellipsis),
+                                if (x.decoration != null) x.decoration!
+                              ])
+                            ]),
+                        trailing: Radio(
+                          value: x.value,
+                          groupValue: group,
+                          onChanged: (value) => setState(() => group = value),
+                        )))))
+                .append(Align(
+                  alignment: Alignment.bottomRight,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 28.0, horizontal: 26.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10)),
+                      onPressed: () {
+                        onChanged(group); // Handle change
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Apply', style: TextStyle(fontSize: 17, color: Theme.of(context).colorScheme.onPrimary)),
+                    ),
+                  ),
+                ))
+                .toList(),
+          );
+        }));
+      },
+    );
+
+typedef Callback<T> = void Function(T value);
+
+class AdaptiveFormRow<T> extends StatelessWidget {
+  AdaptiveFormRow({
+    super.key,
+    required this.title,
+    required this.value,
+    required this.onChanged,
+    this.placeholder,
+    this.maxLength,
+    this.helper,
+  });
+
+  final String title; // Title of the form row
+  final T value; // Initial and updated value
+  final dynamic Function(T) onChanged; // With validation
+
+  final T? placeholder; // For string-based values
+  final int? maxLength; // For string-based values
+  final String? helper; // Helper text
+
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    if (value is String) _controller.text = value as String;
+    return StatefulBuilder(builder: (context, setState) {
+      if (Share.settings.appSettings.useCupertino) {
+        return switch (value.runtimeType) {
+          // Switch for boolean variables
+          bool => CupertinoFormRow(
+              prefix: Flexible(flex: 3, child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis)),
+              child: CupertinoSwitch(value: value as bool, onChanged: (s) => setState(() => onChanged(s as T)))),
+          // Input field for string-based values
+          String => CupertinoListTile(
+                title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: 100),
+                    child: CupertinoTextField.borderless(
+                        onChanged: (s) => setState(() {}),
+                        onSubmitted: (value) {
+                          var result = onChanged(value as T);
+                          setState(() => _controller.text = result);
+                        },
+                        controller: _controller,
+                        placeholder: placeholder as String?,
+                        expands: false,
+                        textAlign: TextAlign.end,
+                        maxLength: maxLength ?? 10,
+                        showCursor: _controller.text.isNotEmpty,
+                        maxLengthEnforcement: MaxLengthEnforcement.enforced)),
+              ],
+            )),
+          // Everything else
+          _ => Text('Unsupported type: ${T.runtimeType}')
+        };
+      } else {
+        return switch (value.runtimeType) {
+          // Switch for boolean variables
+          bool => AdaptiveCard(
+              child: title,
+              after: helper,
+              regular: true,
+              trailingElement: Switch(value: value as bool, onChanged: (s) => setState(() => onChanged(s as T))),
+            ),
+          // Input field for string-based values
+          String => AdaptiveCard(
+              child: title,
+              after: helper,
+              regular: true,
+              trailingElement: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 100),
+                child: TextFormField(
+                  onChanged: (s) => setState(() {}),
+                  onFieldSubmitted: (value) {
+                    var result = onChanged(value as T);
+                    setState(() => _controller.text = result);
+                  },
+                  controller: _controller,
+                  expands: false,
+                  textAlign: TextAlign.end,
+                  maxLength: maxLength ?? 10,
+                  showCursor: _controller.text.isNotEmpty,
+                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                  decoration: InputDecoration(
+                    hintText: placeholder as String?,
+                    counterText: "",
+                    hintStyle: TextStyle(fontWeight: FontWeight.w400, color: Colors.grey),
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    hintTextDirection: TextDirection.ltr,
+                    fillColor: Colors.transparent,
+                  ),
+                ),
+              ),
+            ),
+          // Everything else
+          _ => Text('Unsupported type: ${T.runtimeType}')
+        };
+      }
+    });
+  }
 }

@@ -44,7 +44,7 @@ class _GradesPageState extends State<GradesPage> {
   Widget subjectsWidget(List<Lesson> subjectsToDisplay, [bool filled = true]) {
     var hasSecondSemester = subjectsToDisplay.any((x) => x.allGrades.any((y) => y.semester == 2));
     return CardContainer(
-      filled: filled,
+      filled: false,
       additionalDividerMargin: 5,
       children: subjectsToDisplay.isEmpty
           // No messages to display
@@ -52,136 +52,136 @@ class _GradesPageState extends State<GradesPage> {
           // Bindable messages layout
           : subjectsToDisplay.select((x, index) {
               var grades = x.allGrades.where((x) => x.semester == 2).appendAllIfEmpty(x.allGrades);
+              var inlineGradesRow =
+                  Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Visibility(
+                    visible: grades.isNotEmpty,
+                    child: Expanded(
+                        child: Container(
+                            margin: EdgeInsets.only(top: 8),
+                            child: ExtendedWrap(
+                                maxLines: 1,
+                                overflowWidget: Text('...'),
+                                spacing: 5,
+                                children: grades
+                                    .where((y) => !y.major)
+                                    .orderByDescending((y) => y.addDate)
+                                    .distinct((x) => mapPropsToHashCode([x.resitPart ? 0 : UniqueKey(), x.name]))
+                                    .select((y, index) => Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 4),
+                                          decoration: BoxDecoration(
+                                              color: y.major
+                                                  ? (y.isFinal || y.isSemester)
+                                                      ? y.asColor()
+                                                      : null
+                                                  : y.asColor(),
+                                              border: Border.all(
+                                                  color: y.asColor(), width: 1, strokeAlign: BorderSide.strokeAlignInside),
+                                              borderRadius: BorderRadius.all(Radius.circular(4))),
+                                          child: Text(y.value,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: (y.isFinalProposition || y.isSemesterProposition)
+                                                      ? CupertinoDynamicColor.resolve(
+                                                          CupertinoDynamicColor.withBrightness(
+                                                              color: CupertinoColors.black,
+                                                              darkColor: CupertinoColors.white),
+                                                          context)
+                                                      : CupertinoColors.black)),
+                                        ))
+                                    .prependIf(Container(width: 3), grades.any((y) => y.major))
+                                    .prependAll(grades
+                                        .where((y) => y.major)
+                                        .orderByDescending((y) => y.isFinal ? 1 : 0)
+                                        .orderByDescending((y) => y.isSemester ? 1 : 0)
+                                        .thenByDescending((y) => y.addDate)
+                                        .take(1)
+                                        .select((y, index) => Container(
+                                              padding: EdgeInsets.symmetric(horizontal: 4),
+                                              decoration: BoxDecoration(
+                                                  color: y.major
+                                                      ? (y.isFinal || y.isSemester)
+                                                          ? y.asColor()
+                                                          : null
+                                                      : y.asColor(),
+                                                  border: Border.all(
+                                                      color: y.asColor(),
+                                                      width: 1,
+                                                      strokeAlign: BorderSide.strokeAlignInside),
+                                                  borderRadius: BorderRadius.all(Radius.circular(4))),
+                                              child: Text(y.value,
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: (y.isFinalProposition || y.isSemesterProposition)
+                                                          ? CupertinoDynamicColor.resolve(
+                                                              CupertinoDynamicColor.withBrightness(
+                                                                  color: CupertinoColors.black,
+                                                                  darkColor: CupertinoColors.white),
+                                                              context)
+                                                          : CupertinoColors.black)),
+                                            )))
+                                    .prependIf(
+                                        Container(
+                                            margin: EdgeInsets.only(right: 3),
+                                            child: Text("/Semesters/First".localized,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: CupertinoColors.secondaryLabel.resolveFrom(context)))),
+                                        hasSecondSemester && grades.all((y) => y.semester == 1))
+                                    .toList()))))
+              ]);
 
-              return Builder(
-                  builder: (context) => AdaptiveCard(
-                      click: () => Navigator.push(
-                          context,
-                          AdaptivePageRoute(
-                              builder: (context) => GradesDetailedPage(
-                                    lesson: x,
-                                  ))),
-                      child: Container(
-                          padding: EdgeInsets.only(top: 15, bottom: 15),
-                          child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      UnreadDot(unseen: () => x.hasUnseen, margin: EdgeInsets.only(right: 6)),
-                                      Expanded(
-                                          child: Container(
-                                              margin: EdgeInsets.only(right: 10),
-                                              child: Text(
-                                                x.name,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                                              ))),
-                                    ]),
-                                Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Visibility(
-                                          visible: grades.isNotEmpty,
-                                          child: Expanded(
+              return (AdaptiveCard(
+                  click: () => Navigator.push(
+                      context,
+                      AdaptivePageRoute(
+                          builder: (context) => GradesDetailedPage(
+                                lesson: x,
+                              ))),
+                  regular: true,
+                  unreadDot: UnreadDot(unseen: () => x.hasUnseen),
+                  after:
+                      Share.settings.appSettings.useCupertino ? null : (grades.isEmpty ? x.teacher.name : inlineGradesRow),
+                  child: Share.settings.appSettings.useCupertino
+                      ? Builder(builder: (context) {
+                          return Container(
+                              padding: EdgeInsets.only(top: 15, bottom: 15),
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          UnreadDot(unseen: () => x.hasUnseen, margin: EdgeInsets.only(right: 6)),
+                                          Expanded(
                                               child: Container(
-                                                  margin: EdgeInsets.only(top: 8),
-                                                  child: ExtendedWrap(
-                                                      maxLines: 1,
-                                                      overflowWidget: Text('...'),
-                                                      spacing: 5,
-                                                      children: grades
-                                                          .where((y) => !y.major)
-                                                          .orderByDescending((y) => y.addDate)
-                                                          .distinct((x) =>
-                                                              mapPropsToHashCode([x.resitPart ? 0 : UniqueKey(), x.name]))
-                                                          .select((y, index) => Container(
-                                                                padding: EdgeInsets.symmetric(horizontal: 4),
-                                                                decoration: BoxDecoration(
-                                                                    color: y.major
-                                                                        ? (y.isFinal || y.isSemester)
-                                                                            ? y.asColor()
-                                                                            : null
-                                                                        : y.asColor(),
-                                                                    border: Border.all(
-                                                                        color: y.asColor(),
-                                                                        width: 1,
-                                                                        strokeAlign: BorderSide.strokeAlignInside),
-                                                                    borderRadius: BorderRadius.all(Radius.circular(4))),
-                                                                child: Text(y.value,
-                                                                    textAlign: TextAlign.center,
-                                                                    style: TextStyle(
-                                                                        fontSize: 13,
-                                                                        color:
-                                                                            (y.isFinalProposition || y.isSemesterProposition)
-                                                                                ? CupertinoDynamicColor.resolve(
-                                                                                    CupertinoDynamicColor.withBrightness(
-                                                                                        color: CupertinoColors.black,
-                                                                                        darkColor: CupertinoColors.white),
-                                                                                    context)
-                                                                                : CupertinoColors.black)),
-                                                              ))
-                                                          .prependIf(Container(width: 3), grades.any((y) => y.major))
-                                                          .prependAll(grades
-                                                              .where((y) => y.major)
-                                                              .orderByDescending((y) => y.isFinal ? 1 : 0)
-                                                              .orderByDescending((y) => y.isSemester ? 1 : 0)
-                                                              .thenByDescending((y) => y.addDate)
-                                                              .take(1)
-                                                              .select((y, index) => Container(
-                                                                    padding: EdgeInsets.symmetric(horizontal: 4),
-                                                                    decoration: BoxDecoration(
-                                                                        color: y.major
-                                                                            ? (y.isFinal || y.isSemester)
-                                                                                ? y.asColor()
-                                                                                : null
-                                                                            : y.asColor(),
-                                                                        border: Border.all(
-                                                                            color: y.asColor(),
-                                                                            width: 1,
-                                                                            strokeAlign: BorderSide.strokeAlignInside),
-                                                                        borderRadius: BorderRadius.all(Radius.circular(4))),
-                                                                    child: Text(y.value,
-                                                                        textAlign: TextAlign.center,
-                                                                        style: TextStyle(
-                                                                            fontSize: 13,
-                                                                            color: (y.isFinalProposition ||
-                                                                                    y.isSemesterProposition)
-                                                                                ? CupertinoDynamicColor.resolve(
-                                                                                    CupertinoDynamicColor.withBrightness(
-                                                                                        color: CupertinoColors.black,
-                                                                                        darkColor: CupertinoColors.white),
-                                                                                    context)
-                                                                                : CupertinoColors.black)),
-                                                                  )))
-                                                          .prependIf(
-                                                              Container(
-                                                                  margin: EdgeInsets.only(right: 3),
-                                                                  child: Text("/Semesters/First".localized,
-                                                                      textAlign: TextAlign.center,
-                                                                      style: TextStyle(
-                                                                          fontSize: 14,
-                                                                          color: CupertinoColors.secondaryLabel
-                                                                              .resolveFrom(context)))),
-                                                              hasSecondSemester && grades.all((y) => y.semester == 1))
-                                                          .toList()))))
-                                    ]),
-                                Visibility(
-                                    visible: grades.isEmpty,
-                                    child: Opacity(
-                                        opacity: 0.5,
-                                        child: Container(
-                                            margin: EdgeInsets.only(top: 5),
-                                            child: Text(
-                                              x.teacher.name,
-                                              style: TextStyle(fontSize: 16),
-                                            )))),
-                              ]))));
+                                                  margin: EdgeInsets.only(right: 10),
+                                                  child: Text(
+                                                    x.name,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                                                  ))),
+                                        ]),
+                                    inlineGradesRow,
+                                    Visibility(
+                                        visible: grades.isEmpty,
+                                        child: Opacity(
+                                            opacity: 0.5,
+                                            child: Container(
+                                                margin: EdgeInsets.only(top: 5),
+                                                child: Text(
+                                                  x.teacher.name,
+                                                  style: TextStyle(fontSize: 16),
+                                                )))),
+                                  ]));
+                        })
+                      : x.name));
             }).toList(),
     );
   }

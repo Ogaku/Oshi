@@ -1262,28 +1262,39 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       title: segmentController.segment == HomepageSegments.home
           ? '/Titles/Pages/Home'.localized
           : '/Titles/Pages/Timeline'.localized,
-      trailing: AdaptiveMenuButton(
-        itemBuilder: (context) => [
-          AdaptiveMenuItem(
-              title: 'Settings',
-              icon: CupertinoIcons.gear,
-              onTap: () =>
-                  Navigator.of(context, rootNavigator: true).push(AdaptivePageRoute(builder: (context) => SettingsPage()))),
-          PullDownMenuDivider.large(),
-          PullDownMenuTitle(title: Text('Accounts')),
-          AdaptiveMenuItem(
-            title: 'Sessions',
-            icon: CupertinoIcons.rectangle_stack_person_crop,
-            onTap: () => Share.changeBase.broadcast(Value(() => sessionsPage)),
-          ),
-          AdaptiveMenuItem(
-            title: 'Mark as read',
-            icon: CupertinoIcons.checkmark_circle,
-            onTap: () => Share.session.unreadChanges.markAsRead(),
-          ),
-        ],
-        child: _eventfulMenuButton,
-      ),
+      trailing: Share.settings.appSettings.useCupertino
+          ? AdaptiveMenuButton(
+              itemBuilder: (context) => [
+                AdaptiveMenuItem(
+                    title: 'Settings',
+                    icon: CupertinoIcons.gear,
+                    onTap: () => Navigator.of(context, rootNavigator: true)
+                        .push(AdaptivePageRoute(builder: (context) => SettingsPage()))),
+                PullDownMenuDivider.large(),
+                PullDownMenuTitle(title: Text('Accounts')),
+                AdaptiveMenuItem(
+                  title: 'Sessions',
+                  icon: CupertinoIcons.rectangle_stack_person_crop,
+                  onTap: () => Share.changeBase.broadcast(Value(() => sessionsPage)),
+                ),
+                AdaptiveMenuItem(
+                  title: 'Mark as read',
+                  icon: CupertinoIcons.checkmark_circle,
+                  onTap: () => Share.session.unreadChanges.markAsRead(),
+                ),
+              ],
+              child: _eventfulMenuButton,
+            )
+          : SafeArea(
+              child: IconButton(
+              onPressed: () =>
+                  Navigator.of(context, rootNavigator: true).push(AdaptivePageRoute(builder: (context) => SettingsPage())),
+              icon: Icon(
+                Icons.settings,
+                size: 25,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            )),
       children: segmentController.segment == HomepageSegments.home ? homePageChildren : timelineChildren,
     );
   }

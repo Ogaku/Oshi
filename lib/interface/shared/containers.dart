@@ -5,6 +5,8 @@ import 'dart:async';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:oshi/interface/components/cupertino/application.dart';
+import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/interface/shared/views/grades_detailed.dart';
 import 'package:oshi/share/share.dart';
 
@@ -21,6 +23,7 @@ class CardContainer extends StatefulWidget {
     this.filled = true,
     this.backgroundColor,
     this.margin,
+    this.regularOverride,
   });
 
   final bool largeHeader;
@@ -32,6 +35,7 @@ class CardContainer extends StatefulWidget {
   final double dividerMargin;
   final bool noDivider;
   final bool filled;
+  final bool? regularOverride;
 
   final Color? backgroundColor;
   final EdgeInsets? margin;
@@ -60,7 +64,7 @@ class _CardContainerState extends State<CardContainer> {
                         opacity: 0.5,
                         child: Text((widget.header as String).toUpperCase(),
                             style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))))
-            : widget.header,
+            : ((widget.header is Widget) ? widget.header : null),
         footer: (widget.footer is String && widget.footer.isNotEmpty)
             ? (Container(
                 margin: EdgeInsets.symmetric(horizontal: 20),
@@ -69,14 +73,18 @@ class _CardContainerState extends State<CardContainer> {
         children: widget.children,
       );
     } else {
+      var regular = widget.regularOverride ??
+          ((widget.children.first is AdaptiveCard && (widget.children.first as AdaptiveCard).regular) ||
+              widget.children.first is AdaptiveFormRow);
+
       return Container(
-        margin: widget.margin ?? const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+        margin: regular ? EdgeInsets.only() : (widget.margin ?? const EdgeInsets.only(left: 10, right: 10, bottom: 10)),
         child: Table(children: [
           if (widget.header is! String && widget.header != null) TableRow(children: [widget.header]),
           if (widget.header is String && widget.header.isNotEmpty)
             TableRow(children: [
               Container(
-                margin: EdgeInsets.only(left: 5, top: 10),
+                margin: regular ? EdgeInsets.only(left: 23, top: 25, bottom: 10) : EdgeInsets.only(left: 5, top: 10),
                 child: Text(
                   (widget.header as String).toLowerCase().capitalize(),
                   style: TextStyle(color: Theme.of(context).colorScheme.primary),
@@ -100,7 +108,9 @@ class _CardContainerState extends State<CardContainer> {
           if (widget.footer is String && widget.footer.isNotEmpty)
             TableRow(children: [
               Container(
-                margin: EdgeInsets.only(left: 5, bottom: 6),
+                margin: regular
+                    ? EdgeInsets.only(left: 22, bottom: 10, top: 10, right: 20)
+                    : EdgeInsets.only(left: 5, bottom: 6),
                 child: Text(
                   widget.footer,
                   style: TextStyle(color: Theme.of(context).dividerColor),
@@ -124,6 +134,9 @@ class AdaptiveCard extends StatefulWidget {
     this.after,
     this.roundedFocus = true,
     this.regular = false,
+    this.unreadDot,
+    this.trailingElement,
+    this.forceTrailing = false,
   });
 
   final bool hideChevron;
@@ -131,10 +144,13 @@ class AdaptiveCard extends StatefulWidget {
   final bool centered;
   final bool roundedFocus;
   final bool regular;
+  final bool forceTrailing;
 
   final FutureOr<void> Function()? click;
   final dynamic child;
   final dynamic after;
+  final dynamic trailingElement;
+  final UnreadDot? unreadDot;
 
   @override
   State<AdaptiveCard> createState() => _AdaptiveCardState();
@@ -170,30 +186,55 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
                       )))
               : widget.child);
     } else {
-      return Padding(
-        padding: widget.regular ? const EdgeInsets.symmetric(vertical: 6, horizontal: 5) : const EdgeInsets.all(0),
-        child: ListTile(
-            onTap: widget.click,
-            contentPadding: EdgeInsets.symmetric(horizontal: (widget.centered || widget.regular) ? 0 : 15),
-            shape: widget.roundedFocus
-                ? const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0)))
-                : null,
-            trailing: widget.after != null && widget.after is! String ? widget.after : null,
-            title: Table(children: [
+      return ListTile(
+          onTap: widget.click,
+          contentPadding: widget.regular
+              ? EdgeInsets.symmetric(horizontal: 23, vertical: 6)
+              : EdgeInsets.symmetric(horizontal: widget.centered ? 0 : 15),
+          shape: widget.roundedFocus
+              ? const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0)))
+              : null,
+          trailing: widget.forceTrailing && widget.after is Widget
+              ? SizedBox(child: widget.after, width: 100, height: 100)
+              : (widget.trailingElement is Widget
+                  ? widget.trailingElement
+                  : (widget.trailingElement is String && widget.click != null
+                      ? ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context).colorScheme.secondary,
+                              padding: EdgeInsets.symmetric(horizontal: 27, vertical: 15)),
+                          onPressed: widget.click,
+                          child: Text(widget.trailingElement as String,
+                              style: TextStyle(fontSize: 17, color: Theme.of(context).colorScheme.onSecondary)),
+                        )
+                      : null)),
+          title: Table(children: [
+            TableRow(children: [
+              Table(
+                  columnWidths: widget.unreadDot != null ? const {0: IntrinsicColumnWidth(), 1: FlexColumnWidth(1)} : null,
+                  children: [
+                    TableRow(children: [
+                      if (widget.unreadDot != null)
+                        TableCell(
+                          verticalAlignment: TableCellVerticalAlignment.middle,
+                          child: widget.unreadDot ?? Container(),
+                        ),
+                      widget.child is String
+                          ? Opacity(
+                              opacity: widget.secondary ? 0.5 : 1.0,
+                              child: Container(
+                                  alignment: widget.centered ? Alignment.center : null,
+                                  child: Text(
+                                    widget.child as String,
+                                    style: TextStyle(fontWeight: FontWeight.w400, fontSize: widget.regular ? 20 : 17),
+                                  )))
+                          : widget.child
+                    ])
+                  ])
+            ]),
+            if (widget.after != null && !widget.forceTrailing)
               TableRow(children: [
-                widget.child is String
-                    ? Opacity(
-                        opacity: widget.secondary ? 0.5 : 1.0,
-                        child: Container(
-                            alignment: widget.centered ? Alignment.center : null,
-                            child: Text(
-                              widget.child as String,
-                              style: TextStyle(fontWeight: FontWeight.w400, fontSize: widget.regular ? 20 : 17),
-                            )))
-                    : widget.child
-              ]),
-              if (widget.after is String)
-                TableRow(children: [
+                if (widget.after is String)
                   Opacity(
                     opacity: 0.75,
                     child: Text(
@@ -201,9 +242,9 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
                       style: TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
                     ),
                   ),
-                ])
-            ])),
-      );
+                if (widget.after is Widget) widget.after
+              ])
+          ]));
     }
   }
 }

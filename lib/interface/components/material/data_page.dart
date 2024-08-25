@@ -8,8 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/interface/shared/containers.dart';
-import 'package:oshi/share/extensions.dart';
-// import 'package:dynamic_tabbar/dynamic_tabbar.dart';
 import 'package:oshi/share/share.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 
@@ -61,8 +59,8 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
 
   void setStateListener([bool self = false]) {
     if (mounted) {
-      widget.setState!(() {});
       if (self) setState(() {});
+      // widget.setState!(() {});
     }
   }
 
@@ -127,110 +125,92 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
               }
 
               await Share.session.refreshAll(weekStart: widget.selectedDate);
+              refreshController.refreshCompleted();
 
-              setState(() {
-                refreshController.refreshCompleted();
-              });
-
-              if (widget.setState != null) widget.setState!(() {});
+              if (mounted) setState(() {});
+              if (mounted && widget.setState != null) widget.setState!(() {});
             });
           },
           child: CustomScrollView(
             slivers: <Widget>[
-              SliverAppBar(
+              SliverAppBar.large(
                 key: ValueKey<int>(1),
                 backgroundColor:
                     widget.pageFlags.hasFlag(DataPageType.alternativeBackground) ? Theme.of(context).hoverColor : null,
                 pinned: true,
                 snap: false,
                 floating: false,
-                expandedHeight: 130.0,
                 flexibleSpace: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
                   var top = constraints.biggest.height;
+                  var padding = 100.0 - ((constraints.maxHeight - 64) * 100 / (242 - 64));
+
                   return FlexibleSpaceBar(
                       centerTitle: false,
-                      titlePadding: EdgeInsets.only(left: 20, bottom: 15, right: 20),
+                      titlePadding: EdgeInsets.only(left: (isChildPage ?? false) ? padding : 20, bottom: 15, right: 20),
                       title: AnimatedOpacity(
                           duration: Duration(milliseconds: 250),
                           opacity: (top > 110 || widget.leading == null) ? 1.0 : 0.0,
-                          child: Text(widget.title)),
-                      background: Stack(
-                          children: <Widget>[
-                        if (isChildPage ?? false)
-                          Padding(
-                            padding: const EdgeInsets.all(7.0),
-                            child: Align(
-                              alignment: Alignment.topLeft,
-                              child: SafeArea(
-                                  child: IconButton(
-                                      onPressed: () => Navigator.of(context).pop(),
-                                      icon: Icon(
-                                        Icons.arrow_back,
-                                        size: 25,
-                                        color: Theme.of(context).colorScheme.onSurface,
+                          child: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                      background: Stack(children: <Widget>[
+                        // Search icon
+                        if (widget.pageFlags.hasFlag(DataPageType.searchable))
+                          SearchAnchor(
+                            isFullScreen: true,
+                            builder: (context, controller) => Padding(
+                              padding: (isChildPage ?? false) && widget.trailing != null
+                                  ? const EdgeInsets.only(left: 65, top: 17)
+                                  : const EdgeInsets.all(15.0),
+                              child: Align(
+                                  alignment: (isChildPage ?? false) && widget.trailing == null
+                                      ? Alignment.topRight
+                                      : Alignment.topLeft,
+                                  child: SafeArea(
+                                      child: Icon(
+                                    Icons.search,
+                                    size: 25,
+                                    color: Theme.of(context).colorScheme.onSurface,
+                                  ))),
+                            ),
+                            suggestionsBuilder: widget.searchBuilder ??
+                                (context, controller) => (widget.children ?? []).prepend(SizedBox(height: 15)),
+                          ),
+                        // Refresh progress status
+                        if ((Share.session.refreshStatus.progressStatus?.isNotEmpty ?? false) &&
+                            widget.pageFlags.hasFlag(DataPageType.refreshable))
+                          SafeArea(
+                            child: Padding(
+                              padding: switch (isChildPage ?? false) {
+                                false when widget.pageFlags.hasFlag(DataPageType.searchable) =>
+                                  const EdgeInsets.only(left: 45), // Search icon only
+                                false when !widget.pageFlags.hasFlag(DataPageType.searchable) =>
+                                  const EdgeInsets.only(left: 5), // Nothing in the way
+                                true when widget.pageFlags.hasFlag(DataPageType.searchable) && widget.trailing == null =>
+                                  const EdgeInsets.only(left: 45), // Back icon only
+                                true when widget.pageFlags.hasFlag(DataPageType.searchable) && widget.trailing != null =>
+                                  const EdgeInsets.only(left: 100), // Two icons ::before
+                                _ => const EdgeInsets.all(0),
+                              },
+                              child: Container(
+                                  margin: const EdgeInsets.only(top: 10, left: 10),
+                                  child: ConstrainedBox(
+                                      constraints: const BoxConstraints(maxWidth: 150),
+                                      child: Text(
+                                        Share.session.refreshStatus.progressStatus ?? '',
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                            color: CupertinoColors.inactiveGray, fontSize: 13, fontWeight: FontWeight.w300),
                                       ))),
                             ),
                           )
-                      ]
-                              .appendIf(
-                                  SearchAnchor(
-                                    isFullScreen: true,
-                                    builder: (context, controller) => Padding(
-                                      padding: (isChildPage ?? false) && widget.trailing != null
-                                          ? const EdgeInsets.only(left: 65, top: 17)
-                                          : const EdgeInsets.all(15.0),
-                                      child: Align(
-                                          alignment: (isChildPage ?? false) && widget.trailing == null
-                                              ? Alignment.topRight
-                                              : Alignment.topLeft,
-                                          child: SafeArea(
-                                              child: Icon(
-                                            Icons.search,
-                                            size: 25,
-                                            color: Theme.of(context).colorScheme.onSurface,
-                                          ))),
-                                    ),
-                                    suggestionsBuilder: widget.searchBuilder ??
-                                        (context, controller) => (widget.children ?? []).prepend(SizedBox(height: 15)),
-                                  ),
-                                  (widget.pageFlags.hasFlag(DataPageType.searchable) &&
-                                      ((Share.session.refreshStatus.progressStatus?.isEmpty ?? true) ||
-                                          (isChildPage ?? false))))
-                              .toList()));
+                      ]));
                 }),
-                leadingWidth: switch (isChildPage ?? false) {
-                  false when widget.pageFlags.hasFlag(DataPageType.searchable) => 150 + 45, // Search icon only
-                  false when !widget.pageFlags.hasFlag(DataPageType.searchable) => 150 + 5, // Nothing in the way
-                  true when widget.pageFlags.hasFlag(DataPageType.searchable) && widget.trailing == null => 150 + 45, // Back
-                  true when widget.pageFlags.hasFlag(DataPageType.searchable) && widget.trailing != null => 150 + 100, // Two
-                  _ => 150, // Literally nothing
-                },
-                leading: ((Share.session.refreshStatus.progressStatus?.isNotEmpty ?? false)
-                    ? Padding(
-                        padding: switch (isChildPage ?? false) {
-                          false when widget.pageFlags.hasFlag(DataPageType.searchable) =>
-                            const EdgeInsets.only(left: 45), // Search icon only
-                          false when !widget.pageFlags.hasFlag(DataPageType.searchable) =>
-                            const EdgeInsets.only(left: 5), // Nothing in the way
-                          true when widget.pageFlags.hasFlag(DataPageType.searchable) && widget.trailing == null =>
-                            const EdgeInsets.only(left: 45), // Back icon only
-                          true when widget.pageFlags.hasFlag(DataPageType.searchable) && widget.trailing != null =>
-                            const EdgeInsets.only(left: 100), // Two icons ::before
-                          _ => const EdgeInsets.all(0),
-                        },
-                        child: Container(
-                            margin: const EdgeInsets.only(top: 10, left: 10),
-                            child: ConstrainedBox(
-                                constraints: const BoxConstraints(maxWidth: 150),
-                                child: Text(
-                                  Share.session.refreshStatus.progressStatus ?? '',
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                      color: CupertinoColors.inactiveGray, fontSize: 13, fontWeight: FontWeight.w300),
-                                ))),
-                      )
-                    : Container(margin: EdgeInsets.only(left: 10, top: 3, bottom: 1), child: widget.leading)),
+                leadingWidth: widget.leading != null ? 150 : null,
+                leading: widget.leading == null ||
+                        (Share.session.refreshStatus.progressStatus?.isNotEmpty ?? false) &&
+                            widget.pageFlags.hasFlag(DataPageType.refreshable)
+                    ? null // Show the back button
+                    : Container(margin: EdgeInsets.only(left: 10, top: 3, bottom: 1), child: widget.leading),
                 actions: <Widget>[Container(margin: EdgeInsets.only(right: 10), child: widget.trailing)],
               ),
               if (widget.pageFlags.hasFlag(DataPageType.segmented) && (widget.segments?.isNotEmpty ?? false))

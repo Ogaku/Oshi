@@ -362,15 +362,15 @@ class _MessagesPageState extends State<MessagesPage> {
                       ],
                     )
                   : SafeArea(
-                      child: GestureDetector(
-                      onTap: () {
+                      child: IconButton(
+                      onPressed: () {
                         showCupertinoModalBottomSheet(
                             context: context,
                             builder: (context) => MessageComposePage(
                                 signature:
                                     '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                       },
-                      child: Icon(
+                      icon: Icon(
                         Icons.add,
                         size: 25,
                         color: Theme.of(context).colorScheme.onSurface,
