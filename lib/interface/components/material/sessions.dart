@@ -191,10 +191,20 @@ class _SessionsPageState extends State<SessionsPage> {
           theme: ThemeData(
             colorScheme: lightColorScheme,
             useMaterial3: true,
+            pageTransitionsTheme: const PageTransitionsTheme(
+              builders: <TargetPlatform, PageTransitionsBuilder>{
+                TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+              },
+            ),
           ),
           darkTheme: ThemeData(
             colorScheme: darkColorScheme,
             useMaterial3: true,
+            pageTransitionsTheme: const PageTransitionsTheme(
+              builders: <TargetPlatform, PageTransitionsBuilder>{
+                TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+              },
+            ),
           ),
           home: Builder(builder: (context) {
             ErrorWidget.builder = errorView;
@@ -553,10 +563,20 @@ class _NewSessionPageState extends State<NewSessionPage> {
               theme: ThemeData(
                 colorScheme: lightColorScheme,
                 useMaterial3: true,
+                pageTransitionsTheme: const PageTransitionsTheme(
+                  builders: <TargetPlatform, PageTransitionsBuilder>{
+                    TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+                  },
+                ),
               ),
               darkTheme: ThemeData(
                 colorScheme: darkColorScheme,
                 useMaterial3: true,
+                pageTransitionsTheme: const PageTransitionsTheme(
+                  builders: <TargetPlatform, PageTransitionsBuilder>{
+                    TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+                  },
+                ),
               ),
               home: body);
     });
