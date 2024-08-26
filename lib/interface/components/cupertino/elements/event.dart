@@ -28,6 +28,7 @@ extension TimelineWidgetsExtension on Iterable<AgendaEvent> {
               AdaptiveCard(
                   centered: true,
                   secondary: true,
+                  padding: EdgeInsets.only(),
                   child: Opacity(
                       opacity: 0.5,
                       child: Container(
@@ -38,14 +39,14 @@ extension TimelineWidgetsExtension on Iterable<AgendaEvent> {
                           ))))
             ]
           : select((x, index) => Visibility(
-                  visible: isNotEmpty,
-                  child: AdaptiveCard(
-                      child: Builder(
-                          builder: (context) =>
-                              x.event?.asEventWidget(context, isNotEmpty, day, setState) ??
-                              x.lesson?.asLessonWidget(context, null, day, setState) ??
-                              Text('')))))
-              .toList();
+              visible: isNotEmpty,
+              child: AdaptiveCard(
+                  padding: EdgeInsets.only(),
+                  child: Builder(
+                      builder: (context) =>
+                          x.event?.asEventWidget(context, isNotEmpty, day, setState) ??
+                          x.lesson?.asLessonWidget(context, null, day, setState) ??
+                          Text(''))))).toList();
 }
 
 extension EventColors on Event {
@@ -89,6 +90,7 @@ extension EventWidgetsExtension on Iterable<Event> {
               AdaptiveCard(
                   centered: true,
                   secondary: true,
+                  padding: EdgeInsets.only(),
                   child: Opacity(
                       opacity: 0.5,
                       child: Container(
@@ -99,10 +101,10 @@ extension EventWidgetsExtension on Iterable<Event> {
                           ))))
             ]
           : select((x, index) => Visibility(
-                  visible: isNotEmpty,
-                  child: AdaptiveCard(
-                      child: Builder(builder: (context) => x.asEventWidget(context, isNotEmpty, day, setState)))))
-              .toList();
+              visible: isNotEmpty,
+              child: AdaptiveCard(
+                  padding: EdgeInsets.only(),
+                  child: Builder(builder: (context) => x.asEventWidget(context, isNotEmpty, day, setState))))).toList();
 }
 
 extension EventWidgetExtension on Event {

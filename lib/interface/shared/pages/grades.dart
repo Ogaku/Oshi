@@ -223,9 +223,11 @@ class _GradesPageState extends State<GradesPage> {
           subjectsWidget(Share.session.data.student.subjects.orderBy((x) => x.name).toList()),
           CardContainer(
             additionalDividerMargin: 5,
+            regularOverride: false,
             children: [
               AdaptiveCard(
                   child: '/Average'.localized,
+                  regular: false,
                   after: () {
                     var majors =
                         Share.session.data.student.subjects.where((x) => x.hasMajor).select((x, _) => x.topMajor!.asValue);

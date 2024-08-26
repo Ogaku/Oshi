@@ -391,8 +391,9 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                         }),
                                     child: 'Semester',
                                     after: 'Select the semester',
-                                    trailingElement:
-                                        switch (semester) { 1 => "first", 2 => "second", _ => "ERR" }.toString().capitalize(),
+                                    trailingElement: switch (semester) { 1 => "first", 2 => "second", _ => "ERR" }
+                                        .toString()
+                                        .capitalize(),
                                   ),
                                 // Message input
                                 if (Share.settings.appSettings.useCupertino)
@@ -505,6 +506,7 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                                   if (!Share.settings.appSettings.useCupertino)
                                                     AdaptiveCard(
                                                       regular: true,
+                                                      margin: EdgeInsets.symmetric(horizontal: 6),
                                                       click: () => showOptionDialog(
                                                           context: context,
                                                           title: 'Grade type',
@@ -536,12 +538,14 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                                   CardContainer(additionalDividerMargin: 5, filled: false, children: [
                                                     // Average
                                                     AdaptiveFormRow(
+                                                        noMargin: true,
                                                         helper: 'Set grade weight to 0 or 1',
                                                         title: 'Counts to the average',
                                                         value: counts,
                                                         onChanged: (s) => setState(() => counts = s)),
                                                     // Resit
                                                     AdaptiveFormRow(
+                                                        noMargin: true,
                                                         helper: 'Maek the grade as corrected',
                                                         title: 'Resit (corrected grade)',
                                                         value: resit,

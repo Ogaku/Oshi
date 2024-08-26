@@ -159,7 +159,10 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
         (searchController.text.isEmpty ? lessonsWidget : Container()),
         if (!Share.settings.appSettings.useCupertino &&
             (homeworksToday.isNotEmpty || eventsToday.isNotEmpty || teachersAbsentToday.isNotEmpty))
-          Divider(indent: 25, endIndent: 25),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Divider(indent: 23, endIndent: 23),
+          ),
         // Homeworks for today
         Visibility(
             visible: homeworksToday.isNotEmpty,
@@ -300,7 +303,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                   animateToPage(newDate);
                 }),
           child: Container(
-              margin: EdgeInsets.only(top: 5, bottom: 5, right: Share.settings.appSettings.useCupertino ? 0 : 25),
+              margin: EdgeInsets.only(top: Share.settings.appSettings.useCupertino ? 0 : 5, bottom: 5, right: Share.settings.appSettings.useCupertino ? 0 : 25),
               child:
                   TextChip(width: 110, text: DateFormat.yMd(Share.settings.appSettings.localeCode).format(selectedDate)))),
       trailing: isWorking

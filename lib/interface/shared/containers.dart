@@ -57,7 +57,7 @@ class _CardContainerState extends State<CardContainer> {
         hasLeading: false,
         header: (widget.header is String && widget.header.isNotEmpty)
             ? (widget.largeHeader
-                ? Text((widget.header as String).toUpperCase())
+                ? Text((widget.header as String).capitalize())
                 : Container(
                     margin: EdgeInsets.symmetric(horizontal: 20),
                     child: Opacity(
@@ -133,11 +133,12 @@ class AdaptiveCard extends StatefulWidget {
     required this.child,
     this.after,
     this.roundedFocus = true,
-    this.regular = false,
+    this.regular = true,
     this.unreadDot,
     this.trailingElement,
     this.forceTrailing = false,
     this.margin,
+    this.padding,
   });
 
   final bool hideChevron;
@@ -147,6 +148,7 @@ class AdaptiveCard extends StatefulWidget {
   final bool regular;
   final bool forceTrailing;
   final EdgeInsets? margin;
+  final EdgeInsets? padding;
 
   final FutureOr<void> Function()? click;
   final dynamic child;
@@ -164,19 +166,26 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
     if (Share.settings.appSettings.useCupertino) {
       return CupertinoListTile(
           onTap: widget.click,
-          trailing: widget.after != null
-              ? (widget.after is String
-                  ? Text(
-                      widget.after as String,
-                      style: TextStyle(fontWeight: FontWeight.normal),
-                    )
-                  : widget.after)
-              : (widget.click != null && !widget.hideChevron
-                  ? Container(
-                      margin: EdgeInsets.only(left: 2),
-                      child: Transform.scale(
-                          scale: 0.7, child: Icon(CupertinoIcons.chevron_forward, color: CupertinoColors.inactiveGray)))
-                  : null),
+          padding: widget.padding,
+          trailing: Row(
+            children: [
+              if (widget.after != null)
+                (widget.after is String
+                    ? Opacity(
+                        opacity: 0.5,
+                        child: Text(
+                          widget.after as String,
+                          style: TextStyle(fontWeight: FontWeight.normal),
+                        ),
+                      )
+                    : widget.after),
+              if (widget.click != null && !widget.hideChevron)
+                Container(
+                    margin: EdgeInsets.only(left: 5),
+                    child: Transform.scale(
+                        scale: 0.7, child: Icon(CupertinoIcons.chevron_forward, color: CupertinoColors.inactiveGray)))
+            ],
+          ),
           title: widget.child is String
               ? Opacity(
                   opacity: widget.secondary ? 0.5 : 1.0,
@@ -190,7 +199,8 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
     } else {
       return ListTile(
           onTap: widget.click,
-          contentPadding: widget.margin ?? (widget.regular
+          contentPadding: widget.margin ??
+              (widget.regular
                   ? EdgeInsets.symmetric(horizontal: 23, vertical: 6)
                   : EdgeInsets.symmetric(horizontal: widget.centered ? 0 : 15)),
           shape: widget.roundedFocus

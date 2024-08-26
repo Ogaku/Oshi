@@ -93,13 +93,16 @@ class _MessagesPageState extends State<MessagesPage> {
     return <Widget>[
       CardContainer(
         additionalDividerMargin: 5,
-        filled: messagesToDisplay.isNotEmpty && filled,
+        filled: false,
+        regularOverride: true,
         children: messagesToDisplay.isEmpty
             // No messages to display
             ? [
                 AdaptiveCard(
                     secondary: true,
                     centered: true,
+                    regular: true,
+                    padding: EdgeInsets.only(),
                     child: folder == MessageFolders.announcements
                         ? (query.isEmpty ? 'No announcements, yet...' : 'No announcements matching the query')
                         : (query.isEmpty ? 'No messages, yet...' : 'No messages matching the query'))
@@ -170,93 +173,94 @@ class _MessagesPageState extends State<MessagesPage> {
                                 : 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate)} ${x.message.sender?.name} wrote:\n"${x.message.topic}\n\n${x.message.preview}[...]"'),
                             color: CupertinoColors.systemBlue))
                         .toList(),
-                    child: GestureDetector(
-                        onLongPress: () => print('Long press'),
-                        child: AdaptiveCard(
-                            click: () => openMessage(message: x.message, announcement: x.announcement, folder: folder),
-                            child: Container(
-                              decoration: Share.settings.appSettings.useCupertino
-                                  ? BoxDecoration(
-                                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                                      color: CupertinoDynamicColor.resolve(
-                                          CupertinoDynamicColor.withBrightness(
-                                              color: const Color.fromARGB(255, 255, 255, 255),
-                                              darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                                          context))
-                                  : null,
-                              child: Table(children: [
-                                TableRow(children: [
-                                  Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Visibility(
-                                            visible: (!x.message.read && folder == MessageFolders.inbox) ||
-                                                (x.message.id != 1 && folder == MessageFolders.announcements),
+                    child: AdaptiveCard(
+                        click: () => openMessage(message: x.message, announcement: x.announcement, folder: folder),
+                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        child: Container(
+                          decoration: Share.settings.appSettings.useCupertino
+                              ? BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                  color: CupertinoDynamicColor.resolve(
+                                      CupertinoDynamicColor.withBrightness(
+                                          color: const Color.fromARGB(255, 255, 255, 255),
+                                          darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                                      context))
+                              : null,
+                          child: Table(children: [
+                            TableRow(children: [
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Visibility(
+                                        visible: (!x.message.read && folder == MessageFolders.inbox) ||
+                                            (x.message.id != 1 && folder == MessageFolders.announcements),
+                                        child: Container(
+                                            margin: EdgeInsets.only(top: 5, right: 6),
                                             child: Container(
-                                                margin: EdgeInsets.only(top: 5, right: 6),
-                                                child: Container(
-                                                  height: 10,
-                                                  width: 10,
-                                                  decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      color: CupertinoTheme.of(context).primaryColor),
-                                                ))),
-                                        Expanded(
-                                            child: Container(
-                                                margin: EdgeInsets.only(right: 10),
-                                                child: Text(
-                                                  x.message.senderName,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                                ))),
-                                        Visibility(
-                                          visible: x.message.hasAttachments,
-                                          child: Transform.scale(
-                                              scale: 0.6,
-                                              child: Icon(CupertinoIcons.paperclip, color: CupertinoColors.inactiveGray)),
-                                        ),
-                                        Container(
-                                            margin: EdgeInsets.only(top: 1),
-                                            child: Opacity(
-                                                opacity: 0.5,
-                                                child: Text(
-                                                  folder == MessageFolders.announcements
-                                                      ? (x.message.sendDate.month == x.message.readDate?.month &&
-                                                              x.message.sendDate.year == x.message.readDate?.year &&
-                                                              x.message.sendDate.day != x.message.readDate?.day
-                                                          ? '${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(x.message.sendDate)} - ${DateFormat.d(Share.settings.appSettings.localeCode).format(x.message.readDate ?? DateTime.now())}'
-                                                          : '${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(x.message.sendDate)} - ${DateFormat(x.message.sendDate.year == x.message.readDate?.year ? 'MMMd' : 'yMMMd', Share.settings.appSettings.localeCode).format(x.message.readDate ?? DateTime.now())}')
-                                                      : x.message.sendDateString,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-                                                )))
-                                      ]),
-                                ]),
-                                TableRow(children: [
-                                  Container(
-                                      margin: EdgeInsets.only(top: 3),
+                                              height: 10,
+                                              width: 10,
+                                              decoration: BoxDecoration(
+                                                  shape: BoxShape.circle, color: CupertinoTheme.of(context).primaryColor),
+                                            ))),
+                                    Expanded(
+                                        child: Container(
+                                            margin: EdgeInsets.only(right: 10),
+                                            child: Text(
+                                              x.message.senderName,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                            ))),
+                                    Visibility(
+                                      visible: x.message.hasAttachments,
+                                      child: Transform.scale(
+                                          scale: 0.6,
+                                          child: Icon(CupertinoIcons.paperclip, color: CupertinoColors.inactiveGray)),
+                                    ),
+                                    Container(
+                                        margin: EdgeInsets.only(top: 1),
+                                        child: Opacity(
+                                            opacity: 0.5,
+                                            child: Text(
+                                              folder == MessageFolders.announcements
+                                                  ? (x.message.sendDate.month == x.message.readDate?.month &&
+                                                          x.message.sendDate.year == x.message.readDate?.year &&
+                                                          x.message.sendDate.day != x.message.readDate?.day
+                                                      ? '${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(x.message.sendDate)} - ${DateFormat.d(Share.settings.appSettings.localeCode).format(x.message.readDate ?? DateTime.now())}'
+                                                      : '${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(x.message.sendDate)} - ${DateFormat(x.message.sendDate.year == x.message.readDate?.year ? 'MMMd' : 'yMMMd', Share.settings.appSettings.localeCode).format(x.message.readDate ?? DateTime.now())}')
+                                                  : x.message.sendDateString,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                                            )))
+                                  ]),
+                            ]),
+                            TableRow(children: [
+                              Container(
+                                  margin: EdgeInsets.only(top: 3),
+                                  child: Text(
+                                    x.message.topic,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(fontSize: 16),
+                                  )),
+                            ]),
+                            TableRow(children: [
+                              Opacity(
+                                  opacity: 0.5,
+                                  child: Container(
+                                      margin: EdgeInsets.only(top: 5),
                                       child: Text(
-                                        x.message.topic,
+                                        x.message.previewString
+                                            .replaceAll('\n ', '\n')
+                                            .replaceAll('\n\n', '\n')
+                                            .replaceAll('\n\r', ''),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(fontSize: 16),
-                                      )),
-                                ]),
-                                TableRow(children: [
-                                  Opacity(
-                                      opacity: 0.5,
-                                      child: Container(
-                                          margin: EdgeInsets.only(top: 5),
-                                          child: Text(
-                                            x.message.previewString.replaceAll('\n ', '\n').replaceAll('\n\n', '\n'),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(fontSize: 16),
-                                          ))),
-                                ]),
-                              ]),
-                            )))))
+                                      ))),
+                            ]),
+                          ]),
+                        ))))
                 .toList(),
       )
     ].prepend(SizedBox(height: messagesToDisplay.isNotEmpty ? (filled ? 10 : 15) : 0)).toList();
@@ -328,7 +332,9 @@ class _MessagesPageState extends State<MessagesPage> {
                           title: 'New',
                           icon: CupertinoIcons.add,
                           onTap: () {
-                            showCupertinoModalBottomSheet(
+                            (Share.settings.appSettings.useCupertino
+                                    ? showCupertinoModalBottomSheet
+                                    : showMaterialModalBottomSheet)(
                                 context: context,
                                 builder: (context) => MessageComposePage(
                                     signature:
@@ -364,7 +370,9 @@ class _MessagesPageState extends State<MessagesPage> {
                   : SafeArea(
                       child: IconButton(
                       onPressed: () {
-                        showCupertinoModalBottomSheet(
+                        (Share.settings.appSettings.useCupertino
+                                ? showCupertinoModalBottomSheet
+                                : showMaterialModalBottomSheet)(
                             context: context,
                             builder: (context) => MessageComposePage(
                                 signature:

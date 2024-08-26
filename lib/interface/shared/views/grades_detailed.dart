@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
+import 'package:oshi/interface/components/shim/elements/context_menu.dart';
 import 'package:oshi/interface/components/shim/elements/grade.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/views/message_compose.dart';
@@ -49,21 +50,21 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
           // No messages to display
           ? [
               AdaptiveCard(
+                padding: EdgeInsets.only(),
                 centered: true,
                 secondary: true,
                 child: query.isNotEmpty ? 'No grades matching the query' : 'No grades',
               )
             ]
           // Bindable messages layout
-          : gradesToDisplay
-              .select((x, index) {
-                return AdaptiveCard(
-                    child: x.asGrade(context, setState,
-                        corrected: widget.lesson.allGrades.firstWhereOrDefault(
-                            (y) => x.resitPart && y.resitPart && y.name == x.name && x != y,
-                            defaultValue: null)));
-              })
-              .toList(),
+          : gradesToDisplay.select((x, index) {
+              return AdaptiveCard(
+                  padding: EdgeInsets.only(),
+                  child: x.asGrade(context, setState,
+                      corrected: widget.lesson.allGrades.firstWhereOrDefault(
+                          (y) => x.resitPart && y.resitPart && y.name == x.name && x != y,
+                          defaultValue: null)));
+            }).toList(),
     );
   }
 
@@ -75,21 +76,21 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
         Visibility(
             visible: widget.lesson.gradesAverage >= 0,
             child: AdaptiveCard(
-                child: CupertinoContextMenu.builder(
-                    enableHapticFeedback: true,
+                padding: EdgeInsets.only(),
+                child: AdaptiveContextMenu(
                     actions: [
-                      CupertinoContextMenuAction(
+                      AdaptiveContextMenuAction(
                         onPressed: () {
                           sharing.Share.share('My average from ${widget.lesson.name} is ${widget.lesson.gradesAverage}!');
                           Navigator.of(context, rootNavigator: true).pop();
                         },
-                        trailingIcon: CupertinoIcons.share,
-                        child: const Text('Share'),
+                        icon: CupertinoIcons.share,
+                        title: 'Share',
                       ),
-                      CupertinoContextMenuAction(
+                      AdaptiveContextMenuAction(
                         isDestructiveAction: true,
-                        trailingIcon: CupertinoIcons.chat_bubble_2,
-                        child: const Text('Inquiry'),
+                        icon: CupertinoIcons.chat_bubble_2,
+                        title: 'Inquiry',
                         onPressed: () {
                           Navigator.of(context, rootNavigator: true).pop();
                           showCupertinoModalBottomSheet(
@@ -102,38 +103,36 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                         },
                       ),
                     ],
-                    builder: (BuildContext context, Animation<double> animation) {
-                      return Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                              color: CupertinoDynamicColor.resolve(
-                                  CupertinoDynamicColor.withBrightness(
-                                      color: const Color.fromARGB(255, 255, 255, 255),
-                                      darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                                  context)),
-                          padding: EdgeInsets.only(top: 18, bottom: 15, right: 15, left: 20),
-                          child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                  maxHeight: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
-                                  maxWidth: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
-                              child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                        padding: EdgeInsets.only(bottom: 5),
-                                        child: Text(
-                                          'Average',
-                                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                        )),
-                                    Container(
-                                        padding: EdgeInsets.only(bottom: 5),
-                                        child: Text(
-                                          widget.lesson.gradesAverage.toStringAsFixed(2),
-                                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                        )),
-                                  ])));
-                    }))),
+                    child: Container(
+                        decoration: Share.settings.appSettings.useCupertino
+                            ? BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                color: CupertinoDynamicColor.resolve(
+                                    CupertinoDynamicColor.withBrightness(
+                                        color: const Color.fromARGB(255, 255, 255, 255),
+                                        darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                                    context))
+                            : null,
+                        padding: Share.settings.appSettings.useCupertino
+                            ? EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20)
+                            : null,
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                  padding: EdgeInsets.only(bottom: 5),
+                                  child: Text(
+                                    'Average',
+                                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                  )),
+                              Container(
+                                  padding: EdgeInsets.only(bottom: 5),
+                                  child: Text(
+                                    widget.lesson.gradesAverage.toStringAsFixed(2),
+                                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                  )),
+                            ]))))),
         secondSemester);
 
     var gradesSemesterBottomWidgets = <Widget>[
@@ -141,22 +140,22 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
       Visibility(
           visible: widget.lesson.gradesSemAverage >= 0,
           child: AdaptiveCard(
-              child: CupertinoContextMenu.builder(
-                  enableHapticFeedback: true,
+              padding: EdgeInsets.only(),
+              child: AdaptiveContextMenu(
                   actions: [
-                    CupertinoContextMenuAction(
+                    AdaptiveContextMenuAction(
                       onPressed: () {
                         sharing.Share.share(
                             'My 1st semester average from ${widget.lesson.name} is ${widget.lesson.gradesSemAverage}!');
                         Navigator.of(context, rootNavigator: true).pop();
                       },
-                      trailingIcon: CupertinoIcons.share,
-                      child: const Text('Share'),
+                      icon: CupertinoIcons.share,
+                      title: 'Share',
                     ),
-                    CupertinoContextMenuAction(
+                    AdaptiveContextMenuAction(
                       isDestructiveAction: true,
-                      trailingIcon: CupertinoIcons.chat_bubble_2,
-                      child: const Text('Inquiry'),
+                      icon: CupertinoIcons.chat_bubble_2,
+                      title: 'Inquiry',
                       onPressed: () {
                         Navigator.of(context, rootNavigator: true).pop();
                         showCupertinoModalBottomSheet(
@@ -169,38 +168,36 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                       },
                     ),
                   ],
-                  builder: (BuildContext context, Animation<double> animation) {
-                    return Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            color: CupertinoDynamicColor.resolve(
-                                CupertinoDynamicColor.withBrightness(
-                                    color: const Color.fromARGB(255, 255, 255, 255),
-                                    darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                                context)),
-                        padding: EdgeInsets.only(top: 18, bottom: 15, right: 15, left: 20),
-                        child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                                maxHeight: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
-                                maxWidth: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
-                            child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                      padding: EdgeInsets.only(bottom: 5),
-                                      child: Text(
-                                        'Semester average',
-                                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                      )),
-                                  Container(
-                                      padding: EdgeInsets.only(bottom: 5),
-                                      child: Text(
-                                        widget.lesson.gradesSemAverage.toStringAsFixed(2),
-                                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                      )),
-                                ])));
-                  })))
+                  child: Container(
+                      decoration: Share.settings.appSettings.useCupertino
+                          ? BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                              color: CupertinoDynamicColor.resolve(
+                                  CupertinoDynamicColor.withBrightness(
+                                      color: const Color.fromARGB(255, 255, 255, 255),
+                                      darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                                  context))
+                          : null,
+                      padding: Share.settings.appSettings.useCupertino
+                          ? EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20)
+                          : null,
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                                padding: EdgeInsets.only(bottom: 5),
+                                child: Text(
+                                  'Semester average',
+                                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                )),
+                            Container(
+                                padding: EdgeInsets.only(bottom: 5),
+                                child: Text(
+                                  widget.lesson.gradesSemAverage.toStringAsFixed(2),
+                                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                                )),
+                          ])))))
     ];
 
     // Proposed grade (2nd semester / year)
@@ -209,22 +206,22 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
             ?.value !=
         null) {
       gradesBottomWidgets.add(AdaptiveCard(
-          child: CupertinoContextMenu.builder(
-              enableHapticFeedback: true,
+          padding: EdgeInsets.only(),
+          child: AdaptiveContextMenu(
               actions: [
-                CupertinoContextMenuAction(
+                AdaptiveContextMenuAction(
                   onPressed: () {
                     sharing.Share.share(
                         'I got a ${widget.lesson.allGrades.firstWhereOrDefault((x) => x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition))?.value} proposition from ${widget.lesson.name}!');
                     Navigator.of(context, rootNavigator: true).pop();
                   },
-                  trailingIcon: CupertinoIcons.share,
-                  child: const Text('Share'),
+                  icon: CupertinoIcons.share,
+                  title: 'Share',
                 ),
-                CupertinoContextMenuAction(
+                AdaptiveContextMenuAction(
                   isDestructiveAction: true,
-                  trailingIcon: CupertinoIcons.chat_bubble_2,
-                  child: const Text('Inquiry'),
+                  icon: CupertinoIcons.chat_bubble_2,
+                  title: 'Inquiry',
                   onPressed: () {
                     Navigator.of(context, rootNavigator: true).pop();
                     showCupertinoModalBottomSheet(
@@ -237,74 +234,70 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   },
                 ),
               ],
-              builder: (BuildContext context, Animation<double> animation) {
-                return Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        color: CupertinoDynamicColor.resolve(
-                            CupertinoDynamicColor.withBrightness(
-                                color: const Color.fromARGB(255, 255, 255, 255),
-                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                            context)),
-                    padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
-                    child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                            maxHeight: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
-                            maxWidth: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Container(
+                  decoration: Share.settings.appSettings.useCupertino
+                      ? BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          color: CupertinoDynamicColor.resolve(
+                              CupertinoDynamicColor.withBrightness(
+                                  color: const Color.fromARGB(255, 255, 255, 255),
+                                  darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                              context))
+                      : null,
+                  padding: Share.settings.appSettings.useCupertino
+                      ? EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20)
+                      : null,
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    UnreadDot(
-                                        unseen: () => widget.lesson.allGrades.any((x) =>
-                                            (x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition)) &&
-                                            x.unseen),
-                                        markAsSeen: () => widget.lesson.allGrades
-                                            .where(
-                                                (x) => x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition))
-                                            .forEach((x) => x.markAsSeen()),
-                                        margin: EdgeInsets.only(right: 8)),
-                                    Text(
-                                      'Proposed grade',
-                                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                    ),
-                                  ]),
+                              UnreadDot(
+                                  unseen: () => widget.lesson.allGrades.any((x) =>
+                                      (x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition)) && x.unseen),
+                                  markAsSeen: () => widget.lesson.allGrades
+                                      .where((x) => x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition))
+                                      .forEach((x) => x.markAsSeen()),
+                                  margin: EdgeInsets.only(right: 8)),
                               Text(
-                                widget.lesson.allGrades
-                                        .firstWhereOrDefault(
-                                            (x) => x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition))
-                                        ?.value
-                                        .toString() ??
-                                    'Unknown',
+                                'Proposed grade',
                                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                               ),
-                            ])));
-              })));
+                            ]),
+                        Text(
+                          widget.lesson.allGrades
+                                  .firstWhereOrDefault(
+                                      (x) => x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition))
+                                  ?.value
+                                  .toString() ??
+                              'Unknown',
+                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                        ),
+                      ])))));
     }
 
     // Proposed grade (1st semester)
     if (widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemesterProposition && x.semester == 1)?.value != null) {
       gradesSemesterBottomWidgets.add(AdaptiveCard(
-          child: CupertinoContextMenu.builder(
-              enableHapticFeedback: true,
+          padding: EdgeInsets.only(),
+          child: AdaptiveContextMenu(
               actions: [
-                CupertinoContextMenuAction(
+                AdaptiveContextMenuAction(
                   onPressed: () {
                     sharing.Share.share(
                         'I got a ${widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemesterProposition && x.semester == 1)?.value} semester proposition from ${widget.lesson.name}!');
                     Navigator.of(context, rootNavigator: true).pop();
                   },
-                  trailingIcon: CupertinoIcons.share,
-                  child: const Text('Share'),
+                  icon: CupertinoIcons.share,
+                  title: 'Share',
                 ),
-                CupertinoContextMenuAction(
+                AdaptiveContextMenuAction(
                   isDestructiveAction: true,
-                  trailingIcon: CupertinoIcons.chat_bubble_2,
-                  child: const Text('Inquiry'),
+                  icon: CupertinoIcons.chat_bubble_2,
+                  title: 'Inquiry',
                   onPressed: () {
                     Navigator.of(context, rootNavigator: true).pop();
                     showCupertinoModalBottomSheet(
@@ -317,71 +310,69 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   },
                 ),
               ],
-              builder: (BuildContext context, Animation<double> animation) {
-                return Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        color: CupertinoDynamicColor.resolve(
-                            CupertinoDynamicColor.withBrightness(
-                                color: const Color.fromARGB(255, 255, 255, 255),
-                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                            context)),
-                    padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
-                    child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                            maxHeight: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
-                            maxWidth: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Container(
+                  decoration: Share.settings.appSettings.useCupertino
+                      ? BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          color: CupertinoDynamicColor.resolve(
+                              CupertinoDynamicColor.withBrightness(
+                                  color: const Color.fromARGB(255, 255, 255, 255),
+                                  darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                              context))
+                      : null,
+                  padding: Share.settings.appSettings.useCupertino
+                      ? EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20)
+                      : null,
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    UnreadDot(
-                                        unseen: () => widget.lesson.allGrades
-                                            .any((x) => (x.isSemesterProposition && x.semester == 1) && x.unseen),
-                                        markAsSeen: () => widget.lesson.allGrades
-                                            .where((x) => x.isSemesterProposition && x.semester == 1)
-                                            .forEach((x) => x.markAsSeen()),
-                                        margin: EdgeInsets.only(right: 8)),
-                                    Text(
-                                      'Proposed grade',
-                                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                    ),
-                                  ]),
+                              UnreadDot(
+                                  unseen: () => widget.lesson.allGrades
+                                      .any((x) => (x.isSemesterProposition && x.semester == 1) && x.unseen),
+                                  markAsSeen: () => widget.lesson.allGrades
+                                      .where((x) => x.isSemesterProposition && x.semester == 1)
+                                      .forEach((x) => x.markAsSeen()),
+                                  margin: EdgeInsets.only(right: 8)),
                               Text(
-                                widget.lesson.allGrades
-                                        .firstWhereOrDefault((x) => x.isSemesterProposition && x.semester == 1)
-                                        ?.value
-                                        .toString() ??
-                                    'Unknown',
+                                'Proposed grade',
                                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                               ),
-                            ])));
-              })));
+                            ]),
+                        Text(
+                          widget.lesson.allGrades
+                                  .firstWhereOrDefault((x) => x.isSemesterProposition && x.semester == 1)
+                                  ?.value
+                                  .toString() ??
+                              'Unknown',
+                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                        ),
+                      ])))));
     }
 
     // Final grade (2nd semester / year)
     if (widget.lesson.allGrades.firstWhereOrDefault((x) => x.isFinal || (x.isSemester && x.semester == 2))?.value != null) {
       gradesBottomWidgets.add(AdaptiveCard(
-          child: CupertinoContextMenu.builder(
-              enableHapticFeedback: true,
+          padding: EdgeInsets.only(),
+          child: AdaptiveContextMenu(
               actions: [
-                CupertinoContextMenuAction(
+                AdaptiveContextMenuAction(
                   onPressed: () {
                     sharing.Share.share(
                         'I got a ${widget.lesson.allGrades.firstWhereOrDefault((x) => x.isFinal || (x.semester == 2 && x.isSemester))?.value} final from ${widget.lesson.name}!');
                     Navigator.of(context, rootNavigator: true).pop();
                   },
-                  trailingIcon: CupertinoIcons.share,
-                  child: const Text('Share'),
+                  icon: CupertinoIcons.share,
+                  title: 'Share',
                 ),
-                CupertinoContextMenuAction(
+                AdaptiveContextMenuAction(
                   isDestructiveAction: true,
-                  trailingIcon: CupertinoIcons.chat_bubble_2,
-                  child: const Text('Inquiry'),
+                  icon: CupertinoIcons.chat_bubble_2,
+                  title: 'Inquiry',
                   onPressed: () {
                     Navigator.of(context, rootNavigator: true).pop();
                     showCupertinoModalBottomSheet(
@@ -394,71 +385,69 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   },
                 ),
               ],
-              builder: (BuildContext context, Animation<double> animation) {
-                return Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        color: CupertinoDynamicColor.resolve(
-                            CupertinoDynamicColor.withBrightness(
-                                color: const Color.fromARGB(255, 255, 255, 255),
-                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                            context)),
-                    padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
-                    child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                            maxHeight: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
-                            maxWidth: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Container(
+                  decoration: Share.settings.appSettings.useCupertino
+                      ? BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          color: CupertinoDynamicColor.resolve(
+                              CupertinoDynamicColor.withBrightness(
+                                  color: const Color.fromARGB(255, 255, 255, 255),
+                                  darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                              context))
+                      : null,
+                  padding: Share.settings.appSettings.useCupertino
+                      ? EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20)
+                      : null,
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    UnreadDot(
-                                        unseen: () => widget.lesson.allGrades
-                                            .any((x) => (x.isFinal || (x.semester == 2 && x.isSemester)) && x.unseen),
-                                        markAsSeen: () => widget.lesson.allGrades
-                                            .where((x) => x.isFinal || (x.semester == 2 && x.isSemester))
-                                            .forEach((x) => x.markAsSeen()),
-                                        margin: EdgeInsets.only(right: 8)),
-                                    Text(
-                                      'Final grade',
-                                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                    ),
-                                  ]),
+                              UnreadDot(
+                                  unseen: () => widget.lesson.allGrades
+                                      .any((x) => (x.isFinal || (x.semester == 2 && x.isSemester)) && x.unseen),
+                                  markAsSeen: () => widget.lesson.allGrades
+                                      .where((x) => x.isFinal || (x.semester == 2 && x.isSemester))
+                                      .forEach((x) => x.markAsSeen()),
+                                  margin: EdgeInsets.only(right: 8)),
                               Text(
-                                widget.lesson.allGrades
-                                        .firstWhereOrDefault((x) => x.isFinal || (x.semester == 2 && x.isSemester))
-                                        ?.value
-                                        .toString() ??
-                                    'Unknown',
+                                'Final grade',
                                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                               ),
-                            ])));
-              })));
+                            ]),
+                        Text(
+                          widget.lesson.allGrades
+                                  .firstWhereOrDefault((x) => x.isFinal || (x.semester == 2 && x.isSemester))
+                                  ?.value
+                                  .toString() ??
+                              'Unknown',
+                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                        ),
+                      ])))));
     }
 
     // Final grade (1st semester)
     if (widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemester && x.semester == 1)?.value != null) {
       gradesSemesterBottomWidgets.add(AdaptiveCard(
-          child: CupertinoContextMenu.builder(
-              enableHapticFeedback: true,
+          padding: EdgeInsets.only(),
+          child: AdaptiveContextMenu(
               actions: [
-                CupertinoContextMenuAction(
+                AdaptiveContextMenuAction(
                   onPressed: () {
                     sharing.Share.share(
                         'I got a ${widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemester && x.semester == 1)?.value} semester from ${widget.lesson.name}!');
                     Navigator.of(context, rootNavigator: true).pop();
                   },
-                  trailingIcon: CupertinoIcons.share,
-                  child: const Text('Share'),
+                  icon: CupertinoIcons.share,
+                  title: 'Share',
                 ),
-                CupertinoContextMenuAction(
+                AdaptiveContextMenuAction(
                   isDestructiveAction: true,
-                  trailingIcon: CupertinoIcons.chat_bubble_2,
-                  child: const Text('Inquiry'),
+                  icon: CupertinoIcons.chat_bubble_2,
+                  title: 'Inquiry',
                   onPressed: () {
                     Navigator.of(context, rootNavigator: true).pop();
                     showCupertinoModalBottomSheet(
@@ -471,56 +460,54 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   },
                 ),
               ],
-              builder: (BuildContext context, Animation<double> animation) {
-                return Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        color: CupertinoDynamicColor.resolve(
-                            CupertinoDynamicColor.withBrightness(
-                                color: const Color.fromARGB(255, 255, 255, 255),
-                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                            context)),
-                    padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
-                    child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                            maxHeight: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
-                            maxWidth: animation.value < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Container(
+                  decoration: Share.settings.appSettings.useCupertino
+                      ? BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          color: CupertinoDynamicColor.resolve(
+                              CupertinoDynamicColor.withBrightness(
+                                  color: const Color.fromARGB(255, 255, 255, 255),
+                                  darkColor: const Color.fromARGB(255, 28, 28, 30)),
+                              context))
+                      : null,
+                  padding: Share.settings.appSettings.useCupertino
+                      ? EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20)
+                      : null,
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    UnreadDot(
-                                        unseen: () => widget.lesson.allGrades
-                                            .any((x) => (x.isSemester && x.semester == 1) && x.unseen),
-                                        markAsSeen: () => widget.lesson.allGrades
-                                            .where((x) => x.isSemester && x.semester == 1)
-                                            .forEach((x) => x.markAsSeen()),
-                                        margin: EdgeInsets.only(right: 8)),
-                                    Text(
-                                      'Semester grade',
-                                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                                    ),
-                                  ]),
+                              UnreadDot(
+                                  unseen: () =>
+                                      widget.lesson.allGrades.any((x) => (x.isSemester && x.semester == 1) && x.unseen),
+                                  markAsSeen: () => widget.lesson.allGrades
+                                      .where((x) => x.isSemester && x.semester == 1)
+                                      .forEach((x) => x.markAsSeen()),
+                                  margin: EdgeInsets.only(right: 8)),
                               Text(
-                                widget.lesson.allGrades
-                                        .firstWhereOrDefault((x) => x.isSemester && x.semester == 1)
-                                        ?.value
-                                        .toString() ??
-                                    'Unknown',
+                                'Semester grade',
                                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                               ),
-                            ])));
-              })));
+                            ]),
+                        Text(
+                          widget.lesson.allGrades
+                                  .firstWhereOrDefault((x) => x.isSemester && x.semester == 1)
+                                  ?.value
+                                  .toString() ??
+                              'Unknown',
+                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                        ),
+                      ])))));
     }
 
     return DataPageBase.adaptive(
         pageFlags: [
           DataPageType.searchable,
-          DataPageType.refreshable,
+          // DataPageType.refreshable,
         ].flag,
         setState: setState,
         title: widget.lesson.name,

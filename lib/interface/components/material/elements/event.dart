@@ -41,12 +41,14 @@ extension TimelineWidgetsExtension on Iterable<AgendaEvent> {
             ]
           : select((x, index) => Visibility(
               visible: isNotEmpty,
-              child: AdaptiveCard(
-                  child: Builder(
-                      builder: (context) =>
-                          x.event?.asEventWidget(context, isNotEmpty, day, setState) ??
-                          x.lesson?.asLessonWidget(context, null, day, setState) ??
-                          Text(''))))).toList();
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 7),
+                child: Builder(
+                    builder: (context) =>
+                        x.event?.asEventWidget(context, isNotEmpty, day, setState) ??
+                        x.lesson?.asLessonWidget(context, null, day, setState) ??
+                        Text('')),
+              ))).toList();
 }
 
 extension EventColors on Event {
@@ -101,8 +103,10 @@ extension EventWidgetsExtension on Iterable<Event> {
             ]
           : select((x, index) => Visibility(
               visible: isNotEmpty,
-              child: AdaptiveCard(
-                  child: Builder(builder: (context) => x.asEventWidget(context, isNotEmpty, day, setState))))).toList();
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 7),
+                child: Builder(builder: (context) => x.asEventWidget(context, isNotEmpty, day, setState)),
+              ))).toList();
 }
 
 extension EventWidgetExtension on Event {

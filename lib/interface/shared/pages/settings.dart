@@ -82,6 +82,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     AdaptiveCard(
                         regular: true,
                         click: profilePageHandler,
+                        padding: EdgeInsets.symmetric(horizontal: 15),
                         child: Container(
                           decoration: Share.settings.appSettings.useCupertino
                               ? null
@@ -91,7 +92,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   color: Theme.of(context).colorScheme.surfaceContainer),
                           child: Row(children: [
                             Container(
-                                margin: EdgeInsets.all(15),
+                                margin: EdgeInsets.symmetric(vertical: 15),
                                 child: GestureDetector(
                                     onTap: (isAndroid || isIOS)
                                         ? () => ImagePicker().pickImage(source: ImageSource.gallery).then((value) {
@@ -749,6 +750,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                           margin: EdgeInsets.symmetric(
                                               horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
                                           filled: false,
+                                          regularOverride: true,
                                           header: element.key,
                                           additionalDividerMargin: 5,
                                           children: element.isEmpty
@@ -890,6 +892,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                     margin:
                                                                         EdgeInsets.symmetric(horizontal: 18, vertical: 15),
                                                                     filled: false,
+                                                                    regularOverride: true,
                                                                     header: element.key.nameExtra,
                                                                     additionalDividerMargin: 5,
                                                                     children: element.isEmpty
@@ -903,8 +906,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                         // Bindable messages layout
                                                                         : element
                                                                             .toList()
-                                                                            .select(
-                                                                                (x, _) => x.grade.asGrade(context, setState))
+                                                                            .select((x, _) => Padding(
+                                                                                padding: const EdgeInsets.symmetric(
+                                                                                    horizontal: 10),
+                                                                                child: x.grade.asGrade(context, setState)))
                                                                             .toList()))
                                                                 .appendIfEmpty(CardContainer(
                                                                     margin:

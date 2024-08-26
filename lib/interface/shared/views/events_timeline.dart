@@ -57,7 +57,9 @@ class _EventsPageState extends State<EventsPage> {
 
     return thingsToDisplayByDate
         .select((element, index) => CardContainer(
-            header: Text(element.key),
+            filled: false,
+            regularOverride: true,
+            header: element.key,
             additionalDividerMargin: 5,
             children: element.isEmpty
                 // No messages to display
@@ -65,11 +67,19 @@ class _EventsPageState extends State<EventsPage> {
                     AdaptiveCard(
                       secondary: true,
                       centered: true,
+                      regular: true,
                       child: 'No events to display',
                     )
                   ]
                 // Bindable messages layout
                 : element.toList().asEventWidgets(null, query, 'No events matching the query', setState)))
+        .cast<Widget>()
+        .appendIfEmpty(AdaptiveCard(
+          secondary: true,
+          centered: true,
+          regular: true,
+          child: query.isNotEmpty ? 'No events matching the query' : 'No events to display',
+        ))
         .toList();
   }
 
@@ -78,7 +88,7 @@ class _EventsPageState extends State<EventsPage> {
     return DataPageBase.adaptive(
         pageFlags: [
           DataPageType.searchable,
-          DataPageType.refreshable,
+          if (Share.settings.appSettings.useCupertino) DataPageType.refreshable,
           DataPageType.segmentedSticky,
         ].flag,
         setState: setState,
