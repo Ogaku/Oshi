@@ -51,8 +51,8 @@ class FakeDataReader implements IProvider {
   @override
   ProviderData? get registerData => ProviderData(
       student: Student(
-          account: Account(firstName: 'Harry', lastName: 'Garncarz'),
-          mainClass: Class(symbol: 'Gryffindor', unit: Unit(name: 'Hogwarts School of Witchcraft and Wizardry'))));
+          account: Account(firstName: 'Pomura', lastName: 'Inpuff'),
+          mainClass: Class(symbol: '3c', unit: Unit(name: 'St. Hermelin High'))),);
 
   @override
   Map<String, ({String name, bool obscure, ({String text, Uri link})? helper})> get credentialsConfig => {};

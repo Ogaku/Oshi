@@ -7,9 +7,9 @@ import 'package:event/src/eventargs.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:logging/logging.dart';
 import 'package:intl/intl.dart';
-import 'package:oshi/interface/cupertino/pages/messages.dart';
 import 'package:oshi/models/data/averages.dart';
 import 'package:oshi/models/data/messages.dart';
+import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:darq/darq.dart';
@@ -1008,14 +1008,6 @@ extension CategoryExtension on Category {
       _ => models.EventCategory.other // Inne
     };
   }
-}
-
-extension DateTimeExtension on DateTime {
-  DateTime asDate() => DateTime(year, month, day);
-  bool isAfterOrSame(DateTime? other) => this == other || isAfter(other ?? DateTime.now());
-  bool isBeforeOrSame(DateTime? other) => this == other || isBefore(other ?? DateTime.now());
-  DateTime withTime(DateTime? other) =>
-      other == null ? this : DateTime(year, month, day, other.hour, other.minute, other.second);
 }
 
 List<T> addOrReplace<T>(List<T>? oldList, List<T> newList) {

@@ -1,4 +1,5 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
+import 'package:oshi/interface/shared/session_management.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -7,13 +8,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:oshi/share/background.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/share.dart';
-
-import 'package:oshi/interface/cupertino/sessions_page.dart' as cupertinoapp show sessionsPage;
-import 'package:oshi/interface/cupertino/new_session.dart' as cupertinoapp show newSessionPage;
-import 'package:oshi/interface/cupertino/base_app.dart' as cupertinoapp show baseApp;
-import 'package:oshi/interface/material/sessions_page.dart' as materialapp show sessionsPage;
-import 'package:oshi/interface/material/new_session.dart' as materialapp show newSessionPage;
-import 'package:oshi/interface/material/base_app.dart' as materialapp show baseApp;
 
 Future<void> main() async {
   // Setup routine, see background.dart
@@ -37,18 +31,16 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  StatefulWidget Function() child = Share.settings.appSettings.useCupertino
-      ? () => (Share.settings.sessions.lastSession != null
-          ? cupertinoapp.baseApp
-          : (Share.settings.sessions.sessions.isEmpty ? cupertinoapp.newSessionPage : cupertinoapp.sessionsPage))
-      : () => (Share.settings.sessions.lastSession != null
-          ? materialapp.baseApp
-          : (Share.settings.sessions.sessions.isEmpty ? materialapp.newSessionPage : materialapp.sessionsPage));
+  late StatefulWidget Function() child;
+  StatefulWidget Function() get _child => () => (Share.settings.sessions.lastSession != null
+      ? baseApplication
+      : (Share.settings.sessions.sessions.isEmpty ? newSessionPage : sessionsPage));
 
   @override
   void initState() {
     super.initState();
     initializeDateFormatting();
+    child = _child;
 
     if (isAndroid || isIOS) {
       initPlatformState();
@@ -108,7 +100,10 @@ class _MainAppState extends State<MainApp> {
     Share.changeBase.unsubscribeAll();
     Share.changeBase.subscribe((args) {
       setState(() {
-        if (args != null) child = args.value;
+        if (args != null)
+          child = args.value;
+        else
+          child = _child;
       });
     });
 

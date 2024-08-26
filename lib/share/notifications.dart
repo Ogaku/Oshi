@@ -6,13 +6,13 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:event/event.dart';
+import 'package:oshi/interface/shared/session_management.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mutex/mutex.dart';
-import 'package:oshi/interface/cupertino/base_app.dart';
-import 'package:oshi/interface/cupertino/pages/home.dart';
+import 'package:oshi/interface/shared/pages/home.dart';
 import 'package:oshi/share/share.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -106,7 +106,7 @@ class NotificationController {
 
           // Change the main page to the base application
           await Share.session.tryLogin(showErrors: false);
-          Share.changeBase.broadcast(Value(() => baseApp));
+          Share.changeBase.broadcast(Value(() => baseApplication));
           await Future.delayed(const Duration(milliseconds: 500));
         }
 

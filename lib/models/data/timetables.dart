@@ -2,13 +2,13 @@ import 'package:darq/darq.dart';
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:oshi/interface/cupertino/pages/timetable.dart';
 import 'package:oshi/models/data/class.dart';
 import 'package:oshi/models/data/classroom.dart';
 import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/models/data/teacher.dart';
 
 import 'package:hive/hive.dart';
+import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
 part 'timetables.g.dart';
 

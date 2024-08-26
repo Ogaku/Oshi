@@ -5,7 +5,7 @@ import 'dart:math';
 import 'package:darq/darq.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:oshi/interface/cupertino/pages/home.dart';
+import 'package:oshi/interface/shared/pages/home.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/share/share.dart';
 import 'package:path/path.dart' as path;
