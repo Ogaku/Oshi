@@ -585,6 +585,7 @@ extension LessonWidgetExtension on TimetableLesson {
                 },
               ),
             ],
+        longPressOnly: true,
         child: lessonBody(context, selectedDate, selectedDay,
             animation: null, markRemoved: markRemoved, markModified: markModified, onTap: onTap));
   }
@@ -594,6 +595,7 @@ extension LessonWidgetExtension on TimetableLesson {
       bool markRemoved = false,
       bool markModified = false,
       bool useOnTap = false,
+      bool disableTap = false,
       Function()? onTap}) {
     var events = Share.session.events
         .where((y) => y.date == selectedDate)
@@ -605,324 +607,229 @@ extension LessonWidgetExtension on TimetableLesson {
         .toList();
 
     var tag = Uuid().v4();
-    var body = GestureDetector(
-        onTap: (useOnTap && onTap != null)
-            ? onTap
-            : (animation == null || animation.value >= CupertinoContextMenu.animationOpensAt)
-                ? null
+    var body = AdaptiveCard(
+        regular: true,
+        click: disableTap
+            ? null
+            : ((useOnTap && onTap != null)
+                ? onTap
                 : () => showMaterialModalBottomSheet(
                     expand: false,
                     context: context,
-                    builder: (context) => Container(
-                        color: CupertinoDynamicColor.resolve(
-                            CupertinoDynamicColor.withBrightness(
-                                color: const Color.fromARGB(255, 242, 242, 247),
-                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                            context),
-                        child: Table(
+                    builder: (context) => Table(
                             children: <TableRow>[
                           TableRow(children: [
                             Container(
-                                margin: EdgeInsets.only(top: 20, left: 15, right: 15),
+                                margin: EdgeInsets.only(top: 15, left: 10, right: 10),
                                 child: Hero(
                                     tag: tag,
                                     child: lessonBody(context, selectedDate, selectedDay,
                                         useOnTap: onTap != null,
                                         markRemoved: markRemoved,
                                         markModified: markModified,
+                                        disableTap: true,
                                         onTap: onTap)))
                           ])
                         ].appendAllIf(events, events.isNotEmpty).appendIf(
                                 TableRow(children: [
                                   CardContainer(
+                                      filled: true,
                                       additionalDividerMargin: 5,
+                                      regularOverride: true,
                                       children: <Widget>[]
                                           .appendIf(
                                               AdaptiveCard(
-                                                  child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Text('Subject'),
-                                                  Flexible(
-                                                      child: Container(
-                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                          child: Opacity(
-                                                              opacity: 0.5,
-                                                              child: Text(subject?.name ?? '',
-                                                                  maxLines: 3,
-                                                                  overflow: TextOverflow.ellipsis,
-                                                                  textAlign: TextAlign.end))))
-                                                ],
-                                              )),
+                                                child: 'Subject',
+                                                regular: true,
+                                                after: subject?.name ?? '',
+                                              ),
                                               subject?.name.isNotEmpty ?? false)
                                           .appendIf(
                                               AdaptiveCard(
-                                                  child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Text('Teacher'),
-                                                  Flexible(
-                                                      child: Container(
-                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                          child: Opacity(
-                                                              opacity: 0.5,
-                                                              child: Text(teacher?.name ?? '',
-                                                                  maxLines: 1, overflow: TextOverflow.ellipsis))))
-                                                ],
-                                              )),
+                                                child: 'Teacher',
+                                                regular: true,
+                                                after: teacher?.name ?? '',
+                                              ),
                                               teacher?.name.isNotEmpty ?? false)
                                           .appendIf(
                                               AdaptiveCard(
-                                                  child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Text('Classroom'),
-                                                  Flexible(
-                                                      child: Container(
-                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                          child: Opacity(
-                                                              opacity: 0.5,
-                                                              child: Text(classroom?.name ?? '',
-                                                                  maxLines: 1, textAlign: TextAlign.end))))
-                                                ],
-                                              )),
+                                                child: 'Classroom',
+                                                regular: true,
+                                                after: classroom?.name ?? '',
+                                              ),
                                               classroom?.name.isNotEmpty ?? false)
                                           .appendIf(
                                               AdaptiveCard(
-                                                  child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Text('Lesson no.'),
-                                                  Flexible(
-                                                      child: Container(
-                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                          child: Opacity(
-                                                              opacity: 0.5,
-                                                              child: Text(lessonNo.toString(),
-                                                                  maxLines: 3,
-                                                                  overflow: TextOverflow.ellipsis,
-                                                                  textAlign: TextAlign.end))))
-                                                ],
-                                              )),
+                                                child: 'Lesson no.',
+                                                regular: true,
+                                                after: lessonNo.toString(),
+                                              ),
                                               lessonNo >= 0)
                                           // Substitution details - original lesson
                                           .appendIf(
                                               AdaptiveCard(
-                                                  child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Text('Original lesson'),
-                                                  Flexible(
-                                                      child: Container(
-                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                          child: Opacity(
-                                                              opacity: 0.5,
-                                                              child: Text(substitutionDetails?.originalSubject?.name ?? '',
-                                                                  maxLines: 3, textAlign: TextAlign.end))))
-                                                ],
-                                              )),
+                                                  child: 'Original lesson',
+                                                  regular: true,
+                                                  after: substitutionDetails?.originalSubject?.name ?? ''),
                                               (isCanceled || modifiedSchedule) &&
                                                   !isMovedLesson &&
                                                   (substitutionDetails?.originalSubject?.name.isNotEmpty ?? false))
                                           // Substitution details - original teacher
                                           .appendIf(
                                               AdaptiveCard(
-                                                  child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Text('Original teacher'),
-                                                  Flexible(
-                                                      child: Container(
-                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                          child: Opacity(
-                                                              opacity: 0.5,
-                                                              child: Text(substitutionDetails?.originalTeacher?.name ?? '',
-                                                                  maxLines: 3, textAlign: TextAlign.end))))
-                                                ],
-                                              )),
+                                                child: 'Original teacher',
+                                                regular: true,
+                                                after: substitutionDetails?.originalTeacher?.name ?? '',
+                                              ),
                                               (isCanceled || modifiedSchedule) &&
                                                   !isMovedLesson &&
                                                   (substitutionDetails?.originalTeacher?.name.isNotEmpty ?? false))
                                           // Substitution details - moved lesson
                                           .appendIf(
                                               AdaptiveCard(
-                                                  child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Text(isCanceled ? 'Moved to' : 'Moved from'),
-                                                  Flexible(
-                                                      child: Container(
-                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                          child: Opacity(
-                                                              opacity: 0.5,
-                                                              child: Text(
-                                                                  '${DateFormat.yMd(Share.settings.appSettings.localeCode).format(substitutionDetails?.originalDate ?? DateTime.now().asDate())}${substitutionDetails?.originalLessonNo != null ? ', L${substitutionDetails?.originalLessonNo.toString()}' : ''}',
-                                                                  maxLines: 3,
-                                                                  textAlign: TextAlign.end))))
-                                                ],
-                                              )),
+                                                child: isCanceled ? 'Moved to' : 'Moved from',
+                                                regular: true,
+                                                after:
+                                                    '${DateFormat.yMd(Share.settings.appSettings.localeCode).format(substitutionDetails?.originalDate ?? DateTime.now().asDate())}${substitutionDetails?.originalLessonNo != null ? ', L${substitutionDetails?.originalLessonNo.toString()}' : ''}',
+                                              ),
                                               isMovedLesson)
                                           // Substitution details - cancelled
                                           .appendIf(
                                               AdaptiveCard(
-                                                  child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  Flexible(
-                                                      child: Container(
-                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                          child: Opacity(
-                                                              opacity: 0.5,
-                                                              child: Text('This lesson has been cancelled',
-                                                                  maxLines: 1, textAlign: TextAlign.center))))
-                                                ],
-                                              )),
+                                                centered: true,
+                                                child: 'This lesson has been cancelled',
+                                              ),
                                               isCanceled && !isMovedLesson))
                                 ]),
                                 true)))),
-        child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: (animation == null ||
-                        animation.value >= CupertinoContextMenu.animationOpensAt ||
-                        markModified ||
-                        markRemoved ||
-                        onTap != null)
-                    ? CupertinoDynamicColor.resolve(CupertinoColors.tertiarySystemBackground, context)
-                    : CupertinoDynamicColor.resolve(
-                        CupertinoDynamicColor.withBrightness(
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                        context)),
-            padding: EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20),
-            child: Opacity(
-                opacity: (isCanceled ||
-                        (date == DateTime.now().asDate() &&
-                            (selectedDay?.dayEnd?.isAfter(DateTime.now()) ?? false) &&
-                            (hourTo?.asHour(DateTime.now()).isBefore(DateTime.now()) ?? false)))
-                    ? 0.5
-                    : 1.0,
-                child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                        maxHeight: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt
-                            ? double.infinity
-                            : ((modifiedSchedule || isCanceled) ? 110 : 80),
-                        maxWidth: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 300),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.max,
-                              children:
-                                  // Event tags
-                                  Share.session.events
-                                          .where((y) => y.date == selectedDate)
-                                          .where((y) => (y.lessonNo ?? -1) == lessonNo)
-                                          .select((y, index) => Container(
-                                              margin: EdgeInsets.only(top: 5, right: 6),
-                                              child: Container(
-                                                height: 10,
-                                                width: 10,
-                                                decoration: BoxDecoration(shape: BoxShape.circle, color: y.asColor()),
-                                              )) as Widget)
-                                          .toList() +
-                                      // The lesson block
-                                      [
-                                        UnreadDot(
-                                            unseen: () => unseen,
-                                            markAsSeen: markAsSeen,
-                                            margin: EdgeInsets.only(top: 5, right: 6)),
-                                        // Lesson name
-                                        Expanded(
-                                            flex: 2,
-                                            child: Text(
-                                              subject?.name ?? 'Unknown',
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontStyle: (isCanceled || modifiedSchedule || markModified)
-                                                      ? FontStyle.italic
-                                                      : FontStyle.normal,
-                                                  decoration:
-                                                      (isCanceled || markRemoved) ? TextDecoration.lineThrough : null),
-                                            )),
-                                        // Classroom name/symbol
-                                        Container(
-                                            padding: EdgeInsets.only(left: 15),
-                                            child: ((animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt &&
-                                                    (Share.session.data.student.attendances
-                                                            ?.any((y) => y.date == date && y.lessonNo == lessonNo) ??
-                                                        false))
-                                                ? (switch (Share.session.data.student.attendances!
-                                                    .firstWhere((y) => y.date == date && y.lessonNo == lessonNo)
-                                                    .type) {
-                                                    AttendanceType.absent =>
-                                                      Icon(CupertinoIcons.xmark, color: CupertinoColors.destructiveRed),
-                                                    AttendanceType.late =>
-                                                      Icon(CupertinoIcons.timer, color: CupertinoColors.systemYellow),
-                                                    AttendanceType.excused => Icon(CupertinoIcons.doc_on_clipboard,
-                                                        color: CupertinoColors.systemCyan),
-                                                    AttendanceType.duty => Icon(CupertinoIcons.rectangle_stack_person_crop,
-                                                        color: CupertinoColors.systemIndigo),
-                                                    AttendanceType.present =>
-                                                      Icon(CupertinoIcons.check_mark, color: CupertinoColors.activeGreen),
-                                                    AttendanceType.other =>
-                                                      Icon(CupertinoIcons.question, color: CupertinoColors.inactiveGray)
-                                                  })
-                                                : Text(
-                                                    classroom?.name ?? '',
-                                                    style: TextStyle(
-                                                        fontSize: 17,
-                                                        fontStyle: (isCanceled || modifiedSchedule || markModified)
-                                                            ? FontStyle.italic
-                                                            : FontStyle.normal,
-                                                        decoration:
-                                                            (isCanceled || markRemoved) ? TextDecoration.lineThrough : null),
-                                                  ))
-                                      ]),
-                          // Time and teacher details
-                          Visibility(
-                              visible: !(date == DateTime.now().asDate() &&
-                                  (selectedDay?.dayEnd?.isAfter(DateTime.now()) ?? false) &&
-                                  ((hourTo?.asHour(DateTime.now()).isBefore(DateTime.now()) ?? false) || isCanceled)),
-                              child: Container(
-                                  margin: EdgeInsets.only(top: 4),
-                                  child: Opacity(
-                                      opacity: 0.5,
-                                      child: Text(
-                                        detailsTimeTeacherString,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            fontSize: 17,
-                                            fontStyle: (isCanceled || modifiedSchedule || markModified)
-                                                ? FontStyle.italic
-                                                : FontStyle.normal,
-                                            decoration: (isCanceled || markRemoved) ? TextDecoration.lineThrough : null),
-                                      )))),
-                          // Substitution details - visible if context is opened
-                          Visibility(
-                              visible: (animation?.value ?? 0) >= CupertinoContextMenu.animationOpensAt &&
-                                  (modifiedSchedule || isCanceled),
-                              child: Container(
-                                  margin: EdgeInsets.only(top: 4),
-                                  child: Opacity(
-                                      opacity: 0.5,
-                                      child: Text(
-                                        substitutionDetailsString,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            fontSize: 17,
-                                            fontStyle: (isCanceled || modifiedSchedule || markModified)
-                                                ? FontStyle.italic
-                                                : FontStyle.normal,
-                                            decoration: (isCanceled || markRemoved) ? TextDecoration.lineThrough : null),
-                                      ))))
-                        ])))));
+        margin: EdgeInsets.only(left: 15, top: 5, bottom: 5, right: 20),
+        child: Opacity(
+            opacity: (isCanceled ||
+                    (date == DateTime.now().asDate() &&
+                        (selectedDay?.dayEnd?.isAfter(DateTime.now()) ?? false) &&
+                        (hourTo?.asHour(DateTime.now()).isBefore(DateTime.now()) ?? false)))
+                ? 0.5
+                : 1.0,
+            child: ConstrainedBox(
+                constraints: BoxConstraints(
+                    maxHeight: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt
+                        ? double.infinity
+                        : ((modifiedSchedule || isCanceled) ? 110 : 80),
+                    maxWidth: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 300),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          children:
+                              // Event tags
+                              Share.session.events
+                                      .where((y) => y.date == selectedDate)
+                                      .where((y) => (y.lessonNo ?? -1) == lessonNo)
+                                      .select((y, index) => Container(
+                                          margin: EdgeInsets.only(top: 5, right: 6),
+                                          child: Container(
+                                            height: 10,
+                                            width: 10,
+                                            decoration: BoxDecoration(shape: BoxShape.circle, color: y.asColor()),
+                                          )) as Widget)
+                                      .toList() +
+                                  // The lesson block
+                                  [
+                                    UnreadDot(
+                                        unseen: () => unseen,
+                                        markAsSeen: markAsSeen,
+                                        margin: EdgeInsets.only(top: 5, right: 6)),
+                                    // Lesson name
+                                    Expanded(
+                                        flex: 2,
+                                        child: Text(
+                                          subject?.name ?? 'Unknown',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w600,
+                                              fontStyle: (isCanceled || modifiedSchedule || markModified)
+                                                  ? FontStyle.italic
+                                                  : FontStyle.normal,
+                                              decoration: (isCanceled || markRemoved) ? TextDecoration.lineThrough : null),
+                                        )),
+                                    // Classroom name/symbol
+                                    Container(
+                                        padding: EdgeInsets.only(left: 15),
+                                        child: ((animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt &&
+                                                (Share.session.data.student.attendances
+                                                        ?.any((y) => y.date == date && y.lessonNo == lessonNo) ??
+                                                    false))
+                                            ? (switch (Share.session.data.student.attendances!
+                                                .firstWhere((y) => y.date == date && y.lessonNo == lessonNo)
+                                                .type) {
+                                                AttendanceType.absent =>
+                                                  Icon(CupertinoIcons.xmark, color: CupertinoColors.destructiveRed),
+                                                AttendanceType.late =>
+                                                  Icon(CupertinoIcons.timer, color: CupertinoColors.systemYellow),
+                                                AttendanceType.excused =>
+                                                  Icon(CupertinoIcons.doc_on_clipboard, color: CupertinoColors.systemCyan),
+                                                AttendanceType.duty => Icon(CupertinoIcons.rectangle_stack_person_crop,
+                                                    color: CupertinoColors.systemIndigo),
+                                                AttendanceType.present =>
+                                                  Icon(CupertinoIcons.check_mark, color: CupertinoColors.activeGreen),
+                                                AttendanceType.other =>
+                                                  Icon(CupertinoIcons.question, color: CupertinoColors.inactiveGray)
+                                              })
+                                            : Text(
+                                                classroom?.name ?? '',
+                                                style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontStyle: (isCanceled || modifiedSchedule || markModified)
+                                                        ? FontStyle.italic
+                                                        : FontStyle.normal,
+                                                    decoration:
+                                                        (isCanceled || markRemoved) ? TextDecoration.lineThrough : null),
+                                              ))
+                                  ]),
+                      // Time and teacher details
+                      Visibility(
+                          visible: !(date == DateTime.now().asDate() &&
+                              (selectedDay?.dayEnd?.isAfter(DateTime.now()) ?? false) &&
+                              ((hourTo?.asHour(DateTime.now()).isBefore(DateTime.now()) ?? false) || isCanceled)),
+                          child: Container(
+                              margin: EdgeInsets.only(top: 4),
+                              child: Opacity(
+                                  opacity: 0.5,
+                                  child: Text(
+                                    detailsTimeTeacherString,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontStyle: (isCanceled || modifiedSchedule || markModified)
+                                            ? FontStyle.italic
+                                            : FontStyle.normal,
+                                        decoration: (isCanceled || markRemoved) ? TextDecoration.lineThrough : null),
+                                  )))),
+                      // Substitution details - visible if context is opened - not supported in material
+                      Visibility(
+                          visible: (animation?.value ?? 0) >= CupertinoContextMenu.animationOpensAt &&
+                              (modifiedSchedule || isCanceled),
+                          child: Container(
+                              margin: EdgeInsets.only(top: 4),
+                              child: Opacity(
+                                  opacity: 0.5,
+                                  child: Text(
+                                    substitutionDetailsString,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontStyle: (isCanceled || modifiedSchedule || markModified)
+                                            ? FontStyle.italic
+                                            : FontStyle.normal,
+                                        decoration: (isCanceled || markRemoved) ? TextDecoration.lineThrough : null),
+                                  ))))
+                    ]))));
 
     return animation == null ? body : Hero(tag: tag, child: body);
   }
