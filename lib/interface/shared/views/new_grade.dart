@@ -381,18 +381,18 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                         context: context,
                                         title: 'Semester',
                                         icon: Icons.line_weight,
-                                        selection: weight,
+                                        selection: semester,
                                         options: [
                                           OptionEntry(name: 'First', value: 1),
                                           OptionEntry(name: 'Second', value: 2),
                                         ],
                                         onChanged: (v) {
-                                          setState(() => weight = v);
+                                          setState(() => semester = v);
                                         }),
                                     child: 'Semester',
                                     after: 'Select the semester',
                                     trailingElement:
-                                        switch (semester) { 1 => "first", 2 => "second", _ => "ERR" }.toString(),
+                                        switch (semester) { 1 => "first", 2 => "second", _ => "ERR" }.toString().capitalize(),
                                   ),
                                 // Message input
                                 if (Share.settings.appSettings.useCupertino)

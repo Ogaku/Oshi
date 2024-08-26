@@ -4,6 +4,7 @@
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
 import 'package:oshi/interface/components/shim/elements/grade.dart';
@@ -42,7 +43,8 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
 
     return CardContainer(
       additionalDividerMargin: 5,
-      filled: gradesToDisplay.isNotEmpty && filled,
+      filled: false,
+      regularOverride: true,
       children: gradesToDisplay.isEmpty
           // No messages to display
           ? [
@@ -53,13 +55,15 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
               )
             ]
           // Bindable messages layout
-          : gradesToDisplay.select((x, index) {
-              return AdaptiveCard(
-                  child: x.asGrade(context, setState,
-                      corrected: widget.lesson.allGrades.firstWhereOrDefault(
-                          (y) => x.resitPart && y.resitPart && y.name == x.name && x != y,
-                          defaultValue: null)));
-            }).toList(),
+          : gradesToDisplay
+              .select((x, index) {
+                return AdaptiveCard(
+                    child: x.asGrade(context, setState,
+                        corrected: widget.lesson.allGrades.firstWhereOrDefault(
+                            (y) => x.resitPart && y.resitPart && y.name == x.name && x != y,
+                            defaultValue: null)));
+              })
+              .toList(),
     );
   }
 

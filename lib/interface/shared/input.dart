@@ -77,10 +77,12 @@ class AdaptiveMenuButton extends StatefulWidget {
     super.key,
     required this.itemBuilder,
     Widget? child,
+    this.longPressOnly = false,
   }) : child = child ?? Icon(Share.settings.appSettings.useCupertino ? CupertinoIcons.ellipsis_circle : Icons.more_vert);
 
   final Widget child;
   final PullDownMenuItemBuilder itemBuilder;
+  final bool longPressOnly;
 
   @override
   State<AdaptiveMenuButton> createState() => _AdaptiveMenuButtonState();
@@ -125,16 +127,27 @@ class _AdaptiveMenuButtonState extends State<AdaptiveMenuButton> with SingleTick
           controller: _menuController,
           onClose: _animationController.reset,
           onOpen: _animationController.forward,
-          builder: (_, controller, child) => IconButton(
-            onPressed: () {
-              if (_animationController.status case AnimationStatus.forward || AnimationStatus.completed) {
-                _animationController.reverse();
-              } else {
-                _animationController.forward();
-              }
-            },
-            icon: widget.child,
-          ),
+          builder: (_, controller, child) => widget.longPressOnly
+              ? GestureDetector(
+                  onLongPress: () {
+                    if (_animationController.status case AnimationStatus.forward || AnimationStatus.completed) {
+                      _animationController.reverse();
+                    } else {
+                      _animationController.forward();
+                    }
+                  },
+                  child: widget.child,
+                )
+              : IconButton(
+                  onPressed: () {
+                    if (_animationController.status case AnimationStatus.forward || AnimationStatus.completed) {
+                      _animationController.reverse();
+                    } else {
+                      _animationController.forward();
+                    }
+                  },
+                  icon: widget.child,
+                ),
           menuChildren: [
             FadeTransition(
                 opacity: _animationController,

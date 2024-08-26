@@ -14,6 +14,11 @@ extension ListExtension<T> on List<T> {
       if (length != i + 1) yield element;
     }
   }
+
+  List<T> intersperseIf(T element, bool condition) {
+    if (!condition) return toList();
+    return intersperse(element).toList();
+  }
 }
 
 extension ListAppendExtension<T> on Iterable<T> {
