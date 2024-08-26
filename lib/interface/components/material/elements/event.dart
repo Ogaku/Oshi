@@ -1,10 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
 import 'package:oshi/interface/shared/containers.dart';
+import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
 import 'package:oshi/interface/shared/views/events_timeline.dart';
 import 'package:oshi/interface/shared/views/message_compose.dart';
@@ -38,14 +40,13 @@ extension TimelineWidgetsExtension on Iterable<AgendaEvent> {
                           ))))
             ]
           : select((x, index) => Visibility(
-                  visible: isNotEmpty,
-                  child: AdaptiveCard(
-                      child: Builder(
-                          builder: (context) =>
-                              x.event?.asEventWidget(context, isNotEmpty, day, setState) ??
-                              x.lesson?.asLessonWidget(context, null, day, setState) ??
-                              Text('')))))
-              .toList();
+              visible: isNotEmpty,
+              child: AdaptiveCard(
+                  child: Builder(
+                      builder: (context) =>
+                          x.event?.asEventWidget(context, isNotEmpty, day, setState) ??
+                          x.lesson?.asLessonWidget(context, null, day, setState) ??
+                          Text(''))))).toList();
 }
 
 extension EventColors on Event {
@@ -99,171 +100,159 @@ extension EventWidgetsExtension on Iterable<Event> {
                           ))))
             ]
           : select((x, index) => Visibility(
-                  visible: isNotEmpty,
-                  child: AdaptiveCard(
-                      child: Builder(builder: (context) => x.asEventWidget(context, isNotEmpty, day, setState)))))
-              .toList();
+              visible: isNotEmpty,
+              child: AdaptiveCard(
+                  child: Builder(builder: (context) => x.asEventWidget(context, isNotEmpty, day, setState))))).toList();
 }
 
 extension EventWidgetExtension on Event {
   Widget asEventWidget(BuildContext context, bool isNotEmpty, TimetableDay? day, void Function(VoidCallback fn) setState,
           {bool markRemoved = false, bool markModified = false, Function()? onTap}) =>
-      CupertinoContextMenu.builder(
-          enableHapticFeedback: true,
-          actions: [
-            CupertinoContextMenuAction(
-              onPressed: () {
-                sharing.Share.share(
-                    'There\'s a "$titleString" on ${DateFormat("EEEE, MMM d, y").format(timeFrom)} ${(classroom?.name.isNotEmpty ?? false) ? ("in ${classroom?.name ?? ""}") : "at school"}');
-                Navigator.of(context, rootNavigator: true).pop();
-              },
-              trailingIcon: CupertinoIcons.share,
-              child: const Text('Share'),
-            ),
-            category == EventCategory.homework
-                // Homework - mark as done
-                ? CupertinoContextMenuAction(
-                    onPressed: () {
-                      if (Share.session.data.student.mainClass.events.contains(this)) {
-                        Share.session.provider.markEventAsDone(parent: this).then((s) {
-                          try {
-                            if (s.success) {
-                              setState(() => Share.session.data.student.mainClass
-                                      .events[Share.session.data.student.mainClass.events.indexOf(this)] =
+      AdaptiveMenuButton(
+          itemBuilder: (context) => [
+                AdaptiveMenuItem(
+                  onTap: () {
+                    sharing.Share.share(
+                        'There\'s a "$titleString" on ${DateFormat("EEEE, MMM d, y").format(timeFrom)} ${(classroom?.name.isNotEmpty ?? false) ? ("in ${classroom?.name ?? ""}") : "at school"}');
+                  },
+                  icon: CupertinoIcons.share,
+                  title: 'Share',
+                ),
+                category == EventCategory.homework
+                    // Homework - mark as done
+                    ? AdaptiveMenuItem(
+                        onTap: () {
+                          if (Share.session.data.student.mainClass.events.contains(this)) {
+                            Share.session.provider.markEventAsDone(parent: this).then((s) {
+                              try {
+                                if (s.success) {
+                                  setState(() => Share.session.data.student.mainClass
+                                          .events[Share.session.data.student.mainClass.events.indexOf(this)] =
+                                      Event.from(other: this, done: true));
+                                }
+                              } catch (ex) {
+                                // ignored
+                              }
+                            });
+                          } else {
+                            // Must be a custom event
+                            try {
+                              setState(() => Share.session.customEvents[Share.session.customEvents.indexOf(this)] =
                                   Event.from(other: this, done: true));
+                            } catch (ex) {
+                              // ignored
                             }
+                          }
+                        },
+                        icon: CupertinoIcons.check_mark,
+                        title: 'Mark as done',
+                      )
+                    // Event - add to calendar
+                    : AdaptiveMenuItem(
+                        onTap: () {
+                          try {
+                            calendar.Add2Calendar.addEvent2Cal(calendar.Event(
+                                title: titleString,
+                                description: subtitleString,
+                                location: classroom?.name,
+                                startDate: timeFrom,
+                                endDate: timeTo ?? timeFrom));
                           } catch (ex) {
                             // ignored
                           }
-                        });
-                      } else {
-                        // Must be a custom event
-                        try {
-                          setState(() => Share.session.customEvents[Share.session.customEvents.indexOf(this)] =
-                              Event.from(other: this, done: true));
-                        } catch (ex) {
-                          // ignored
-                        }
-                      }
-                      Navigator.of(context, rootNavigator: true).pop();
-                    },
-                    trailingIcon: CupertinoIcons.check_mark,
-                    child: const Text('Mark as done'),
-                  )
-                // Event - add to calendar
-                : CupertinoContextMenuAction(
-                    onPressed: () {
-                      try {
-                        calendar.Add2Calendar.addEvent2Cal(calendar.Event(
-                            title: titleString,
-                            description: subtitleString,
-                            location: classroom?.name,
-                            startDate: timeFrom,
-                            endDate: timeTo ?? timeFrom));
-                      } catch (ex) {
-                        // ignored
-                      }
-                      Navigator.of(context, rootNavigator: true).pop();
-                    },
-                    trailingIcon: CupertinoIcons.calendar,
-                    child: const Text('Add to calendar'),
-                  ),
-          ]
-              .appendIf(
-                  CupertinoContextMenuAction(
-                    trailingIcon: CupertinoIcons.pencil,
-                    child: const Text('Edit'),
-                    onPressed: () {
-                      try {
-                        showCupertinoModalBottomSheet(
-                            context: context,
-                            builder: (context) => EventComposePage(
-                                  previous: this,
-                                )).then((value) => setState(() {}));
-                      } catch (ex) {
-                        // ignored
-                      }
-                      Navigator.of(context, rootNavigator: true).pop();
-                    },
-                  ),
-                  isOwnEvent || isSharedEvent)
-              .append(CupertinoContextMenuAction(
-                isDestructiveAction: true,
-                trailingIcon: CupertinoIcons.chat_bubble_2,
-                child: const Text('Inquiry'),
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: true).pop();
-                  showCupertinoModalBottomSheet(
-                      context: context,
-                      builder: (context) => MessageComposePage(
-                          receivers: sender != null ? [sender!] : [],
-                          subject: 'Pytanie o wydarzenie w dniu ${DateFormat("y.M.d").format(date ?? timeFrom)}',
-                          signature:
-                              '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-                },
-              ))
-              .appendIf(
-                  CupertinoContextMenuAction(
-                    isDestructiveAction: true,
-                    trailingIcon: CupertinoIcons.delete,
-                    child: const Text('Delete'),
-                    onPressed: () {
-                      Navigator.of(context, rootNavigator: true).pop();
-                      setState(() => Share.session.customEvents.remove(this));
-                      Share.settings.save();
-                    },
-                  ),
-                  isOwnEvent)
-              .appendIf(
-                  CupertinoContextMenuAction(
-                    isDestructiveAction: true,
-                    trailingIcon: CupertinoIcons.delete,
-                    child: const Text('Delete'),
-                    onPressed: () {
-                      Navigator.of(context, rootNavigator: true).pop();
-                      setState(() => Share.session.sharedEvents.remove(this));
-                      Share.settings.save();
-                      unshare(); // Unshare the event using the API
-                    },
-                  ),
-                  isSharedEvent),
-          builder: (BuildContext context, Animation<double> animation) => eventBody(isNotEmpty, day, context,
-              animation: animation, markRemoved: markRemoved, markModified: markModified, onTap: onTap));
+                        },
+                        icon: CupertinoIcons.calendar,
+                        title: 'Add to calendar',
+                      ),
+              ]
+                  .appendIf(
+                      AdaptiveMenuItem(
+                        icon: CupertinoIcons.pencil,
+                        title: 'Edit',
+                        onTap: () {
+                          try {
+                            showMaterialModalBottomSheet(
+                                context: context,
+                                builder: (context) => EventComposePage(
+                                      previous: this,
+                                    )).then((value) => setState(() {}));
+                          } catch (ex) {
+                            // ignored
+                          }
+                          Navigator.of(context, rootNavigator: true).pop();
+                        },
+                      ),
+                      isOwnEvent || isSharedEvent)
+                  .appendIf(
+                      AdaptiveMenuItem(
+                        icon: CupertinoIcons.chat_bubble_2,
+                        title: 'Inquiry',
+                        onTap: () {
+                          showMaterialModalBottomSheet(
+                              context: context,
+                              builder: (context) => MessageComposePage(
+                                  receivers: sender != null ? [sender!] : [],
+                                  subject: 'Pytanie o wydarzenie w dniu ${DateFormat("y.M.d").format(date ?? timeFrom)}',
+                                  signature:
+                                      '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                        },
+                      ),
+                      !isOwnEvent)
+                  .appendIf(
+                      AdaptiveMenuItem(
+                        icon: CupertinoIcons.delete,
+                        title: 'Delete',
+                        onTap: () {
+                          setState(() => Share.session.customEvents.remove(this));
+                          Share.settings.save();
+                        },
+                      ),
+                      isOwnEvent)
+                  .appendIf(
+                      AdaptiveMenuItem(
+                        icon: CupertinoIcons.delete,
+                        title: 'Delete',
+                        onTap: () {
+                          setState(() => Share.session.sharedEvents.remove(this));
+                          Share.settings.save();
+                          unshare(); // Unshare the event using the API
+                        },
+                      ),
+                      isSharedEvent),
+          longPressOnly: true,
+          child: eventBody(isNotEmpty, day, context,
+              animation: null, markRemoved: markRemoved, markModified: markModified, onTap: onTap));
 
   Widget eventBody(bool isNotEmpty, TimetableDay? day, BuildContext context,
       {Animation<double>? animation,
       bool markRemoved = false,
       bool markModified = false,
       bool useOnTap = false,
+      bool disableTap = false,
       Function()? onTap}) {
     var tag = Uuid().v4();
-    var body = GestureDetector(
-        onTap: (useOnTap && onTap != null)
-            ? onTap
-            : (animation == null || animation.value >= CupertinoContextMenu.animationOpensAt)
-                ? null
-                : () => showCupertinoModalBottomSheet(
+    var body = AdaptiveCard(
+        regular: true,
+        click: disableTap
+            ? null
+            : ((useOnTap && onTap != null)
+                ? onTap
+                : () => showMaterialModalBottomSheet(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     expand: false,
                     context: context,
-                    builder: (context) => Container(
-                        color: Share.settings.appSettings.useCupertino
-                            ? CupertinoDynamicColor.resolve(
-                                CupertinoDynamicColor.withBrightness(
-                                    color: const Color.fromARGB(255, 242, 242, 247),
-                                    darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                                context)
-                            : null,
-                        child: Table(
+                    builder: (context) => Table(
                             children: [
                           TableRow(children: [
                             Container(
-                                margin: EdgeInsets.only(top: 20, left: 15, right: 15),
+                                margin: EdgeInsets.only(top: 15, left: 10, right: 10),
                                 child: Hero(
                                     tag: tag,
                                     child: eventBody(isNotEmpty, day, context,
                                         useOnTap: onTap != null,
                                         markRemoved: markRemoved,
                                         markModified: markModified,
+                                        disableTap: true,
                                         onTap: onTap)))
                           ]),
                         ]
@@ -306,278 +295,194 @@ extension EventWidgetExtension on Event {
                                             .toList() ??
                                         [],
                                     attachments?.isNotEmpty ?? false)
-                                .appendIf(
-                                    TableRow(children: [
-                                      CardContainer(
-                                          additionalDividerMargin: 5,
-                                          children: <Widget>[
-                                            AdaptiveCard(
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Text('Title'),
-                                                  Flexible(
-                                                      child: Container(
-                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                          child: Opacity(
-                                                              opacity: 0.5,
-                                                              child: Text(titleString,
-                                                                  maxLines: 15, textAlign: TextAlign.end))))
-                                                ],
+                                .append(TableRow(children: [
+                                  CardContainer(
+                                      filled: false,
+                                      additionalDividerMargin: 5,
+                                      regularOverride: true,
+                                      children: <Widget>[
+                                        Divider(),
+                                        AdaptiveCard(
+                                          child: 'Title',
+                                          regular: true,
+                                          after: titleString,
+                                        ),
+                                      ]
+                                          .appendIf(
+                                              AdaptiveCard(
+                                                child: 'Subtitle',
+                                                regular: true,
+                                                after: subtitleString,
                                               ),
-                                            ),
-                                          ]
-                                              .appendIf(
-                                                  AdaptiveCard(
-                                                      child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Text('Subtitle'),
-                                                      Flexible(
-                                                          child: Container(
-                                                              margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                              child: Opacity(
-                                                                  opacity: 0.5,
-                                                                  child: Text(subtitleString,
-                                                                      maxLines: 15, textAlign: TextAlign.end))))
-                                                    ],
-                                                  )),
-                                                  subtitleString.isNotEmpty)
-                                              .appendIf(
-                                                  AdaptiveCard(
-                                                      child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Container(
-                                                          margin: EdgeInsets.only(right: 3),
-                                                          child: Text(
-                                                              category == EventCategory.teacher ? 'Teacher' : 'Added by')),
-                                                      Flexible(
-                                                          child: Opacity(
-                                                              opacity: 0.5,
-                                                              child: Text(sender?.name ?? '',
-                                                                  maxLines: 1, overflow: TextOverflow.ellipsis)))
-                                                    ],
-                                                  )),
-                                                  sender?.name.isNotEmpty ?? false)
-                                              .appendIf(
-                                                  AdaptiveCard(
-                                                      child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Container(margin: EdgeInsets.only(right: 3), child: Text('Date')),
-                                                      Flexible(
-                                                          child: Opacity(
-                                                              opacity: 0.5,
-                                                              child: Text(
-                                                                  DateFormat.yMMMMEEEEd(
-                                                                          Share.settings.appSettings.localeCode)
-                                                                      .format(date ?? timeFrom),
-                                                                  maxLines: 1,
-                                                                  overflow: TextOverflow.ellipsis)))
-                                                    ],
-                                                  )),
-                                                  date != null)
-                                              .appendIf(
-                                                  AdaptiveCard(
-                                                      child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Container(margin: EdgeInsets.only(right: 3), child: Text('Classroom')),
-                                                      Flexible(
-                                                          child: Opacity(
-                                                              opacity: 0.5,
-                                                              child: Text(classroom?.name ?? '',
-                                                                  maxLines: 1, overflow: TextOverflow.ellipsis)))
-                                                    ],
-                                                  )),
-                                                  classroom?.name.isNotEmpty ?? false)
-                                              .appendIf(
-                                                  AdaptiveCard(
-                                                      child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Container(
-                                                          margin: EdgeInsets.only(right: 3), child: Text('Start time')),
-                                                      Flexible(
-                                                          child: Opacity(
-                                                              opacity: 0.5,
-                                                              child: Text(
-                                                                  DateFormat.Hm(Share.settings.appSettings.localeCode)
-                                                                      .format(timeFrom),
-                                                                  maxLines: 1,
-                                                                  overflow: TextOverflow.ellipsis)))
-                                                    ],
-                                                  )),
-                                                  timeFrom.hour != 0)
-                                              .appendIf(
-                                                  AdaptiveCard(
-                                                      child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Container(margin: EdgeInsets.only(right: 3), child: Text('End time')),
-                                                      Flexible(
-                                                          child: Opacity(
-                                                              opacity: 0.5,
-                                                              child: Text(
-                                                                  DateFormat.Hm(Share.settings.appSettings.localeCode)
-                                                                      .format(timeTo ?? timeFrom),
-                                                                  maxLines: 1,
-                                                                  overflow: TextOverflow.ellipsis)))
-                                                    ],
-                                                  )),
-                                                  timeTo != null && timeTo?.hour != 0))
-                                    ]),
-                                    true)))),
-        child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: (animation == null ||
-                        animation.value >= CupertinoContextMenu.animationOpensAt ||
-                        markModified ||
-                        markRemoved ||
-                        onTap != null)
-                    ? CupertinoDynamicColor.resolve(CupertinoColors.tertiarySystemBackground, context)
-                    : CupertinoDynamicColor.resolve(
-                        CupertinoDynamicColor.withBrightness(
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                        context)),
-            padding: Share.settings.appSettings.useCupertino
-                ? EdgeInsets.only(top: 15, bottom: 15, right: 15, left: 20)
-                : EdgeInsets.only(top: 5, bottom: 5, right: 5, left: 5),
-            child: ConstrainedBox(
-                constraints: BoxConstraints(
-                    maxHeight: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
-                    maxWidth: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 260),
-                child: Opacity(
-                    opacity: (category == EventCategory.homework && done) ? 0.5 : 1.0,
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                              flex: 2,
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                          // Unread badge
-                                          UnreadDot(
-                                              unseen: () => unseen,
-                                              markAsSeen: markAsSeen,
-                                              margin: EdgeInsets.only(top: 5, right: 6)),
-                                          // Event tag
-                                          Visibility(
-                                              visible: (day?.lessons
-                                                      .any((y) => y?.any((z) => z.lessonNo == (lessonNo ?? -1)) ?? false) ??
-                                                  false),
+                                              subtitleString.isNotEmpty)
+                                          .appendIf(
+                                              AdaptiveCard(
+                                                child: category == EventCategory.teacher ? 'Teacher' : 'Added by',
+                                                regular: true,
+                                                after: sender?.name ?? '',
+                                              ),
+                                              sender?.name.isNotEmpty ?? false)
+                                          .appendIf(
+                                              AdaptiveCard(
+                                                child: 'Date',
+                                                regular: true,
+                                                after: DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode)
+                                                    .format(date ?? timeFrom),
+                                              ),
+                                              date != null)
+                                          .appendIf(
+                                              AdaptiveCard(child: 'Classroom', regular: true, after: classroom?.name ?? ''),
+                                              classroom?.name.isNotEmpty ?? false)
+                                          .appendIf(
+                                              AdaptiveCard(
+                                                child: 'Start time',
+                                                regular: true,
+                                                after: DateFormat.Hm(Share.settings.appSettings.localeCode).format(timeFrom),
+                                              ),
+                                              timeFrom.hour != 0)
+                                          .appendIf(
+                                              AdaptiveCard(
+                                                child: 'End time',
+                                                regular: true,
+                                                after: DateFormat.Hm(Share.settings.appSettings.localeCode)
+                                                    .format(timeTo ?? timeFrom),
+                                              ),
+                                              timeTo != null && timeTo?.hour != 0))
+                                ]))
+                                .toList()))),
+        margin: EdgeInsets.only(left: 15, top: 5, bottom: 5, right: 20),
+        child: ConstrainedBox(
+            constraints: BoxConstraints(
+                maxHeight: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
+                maxWidth: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 260),
+            child: Opacity(
+                opacity: (category == EventCategory.homework && done) ? 0.5 : 1.0,
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                          flex: 2,
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      // Unread badge
+                                      UnreadDot(
+                                          unseen: () => unseen,
+                                          markAsSeen: markAsSeen,
+                                          margin: EdgeInsets.only(top: 5, right: 6)),
+                                      // Event tag
+                                      Visibility(
+                                          visible: (day?.lessons
+                                                  .any((y) => y?.any((z) => z.lessonNo == (lessonNo ?? -1)) ?? false) ??
+                                              false),
+                                          child: Container(
+                                              margin: EdgeInsets.only(top: 5, right: 6),
                                               child: Container(
-                                                  margin: EdgeInsets.only(top: 5, right: 6),
-                                                  child: Container(
-                                                    height: 10,
-                                                    width: 10,
-                                                    decoration: BoxDecoration(shape: BoxShape.circle, color: asColor()),
-                                                  ))),
-                                          // Event title
-                                          Expanded(
-                                              flex: 2,
+                                                height: 10,
+                                                width: 10,
+                                                decoration: BoxDecoration(shape: BoxShape.circle, color: asColor()),
+                                              ))),
+                                      // Event title
+                                      Expanded(
+                                          flex: 2,
+                                          child: Text(
+                                            titleString,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.w600,
+                                                fontStyle: markModified ? FontStyle.italic : null,
+                                                decoration: markRemoved ? TextDecoration.lineThrough : null),
+                                          )),
+                                      // Symbol/homework/days
+                                      Visibility(
+                                          visible: category == EventCategory.homework && done,
+                                          child: Container(
+                                              margin: EdgeInsets.only(left: 4), child: Icon(CupertinoIcons.check_mark))),
+                                      Visibility(
+                                          visible: classroom?.name != null && category != EventCategory.teacher,
+                                          child: Container(
+                                              margin: EdgeInsets.only(top: 1, left: 3),
                                               child: Text(
-                                                titleString,
                                                 maxLines: 1,
+                                                classroom?.name ?? '^^',
                                                 overflow: TextOverflow.ellipsis,
                                                 style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 16,
                                                     fontStyle: markModified ? FontStyle.italic : null,
                                                     decoration: markRemoved ? TextDecoration.lineThrough : null),
-                                              )),
-                                          // Symbol/homework/days
-                                          Visibility(
-                                              visible: category == EventCategory.homework && done,
-                                              child: Container(
-                                                  margin: EdgeInsets.only(left: 4), child: Icon(CupertinoIcons.check_mark))),
-                                          Visibility(
-                                              visible: classroom?.name != null && category != EventCategory.teacher,
-                                              child: Container(
-                                                  margin: EdgeInsets.only(top: 1, left: 3),
-                                                  child: Text(
-                                                    maxLines: 1,
-                                                    classroom?.name ?? '^^',
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(
-                                                        fontSize: 16,
-                                                        fontStyle: markModified ? FontStyle.italic : null,
-                                                        decoration: markRemoved ? TextDecoration.lineThrough : null),
-                                                  ))),
-                                          Visibility(
-                                              visible: category == EventCategory.teacher,
-                                              child: Container(
-                                                  margin: EdgeInsets.only(top: 1, left: 3),
-                                                  child: (timeFrom.hour != 0 && timeTo?.hour != 0) &&
-                                                          (timeFrom.asDate() == timeTo?.asDate())
-                                                      ? Text(
-                                                          maxLines: 1,
-                                                          "${DateFormat.Hm(Share.settings.appSettings.localeCode).format(timeFrom)} - ${DateFormat.Hm(Share.settings.appSettings.localeCode).format(timeTo ?? DateTime.now())}",
-                                                          overflow: TextOverflow.ellipsis,
-                                                          style: TextStyle(
-                                                              fontSize: 15,
-                                                              fontStyle: markModified ? FontStyle.italic : null,
-                                                              decoration: markRemoved ? TextDecoration.lineThrough : null),
-                                                        )
-                                                      : Text(
-                                                          maxLines: 1,
-                                                          (timeFrom.month == timeTo?.month && timeFrom.day == timeTo?.day)
-                                                              ? DateFormat.MMMd(Share.settings.appSettings.localeCode)
-                                                                  .format(timeTo ?? DateTime.now())
-                                                              : (timeFrom.month == timeTo?.month)
-                                                                  ? "${DateFormat.d(Share.settings.appSettings.localeCode).format(timeFrom)} - ${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(timeTo ?? DateTime.now())}"
-                                                                  : "${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(timeFrom)} - ${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(timeTo ?? DateTime.now())}",
-                                                          overflow: TextOverflow.ellipsis,
-                                                          style: TextStyle(
-                                                              fontSize: 15,
-                                                              fontStyle: markModified ? FontStyle.italic : null,
-                                                              decoration: markRemoved ? TextDecoration.lineThrough : null),
-                                                        )))
-                                        ]),
-                                    Visibility(
-                                        visible: locationString.isNotEmpty,
-                                        child: Opacity(
-                                            opacity: 0.5,
-                                            child: Container(
-                                                padding: EdgeInsets.only(top: 4),
-                                                child: Text(
-                                                  maxLines: 1,
-                                                  locationString,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontStyle: markModified ? FontStyle.italic : null,
-                                                      decoration: markRemoved ? TextDecoration.lineThrough : null),
-                                                )))),
-                                    Visibility(
-                                        visible: subtitleString.isNotEmpty,
-                                        child: Opacity(
-                                            opacity: 0.5,
-                                            child: Container(
-                                                margin: EdgeInsets.only(top: 4),
-                                                child: Text(
-                                                  subtitleString.trim(),
-                                                  overflow: TextOverflow.ellipsis,
-                                                  maxLines: 2,
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontStyle: markModified ? FontStyle.italic : null,
-                                                      decoration: markRemoved ? TextDecoration.lineThrough : null),
-                                                )))),
-                                  ]))
-                        ])))));
+                                              ))),
+                                      Visibility(
+                                          visible: category == EventCategory.teacher,
+                                          child: Container(
+                                              margin: EdgeInsets.only(top: 1, left: 3),
+                                              child: (timeFrom.hour != 0 && timeTo?.hour != 0) &&
+                                                      (timeFrom.asDate() == timeTo?.asDate())
+                                                  ? Text(
+                                                      maxLines: 1,
+                                                      "${DateFormat.Hm(Share.settings.appSettings.localeCode).format(timeFrom)} - ${DateFormat.Hm(Share.settings.appSettings.localeCode).format(timeTo ?? DateTime.now())}",
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                          fontSize: 15,
+                                                          fontStyle: markModified ? FontStyle.italic : null,
+                                                          decoration: markRemoved ? TextDecoration.lineThrough : null),
+                                                    )
+                                                  : Text(
+                                                      maxLines: 1,
+                                                      (timeFrom.month == timeTo?.month && timeFrom.day == timeTo?.day)
+                                                          ? DateFormat.MMMd(Share.settings.appSettings.localeCode)
+                                                              .format(timeTo ?? DateTime.now())
+                                                          : (timeFrom.month == timeTo?.month)
+                                                              ? "${DateFormat.d(Share.settings.appSettings.localeCode).format(timeFrom)} - ${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(timeTo ?? DateTime.now())}"
+                                                              : "${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(timeFrom)} - ${DateFormat.MMMd(Share.settings.appSettings.localeCode).format(timeTo ?? DateTime.now())}",
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                          fontSize: 15,
+                                                          fontStyle: markModified ? FontStyle.italic : null,
+                                                          decoration: markRemoved ? TextDecoration.lineThrough : null),
+                                                    )))
+                                    ]),
+                                Visibility(
+                                    visible: locationString.isNotEmpty,
+                                    child: Opacity(
+                                        opacity: 0.5,
+                                        child: Container(
+                                            padding: EdgeInsets.only(top: 4),
+                                            child: Text(
+                                              maxLines: 1,
+                                              locationString,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontStyle: markModified ? FontStyle.italic : null,
+                                                  decoration: markRemoved ? TextDecoration.lineThrough : null),
+                                            )))),
+                                Visibility(
+                                    visible: subtitleString.isNotEmpty,
+                                    child: Opacity(
+                                        opacity: 0.5,
+                                        child: Container(
+                                            margin: EdgeInsets.only(top: 4),
+                                            child: Text(
+                                              subtitleString.trim(),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 2,
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontStyle: markModified ? FontStyle.italic : null,
+                                                  decoration: markRemoved ? TextDecoration.lineThrough : null),
+                                            )))),
+                              ]))
+                    ]))));
 
     return animation == null ? body : Hero(tag: tag, child: body);
   }
@@ -601,90 +506,87 @@ extension LessonWidgetExtension on TimetableLesson {
       LessonCallTypes.wholeLesson => 'całej'
     };
 
-    return CupertinoContextMenu.builder(
-        enableHapticFeedback: true,
-        actions: [
-          CupertinoContextMenuAction(
-            onPressed: () {
-              sharing.Share.share(
-                  'There\'s ${subject?.name ?? "a lesson"} on ${DateFormat("EEEE, MMM d, y").format(date)} with ${teacher?.name ?? "a teacher"}');
-              Navigator.of(context, rootNavigator: true).pop();
-            },
-            trailingIcon: CupertinoIcons.share,
-            child: const Text('Share'),
-          ),
-          CupertinoContextMenuAction(
-            onPressed: () {
-              try {
-                calendar.Add2Calendar.addEvent2Cal(calendar.Event(
-                    title: subject?.name ?? 'Lesson on ${DateFormat("EEEE, MMM d, y").format(date)}',
-                    location: classroom?.name,
-                    startDate: timeFrom ?? date,
-                    endDate: timeTo ?? date));
-              } catch (ex) {
-                // ignored
-              }
-              Navigator.of(context, rootNavigator: true).pop();
-            },
-            trailingIcon: CupertinoIcons.calendar,
-            child: const Text('Add to calendar'),
-          ),
-          CupertinoContextMenuAction(
-            onPressed: () {
-              try {
-                showCupertinoModalBottomSheet(
-                    context: context,
-                    builder: (context) => EventComposePage(
-                          date: date,
-                          startTime: timeFrom,
-                          endTime: timeTo,
-                          classroom: classroom?.name,
-                          lessonNumber: lessonNo,
-                        )).then((value) => setState(() {}));
-              } catch (ex) {
-                // ignored
-              }
-              Navigator.of(context, rootNavigator: true).pop();
-            },
-            trailingIcon: CupertinoIcons.add,
-            child: const Text('Create event'),
-          ),
-          CupertinoContextMenuAction(
-            isDestructiveAction: true,
-            trailingIcon: CupertinoIcons.timer,
-            child: Text('Call $lessonCallButtonString'),
-            onPressed: () {
-              Navigator.of(context, rootNavigator: true).pop();
-              showCupertinoModalBottomSheet(
-                  context: context,
-                  builder: (context) => MessageComposePage(
-                      receivers: teacher != null ? [teacher!] : [],
-                      subject:
-                          'Zwolnienie z $lessonCallMessageString w dniu ${DateFormat("y.M.d").format(date)}, L$lessonNo',
-                      message:
-                          'Dzień dobry,\n\nProszę o zwolnienie mnie z $lessonCallMessageString lekcji ${subject?.name} w dniu ${DateFormat("y.M.d").format(date)}, na $lessonNo godzinie lekcyjnej.',
-                      signature:
-                          '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-            },
-          ),
-          CupertinoContextMenuAction(
-            isDestructiveAction: true,
-            trailingIcon: CupertinoIcons.chat_bubble_2,
-            child: const Text('Inquiry'),
-            onPressed: () {
-              Navigator.of(context, rootNavigator: true).pop();
-              showCupertinoModalBottomSheet(
-                  context: context,
-                  builder: (context) => MessageComposePage(
-                      receivers: teacher != null ? [teacher!] : [],
-                      subject: 'Pytanie o lekcję w dniu ${DateFormat("y.M.d").format(date)}, L$lessonNo',
-                      signature:
-                          '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-            },
-          ),
-        ],
-        builder: (BuildContext context, Animation<double> animation) => lessonBody(context, selectedDate, selectedDay,
-            animation: animation, markRemoved: markRemoved, markModified: markModified, onTap: onTap));
+    return AdaptiveMenuButton(
+        itemBuilder: (context) => [
+              AdaptiveMenuItem(
+                onTap: () {
+                  sharing.Share.share(
+                      'There\'s ${subject?.name ?? "a lesson"} on ${DateFormat("EEEE, MMM d, y").format(date)} with ${teacher?.name ?? "a teacher"}');
+                  Navigator.of(context, rootNavigator: true).pop();
+                },
+                icon: CupertinoIcons.share,
+                title: 'Share',
+              ),
+              AdaptiveMenuItem(
+                onTap: () {
+                  try {
+                    calendar.Add2Calendar.addEvent2Cal(calendar.Event(
+                        title: subject?.name ?? 'Lesson on ${DateFormat("EEEE, MMM d, y").format(date)}',
+                        location: classroom?.name,
+                        startDate: timeFrom ?? date,
+                        endDate: timeTo ?? date));
+                  } catch (ex) {
+                    // ignored
+                  }
+                  Navigator.of(context, rootNavigator: true).pop();
+                },
+                icon: CupertinoIcons.calendar,
+                title: 'Add to calendar',
+              ),
+              AdaptiveMenuItem(
+                onTap: () {
+                  try {
+                    showMaterialModalBottomSheet(
+                        context: context,
+                        builder: (context) => EventComposePage(
+                              date: date,
+                              startTime: timeFrom,
+                              endTime: timeTo,
+                              classroom: classroom?.name,
+                              lessonNumber: lessonNo,
+                            )).then((value) => setState(() {}));
+                  } catch (ex) {
+                    // ignored
+                  }
+                  Navigator.of(context, rootNavigator: true).pop();
+                },
+                icon: CupertinoIcons.add,
+                title: 'Create event',
+              ),
+              AdaptiveMenuItem(
+                icon: CupertinoIcons.timer,
+                title: 'Call $lessonCallButtonString',
+                onTap: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  showMaterialModalBottomSheet(
+                      context: context,
+                      builder: (context) => MessageComposePage(
+                          receivers: teacher != null ? [teacher!] : [],
+                          subject:
+                              'Zwolnienie z $lessonCallMessageString w dniu ${DateFormat("y.M.d").format(date)}, L$lessonNo',
+                          message:
+                              'Dzień dobry,\n\nProszę o zwolnienie mnie z $lessonCallMessageString lekcji ${subject?.name} w dniu ${DateFormat("y.M.d").format(date)}, na $lessonNo godzinie lekcyjnej.',
+                          signature:
+                              '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                },
+              ),
+              AdaptiveMenuItem(
+                icon: CupertinoIcons.chat_bubble_2,
+                title: 'Inquiry',
+                onTap: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  showMaterialModalBottomSheet(
+                      context: context,
+                      builder: (context) => MessageComposePage(
+                          receivers: teacher != null ? [teacher!] : [],
+                          subject: 'Pytanie o lekcję w dniu ${DateFormat("y.M.d").format(date)}, L$lessonNo',
+                          signature:
+                              '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                },
+              ),
+            ],
+        child: lessonBody(context, selectedDate, selectedDay,
+            animation: null, markRemoved: markRemoved, markModified: markModified, onTap: onTap));
   }
 
   Widget lessonBody(BuildContext context, DateTime? selectedDate, TimetableDay? selectedDay,
@@ -708,7 +610,7 @@ extension LessonWidgetExtension on TimetableLesson {
             ? onTap
             : (animation == null || animation.value >= CupertinoContextMenu.animationOpensAt)
                 ? null
-                : () => showCupertinoModalBottomSheet(
+                : () => showMaterialModalBottomSheet(
                     expand: false,
                     context: context,
                     builder: (context) => Container(

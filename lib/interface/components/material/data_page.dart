@@ -9,7 +9,8 @@ import 'package:flutter/services.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/share/share.dart';
-import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
+
+final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
 
 class DataPage extends DataPageBase {
   const DataPage(
@@ -35,7 +36,6 @@ class DataPage extends DataPageBase {
 class DataPageState extends State<DataPage> with TickerProviderStateMixin {
   late final TabController tabController;
   bool? isChildPage;
-  var refreshController = RefreshController(initialRefresh: false);
 
   @override
   void initState() {
@@ -94,10 +94,6 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
     widget.segmentController?.removeListener(pushUpdateSegment);
     widget.segmentController?.addListener(pushUpdateSegment);
 
-    // Pull the refresh status from the session data
-    refreshController.headerMode?.value =
-        Share.session.refreshStatus.isRefreshing ? RefreshStatus.refreshing : RefreshStatus.idle;
-
     // onChanged, onSubmitted -> already handled by searchController
     return DynamicColorBuilder(builder: (lightDynamic, darkDynamic) {
       // ignore: unused_local_variable
@@ -109,24 +105,19 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
 
       return Scaffold(
         backgroundColor: widget.pageFlags.hasFlag(DataPageType.alternativeBackground) ? Theme.of(context).hoverColor : null,
-        body: SmartRefresher(
-          enablePullDown: widget.pageFlags.hasFlag(DataPageType.refreshable),
-          header: MaterialClassicHeader(
-            backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-          controller: refreshController,
-          onRefresh: () {
+        body: RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: () async {
             if (Share.session.refreshStatus.isRefreshing) return;
-            Share.session.refreshStatus.refreshMutex.protect<void>(() async {
+            await Share.session.refreshStatus.refreshMutex.protect<void>(() async {
               try {
                 HapticFeedback.mediumImpact(); // Trigger a haptic feedback
               } catch (ex) {
                 // ignored
               }
-
+              
               await Share.session.refreshAll(weekStart: widget.selectedDate);
-              refreshController.refreshCompleted();
+              // refreshController.refreshCompleted();
 
               if (mounted) setState(() {});
               if (mounted && widget.setState != null) widget.setState!(() {});
@@ -203,15 +194,21 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
                                             color: CupertinoColors.inactiveGray, fontSize: 13, fontWeight: FontWeight.w300),
                                       ))),
                             ),
-                          )
+                          ),
+                        if (widget.leading != null &&
+                            (!widget.pageFlags.hasFlag(DataPageType.refreshable) ||
+                                (Share.session.refreshStatus.progressStatus?.isEmpty ?? true)))
+                          SafeArea(
+                            child: SizedBox(
+                                height: 60,
+                                width: 150,
+                                child:
+                                    Container(margin: EdgeInsets.only(left: 10, top: 3, bottom: 1), child: widget.leading)),
+                          ),
                       ]));
                 }),
                 leadingWidth: widget.leading != null ? 150 : null,
-                leading: widget.leading == null ||
-                        (Share.session.refreshStatus.progressStatus?.isNotEmpty ?? false) &&
-                            widget.pageFlags.hasFlag(DataPageType.refreshable)
-                    ? null // Show the back button
-                    : Container(margin: EdgeInsets.only(left: 10, top: 3, bottom: 1), child: widget.leading),
+                leading: null, // Show the back button
                 actions: <Widget>[Container(margin: EdgeInsets.only(right: 10), child: widget.trailing)],
               ),
               if (widget.pageFlags.hasFlag(DataPageType.segmented) && (widget.segments?.isNotEmpty ?? false))

@@ -1,10 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
 import 'package:oshi/interface/shared/containers.dart';
+import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/interface/shared/views/message_compose.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/share/extensions.dart';
@@ -54,41 +56,37 @@ extension AttendanceTypeExtension on AttendanceType {
 extension LessonWidgetExtension on Attendance {
   Widget asAttendanceWidget(BuildContext context,
           {bool markRemoved = false, bool markModified = false, Function()? onTap}) =>
-      CupertinoContextMenu.builder(
-          enableHapticFeedback: true,
-          actions: [
-            CupertinoContextMenuAction(
-              onPressed: () {
-                sharing.Share.share('/Page/Absences/Share'.localized.format(type.asPrep(), type.asStringLong(),
-                    DateFormat("EEEE, MMM d, y").format(date), lesson.subject?.name, lessonNo));
-                Navigator.of(context, rootNavigator: true).pop();
-              },
-              trailingIcon: CupertinoIcons.share,
-              child: Text('/Share'.localized),
-            ),
-            CupertinoContextMenuAction(
-                isDestructiveAction: true,
-                trailingIcon: CupertinoIcons.chat_bubble_2,
-                child: Text('/Inquiry'.localized),
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: true).pop();
-                  showCupertinoModalBottomSheet(
-                      context: context,
-                      builder: (context) => MessageComposePage(
-                          receivers: [teacher],
-                          subject: 'Pytanie o obecność z dnia ${DateFormat("y.M.d").format(date)}, L$lessonNo',
-                          signature:
-                              '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-                }),
-          ]
-              .appendIf(
-                  CupertinoContextMenuAction(
-                      isDestructiveAction: true,
-                      trailingIcon: CupertinoIcons.doc_on_clipboard,
-                      child: Text('Excuse'),
-                      onPressed: () {
+      AdaptiveMenuButton(
+          itemBuilder: (context) => [
+                AdaptiveMenuItem(
+                  onTap: () {
+                    sharing.Share.share('/Page/Absences/Share'.localized.format(type.asPrep(), type.asStringLong(),
+                        DateFormat("EEEE, MMM d, y").format(date), lesson.subject?.name, lessonNo));
+                    Navigator.of(context, rootNavigator: true).pop();
+                  },
+                  icon: CupertinoIcons.share,
+                  title: '/Share'.localized,
+                ),
+                AdaptiveMenuItem(
+                    icon: CupertinoIcons.chat_bubble_2,
+                    title: '/Inquiry'.localized,
+                    onTap: () {
+                      Navigator.of(context, rootNavigator: true).pop();
+                      showMaterialModalBottomSheet(
+                          context: context,
+                          builder: (context) => MessageComposePage(
+                              receivers: [teacher],
+                              subject: 'Pytanie o obecność z dnia ${DateFormat("y.M.d").format(date)}, L$lessonNo',
+                              signature:
+                                  '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                    }),
+              ].appendIf(
+                  AdaptiveMenuItem(
+                      icon: CupertinoIcons.doc_on_clipboard,
+                      title: 'Excuse',
+                      onTap: () {
                         Navigator.of(context, rootNavigator: true).pop();
-                        showCupertinoModalBottomSheet(
+                        showMaterialModalBottomSheet(
                             context: context,
                             builder: (context) => MessageComposePage(
                                 receivers: [Share.session.data.student.mainClass.classTutor],
@@ -98,194 +96,135 @@ extension LessonWidgetExtension on Attendance {
                                 signature:
                                     'Dziękuję,\n\nZ poważaniem,\n${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                       }),
-                  type == AttendanceType.absent)
-              .toList(),
-          builder: (BuildContext context, Animation<double> animation) => attendanceBody(context,
-              animation: animation, markRemoved: markRemoved, markModified: markModified, onTap: onTap));
+                  type == AttendanceType.absent),
+          longPressOnly: true,
+          child:
+              attendanceBody(context, animation: null, markRemoved: markRemoved, markModified: markModified, onTap: onTap));
 
   Widget attendanceBody(BuildContext context,
       {Animation<double>? animation,
       bool markRemoved = false,
       bool markModified = false,
       bool useOnTap = false,
+      bool disableTap = false,
       Function()? onTap}) {
     var tag = Uuid().v4();
-    var body = GestureDetector(
-        onTap: (useOnTap && onTap != null)
-            ? onTap
-            : (animation == null || animation.value >= CupertinoContextMenu.animationOpensAt)
-                ? null
-                : () => showCupertinoModalBottomSheet(
+    var body = AdaptiveCard(
+        regular: true,
+        click: disableTap
+            ? null
+            : ((useOnTap && onTap != null)
+                ? onTap
+                : () => showMaterialModalBottomSheet(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     expand: false,
                     context: context,
-                    builder: (context) => Container(
-                        color: CupertinoDynamicColor.resolve(
-                            CupertinoDynamicColor.withBrightness(
-                                color: const Color.fromARGB(255, 242, 242, 247),
-                                darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                            context),
-                        child: Table(children: <TableRow>[
+                    builder: (context) => Table(children: <TableRow>[
                           TableRow(children: [
                             Container(
-                                margin: EdgeInsets.only(top: 20, left: 15, right: 15),
+                                margin: EdgeInsets.only(top: 15, left: 10, right: 10),
                                 child: Hero(
                                     tag: tag,
                                     child: attendanceBody(context,
                                         useOnTap: onTap != null,
                                         markRemoved: markRemoved,
                                         markModified: markModified,
+                                        disableTap: true,
                                         onTap: onTap)))
                           ]),
                           TableRow(children: [
                             CardContainer(
+                                filled: false,
                                 additionalDividerMargin: 5,
+                                regularOverride: true,
                                 children: [
+                                  Divider(),
+                                  AdaptiveCard(regular: true, child: '/Type'.localized, after: type.asStringLong()),
+                                  AdaptiveCard(regular: true, child: '/AddedBy'.localized, after: teacher.name),
                                   AdaptiveCard(
-                                      child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(margin: EdgeInsets.only(right: 3), child: Text('/Type'.localized)),
-                                      Flexible(
-                                          child: Opacity(
-                                              opacity: 0.5,
-                                              child: Text(type.asStringLong(), maxLines: 2, textAlign: TextAlign.end)))
-                                    ],
-                                  )),
+                                    regular: true,
+                                    child: '/Date'.localized,
+                                    after: DateFormat.yMMMEd(Share.settings.appSettings.localeCode).format(date),
+                                  ),
                                   AdaptiveCard(
-                                      child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(margin: EdgeInsets.only(right: 3), child: Text('/AddedBy'.localized)),
-                                      Flexible(
-                                          child: Opacity(
-                                              opacity: 0.5,
-                                              child: Text(teacher.name, maxLines: 1, overflow: TextOverflow.ellipsis)))
-                                    ],
-                                  )),
-                                  AdaptiveCard(
-                                      child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(margin: EdgeInsets.only(right: 3), child: Text('/Date'.localized)),
-                                      Flexible(
-                                          child: Opacity(
-                                              opacity: 0.5,
-                                              child: Text(
-                                                  DateFormat.yMMMEd(Share.settings.appSettings.localeCode).format(date),
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis)))
-                                    ],
-                                  )),
-                                  AdaptiveCard(
-                                      child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(margin: EdgeInsets.only(right: 3), child: Text('/Added'.localized)),
-                                      Flexible(
-                                          child: Opacity(
-                                              opacity: 0.5,
-                                              child: Text(
-                                                  '${DateFormat.Hm(Share.settings.appSettings.localeCode).format(addDate)}, ${DateFormat.yMMMd(Share.settings.appSettings.localeCode).format(addDate)}',
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis)))
-                                    ],
-                                  )),
+                                    regular: true,
+                                    child: '/Added'.localized,
+                                    after:
+                                        '${DateFormat.Hm(Share.settings.appSettings.localeCode).format(addDate)}, ${DateFormat.yMMMd(Share.settings.appSettings.localeCode).format(addDate)}',
+                                  ),
                                 ].appendIf(
                                     AdaptiveCard(
-                                        child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text('/Lesson'.localized),
-                                        Flexible(
-                                            child: Container(
-                                                margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
-                                                child: Opacity(
-                                                    opacity: 0.5,
-                                                    child: Text(lesson.subject?.name ?? '',
-                                                        maxLines: 3, textAlign: TextAlign.end))))
-                                      ],
-                                    )),
+                                      regular: true,
+                                      child: '/Lesson'.localized,
+                                      after: lesson.subject?.name ?? '',
+                                    ),
                                     lesson.subject?.name.isNotEmpty ?? false))
                           ])
                         ]))),
-        child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: (animation == null ||
-                        animation.value >= CupertinoContextMenu.animationOpensAt ||
-                        markModified ||
-                        markRemoved ||
-                        onTap != null)
-                    ? CupertinoDynamicColor.resolve(CupertinoColors.tertiarySystemBackground, context)
-                    : CupertinoDynamicColor.resolve(
-                        CupertinoDynamicColor.withBrightness(
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                            darkColor: const Color.fromARGB(255, 28, 28, 30)),
-                        context)),
-            padding: EdgeInsets.only(top: 10, bottom: 15, right: 15, left: 10),
-            child: ConstrainedBox(
-                constraints: BoxConstraints(
-                    maxHeight: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 150,
-                    maxWidth: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
-                child: Stack(alignment: Alignment.topLeft, children: [
-                  UnreadDot(unseen: () => unseen, markAsSeen: markAsSeen),
-                  Container(
-                      padding: EdgeInsets.only(top: 5, left: 10),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                                padding: EdgeInsets.only(bottom: 5),
-                                child: Text(
-                                  type.asString(),
-                                  style: TextStyle(
-                                      fontSize: 32,
-                                      fontWeight: FontWeight.w600,
-                                      color: type.asColor(),
-                                      fontStyle: markModified ? FontStyle.italic : null,
-                                      decoration: markRemoved ? TextDecoration.lineThrough : null),
-                                )),
-                            Expanded(
-                                flex: 2,
-                                child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      Visibility(
-                                          visible: (lesson.subject?.name.isNotEmpty ?? false),
-                                          child: Opacity(
-                                              opacity: 0.5,
-                                              child: Container(
-                                                  margin: EdgeInsets.only(left: 35, top: 4),
-                                                  child: Text(
-                                                    lesson.subject?.name ?? 'Unknown lesson',
-                                                    overflow: TextOverflow.ellipsis,
-                                                    maxLines: 2,
-                                                    textAlign: TextAlign.end,
-                                                    style: TextStyle(
-                                                        fontSize: 16,
-                                                        fontStyle: markModified ? FontStyle.italic : null,
-                                                        decoration: markRemoved ? TextDecoration.lineThrough : null),
-                                                  )))),
-                                      Opacity(
+        margin: EdgeInsets.only(left: 15, top: 5, bottom: 5, right: 20),
+        child: ConstrainedBox(
+            constraints: BoxConstraints(
+                maxHeight: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 150,
+                maxWidth: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 250),
+            child: Stack(alignment: Alignment.topLeft, children: [
+              UnreadDot(unseen: () => unseen, markAsSeen: markAsSeen),
+              Container(
+                  padding: EdgeInsets.only(top: 5, left: 10),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                            flex: 2,
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Visibility(
+                                      visible: (lesson.subject?.name.isNotEmpty ?? false),
+                                      child: Opacity(
                                           opacity: 0.5,
                                           child: Container(
-                                              margin: EdgeInsets.only(top: 4),
+                                              margin: EdgeInsets.only(left: 35, top: 4),
                                               child: Text(
-                                                addedDateString,
+                                                lesson.subject?.name ?? 'Unknown lesson',
                                                 overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
-                                                textAlign: TextAlign.end,
+                                                maxLines: 2,
+                                                textAlign: TextAlign.start,
                                                 style: TextStyle(
                                                     fontSize: 16,
                                                     fontStyle: markModified ? FontStyle.italic : null,
                                                     decoration: markRemoved ? TextDecoration.lineThrough : null),
-                                              )))
-                                    ]))
-                          ]))
-                ]))));
+                                              )))),
+                                  Opacity(
+                                      opacity: 0.5,
+                                      child: Container(
+                                          margin: EdgeInsets.only(top: 4),
+                                          child: Text(
+                                            addedDateString,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            textAlign: TextAlign.start,
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontStyle: markModified ? FontStyle.italic : null,
+                                                decoration: markRemoved ? TextDecoration.lineThrough : null),
+                                          )))
+                                ])),
+                        Container(
+                            padding: EdgeInsets.only(bottom: 5),
+                            child: Text(
+                              type.asString(),
+                              style: TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w600,
+                                  color: type.asColor(),
+                                  fontStyle: markModified ? FontStyle.italic : null,
+                                  decoration: markRemoved ? TextDecoration.lineThrough : null),
+                            )),
+                      ]))
+            ])));
 
     return animation == null ? body : Hero(tag: tag, child: body);
   }

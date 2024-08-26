@@ -33,7 +33,7 @@ extension GradeBodyExtension on Grade {
                         title: 'Edit',
                         onTap: () {
                           try {
-                            showCupertinoModalBottomSheet(
+                            showMaterialModalBottomSheet(
                                 context: context,
                                 builder: (context) => GradeComposePage(
                                       previous: (grade: this, lesson: customLesson),
@@ -48,7 +48,7 @@ extension GradeBodyExtension on Grade {
                       AdaptiveMenuItem(
                         icon: CupertinoIcons.chat_bubble_2,
                         title: 'Inquiry',
-                        onTap: () => showCupertinoModalBottomSheet(
+                        onTap: () => showMaterialModalBottomSheet(
                             context: context,
                             builder: (context) => MessageComposePage(
                                 receivers: [addedBy],

@@ -131,14 +131,18 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
           ? DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(selectedDate)
           : null,
       additionalDividerMargin: 5,
-      filled: lessonsToDisplay.isNotEmpty,
+      filled: false,
+      regularOverride: true,
       children: lessonsToDisplay.isEmpty
           // No messages to display
           ? [
-              AdaptiveCard(
-                centered: true,
-                secondary: true,
-                child: selectedDay == null ? 'Refresh to synchronize' : 'No lessons, yay!',
+              Padding(
+                padding: const EdgeInsets.only(top: 5.0),
+                child: AdaptiveCard(
+                  centered: true,
+                  secondary: true,
+                  child: selectedDay == null ? 'Refresh to synchronize' : 'No lessons, yay!',
+                ),
               )
             ]
           // Bindable messages layout
@@ -153,12 +157,17 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
       mainAxisSize: MainAxisSize.max,
       children: [
         (searchController.text.isEmpty ? lessonsWidget : Container()),
+        if (!Share.settings.appSettings.useCupertino &&
+            (homeworksToday.isNotEmpty || eventsToday.isNotEmpty || teachersAbsentToday.isNotEmpty))
+          Divider(indent: 25, endIndent: 25),
         // Homeworks for today
         Visibility(
             visible: homeworksToday.isNotEmpty,
             child: Container(
-                margin: EdgeInsets.only(top: 20),
+                margin: EdgeInsets.only(top: Share.settings.appSettings.useCupertino ? 20 : 0),
                 child: CardContainer(
+                  filled: false,
+                  regularOverride: true,
                   additionalDividerMargin: 5,
                   children: homeworksToday.isNotEmpty ? homeworksToday : [Text('')],
                 ))),
@@ -166,8 +175,10 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
         Visibility(
             visible: eventsToday.isNotEmpty,
             child: Container(
-                margin: EdgeInsets.only(top: 20),
+                margin: EdgeInsets.only(top: Share.settings.appSettings.useCupertino ? 20 : 0),
                 child: CardContainer(
+                  filled: false,
+                  regularOverride: true,
                   additionalDividerMargin: 5,
                   children: eventsToday.isNotEmpty ? eventsToday : [Text('')],
                 ))),
@@ -175,8 +186,10 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
         Visibility(
             visible: teachersAbsentToday.isNotEmpty,
             child: Container(
-                margin: EdgeInsets.only(top: 20),
+                margin: EdgeInsets.only(top: Share.settings.appSettings.useCupertino ? 20 : 0),
                 child: CardContainer(
+                  filled: false,
+                  regularOverride: true,
                   additionalDividerMargin: 5,
                   children: teachersAbsentToday.isNotEmpty ? teachersAbsentToday : [Text('')],
                 ))),
