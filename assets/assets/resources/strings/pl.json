@@ -772,164 +772,165 @@
         "Szkoła 2 odwołana!",
         "Nauczyciele będą nauczać",
         "Uczniowie będą się uczyć",
-        "Ucz się!"
+        "Ucz się!",
+        "Sekai de"
     ],
     "ending_splashes": [
         {
-            "title": "Way to go!",
-            "subtitle": "You've survived all {} lessons"
+            "title": "Tak trzymaj!",
+            "subtitle": "Przetrwałeś/aś {} lekcji"
         },
         {
-            "title": "It's all over now!",
-            "subtitle": "You've survived all {} lessons"
+            "title": "To już jest koniec",
+            "subtitle": "Przetrwałeś/aś wszystkie {} lekcji!"
         },
         {
-            "title": "NOWAY!!!1 ITZ OVER!!!",
-            "subtitle": "YOU HAVE JUST SURVIVED ALL {} LESSONS!"
+            "title": "BEZ DROGI!!!1 TO KONIEC!!!",
+            "subtitle": "PRZETRWAŁEŚ/AŚ {} LEKCJI!"
         },
         {
-            "title": "It's over. Can you believe it?",
-            "subtitle": "{} lessons, Can you believe it?"
+            "title": "To koniec, ale czy aby na pewno?",
+            "subtitle": "{} lekcji, ile jeszcze zostało?"
         },
         {
-            "title": "School speedrun any%",
-            "subtitle": "You got {} achievements!"
+            "title": "Szkoła speedrun any%",
+            "subtitle": "Masz {} osiągnięć!"
         },
         {
-            "title": "You did it",
-            "subtitle": "{} lessons passed"
+            "title": "Brawo!",
+            "subtitle": "{} lekcji przeminęło z wiatrem"
         },
         {
-            "title": "Go home, have some rest",
-            "subtitle": "You've passed all {} lessons today"
+            "title": "Idź do domu, odpocznij",
+            "subtitle": "Odbytych lekcji dzisiaj: {}"
         },
         {
-            "title": "Supercalifragilisticexpialidocious",
-            "subtitle": "You've survived {} lessons"
+            "title": "Superdobrzedoskonalespożytkowanyczas!",
+            "subtitle": "Przetrwałeś/aś {} lekcji"
         },
         {
-            "title": "It's done for today!",
-            "subtitle": "You've survived all {} lessons"
+            "title": "Robota skończona na dziś!",
+            "subtitle": "Przetrwałeś/aś całe {} lekcji"
         },
         {
-            "title": "That's a nice lesson you had there...",
-            "subtitle": "You've passed all {} lessons today"
+            "title": "Fajną lekcję tu masz... Szkoda by było...",
+            "subtitle": "{} lekcji dzisiaj"
         },
         {
-            "title": "The evolution of educating and education",
-            "subtitle": "(More likely lack of it) {} lessons passed"
+            "title": "Rewolucja w edukacji i w edukowaniu!",
+            "subtitle": "(Albo raczej jej brak) {} lekcji"
         },
         {
-            "title": "You did well today ^.^",
-            "subtitle": "You've survived all {} lessons"
+            "title": "Poszło ci świetnie dzisiaj ^.^",
+            "subtitle": "Przetrwałeś/aś całe {} lekcji!"
         },
         {
-            "title": "At least it's not raining outside...",
-            "subtitle": "You've survived all {} lessons"
+            "title": "Przynajmniej nie pada na zewnątrz...",
+            "subtitle": "Przetrwałeś/aś całe {} lekcji"
         },
         {
-            "title": "Send us some feedback on this app!",
-            "subtitle": "You've survived all {} lessons"
+            "title": "Powiedz co sądzisz o naszej aplikacji!",
+            "subtitle": "Przetrwałeś/aś {} lekcji"
         },
         {
-            "title": "Keep your head up, there's two of us in that now",
-            "subtitle": "You've passed all {} lessons today"
+            "title": "Nie smuć się, teraz jesteśmy w tym razem",
+            "subtitle": "Przetrwałeś/aś {} lekcji"
         },
         {
-            "title": "It was a true horror",
-            "subtitle": "You've passed all {} lessons today"
+            "title": "To był PRAWDZIWY HORROR!",
+            "subtitle": "Przetrwałeś/aś całe {} lekcji!"
         },
         {
-            "title": "Protecc but also attacc",
-            "subtitle": "You've survived {} lessons"
+            "title": "Długość i monotonność to nasze motto!",
+            "subtitle": "Przetrwałeś/aś {} lekcji"
         },
         {
-            "title": "We're still working on it",
-            "subtitle": "here, have a lessons passed number - {}"
+            "title": "Wciąż nad tym pracujemy >.<",
+            "subtitle": "masz, trzymaj ilość dzisiejszych lekcji - {}"
         },
         {
-            "title": "True skill in surviving",
-            "subtitle": "You've survived all {} lessons"
+            "title": "Prawdziwa umiejętność przetrwania!",
+            "subtitle": "Przetrwałeś/aś {} lekcji"
         },
         {
-            "title": "[put an ending splash here]",
-            "subtitle": "[put ending splash message here] {}"
+            "title": "[umieść tutaj splash na koniec dnia]",
+            "subtitle": "[a tutaj umieść wiadomość] {}"
         },
         {
-            "title": "Now go home and do your homework",
-            "subtitle": "You've passed all {} lessons today"
+            "title": "A teraz do domu i praca domowa :vibe:",
+            "subtitle": "Przetrwałeś/aś całe {} lekcji!"
         },
         {
-            "title": "Too EZ",
-            "subtitle": "Gained {} XP"
+            "title": "Ale EZ!",
+            "subtitle": "Zdobyto {} XP"
         },
         {
-            "title": "Did you just finished your lessons?",
-            "subtitle": "All {} lessons completed"
+            "title": "Czy ty właśnie... wszyszystkie lekcje? O.o",
+            "subtitle": "Przetrwałeś/aś {} lekcji"
         },
         {
-            "title": "Use some ChatGPT, surely it will help...",
-            "subtitle": "You've survived all {} lessons"
+            "title": "Użyj ChatGPT, na pewno pomoże...",
+            "subtitle": "Przetrwałeś/aś całe {} lekcji!"
         },
         {
-            "title": "Did you know that...",
-            "subtitle": "You've survived all {} lessons?"
+            "title": "Czy wiedziałeś/aś że...",
+            "subtitle": "Przetrwałeś/aś {} lekcji?"
         },
         {
-            "title": "Fellas, is it ok to finish school?",
-            "subtitle": "You've survived {} lessons"
+            "title": "Fellas, czy w porządku jest kończenie zajęć?",
+            "subtitle": "Przetrwałeś/aś {} lekcji"
         },
         {
-            "title": "General Kenobi!",
-            "subtitle": "All {} lessons completed"
+            "title": "Generał Kenobi!",
+            "subtitle": "Cześć tutaj, {} lekcji skończonych"
         },
         {
-            "title": "Good they won't do a sequel...",
-            "subtitle": "All {} lessons completed"
+            "title": "Dobrze, że nie ma czegoś takiego jak Szkoła 2...",
+            "subtitle": "Wszystkie {} lekcji ukończonych"
         },
         {
-            "title": "[This splash is locked - require lvl 40]",
-            "subtitle": "[This splash message is also locked] - {}"
+            "title": "[Ten splash jest zablokowany - potrzebny poziom 40]",
+            "subtitle": "[Ta wiadomość jest także zablokowana :/] - {}"
         },
         {
-            "title": "And now what...?",
-            "subtitle": "All {} lessons completed"
+            "title": "I co teraz...?",
+            "subtitle": "Wszystkie {} lekcji ukończonych"
         },
         {
-            "title": "Hit that new level in that game!",
-            "subtitle": "All {} lessons completed"
+            "title": "No wbij ten poziom!",
+            "subtitle": "Całe {} lekcje dzisiaj"
         },
         {
-            "title": "Stay strong and stay safe!",
-            "subtitle": "You've survived all {} lessons"
+            "title": "Trzymaj się tam!",
+            "subtitle": "Przetrwałeś/aś {} lekcji"
         },
         {
-            "title": "LEEESSSS GOOOO DAT TOO EZ!",
-            "subtitle": "You've survived all {} lessons"
+            "title": "To by nic nie dało!",
+            "subtitle": "Przetrwałeś/aś wszystkie {} lekcji"
         },
         {
-            "title": "Hey, yoo, look I'm in a splash!",
-            "subtitle": "All {} lessons completed"
+            "title": "Hej, patrz! Jestem splashem!",
+            "subtitle": "{} lekcji ukończonych"
         },
         {
-            "title": "What did you expect?",
-            "subtitle": "All {} lessons completed"
+            "title": "A komu to potrzebne?",
+            "subtitle": "{} lekcji ukończonych"
         },
         {
-            "title": "Have a marvelous evening!",
-            "subtitle": "You've passed all {} lessons today"
+            "title": "Dobrego wieczoru i smacznej herbatki",
+            "subtitle": "Ukończono {} lekcji bez żadnej wpadki"
         },
         {
-            "title": "All rumors are true...",
-            "subtitle": "You've survived all {} lessons!"
+            "title": "A więc pogłoski są prawdziwe...",
+            "subtitle": "Przetrwałeś/aś wszystkie {} lekcji!"
         },
         {
-            "title": "Something's not quite right...",
-            "subtitle": "You survived 've {} all lessons"
+            "title": "Coś tu jest nie tak...",
+            "subtitle": "{} lekcji ukończonych"
         },
         {
-            "title": "Imagine here something funny and satisfacting",
-            "subtitle": "You've completed all {} lessons"
+            "title": "Wyobraź sobie tu coś śmiesznego",
+            "subtitle": "{} lekcji ukończonych"
         },
         {
             "title": "An illusion! What are you hiding?",
