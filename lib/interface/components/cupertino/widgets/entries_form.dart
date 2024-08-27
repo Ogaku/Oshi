@@ -39,6 +39,7 @@ class _EntriesFormState<T> extends State<EntriesForm<T>> {
   @override
   Widget build(BuildContext context) {
     return CardContainer(
+        largeHeader: false,
         filled: false,
         regularOverride: true,
         additionalDividerMargin: 5,

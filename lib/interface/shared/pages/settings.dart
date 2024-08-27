@@ -74,7 +74,9 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             // Name and school, avatar picker
             CardContainer(
-                margin: EdgeInsets.symmetric(horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                margin: Share.settings.appSettings.useCupertino
+                    ? EdgeInsets.only(left: 15, right: 15, bottom: 15, top: 8)
+                    : EdgeInsets.symmetric(horizontal: 18, vertical: 15),
                 filled: false,
                 children: <Widget>[
                   // Cupertino - profile badge card
@@ -92,7 +94,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   color: Theme.of(context).colorScheme.surfaceContainer),
                           child: Row(children: [
                             Container(
-                                margin: EdgeInsets.symmetric(vertical: 15),
+                                margin: EdgeInsets.only(top: 15, bottom: 15, right: 12),
                                 child: GestureDetector(
                                     onTap: (isAndroid || isIOS)
                                         ? () => ImagePicker().pickImage(source: ImageSource.gallery).then((value) {

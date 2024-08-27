@@ -61,11 +61,15 @@ class DataPageState extends State<DataPage> {
           ? searchChildren
           : (widget.pageFlags.hasFlag(DataPageType.singleChild) ? null : widget.children),
       transitionBetweenRoutes: !widget.pageFlags.hasFlag(DataPageType.noTransitions),
-      largeTitle: widget.pageFlags.hasFlag(DataPageType.removeLargeTitle) ? null : Text(widget.title),
+      largeTitle: widget.pageFlags.hasFlag(DataPageType.removeLargeTitle) ? null : Text(widget.title, maxLines: 2),
       leading: widget.leading,
       alwaysShowMiddle: widget.pageFlags.hasFlag(DataPageType.childPage),
       previousPageTitle: widget.previousPageTitle,
-      middle: widget.pageFlags.hasFlag(DataPageType.removeMiddleTitle) ? null : Text(widget.title),
+      middle: widget.pageFlags.hasFlag(DataPageType.removeMiddleTitle)
+          ? null
+          : ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 250),
+              child: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis)),
       trailing: widget.trailing,
       child: widget.pageFlags.hasFlag(DataPageType.searchable) && searchController.text.isNotEmpty
           ? searchChildren.firstOrNull

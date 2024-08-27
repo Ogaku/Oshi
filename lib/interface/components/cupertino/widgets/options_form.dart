@@ -43,17 +43,9 @@ class _OptionsFormState<T> extends State<OptionsForm<T>> {
   Widget build(BuildContext context) {
     return CardContainer(
         additionalDividerMargin: 5,
-        header: widget.header.isNotEmpty
-            ? Container(
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                child: Opacity(
-                    opacity: 0.5, child: Text(widget.header, style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal))))
-            : null,
-        footer: widget.description.isNotEmpty
-            ? Container(
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                child: Opacity(opacity: 0.5, child: Text(widget.description, style: TextStyle(fontSize: 13))))
-            : null,
+        header: widget.header.isNotEmpty ? widget.header : null,
+        largeHeader: false,
+        footer: widget.description.isNotEmpty ? widget.description : null,
         children: widget.options
             .select((x, index) => CupertinoListTile(
                 onTap: () {

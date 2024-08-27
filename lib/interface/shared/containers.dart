@@ -48,29 +48,34 @@ class _CardContainerState extends State<CardContainer> {
   @override
   Widget build(BuildContext context) {
     if (Share.settings.appSettings.useCupertino) {
-      return CupertinoListSection.insetGrouped(
-        margin: widget.margin ?? const EdgeInsets.only(left: 15, right: 15, bottom: 10),
-        additionalDividerMargin: widget.additionalDividerMargin,
-        dividerMargin: widget.dividerMargin,
-        separatorColor: widget.noDivider ? Colors.transparent : null,
-        backgroundColor: widget.noDivider ? Colors.transparent : CupertinoColors.systemGroupedBackground,
-        hasLeading: false,
-        header: (widget.header is String && widget.header.isNotEmpty)
-            ? (widget.largeHeader
-                ? Text((widget.header as String).capitalize())
-                : Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20),
-                    child: Opacity(
-                        opacity: 0.5,
-                        child: Text((widget.header as String).toUpperCase(),
-                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)))))
-            : ((widget.header is Widget) ? widget.header : null),
-        footer: (widget.footer is String && widget.footer.isNotEmpty)
-            ? (Container(
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                child: Opacity(opacity: 0.5, child: Text(widget.footer, style: TextStyle(fontSize: 13)))))
-            : widget.footer,
-        children: widget.children,
+      var margin = widget.margin ?? const EdgeInsets.only(left: 15, right: 15, bottom: 10);
+      return Container(
+        margin: EdgeInsets.only(top: margin.top, bottom: margin.bottom, left: 0.0, right: 0.0),
+        child: CupertinoListSection.insetGrouped(
+          margin: EdgeInsets.only(top: 0.0, bottom: 0.0, left: margin.left, right: margin.right),
+          additionalDividerMargin: widget.additionalDividerMargin,
+          dividerMargin: widget.dividerMargin,
+          separatorColor: widget.noDivider ? Colors.transparent : null,
+          backgroundColor: widget.noDivider ? Colors.transparent : CupertinoColors.systemGroupedBackground,
+          hasLeading: false,
+          header: (widget.header is String && widget.header.isNotEmpty)
+              ? (widget.largeHeader
+                  ? Text((widget.header as String).capitalize())
+                  : Container(
+                      margin: EdgeInsets.only(left: 15, right: 15),
+                      child: Opacity(
+                          opacity: 0.5,
+                          child: Text((widget.header as String).toUpperCase(),
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal))),
+                    ))
+              : ((widget.header is Widget) ? widget.header : null),
+          footer: (widget.footer is String && widget.footer.isNotEmpty)
+              ? (Container(
+                  margin: EdgeInsets.only(top: 6, left: 15, right: 15),
+                  child: Opacity(opacity: 0.5, child: Text(widget.footer, style: TextStyle(fontSize: 13)))))
+              : widget.footer,
+          children: widget.children,
+        ),
       );
     } else {
       var regular = widget.regularOverride ??
