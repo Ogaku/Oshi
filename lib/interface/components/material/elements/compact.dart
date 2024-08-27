@@ -24,6 +24,7 @@ import 'dart:ui' as ui;
 extension EventBodyExtension on List<data.Event> {
   List<Widget> asCompactEventList(BuildContext context) => select((x, index) => AdaptiveCard(
       regular: true,
+      rounded: true,
       margin: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
       child: AdaptiveMenuButton(
           longPressOnly: true,
@@ -32,7 +33,6 @@ extension EventBodyExtension on List<data.Event> {
                   onTap: () {
                     sharing.Share.share(
                         'There\'s a "${x.titleString}" on ${DateFormat("EEEE, MMM d, y").format(x.timeFrom)} ${(x.classroom?.name.isNotEmpty ?? false) ? ("in ${x.classroom?.name ?? ""}") : "at school"}');
-                    Navigator.of(context, rootNavigator: true).pop();
                   },
                   icon: CupertinoIcons.share,
                   title: 'Share',
@@ -41,7 +41,6 @@ extension EventBodyExtension on List<data.Event> {
                   icon: CupertinoIcons.chat_bubble_2,
                   title: 'Inquiry',
                   onTap: () {
-                    Navigator.of(context, rootNavigator: true).pop();
                     showMaterialModalBottomSheet(
                         context: context,
                         builder: (context) => MessageComposePage(
@@ -67,8 +66,9 @@ extension EventBodyExtension on List<data.Event> {
                     Row(
                       children: [
                         TextChip(
+                            radius: 18,
                             text: DateFormat.Md(Share.settings.appSettings.localeCode).format(x.date ?? x.timeFrom),
-                            margin: EdgeInsets.only(top: 6, bottom: 6, right: 10)),
+                            margin: EdgeInsets.only(top: 6, bottom: 6, right: 12)),
                         Flexible(
                             child: Text(
                           maxLines: 1,
@@ -93,6 +93,7 @@ extension EventBodyExtension on List<data.Event> {
 
   List<Widget> asCompactHomeworkList(BuildContext context) => select((x, index) => AdaptiveCard(
       regular: true,
+      rounded: true,
       margin: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
       child: AdaptiveMenuButton(
           longPressOnly: true,
@@ -102,7 +103,6 @@ extension EventBodyExtension on List<data.Event> {
                     sharing.Share.share('/Page/Home/Homework/share'
                         .localized
                         .format(x.titleString, DateFormat("EEEE, MMM d, y").format(x.timeFrom)));
-                    Navigator.of(context, rootNavigator: true).pop();
                   },
                   icon: CupertinoIcons.share,
                   title: '/Share'.localized,
@@ -111,7 +111,6 @@ extension EventBodyExtension on List<data.Event> {
                   icon: CupertinoIcons.chat_bubble_2,
                   title: '/Inquiry'.localized,
                   onTap: () {
-                    Navigator.of(context, rootNavigator: true).pop();
                     showMaterialModalBottomSheet(
                         context: context,
                         builder: (context) => MessageComposePage(
@@ -143,9 +142,10 @@ extension EventBodyExtension on List<data.Event> {
                             Row(
                               children: [
                                 TextChip(
+                                    radius: 18,
                                     text: DateFormat.Md(Share.settings.appSettings.localeCode)
                                         .format(x.timeTo ?? x.date ?? x.timeFrom),
-                                    margin: EdgeInsets.only(top: 6, bottom: 6, right: 10)),
+                                    margin: EdgeInsets.only(top: 6, bottom: 6, right: 12)),
                                 Flexible(
                                     child: Align(
                                         alignment: Alignment.centerLeft,
@@ -199,6 +199,7 @@ extension EventBodyExtension on List<data.Event> {
 extension GradeBodyExtension on List<({List<Grade> grades, Lesson lesson})> {
   List<Widget> asCompactGradeList(BuildContext context) => select((x, index) => AdaptiveCard(
       regular: true,
+      rounded: true,
       margin: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
       child: AdaptiveMenuButton(
           longPressOnly: true,
@@ -207,7 +208,6 @@ extension GradeBodyExtension on List<({List<Grade> grades, Lesson lesson})> {
                   onTap: () {
                     sharing.Share.share(
                         'I got ${x.grades.select((y, s) => y.value).join(", ")} from ${x.lesson.name} last week!');
-                    Navigator.of(context, rootNavigator: true).pop();
                   },
                   icon: CupertinoIcons.share,
                   title: 'Share',
@@ -216,7 +216,6 @@ extension GradeBodyExtension on List<({List<Grade> grades, Lesson lesson})> {
                   icon: CupertinoIcons.chat_bubble_2,
                   title: 'Inquiry',
                   onTap: () {
-                    Navigator.of(context, rootNavigator: true).pop();
                     showMaterialModalBottomSheet(
                         context: context,
                         builder: (context) => MessageComposePage(

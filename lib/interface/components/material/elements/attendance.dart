@@ -62,7 +62,6 @@ extension LessonWidgetExtension on Attendance {
                   onTap: () {
                     sharing.Share.share('/Page/Absences/Share'.localized.format(type.asPrep(), type.asStringLong(),
                         DateFormat("EEEE, MMM d, y").format(date), lesson.subject?.name, lessonNo));
-                    Navigator.of(context, rootNavigator: true).pop();
                   },
                   icon: CupertinoIcons.share,
                   title: '/Share'.localized,
@@ -71,7 +70,6 @@ extension LessonWidgetExtension on Attendance {
                     icon: CupertinoIcons.chat_bubble_2,
                     title: '/Inquiry'.localized,
                     onTap: () {
-                      Navigator.of(context, rootNavigator: true).pop();
                       showMaterialModalBottomSheet(
                           context: context,
                           builder: (context) => MessageComposePage(
@@ -85,7 +83,6 @@ extension LessonWidgetExtension on Attendance {
                       icon: CupertinoIcons.doc_on_clipboard,
                       title: 'Excuse',
                       onTap: () {
-                        Navigator.of(context, rootNavigator: true).pop();
                         showMaterialModalBottomSheet(
                             context: context,
                             builder: (context) => MessageComposePage(

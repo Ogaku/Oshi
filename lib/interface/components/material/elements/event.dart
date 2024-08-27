@@ -183,7 +183,6 @@ extension EventWidgetExtension on Event {
                           } catch (ex) {
                             // ignored
                           }
-                          Navigator.of(context, rootNavigator: true).pop();
                         },
                       ),
                       isOwnEvent || isSharedEvent)
@@ -516,7 +515,7 @@ extension LessonWidgetExtension on TimetableLesson {
                 onTap: () {
                   sharing.Share.share(
                       'There\'s ${subject?.name ?? "a lesson"} on ${DateFormat("EEEE, MMM d, y").format(date)} with ${teacher?.name ?? "a teacher"}');
-                  Navigator.of(context, rootNavigator: true).pop();
+                  
                 },
                 icon: CupertinoIcons.share,
                 title: 'Share',
@@ -532,7 +531,7 @@ extension LessonWidgetExtension on TimetableLesson {
                   } catch (ex) {
                     // ignored
                   }
-                  Navigator.of(context, rootNavigator: true).pop();
+                  
                 },
                 icon: CupertinoIcons.calendar,
                 title: 'Add to calendar',
@@ -552,7 +551,7 @@ extension LessonWidgetExtension on TimetableLesson {
                   } catch (ex) {
                     // ignored
                   }
-                  Navigator.of(context, rootNavigator: true).pop();
+                  
                 },
                 icon: CupertinoIcons.add,
                 title: 'Create event',
@@ -561,7 +560,7 @@ extension LessonWidgetExtension on TimetableLesson {
                 icon: CupertinoIcons.timer,
                 title: 'Call $lessonCallButtonString',
                 onTap: () {
-                  Navigator.of(context, rootNavigator: true).pop();
+                  
                   showMaterialModalBottomSheet(
                       context: context,
                       builder: (context) => MessageComposePage(
@@ -578,7 +577,7 @@ extension LessonWidgetExtension on TimetableLesson {
                 icon: CupertinoIcons.chat_bubble_2,
                 title: 'Inquiry',
                 onTap: () {
-                  Navigator.of(context, rootNavigator: true).pop();
+                  
                   showMaterialModalBottomSheet(
                       context: context,
                       builder: (context) => MessageComposePage(

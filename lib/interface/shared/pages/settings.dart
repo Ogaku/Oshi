@@ -163,7 +163,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     margin: EdgeInsets.only(top: 30),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Theme.of(context).colorScheme.surfaceContainerLowest,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Theme.of(context).colorScheme.surfaceContainerLowest
+                          : Theme.of(context).colorScheme.surfaceContainerLow,
                     ),
                     child: IntrinsicHeight(
                       child: Row(

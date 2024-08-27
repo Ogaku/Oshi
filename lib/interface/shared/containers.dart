@@ -24,6 +24,7 @@ class CardContainer extends StatefulWidget {
     this.backgroundColor,
     this.margin,
     this.regularOverride,
+    this.radius,
   });
 
   final bool largeHeader;
@@ -36,6 +37,7 @@ class CardContainer extends StatefulWidget {
   final bool noDivider;
   final bool filled;
   final bool? regularOverride;
+  final double? radius;
 
   final Color? backgroundColor;
   final EdgeInsets? margin;
@@ -98,8 +100,9 @@ class _CardContainerState extends State<CardContainer> {
             ]),
           TableRow(children: [
             (widget.filled || widget.backgroundColor != null)
-                ? Card(
+                ? Card.filled(
                     clipBehavior: Clip.antiAlias,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(widget.radius ?? 12)),
                     color: widget.backgroundColor ?? Theme.of(context).colorScheme.surfaceContainerLow,
                     child: Column(
                       children: widget.children,
@@ -144,6 +147,7 @@ class AdaptiveCard extends StatefulWidget {
     this.forceTrailing = false,
     this.margin,
     this.padding,
+    this.rounded = false,
   });
 
   final bool hideChevron;
@@ -160,6 +164,7 @@ class AdaptiveCard extends StatefulWidget {
   final dynamic after;
   final dynamic trailingElement;
   final UnreadDot? unreadDot;
+  final bool rounded;
 
   @override
   State<AdaptiveCard> createState() => _AdaptiveCardState();
@@ -209,7 +214,7 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
                   ? EdgeInsets.symmetric(horizontal: 23, vertical: 6)
                   : EdgeInsets.symmetric(horizontal: widget.centered ? 0 : 15)),
           shape: widget.roundedFocus
-              ? const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0)))
+              ? RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(widget.rounded ? 12.0 : 20.0)))
               : null,
           trailing: widget.forceTrailing && widget.after is Widget
               ? SizedBox(child: widget.after, width: 100, height: 100)

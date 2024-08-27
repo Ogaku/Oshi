@@ -82,7 +82,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                       AdaptiveContextMenuAction(
                         onPressed: () {
                           sharing.Share.share('My average from ${widget.lesson.name} is ${widget.lesson.gradesAverage}!');
-                          Navigator.of(context, rootNavigator: true).pop();
+                          if (Share.settings.appSettings.useCupertino) {
+                            Navigator.of(context, rootNavigator: true).pop();
+                          }
                         },
                         icon: CupertinoIcons.share,
                         title: 'Share',
@@ -92,7 +94,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                         icon: CupertinoIcons.chat_bubble_2,
                         title: 'Inquiry',
                         onPressed: () {
-                          Navigator.of(context, rootNavigator: true).pop();
+                          if (Share.settings.appSettings.useCupertino) {
+                            Navigator.of(context, rootNavigator: true).pop();
+                          }
                           showCupertinoModalBottomSheet(
                               context: context,
                               builder: (context) => MessageComposePage(
@@ -147,7 +151,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                       onPressed: () {
                         sharing.Share.share(
                             'My 1st semester average from ${widget.lesson.name} is ${widget.lesson.gradesSemAverage}!');
-                        Navigator.of(context, rootNavigator: true).pop();
+                        if (Share.settings.appSettings.useCupertino) {
+                          Navigator.of(context, rootNavigator: true).pop();
+                        }
                       },
                       icon: CupertinoIcons.share,
                       title: 'Share',
@@ -157,7 +163,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                       icon: CupertinoIcons.chat_bubble_2,
                       title: 'Inquiry',
                       onPressed: () {
-                        Navigator.of(context, rootNavigator: true).pop();
+                        if (Share.settings.appSettings.useCupertino) {
+                          Navigator.of(context, rootNavigator: true).pop();
+                        }
                         showCupertinoModalBottomSheet(
                             context: context,
                             builder: (context) => MessageComposePage(
@@ -213,7 +221,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   onPressed: () {
                     sharing.Share.share(
                         'I got a ${widget.lesson.allGrades.firstWhereOrDefault((x) => x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition))?.value} proposition from ${widget.lesson.name}!');
-                    Navigator.of(context, rootNavigator: true).pop();
+                    if (Share.settings.appSettings.useCupertino) {
+                      Navigator.of(context, rootNavigator: true).pop();
+                    }
                   },
                   icon: CupertinoIcons.share,
                   title: 'Share',
@@ -223,7 +233,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   icon: CupertinoIcons.chat_bubble_2,
                   title: 'Inquiry',
                   onPressed: () {
-                    Navigator.of(context, rootNavigator: true).pop();
+                    if (Share.settings.appSettings.useCupertino) {
+                      Navigator.of(context, rootNavigator: true).pop();
+                    }
                     showCupertinoModalBottomSheet(
                         context: context,
                         builder: (context) => MessageComposePage(
@@ -289,7 +301,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   onPressed: () {
                     sharing.Share.share(
                         'I got a ${widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemesterProposition && x.semester == 1)?.value} semester proposition from ${widget.lesson.name}!');
-                    Navigator.of(context, rootNavigator: true).pop();
+                    if (Share.settings.appSettings.useCupertino) {
+                      Navigator.of(context, rootNavigator: true).pop();
+                    }
                   },
                   icon: CupertinoIcons.share,
                   title: 'Share',
@@ -299,7 +313,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   icon: CupertinoIcons.chat_bubble_2,
                   title: 'Inquiry',
                   onPressed: () {
-                    Navigator.of(context, rootNavigator: true).pop();
+                    if (Share.settings.appSettings.useCupertino) {
+                      Navigator.of(context, rootNavigator: true).pop();
+                    }
                     showCupertinoModalBottomSheet(
                         context: context,
                         builder: (context) => MessageComposePage(
@@ -364,7 +380,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   onPressed: () {
                     sharing.Share.share(
                         'I got a ${widget.lesson.allGrades.firstWhereOrDefault((x) => x.isFinal || (x.semester == 2 && x.isSemester))?.value} final from ${widget.lesson.name}!');
-                    Navigator.of(context, rootNavigator: true).pop();
+                    if (Share.settings.appSettings.useCupertino) {
+                      Navigator.of(context, rootNavigator: true).pop();
+                    }
                   },
                   icon: CupertinoIcons.share,
                   title: 'Share',
@@ -374,7 +392,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   icon: CupertinoIcons.chat_bubble_2,
                   title: 'Inquiry',
                   onPressed: () {
-                    Navigator.of(context, rootNavigator: true).pop();
+                    if (Share.settings.appSettings.useCupertino) {
+                      Navigator.of(context, rootNavigator: true).pop();
+                    }
                     showCupertinoModalBottomSheet(
                         context: context,
                         builder: (context) => MessageComposePage(
@@ -439,7 +459,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   onPressed: () {
                     sharing.Share.share(
                         'I got a ${widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemester && x.semester == 1)?.value} semester from ${widget.lesson.name}!');
-                    Navigator.of(context, rootNavigator: true).pop();
+                    if (Share.settings.appSettings.useCupertino) {
+                      Navigator.of(context, rootNavigator: true).pop();
+                    }
                   },
                   icon: CupertinoIcons.share,
                   title: 'Share',
@@ -449,7 +471,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   icon: CupertinoIcons.chat_bubble_2,
                   title: 'Inquiry',
                   onPressed: () {
-                    Navigator.of(context, rootNavigator: true).pop();
+                    if (Share.settings.appSettings.useCupertino) {
+                      Navigator.of(context, rootNavigator: true).pop();
+                    }
                     showCupertinoModalBottomSheet(
                         context: context,
                         builder: (context) => MessageComposePage(
