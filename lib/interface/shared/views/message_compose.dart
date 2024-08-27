@@ -4,6 +4,7 @@ import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:format/format.dart';
 import 'package:oshi/interface/components/cupertino/widgets/text_chip.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/interface/shared/containers.dart';
@@ -11,6 +12,7 @@ import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 
 class MessageComposePage extends StatefulWidget {
   const MessageComposePage({super.key, this.receivers, this.subject, this.message, this.signature});
@@ -54,11 +56,11 @@ class _MessageComposePageState extends State<MessageComposePage> {
         DataPageType.noTransitions,
         DataPageType.alternativeBackground,
       ].flag,
-      title: subjectController.text.isEmpty ? 'New message' : subjectController.text,
+      title: subjectController.text.isEmpty ? 'B8C5F980-D32F-42C9-A7E0-FF7667884776'.localized : subjectController.text,
       childOverride: false,
       leading: Align(
           alignment: Alignment.centerLeft,
-          child: AdaptiveButton(title: 'Cancel', click: isWorking ? null : () async => Navigator.pop(context))),
+          child: AdaptiveButton(title: 'D91ED34B-BB94-4EFF-8DF8-D5F4FF8906BF'.localized, click: isWorking ? null : () async => Navigator.pop(context))),
       trailing: CupertinoButton(
           padding: EdgeInsets.only(right: Share.settings.appSettings.useCupertino ? 0 : 10),
           alignment: Alignment.centerRight,
@@ -72,7 +74,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                             receivers: receivers,
                             topic: subjectController.text.replaceAll('\n', ' '),
                             content: messageController.text +
-                                (signatureController.text.isEmpty ? '' : '\n\n${signatureController.text}'))
+                                (signatureController.text.isEmpty ? '' : 'F263B8B0-0EFA-4486-836D-ED1FF801B2C2'.localized.format(signatureController.text)))
                         .then((value) => setState(() => isWorking = false));
                   } on Exception catch (e) {
                     setState(() => isWorking = false);
@@ -120,7 +122,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                     secondary: true,
                                     setState: setState,
                                     controller: receiverController,
-                                    placeholder: 'Type in receivers...')),
+                                    placeholder: 'EECC0427-E5ED-4A10-96D4-734FE2AA7804'.localized)),
                           ]),
                       // Receivers
                       Container(
@@ -157,7 +159,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                               child: Container(
                                                   alignment: Alignment.center,
                                                   child: Text(
-                                                    'No receivers matching the query',
+                                                    '81B09857-201A-4036-807F-7A32F0C23575'.localized,
                                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                                                   ))))
                                     ]
@@ -181,7 +183,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                   // Subject input
                                   AdaptiveTextField(
                                     controller: subjectController,
-                                    placeholder: 'Subject',
+                                    placeholder: 'AC7FCED9-3CEA-4C69-9512-8B409015DF2C'.localized,
                                     enabled: !isWorking,
                                     setState: setState,
                                   ),
@@ -189,7 +191,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                   AdaptiveTextField(
                                     controller: messageController,
                                     secondary: true,
-                                    placeholder: 'Type in your message here...',
+                                    placeholder: 'DFE8DC1D-FB74-48C0-9016-0F03A5EBD128'.localized,
                                     enabled: !isWorking,
                                     setState: setState,
                                   ),
@@ -197,7 +199,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                   AdaptiveTextField(
                                     controller: signatureController,
                                     secondary: true,
-                                    placeholder: 'No Signature',
+                                    placeholder: 'EB947AC4-561E-4D63-9EAD-7E80C18C48B9'.localized,
                                     enabled: !isWorking,
                                     setState: setState,
                                   ),

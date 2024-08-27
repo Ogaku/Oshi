@@ -4,6 +4,7 @@
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/elements/event.dart';
@@ -16,6 +17,7 @@ import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/data/timetables.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 class EventsPage extends StatefulWidget {
@@ -68,17 +70,19 @@ class _EventsPageState extends State<EventsPage> {
                       secondary: true,
                       centered: true,
                       regular: true,
-                      child: 'No events to display',
+                      child: 'C31AC6D0-D0F1-4902-8CC7-6C911C6508BD'.localized,
                     )
                   ]
                 // Bindable messages layout
-                : element.toList().asEventWidgets(null, query, 'No events matching the query', setState)))
+                : element.toList().asEventWidgets(null, query, 'ACCA97A8-5C58-4D65-A827-6BBE076DDC71'.localized, setState)))
         .cast<Widget>()
         .appendIfEmpty(AdaptiveCard(
           secondary: true,
           centered: true,
           regular: true,
-          child: query.isNotEmpty ? 'No events matching the query' : 'No events to display',
+          child: query.isNotEmpty
+              ? 'ACCA97A8-5C58-4D65-A827-6BBE076DDC71'.localized
+              : 'C31AC6D0-D0F1-4902-8CC7-6C911C6508BD'.localized,
         ))
         .toList();
   }
@@ -95,7 +99,7 @@ class _EventsPageState extends State<EventsPage> {
         trailing: AdaptiveMenuButton(
           itemBuilder: (context) => [
             AdaptiveMenuItem(
-              title: 'New event',
+              title: '6196CAC4-C4CE-41AB-BDB9-AF6EBBF2A5EF'.localized,
               icon: CupertinoIcons.add,
               onTap: () {
                 showCupertinoModalBottomSheet(context: context, builder: (context) => EventComposePage())
@@ -103,21 +107,22 @@ class _EventsPageState extends State<EventsPage> {
               },
             ),
             PullDownMenuDivider.large(),
-            PullDownMenuTitle(title: Text('Filters')),
+            PullDownMenuTitle(title: Text('6948FA91-02DD-4CD9-8DD7-1A3B6465D1B9'.localized)),
             AdaptiveMenuItem(
-              title:
-                  'Homeworks${((Share.session.unreadChanges.homeworksCount > 0) ? ' (${(Share.session.unreadChanges.homeworksCount)})' : '')}',
+              title: '473A2E48-C7AC-46F5-9652-7257B575BA42'.localized.format((Share.session.unreadChanges.homeworksCount > 0)
+                  ? ' (${(Share.session.unreadChanges.homeworksCount)})'
+                  : ''),
               icon: showHomeworks ? CupertinoIcons.book_fill : CupertinoIcons.book,
               onTap: () => setState(() => showHomeworks = !showHomeworks),
             ),
             AdaptiveMenuItem(
-              title: 'Absent teachers',
+              title: '31BA1A6E-2C39-4312-967B-6C4C1C375689'.localized,
               icon: showTeachers ? CupertinoIcons.person_badge_minus_fill : CupertinoIcons.person_badge_minus,
               onTap: () => setState(() => showTeachers = !showTeachers),
             ),
           ],
         ),
-        title: 'Agenda',
+        title: '7D1B6F15-239E-47FE-8935-07376F7FB2C7'.localized,
         searchBuilder: (_, controller) => eventWidgets(controller.text),
         children: [SingleChildScrollView(child: Column(children: eventWidgets()))]);
   }

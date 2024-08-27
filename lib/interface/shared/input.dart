@@ -3,9 +3,11 @@ import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:format/format.dart';
 import 'package:oshi/interface/components/cupertino/widgets/options_form.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 class AdaptiveTextField extends StatefulWidget {
@@ -271,7 +273,7 @@ void showOptionDialog<T>(
                         onChanged(group); // Handle change
                         Navigator.of(context).pop();
                       },
-                      child: Text('Apply', style: TextStyle(fontSize: 17, color: Theme.of(context).colorScheme.onPrimary)),
+                      child: Text('6BA18B4F-656E-4CC7-9093-9A4CE86A6998'.localized, style: TextStyle(fontSize: 17, color: Theme.of(context).colorScheme.onPrimary)),
                     ),
                   ),
                 ))
@@ -340,7 +342,7 @@ class AdaptiveFormRow<T> extends StatelessWidget {
               ],
             )),
           // Everything else
-          _ => Text('Unsupported type: ${T.runtimeType}')
+          _ => Text('F2399A03-D76A-4C95-ACAB-26458D291779'.localized.format(T.runtimeType))
         };
       } else {
         return switch (value.runtimeType) {
@@ -388,7 +390,7 @@ class AdaptiveFormRow<T> extends StatelessWidget {
               ),
             ),
           // Everything else
-          _ => Text('Unsupported type: ${T.runtimeType}')
+          _ => Text('F2399A03-D76A-4C95-ACAB-26458D291779'.localized.format(T.runtimeType))
         };
       }
     });

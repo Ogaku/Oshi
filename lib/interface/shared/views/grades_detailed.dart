@@ -5,6 +5,7 @@ import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:format/format.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
 import 'package:oshi/interface/components/shim/elements/context_menu.dart';
@@ -16,6 +17,7 @@ import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
 
 class GradesDetailedPage extends StatefulWidget {
@@ -53,7 +55,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                 padding: EdgeInsets.only(),
                 centered: true,
                 secondary: true,
-                child: query.isNotEmpty ? 'No grades matching the query' : 'No grades',
+                child: query.isNotEmpty
+                    ? '37DB4F6C-E0AE-44AF-8905-5384B038E522'.localized
+                    : '9A027181-A1D0-41DA-9E0C-719B3D43B9DF'.localized,
               )
             ]
           // Bindable messages layout
@@ -81,18 +85,20 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                     actions: [
                       AdaptiveContextMenuAction(
                         onPressed: () {
-                          sharing.Share.share('My average from ${widget.lesson.name} is ${widget.lesson.gradesAverage}!');
+                          sharing.Share.share('0440D007-CD66-495E-A1C3-9D290E26F507'
+                              .localized
+                              .format(widget.lesson.name, widget.lesson.gradesAverage));
                           if (Share.settings.appSettings.useCupertino) {
                             Navigator.of(context, rootNavigator: true).pop();
                           }
                         },
                         icon: CupertinoIcons.share,
-                        title: 'Share',
+                        title: '/Share'.localized,
                       ),
                       AdaptiveContextMenuAction(
                         isDestructiveAction: true,
                         icon: CupertinoIcons.chat_bubble_2,
-                        title: 'Inquiry',
+                        title: '/Inquiry'.localized,
                         onPressed: () {
                           if (Share.settings.appSettings.useCupertino) {
                             Navigator.of(context, rootNavigator: true).pop();
@@ -101,9 +107,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                               context: context,
                               builder: (context) => MessageComposePage(
                                   receivers: [widget.lesson.teacher],
-                                  subject: 'Pytanie o średnią ocen z przedmiotu ${widget.lesson.name}',
-                                  signature:
-                                      '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                                  subject: '79617CAD-C9A1-4BCA-98FC-4F9D1ADE1B35'.localized.format(widget.lesson.name),
+                                  signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
+                                      Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
                         },
                       ),
                     ],
@@ -127,7 +133,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                               Container(
                                   padding: EdgeInsets.only(bottom: 5),
                                   child: Text(
-                                    'Average',
+                                    '/Average'.localized,
                                     style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                                   )),
                               Container(
@@ -149,19 +155,20 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   actions: [
                     AdaptiveContextMenuAction(
                       onPressed: () {
-                        sharing.Share.share(
-                            'My 1st semester average from ${widget.lesson.name} is ${widget.lesson.gradesSemAverage}!');
+                        sharing.Share.share('86D66F6A-6E4B-4C65-8AB3-EBEACA3FFC90'
+                            .localized
+                            .format(widget.lesson.name, widget.lesson.gradesSemAverage));
                         if (Share.settings.appSettings.useCupertino) {
                           Navigator.of(context, rootNavigator: true).pop();
                         }
                       },
                       icon: CupertinoIcons.share,
-                      title: 'Share',
+                      title: '/Share'.localized,
                     ),
                     AdaptiveContextMenuAction(
                       isDestructiveAction: true,
                       icon: CupertinoIcons.chat_bubble_2,
-                      title: 'Inquiry',
+                      title: '/Inquiry'.localized,
                       onPressed: () {
                         if (Share.settings.appSettings.useCupertino) {
                           Navigator.of(context, rootNavigator: true).pop();
@@ -170,9 +177,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                             context: context,
                             builder: (context) => MessageComposePage(
                                 receivers: [widget.lesson.teacher],
-                                subject: 'Pytanie o średnią ocen z pierwszego semestru z przedmiotu ${widget.lesson.name}',
-                                signature:
-                                    '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                                subject: 'BC6173B0-BD9D-4627-8512-594FB359B983'.localized.format(widget.lesson.name),
+                                signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
+                                    Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
                       },
                     ),
                   ],
@@ -219,8 +226,13 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
               actions: [
                 AdaptiveContextMenuAction(
                   onPressed: () {
-                    sharing.Share.share(
-                        'I got a ${widget.lesson.allGrades.firstWhereOrDefault((x) => x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition))?.value} proposition from ${widget.lesson.name}!');
+                    sharing.Share.share('E02FB126-60E8-4604-B616-69529AB0EE64'.localized.format(
+                        (widget.lesson.allGrades
+                                .firstWhereOrDefault(
+                                    (x) => x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition))
+                                ?.value) ??
+                            '',
+                        widget.lesson.name));
                     if (Share.settings.appSettings.useCupertino) {
                       Navigator.of(context, rootNavigator: true).pop();
                     }
@@ -240,9 +252,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                         context: context,
                         builder: (context) => MessageComposePage(
                             receivers: [widget.lesson.teacher],
-                            subject: 'Pytanie o ocenę proponowaną z przedmiotu ${widget.lesson.name}',
-                            signature:
-                                '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                            subject: '9221D91C-83A8-423E-8352-31FEE4C06FD0'.localized.format(widget.lesson.name),
+                            signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
+                                Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
                   },
                 ),
               ],
@@ -275,7 +287,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                       .forEach((x) => x.markAsSeen()),
                                   margin: EdgeInsets.only(right: 8)),
                               Text(
-                                'Proposed grade',
+                                'B7322EA2-71DE-4CB6-B71C-CDB9E763B32A'.localized,
                                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                               ),
                             ]),
@@ -285,7 +297,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                       (x) => x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition))
                                   ?.value
                                   .toString() ??
-                              'Unknown',
+                              '94149CBB-5B72-4186-A155-20A9C7FB1B2C'.localized,
                           style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                         ),
                       ])))));
@@ -299,19 +311,23 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
               actions: [
                 AdaptiveContextMenuAction(
                   onPressed: () {
-                    sharing.Share.share(
-                        'I got a ${widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemesterProposition && x.semester == 1)?.value} semester proposition from ${widget.lesson.name}!');
+                    sharing.Share.share('A7A1CA79-09B4-4EA6-BA6D-ED85243BADDA'.localized.format(
+                        (widget.lesson.allGrades
+                                .firstWhereOrDefault((x) => x.isSemesterProposition && x.semester == 1)
+                                ?.value) ??
+                            '',
+                        widget.lesson.name));
                     if (Share.settings.appSettings.useCupertino) {
                       Navigator.of(context, rootNavigator: true).pop();
                     }
                   },
                   icon: CupertinoIcons.share,
-                  title: 'Share',
+                  title: '/Share'.localized,
                 ),
                 AdaptiveContextMenuAction(
                   isDestructiveAction: true,
                   icon: CupertinoIcons.chat_bubble_2,
-                  title: 'Inquiry',
+                  title: '/Inquiry'.localized,
                   onPressed: () {
                     if (Share.settings.appSettings.useCupertino) {
                       Navigator.of(context, rootNavigator: true).pop();
@@ -320,9 +336,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                         context: context,
                         builder: (context) => MessageComposePage(
                             receivers: [widget.lesson.teacher],
-                            subject: 'Pytanie o ocenę proponowaną na semestr 1 z przedmiotu ${widget.lesson.name}',
-                            signature:
-                                '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                            subject: '9F390DDF-CBAB-45FA-B762-BDBBDAC7472D'.localized.format(widget.lesson.name),
+                            signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
+                                Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
                   },
                 ),
               ],
@@ -355,7 +371,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                       .forEach((x) => x.markAsSeen()),
                                   margin: EdgeInsets.only(right: 8)),
                               Text(
-                                'Proposed grade',
+                                'B7322EA2-71DE-4CB6-B71C-CDB9E763B32A'.localized,
                                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                               ),
                             ]),
@@ -364,7 +380,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                   .firstWhereOrDefault((x) => x.isSemesterProposition && x.semester == 1)
                                   ?.value
                                   .toString() ??
-                              'Unknown',
+                              '94149CBB-5B72-4186-A155-20A9C7FB1B2C'.localized,
                           style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                         ),
                       ])))));
@@ -378,19 +394,23 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
               actions: [
                 AdaptiveContextMenuAction(
                   onPressed: () {
-                    sharing.Share.share(
-                        'I got a ${widget.lesson.allGrades.firstWhereOrDefault((x) => x.isFinal || (x.semester == 2 && x.isSemester))?.value} final from ${widget.lesson.name}!');
+                    sharing.Share.share('C0E5DDF1-1578-41A3-8833-9F6B8F327512'.localized.format(
+                        (widget.lesson.allGrades
+                                .firstWhereOrDefault((x) => x.isFinal || (x.semester == 2 && x.isSemester))
+                                ?.value) ??
+                            '',
+                        widget.lesson.name));
                     if (Share.settings.appSettings.useCupertino) {
                       Navigator.of(context, rootNavigator: true).pop();
                     }
                   },
                   icon: CupertinoIcons.share,
-                  title: 'Share',
+                  title: '/Share'.localized,
                 ),
                 AdaptiveContextMenuAction(
                   isDestructiveAction: true,
                   icon: CupertinoIcons.chat_bubble_2,
-                  title: 'Inquiry',
+                  title: '/Inquiry'.localized,
                   onPressed: () {
                     if (Share.settings.appSettings.useCupertino) {
                       Navigator.of(context, rootNavigator: true).pop();
@@ -399,9 +419,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                         context: context,
                         builder: (context) => MessageComposePage(
                             receivers: [widget.lesson.teacher],
-                            subject: 'Pytanie o ocenę końcową z przedmiotu ${widget.lesson.name}',
-                            signature:
-                                '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                            subject: '3A47D98A-3FDF-4BD0-94BE-B97A402AE20B'.localized.format(widget.lesson.name),
+                            signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
+                                Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
                   },
                 ),
               ],
@@ -434,7 +454,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                       .forEach((x) => x.markAsSeen()),
                                   margin: EdgeInsets.only(right: 8)),
                               Text(
-                                'Final grade',
+                                '3D7343F4-A362-4D50-BC7B-8E2303B50729'.localized,
                                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                               ),
                             ]),
@@ -443,7 +463,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                   .firstWhereOrDefault((x) => x.isFinal || (x.semester == 2 && x.isSemester))
                                   ?.value
                                   .toString() ??
-                              'Unknown',
+                              '94149CBB-5B72-4186-A155-20A9C7FB1B2C'.localized,
                           style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                         ),
                       ])))));
@@ -457,19 +477,20 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
               actions: [
                 AdaptiveContextMenuAction(
                   onPressed: () {
-                    sharing.Share.share(
-                        'I got a ${widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemester && x.semester == 1)?.value} semester from ${widget.lesson.name}!');
+                    sharing.Share.share('113A072F-2E32-4BBE-8705-4FB4F5B26F6E'.localized.format(
+                        (widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemester && x.semester == 1)?.value) ?? '',
+                        widget.lesson.name));
                     if (Share.settings.appSettings.useCupertino) {
                       Navigator.of(context, rootNavigator: true).pop();
                     }
                   },
                   icon: CupertinoIcons.share,
-                  title: 'Share',
+                  title: '/Share'.localized,
                 ),
                 AdaptiveContextMenuAction(
                   isDestructiveAction: true,
                   icon: CupertinoIcons.chat_bubble_2,
-                  title: 'Inquiry',
+                  title: '/Inquiry'.localized,
                   onPressed: () {
                     if (Share.settings.appSettings.useCupertino) {
                       Navigator.of(context, rootNavigator: true).pop();
@@ -478,9 +499,9 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                         context: context,
                         builder: (context) => MessageComposePage(
                             receivers: [widget.lesson.teacher],
-                            subject: 'Pytanie o ocenę semestralną z przedmiotu ${widget.lesson.name}',
-                            signature:
-                                '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                            subject: '6023BF44-17D2-463D-870B-759681BA3CA7'.localized.format(widget.lesson.name),
+                            signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
+                                Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
                   },
                 ),
               ],
@@ -513,7 +534,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                       .forEach((x) => x.markAsSeen()),
                                   margin: EdgeInsets.only(right: 8)),
                               Text(
-                                'Semester grade',
+                                '102472D7-81EC-45F3-816E-D9EE5783A3CF'.localized,
                                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                               ),
                             ]),
@@ -522,7 +543,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                                   .firstWhereOrDefault((x) => x.isSemester && x.semester == 1)
                                   ?.value
                                   .toString() ??
-                              'Unknown',
+                              '94149CBB-5B72-4186-A155-20A9C7FB1B2C'.localized,
                           style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                         ),
                       ])))));

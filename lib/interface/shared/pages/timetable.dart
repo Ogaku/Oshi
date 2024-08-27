@@ -8,6 +8,7 @@ import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/elements/event.dart';
@@ -90,7 +91,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
             x.titleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
             x.subtitleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
             x.locationString.contains(RegExp(searchController.text, caseSensitive: false)))
-        .asEventWidgets(selectedDay, searchController.text, 'No events matching the query', setState);
+        .asEventWidgets(selectedDay, searchController.text, 'ACCA97A8-5C58-4D65-A827-6BBE076DDC71'.localized, setState);
 
     // Homeworks for the selected day/date
     var homeworksToday = Share.session.events
@@ -101,7 +102,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
             x.subtitleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
             x.locationString.contains(RegExp(searchController.text, caseSensitive: false)))
         .orderBy((x) => x.done ? 1 : 0)
-        .asEventWidgets(selectedDay, searchController.text, 'No homeworks matching the query', setState);
+        .asEventWidgets(selectedDay, searchController.text, '334BC7AB-6780-412F-8604-2C6BAA9F3152'.localized, setState);
 
     // Teacher absences for the selected day/date
     var teachersAbsentToday = Share.session.events
@@ -115,7 +116,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
             x.titleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
             x.subtitleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
             x.locationString.contains(RegExp(searchController.text, caseSensitive: false)))
-        .asEventWidgets(selectedDay, searchController.text, 'No teachers matching the query', setState);
+        .asEventWidgets(selectedDay, searchController.text, 'CB4DFBFF-DC80-4787-8DAD-8046F536D65E'.localized, setState);
 
     // Lessons for the selected day, and those to be displayed
     var lessonsToDisplay = selectedDay?.lessonsStripped
@@ -141,7 +142,9 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                 child: AdaptiveCard(
                   centered: true,
                   secondary: true,
-                  child: selectedDay == null ? 'Refresh to synchronize' : 'No lessons, yay!',
+                  child: selectedDay == null
+                      ? 'AD1F219E-A73A-45AA-9F75-574ACBA84522'.localized
+                      : 'FEF84AFC-C749-4FF3-A0C2-8B5846ACD189'.localized,
                 ),
               )
             ]
@@ -303,7 +306,10 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                   animateToPage(newDate);
                 }),
           child: Container(
-              margin: EdgeInsets.only(top: Share.settings.appSettings.useCupertino ? 0 : 5, bottom: 5, right: Share.settings.appSettings.useCupertino ? 0 : 25),
+              margin: EdgeInsets.only(
+                  top: Share.settings.appSettings.useCupertino ? 0 : 5,
+                  bottom: 5,
+                  right: Share.settings.appSettings.useCupertino ? 0 : 25),
               child:
                   TextChip(width: 110, text: DateFormat.yMd(Share.settings.appSettings.localeCode).format(selectedDate)))),
       trailing: isWorking
@@ -316,7 +322,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
               AdaptiveMenuButton(
                 itemBuilder: (context) => [
                   AdaptiveMenuItem(
-                    title: 'New event',
+                    title: '6196CAC4-C4CE-41AB-BDB9-AF6EBBF2A5EF'.localized,
                     icon: CupertinoIcons.add,
                     onTap: () {
                       showCupertinoModalBottomSheet(context: context, builder: (context) => EventComposePage())
@@ -326,7 +332,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                   PullDownMenuDivider.large(),
                   PullDownMenuTitle(title: Text('/Titles/Pages/Schedule'.localized)),
                   AdaptiveMenuItem(
-                    title: 'Today',
+                    title: 'B6173A9C-6BAB-426E-9F38-257AB0F1B573'.localized,
                     icon: CupertinoIcons.calendar_today,
                     onTap: () => animateToPage(
                         null,
@@ -336,8 +342,10 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                             .inDays),
                   ),
                   AdaptiveMenuItem(
-                    title:
-                        'Agenda${((Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount > 0) ? ' (${(Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount)})' : '')}',
+                    title: '6834A472-D03D-4CC5-A91E-1A65B0C43DF8'.localized.format(
+                        ((Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount > 0)
+                            ? ' (${(Share.session.unreadChanges.timetablesCount + Share.session.unreadChanges.eventsCount)})'
+                            : '')),
                     icon: CupertinoIcons.list_bullet_below_rectangle,
                     onTap: () => Navigator.push(context, AdaptivePageRoute(builder: (context) => EventsPage())),
                   ),

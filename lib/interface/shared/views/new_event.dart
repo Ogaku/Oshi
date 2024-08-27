@@ -4,6 +4,7 @@ import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/input.dart';
@@ -16,6 +17,7 @@ import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 
 class EventComposePage extends StatefulWidget {
   const EventComposePage(
@@ -101,7 +103,7 @@ class _EventComposePageState extends State<EventComposePage> {
       childOverride: false,
       leading: Align(
           alignment: Alignment.centerLeft,
-          child: AdaptiveButton(title: 'Cancel', click: () async => Navigator.pop(context))),
+          child: AdaptiveButton(title: 'D91ED34B-BB94-4EFF-8DF8-D5F4FF8906BF'.localized, click: () async => Navigator.pop(context))),
       trailing: CupertinoButton(
           padding: EdgeInsets.all(5),
           alignment: Alignment.centerRight,
@@ -175,7 +177,7 @@ class _EventComposePageState extends State<EventComposePage> {
                             children: [
                               Container(
                                   margin: EdgeInsets.only(left: 5),
-                                  child: Text('Date:', style: TextStyle(fontWeight: FontWeight.w600))),
+                                  child: Text('63C342E6-6583-45CE-B273-8CB402AE5BAD'.localized, style: TextStyle(fontWeight: FontWeight.w600))),
                               Container(
                                 margin: EdgeInsets.only(left: 5),
                                 child: GestureDetector(
@@ -222,8 +224,8 @@ class _EventComposePageState extends State<EventComposePage> {
                             if (newDate == null) return;
                             setState(() => date = newDate);
                           }),
-                          child: 'Date',
-                          after: 'The event date',
+                          child: '/Date'.localized,
+                          after: '4A36ACC2-773E-49FD-9946-321EF34ADFCB'.localized,
                           trailingElement: DateFormat.yMd(Share.settings.appSettings.localeCode).format(date),
                         ),
                       // Category
@@ -233,14 +235,14 @@ class _EventComposePageState extends State<EventComposePage> {
                           children: [
                             Container(
                                 margin: EdgeInsets.only(left: 5),
-                                child: Text('Category:',
+                                child: Text('D6C84B44-B72B-4EEC-A2E9-3C139BBCA8AC'.localized,
                                     style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: Share.settings.appSettings.useCupertino ? null : 16))),
                             ConstrainedBox(
                                 constraints: BoxConstraints(maxWidth: 250),
                                 child: AdaptiveTextField(
-                                    setState: setState, controller: categoryController, placeholder: 'Start typing...')),
+                                    setState: setState, controller: categoryController, placeholder: '6FFC787F-7E74-4467-94A7-DE04A8349C1A'.localized)),
                           ]),
                       // Receivers
                       Container(
@@ -274,7 +276,7 @@ class _EventComposePageState extends State<EventComposePage> {
                                           customCategoryName = categoryController.text;
                                           categoryController.text = '';
                                         }),
-                                        child: 'Custom category: ${categoryController.text}',
+                                        child: '89DCFE4D-3EBA-4E62-8892-BC5644D639E8'.localized.format(categoryController.text),
                                       )
                                     ]
                                   // Bindable messages layout
@@ -300,7 +302,7 @@ class _EventComposePageState extends State<EventComposePage> {
                                     maxLines: null,
                                     setState: setState,
                                     controller: messageController,
-                                    placeholder: 'Type in the event description here...'),
+                                    placeholder: '8CA8A5B0-F318-46DA-A453-72D162D266E6'.localized),
                               ]
                                   .prependIf(
                                       // Subject input
@@ -308,7 +310,7 @@ class _EventComposePageState extends State<EventComposePage> {
                                           maxLines: null,
                                           setState: setState,
                                           controller: subjectController,
-                                          placeholder: 'Title'),
+                                          placeholder: 'ED8D10FC-50FE-48C5-AD57-8E7418669AC3'.localized),
                                       !shareEvent)
                                   .appendIf(
                                       // Shared event switch
@@ -319,8 +321,8 @@ class _EventComposePageState extends State<EventComposePage> {
                                           children: [
                                             AdaptiveFormRow(
                                                 noMargin: true,
-                                                title: 'Share with class',
-                                                helper: 'Event will be shared with others',
+                                                title: '7B2546FB-BF5A-4390-9ACD-32130F356320'.localized,
+                                                helper: '619C02B6-9564-48DB-B205-FCEE140DF534'.localized,
                                                 value: shareEvent,
                                                 onChanged: (value) => setState(() => shareEvent = value))
                                           ]),
@@ -348,7 +350,7 @@ class _EventComposePageState extends State<EventComposePage> {
                                                   margin: EdgeInsets.only(left: 5),
                                                   child: Opacity(
                                                       opacity: 0.5,
-                                                      child: Text('Optional',
+                                                      child: Text('65233B9B-801B-4145-BDC3-6CA7A4B5736F'.localized,
                                                           style: TextStyle(fontWeight: FontWeight.normal)))),
                                             ]))),
                                 AnimatedSwitcher(
@@ -370,7 +372,7 @@ class _EventComposePageState extends State<EventComposePage> {
                                                         children: [
                                                           Container(
                                                               margin: EdgeInsets.only(left: 5),
-                                                              child: Text('Start time:',
+                                                              child: Text('E5F106C3-4B5F-44B0-AD28-8545CB9A3EF2'.localized,
                                                                   style: TextStyle(fontWeight: FontWeight.w600))),
                                                           Container(
                                                             margin: EdgeInsets.only(left: 5),
@@ -393,7 +395,7 @@ class _EventComposePageState extends State<EventComposePage> {
                                                                     margin: EdgeInsets.only(top: 5, bottom: 5),
                                                                     child: Text(
                                                                         startTime == null
-                                                                            ? 'not specified'
+                                                                            ? 'BC4C4828-36B3-4009-A06B-14641E292A61'.localized
                                                                             : DateFormat.Hm(
                                                                                     Share.settings.appSettings.localeCode)
                                                                                 .format(startTime!),
@@ -418,7 +420,7 @@ class _EventComposePageState extends State<EventComposePage> {
                                                         children: [
                                                           Container(
                                                               margin: EdgeInsets.only(left: 5),
-                                                              child: Text('End time:',
+                                                              child: Text('D0B44429-BF9F-4483-8B3A-0540449B227D'.localized,
                                                                   style: TextStyle(fontWeight: FontWeight.w600))),
                                                           Container(
                                                             margin: EdgeInsets.only(left: 5),
@@ -441,7 +443,7 @@ class _EventComposePageState extends State<EventComposePage> {
                                                                     margin: EdgeInsets.only(top: 5, bottom: 5),
                                                                     child: Text(
                                                                         endTime == null
-                                                                            ? 'not specified'
+                                                                            ? 'BC4C4828-36B3-4009-A06B-14641E292A61'.localized
                                                                             : DateFormat.Hm(
                                                                                     Share.settings.appSettings.localeCode)
                                                                                 .format(endTime!),
@@ -467,10 +469,10 @@ class _EventComposePageState extends State<EventComposePage> {
                                                         showTimePicker(context: context, initialTime: TimeOfDay.now())
                                                             .then((value) => setState(() => startTime = value?.asDateTime()))
                                                       },
-                                                      child: 'Start time',
-                                                      after: 'When the event starts',
+                                                      child: '58710A36-F758-4E5F-916E-9F7846ED58BA'.localized,
+                                                      after: '6D95AC19-4F2C-45C6-A80F-FEECF8A319E3'.localized,
                                                       trailingElement: startTime == null
-                                                          ? 'Not specified'
+                                                          ? '7E2F717D-B138-4E74-A278-8E26F7FC4C4B'.localized
                                                           : DateFormat.Hm(Share.settings.appSettings.localeCode)
                                                               .format(startTime ?? DateTime.now()),
                                                     ),
@@ -482,10 +484,10 @@ class _EventComposePageState extends State<EventComposePage> {
                                                         showTimePicker(context: context, initialTime: TimeOfDay.now())
                                                             .then((value) => setState(() => endTime = value?.asDateTime()))
                                                       },
-                                                      child: 'End time',
-                                                      after: 'When the event ends',
+                                                      child: '87657B56-BFB1-44FB-9B51-9155ED6396E4'.localized,
+                                                      after: 'CB7BA3C9-548E-4854-B9CD-E6EA31FC1319'.localized,
                                                       trailingElement: endTime == null
-                                                          ? 'Not specified'
+                                                          ? '7E2F717D-B138-4E74-A278-8E26F7FC4C4B'.localized
                                                           : DateFormat.Hm(Share.settings.appSettings.localeCode)
                                                               .format(startTime ?? DateTime.now()),
                                                     ),
@@ -494,21 +496,21 @@ class _EventComposePageState extends State<EventComposePage> {
                                                       maxLines: null,
                                                       setState: setState,
                                                       controller: classroomController,
-                                                      placeholder: 'Classroom'),
+                                                      placeholder: 'AA2B9B71-49B6-45BD-A0FE-707D42A09EC5'.localized),
                                                   // Lesson number input
                                                   AdaptiveTextField(
                                                       maxLines: null,
                                                       setState: (s) => setState(() => lessonNumberController.text =
                                                           int.tryParse(lessonNumberController.text)?.toString() ?? ''),
                                                       controller: lessonNumberController,
-                                                      placeholder: 'Lesson number'),
+                                                      placeholder: '89C8B5CF-1E70-4084-A04D-1CDBA5D54603'.localized),
                                                 ].appendIf(
                                                     // Shared event switch
                                                     CupertinoFormSection.insetGrouped(
                                                         margin: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                                                         children: [
                                                           CupertinoFormRow(
-                                                              prefix: Text('Share with class'),
+                                                              prefix: Text('7B2546FB-BF5A-4390-9ACD-32130F356320'.localized),
                                                               child: CupertinoSwitch(
                                                                   value: shareEvent,
                                                                   onChanged: (value) => setState(() => shareEvent = value)))

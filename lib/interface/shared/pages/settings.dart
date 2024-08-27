@@ -9,9 +9,11 @@ import 'package:darq/darq.dart';
 import 'package:duration/locale.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:event/event.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
@@ -239,8 +241,6 @@ class _SettingsPageState extends State<SettingsPage> {
                               builder: (context) => ModalPageBase.adaptive(title: 'App Style', children: [
                                     OptionsForm(
                                         selection: Share.settings.appSettings.useCupertino,
-                                        description:
-                                            'Note, there is no ETA for the Material interface style. Likely, the Cupertino one has to be finished first, as there is only one developer.',
                                         options: [
                                           OptionEntry(name: 'Cupertino', value: true),
                                           OptionEntry(name: 'Material', value: false),
@@ -1003,6 +1003,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                           regular: true,
                                           child: 'Version',
                                           after: Share.buildNumber,
+                                          hideChevron: true,
                                           click: () => Navigator.push(
                                               context,
                                               AdaptivePageRoute(
@@ -1027,6 +1028,83 @@ class _SettingsPageState extends State<SettingsPage> {
                                                                       },
                                                                       title: 'Developer mode',
                                                                       helper: 'Enables testing features')
+                                                                ]),
+                                                            CardContainer(
+                                                                margin: EdgeInsets.symmetric(horizontal: 18, vertical: 15),
+                                                                filled: false,
+                                                                additionalDividerMargin: 5,
+                                                                largeHeader: false,
+                                                                header: 'BACKUP AND RESTORE',
+                                                                children: [
+                                                                  AdaptiveCard(
+                                                                    child: 'Save session data to file',
+                                                                    after: Share.settings.appSettings.useCupertino
+                                                                        ? null
+                                                                        : 'Saves hive data to .hive',
+                                                                    click: () async {
+                                                                      try {
+                                                                        await Share.settingsMutex.protect<void>(() async {
+                                                                          (await Hive.openBox('sessions')).clear();
+                                                                          (await Hive.openBox('sessions'))
+                                                                              .put('sessions', Share.settings.sessions);
+
+                                                                          var path = (await Hive.openBox('sessions')).path;
+                                                                          if (path != null) {
+                                                                            var file = await File(path).readAsBytes();
+                                                                            var result = await FilePicker.platform.saveFile(
+                                                                                dialogTitle: 'Please select an output file',
+                                                                                fileName: 'sessions.hive',
+                                                                                bytes: file);
+                                                                            if (Platform.isWindows && result != null) {
+                                                                              File(result).writeAsBytes(file);
+                                                                            }
+                                                                          }
+                                                                        });
+                                                                      } catch (ex) {
+                                                                        // ignored
+                                                                      }
+                                                                    },
+                                                                  ),
+                                                                  AdaptiveCard(
+                                                                    child: 'Load session data from file',
+                                                                    after: Share.settings.appSettings.useCupertino
+                                                                        ? null
+                                                                        : 'Loads hive data from .hive',
+                                                                    click: () async {
+                                                                      try {
+                                                                        await Share.settingsMutex.protect<void>(() async {
+                                                                          var save = await FilePicker.platform.pickFiles(
+                                                                              allowMultiple: false, type: FileType.any);
+
+                                                                          if (!(save?.files.first.path?.endsWith('.hive') ??
+                                                                              false)) return;
+
+                                                                          (await Hive.openBox('sessions')).clear();
+                                                                          (await Hive.openBox('sessions'))
+                                                                              .put('sessions', Share.settings.sessions);
+
+                                                                          var path = (await Hive.openBox('sessions')).path;
+                                                                          if (save?.files.first.path != null &&
+                                                                              path != null) {
+                                                                            try {
+                                                                              await Hive.close();
+                                                                            } catch (ex) {
+                                                                              // ignored
+                                                                            }
+
+                                                                            File(path).delete();
+                                                                            File(save!.files.first.path!).copy(path);
+
+                                                                            await Hive.initFlutter();
+                                                                            await Share.settings.load();
+                                                                            await Share.settings.save();
+                                                                          }
+                                                                        });
+                                                                      } catch (ex) {
+                                                                        // ignored
+                                                                      }
+                                                                    },
+                                                                  ),
                                                                 ]),
                                                             CardContainer(
                                                                 margin: EdgeInsets.symmetric(horizontal: 18, vertical: 15),
