@@ -16,6 +16,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:loop_page_view/loop_page_view.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
@@ -49,7 +50,7 @@ class SettingsPage extends StatefulWidget {
   State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMixin {
   final TextEditingController _callTimeController = TextEditingController();
 
   final TextEditingController _toTitleController = TextEditingController();
@@ -1373,6 +1374,41 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ]))),
                     child: 'App Info',
                     after: Share.buildNumber),
+                AdaptiveCard(
+                    regular: true,
+                    click: () => (Share.settings.appSettings.useCupertino
+                            ? showCupertinoModalBottomSheet
+                            : showMaterialModalBottomSheet)(
+                        shape: Share.settings.appSettings.useCupertino
+                            ? null
+                            : RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        clipBehavior: Clip.antiAlias,
+                        context: context,
+                        expand: false,
+                        builder: (context) => Container(
+                              height: 510,
+                              color: Colors.white,
+                              child: LoopPageView.builder(
+                                controller: LoopPageController(initialPage: (isAndroid ? 0 : (isIOS ? 1 : 2))),
+                                itemCount: 3,
+                                itemBuilder: (context, index) => switch (index) {
+                                  0 => Table(children: [
+                                      TableRow(children: [Image.asset('assets/resources/images/qr-code-android.png')]),
+                                      TableRow(children: [Center(child:AdaptiveButton(title: 'Android', click: (){}, elevated: true))])
+                                    ]),
+                                  1 => Table(children: [
+                                      TableRow(children: [Image.asset('assets/resources/images/qr-code-ios.png')]),
+                                      TableRow(children: [Center(child:AdaptiveButton(title: 'iOS', click: (){}, elevated: true))])
+                                    ]),
+                                  _ => Table(children: [
+                                      TableRow(children: [Image.asset('assets/resources/images/qr-code-web.png')]),
+                                      TableRow(children: [Center(child:AdaptiveButton(title: 'Web', click: (){}, elevated: true))])
+                                    ]),
+                                },
+                              ),
+                            )),
+                    child: 'Share',
+                    after: 'Share the app'),
                 AdaptiveCard(
                     regular: true,
                     click: () {

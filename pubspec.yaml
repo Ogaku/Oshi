@@ -63,6 +63,7 @@ dependencies:
   dynamic_tabbar: ^1.0.7
   dropdown_button2: ^2.3.9
   file_picker: ^8.0.7
+  loop_page_view: ^1.2.5
 
 dev_dependencies:
   flutter_test:

@@ -273,7 +273,8 @@ void showOptionDialog<T>(
                         onChanged(group); // Handle change
                         Navigator.of(context).pop();
                       },
-                      child: Text('6BA18B4F-656E-4CC7-9093-9A4CE86A6998'.localized, style: TextStyle(fontSize: 17, color: Theme.of(context).colorScheme.onPrimary)),
+                      child: Text('6BA18B4F-656E-4CC7-9093-9A4CE86A6998'.localized,
+                          style: TextStyle(fontSize: 17, color: Theme.of(context).colorScheme.onPrimary)),
                     ),
                   ),
                 ))
@@ -402,16 +403,34 @@ class AdaptiveButton extends StatelessWidget {
     super.key,
     required this.title,
     required this.click,
+    this.elevated = false,
   });
 
   final String title;
   final void Function()? click;
+  final bool elevated;
 
   @override
-  Widget build(BuildContext context) => Share.settings.appSettings.useCupertino
-      ? CupertinoButton(
-          padding: EdgeInsets.all(0),
-          onPressed: click,
-          child: Text(title, style: TextStyle(color: CupertinoTheme.of(context).primaryColor)))
-      : TextButton(onPressed: click, child: Text(title, style: TextStyle(fontSize: 17)));
+  Widget build(BuildContext context) {
+    if (elevated) {
+      return Share.settings.appSettings.useCupertino
+          ? CupertinoButton.filled(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              onPressed: click,
+              child: Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 17)))
+          : ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10)),
+              onPressed: click,
+              child: Text(title, style: TextStyle(fontSize: 17, color: Theme.of(context).colorScheme.onSecondary)));
+    } else {
+      return Share.settings.appSettings.useCupertino
+          ? CupertinoButton(
+              padding: EdgeInsets.all(0),
+              onPressed: click,
+              child: Text(title, style: TextStyle(color: CupertinoTheme.of(context).primaryColor)))
+          : TextButton(onPressed: click, child: Text(title, style: TextStyle(fontSize: 17)));
+    }
+  }
 }
