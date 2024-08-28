@@ -51,11 +51,11 @@
         },
         {
             "id": "/Session/New/Register/Question",
-            "translation": "Który jest twój e-dziennik?"
+            "translation": "Jaki jest twój e-dziennik?"
         },
         {
             "id": "/Session/New/Register/Info",
-            "translation": "Wybierz e-dziennik, którego używasz. Po zalogowaniu będziesz móc zalogować się do innych dzienników jak i zalogować się na wiele kont."
+            "translation": "Wybierz e-dziennik, którego używasz. Po zalogowaniu wciąż możesz dodać inne dzienniki i logować się na kolejne konta."
         },
         {
             "id": "/Session/Login/Data/Complete",
@@ -63,11 +63,11 @@
         },
         {
             "id": "/Session/Login/Data/Info",
-            "translation": "Część informacji o loginie może być przechowywana przez serwis e-dziennika, zakodowana albo w postaci w tokena. Te informacje nie będą przez nas ani przez naszą aplikację udostępniane i nigdy nie opuszczą twojego urządzenia w celach innych niż logowanie."
+            "translation": "Część informacji o loginie może być przechowywana przez serwis e-dziennika, zakodowana albo w postaci w tokena. Te informacje nie są i nigdy nie będą udostępniane oraz nie opuszczą twojego urządzenia w celach innych niż logowanie."
         },
         {
             "id": "/Session/Login/Splash/Session",
-            "translation": "Przyprawianie sesji urzytkownika..."
+            "translation": "Przyprawianie sesji użytkownika..."
         },
         {
             "id": "/Session/Login/Splash/Settings",
