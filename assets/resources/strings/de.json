@@ -1,0 +1,1478 @@
+{
+    "language": "en",
+    "messages": [
+      {
+        "id": "/ByDate",
+        "translation": "By date"
+      },
+      {
+        "id": "/ByLesson",
+        "translation": "By lesson"
+      },
+      {
+        "id": "/ByType",
+        "translation": "By type"
+      },
+      {
+        "id": "/Titles/Pages/Home",
+        "translation": "Home"
+      },
+      {
+        "id": "/Titles/Pages/Timeline",
+        "translation": "Timeline"
+      },
+      {
+        "id": "/Titles/Pages/Grades",
+        "translation": "Grades"
+      },
+      {
+        "id": "/Titles/Pages/Schedule",
+        "translation": "Schedule"
+      },
+      {
+        "id": "/Titles/Pages/Messages",
+        "translation": "Messages"
+      },
+      {
+        "id": "/Titles/Pages/Messages/Inbox",
+        "translation": "Inbox"
+      },
+      {
+        "id": "/Titles/Pages/Messages/Sent",
+        "translation": "Sent"
+      },
+      {
+        "id": "/Titles/Pages/Messages/Announcements",
+        "translation": "Announcements"
+      },
+      {
+        "id": "/Titles/Pages/Absences",
+        "translation": "Absences"
+      },
+      {
+        "id": "/TrademarkInfo",
+        "translation": "All trademarks featured in this app remain the property of their rightful owners, and are used for informational purposes only."
+      },
+      {
+        "id": "/BaseApp/Update/AlertHeader",
+        "translation": "Please update 🤓"
+      },
+      {
+        "id": "/BaseApp/Update/Alert",
+        "translation": "The download page of the newer app version for {} will be opened."
+      },
+      {
+        "id": "/Session/New/Register/Question",
+        "translation": "What is your e-register?"
+      },
+      {
+        "id": "/Session/New/Register/Info",
+        "translation": "Choose the e-register provider depending on which one your school uses. You'll be able to set up more student accounts and e-registers later as needed."
+      },
+      {
+        "id": "/Session/Login/Data/Complete",
+        "translation": "No additional data required."
+      },
+      {
+        "id": "/Session/Login/Data/Info",
+        "translation": "Some login credentials may be stored by the e-register service provider, either encoded or as tokens. This data is not shared and will never leave your device for purposes other than logging in."
+      },
+      {
+        "id": "/Session/Login/Splash/Session",
+        "translation": "Seasoning the user session right now..."
+      },
+      {
+        "id": "/Session/Login/Splash/Settings",
+        "translation": "Cannot believe you've made it this far..."
+      },
+      {
+        "id": "/Session/Login/Error/Title",
+        "translation": "Error logging in!"
+      },
+      {
+        "id": "/Delete",
+        "translation": "Delete"
+      },
+      {
+        "id": "/Session/Page/RegisterAcc",
+        "translation": "E-register accounts"
+      },
+      {
+        "id": "/Session/Page/RegisterLog",
+        "translation": "These are your e-register accounts. Choose one of the currently logged-in sessions, or go create a new one."
+      },
+      {
+        "id": "/Sessions",
+        "translation": "Sessions"
+      },
+      {
+        "id": "/Next",
+        "translation": "Next"
+      },
+      {
+        "id": "/Session/Login/Error/Message",
+        "translation": "An error {} occurred and the provider couldn't log you in to the e-register.\n\nPlease check your credentials and try again later."
+      },
+      {
+        "id": "/Session/Login/Error/Exception",
+        "translation": "Copy Exception"
+      },
+      {
+        "id": "/Session/Login/Error/Stack",
+        "translation": "Copy Stack Trace"
+      },
+      {
+        "id": "/Required",
+        "translation": "Required"
+      },
+      {
+        "id": "/Page/Absences/No",
+        "translation": "No attendances"
+      },
+      {
+        "id": "/Page/Absences/Attendance",
+        "translation": "Attendance"
+      },
+      {
+        "id": "/Page/Absences/Share",
+        "translation": "I got{} \"{}\" on {} from {} on lesson {}!"
+      },
+      {
+        "id": "/Share",
+        "translation": "Share"
+      },
+      {
+        "id": "/Required",
+        "translation": "Required"
+      },
+      {
+        "id": "/Inquiry",
+        "translation": "Inquiry"
+      },
+      {
+        "id": "/Grades",
+        "translation": "Grades"
+      },
+      {
+        "id": "/an",
+        "translation": " an"
+      },
+      {
+        "id": "/a",
+        "translation": " a"
+      },
+      {
+        "id": "/Absence",
+        "translation": "Absence"
+      },
+      {
+        "id": "/Late",
+        "translation": "Late"
+      },
+      {
+        "id": "/Excused",
+        "translation": "Excused"
+      },
+      {
+        "id": "/Duty",
+        "translation": "Duty"
+      },
+      {
+        "id": "/Presence",
+        "translation": "Presence"
+      },
+      {
+        "id": "/Other",
+        "translation": "Other"
+      },
+      {
+        "id": "/Lesson",
+        "translation": "Lesson"
+      },
+      {
+        "id": "/Grades/NoLessons",
+        "translation": "No lessons matching the query"
+      },
+      {
+        "id": "/Type",
+        "translation": "Type"
+      },
+      {
+        "id": "/AddedBy",
+        "translation": "Added by"
+      },
+      {
+        "id": "/Date",
+        "translation": "Date"
+      },
+      {
+        "id": "/Added",
+        "translation": "Added"
+      },
+      {
+        "id": "/SortBy/Date",
+        "translation": "By date"
+      },
+      {
+        "id": "/SortBy/Lesson",
+        "translation": "By lesson"
+      },
+      {
+        "id": "/SortBy/Type",
+        "translation": "By type"
+      },
+      {
+        "id": "/Homeworks",
+        "translation": "Homeworks"
+      },
+      {
+        "id": "/Homeworks/Done",
+        "translation": "All done, yay!"
+      },
+      {
+        "id": "/Page/Home/Homework/share",
+        "translation": "There's a {} for {}"
+      },
+      {
+        "id": "/Summary",
+        "translation": "Summary"
+      },
+      {
+        "id": "/Now",
+        "translation": "Now:"
+      },
+      {
+        "id": "/Home/Counters/Lessons/Singular",
+        "translation": "lesson"
+      },
+      {
+        "id": "/Home/Counters/Lessons/Plural/Start",
+        "translation": "lessons"
+      },
+      {
+        "id": "/Home/Counters/Lessons/Plural/End",
+        "translation": "lessons"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Timetables/New/Singular",
+        "translation": "new timetable change"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Timetables/Updated/Singular",
+        "translation": "updated timetable change"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Timetables/Removed/Singular",
+        "translation": "cancelled lesson"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Timetables/Both/Singular",
+        "translation": "added or updated timetable change"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Timetables/New/Plural/Start",
+        "translation": "new timetable changes"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Timetables/Updated/Plural/Start",
+        "translation": "updated timetable events"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Timetables/Removed/Plural/Start",
+        "translation": "cancelled lessons"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Timetables/Both/Plural/Start",
+        "translation": "added or updated timetable events"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Timetables/New/Plural/End",
+        "translation": "new timetable changes"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Timetables/Updated/Plural/End",
+        "translation": "updated timetable events"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Timetables/Removed/Plural/End",
+        "translation": "cancelled lessons"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Timetables/Both/Plural/End",
+        "translation": "added or updated timetable events"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Grades/New/Singular",
+        "translation": "new grade"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Grades/Updated/Singular",
+        "translation": "updated grade"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Grades/Removed/Singular",
+        "translation": "removed grade"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Grades/Both/Singular",
+        "translation": "added or updated grade"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Grades/New/Plural/Start",
+        "translation": "new grades"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Grades/Updated/Plural/Start",
+        "translation": "updated grades"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Grades/Removed/Plural/Start",
+        "translation": "removed grades"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Grades/Both/Plural/Start",
+        "translation": "added or updated grades"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Grades/New/Plural/End",
+        "translation": "new grades"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Grades/Updated/Plural/End",
+        "translation": "updated grades"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Grades/Removed/Plural/End",
+        "translation": "removed grades"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Grades/Both/Plural/End",
+        "translation": "added or updated grades"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Events/New/Singular",
+        "translation": "new event"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Events/Updated/Singular",
+        "translation": "updated event"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Events/Removed/Singular",
+        "translation": "removed event"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Events/Both/Singular",
+        "translation": "added or updated event"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Events/New/Plural/Start",
+        "translation": "new events"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Events/Updated/Plural/Start",
+        "translation": "updated events"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Events/Removed/Plural/Start",
+        "translation": "removed events"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Events/Both/Plural/Start",
+        "translation": "added or updated events"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Events/New/Plural/End",
+        "translation": "new events"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Events/Updated/Plural/End",
+        "translation": "updated events"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Events/Removed/Plural/End",
+        "translation": "removed events"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Events/Both/Plural/End",
+        "translation": "added or updated events"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Announcements/New/Singular",
+        "translation": "new announcement"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Announcements/Updated/Singular",
+        "translation": "updated announcement"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Announcements/Removed/Singular",
+        "translation": "removed announcement"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Announcements/Both/Singular",
+        "translation": "added or updated announcement"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Announcements/New/Plural/Start",
+        "translation": "new announcements"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Announcements/Updated/Plural/Start",
+        "translation": "updated announcements"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Announcements/Removed/Plural/Start",
+        "translation": "removed announcements"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Announcements/Both/Plural/Start",
+        "translation": "added or updated announcements"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Announcements/New/Plural/End",
+        "translation": "new announcements"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Announcements/Updated/Plural/End",
+        "translation": "updated announcements"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Announcements/Removed/Plural/End",
+        "translation": "removed announcements"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Announcements/Both/Plural/End",
+        "translation": "added or updated announcements"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Messages/New/Singular",
+        "translation": "new message"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Messages/Updated/Singular",
+        "translation": "updated message"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Messages/Removed/Singular",
+        "translation": "removed message"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Messages/Both/Singular",
+        "translation": "added or updated message"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Messages/New/Plural/Start",
+        "translation": "new messages"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Messages/Updated/Plural/Start",
+        "translation": "updated messages"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Messages/Removed/Plural/Start",
+        "translation": "removed messages"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Messages/Both/Plural/Start",
+        "translation": "added or updated messages"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Messages/New/Plural/End",
+        "translation": "new messages"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Messages/Updated/Plural/End",
+        "translation": "updated messages"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Messages/Removed/Plural/End",
+        "translation": "removed messages"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Messages/Both/Plural/End",
+        "translation": "added or updated messages"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Attendances/New/Singular",
+        "translation": "new attendance"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Attendances/Updated/Singular",
+        "translation": "updated attendance"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Attendances/Removed/Singular",
+        "translation": "removed attendance"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Attendances/Both/Singular",
+        "translation": "added or updated attendance"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Attendances/New/Plural/Start",
+        "translation": "new attendances"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Attendances/Updated/Plural/Start",
+        "translation": "updated attendances"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Attendances/Removed/Plural/Start",
+        "translation": "removed attendances"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Attendances/Both/Plural/Start",
+        "translation": "added or updated attendances"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Attendances/New/Plural/End",
+        "translation": "new attendances"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Attendances/Updated/Plural/End",
+        "translation": "updated attendances"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Attendances/Removed/Plural/End",
+        "translation": "removed attendances"
+      },
+      {
+        "id": "/Timeline/Lang/Counters/Attendances/Both/Plural/End",
+        "translation": "added or updated attendances"
+      },
+      {
+        "id": "/Notifications/Categories/Timetable/New",
+        "translation": "Added changes for some lessons on {}, L{}"
+      },
+      {
+        "id": "/Notifications/Categories/Timetable/Substitution",
+        "translation": "Added substitution for a lesson on {}, L{}"
+      },
+      {
+        "id": "/Notifications/Categories/Timetable/Moved",
+        "translation": "A lesson has been moved to {}, L{}"
+      },
+      {
+        "id": "/Notifications/Categories/Timetable/Cancelled",
+        "translation": "A lesson on {}, L{} has been cancelled"
+      },
+      {
+        "id": "/Notifications/Categories/Messages/New",
+        "translation": "New message from {}"
+      },
+      {
+        "id": "/Notifications/Categories/Attendance/Absence",
+        "translation": "New absence on {}, L{}"
+      },
+      {
+        "id": "/Notifications/Categories/Attendance/Late",
+        "translation": "New belate on {}, L{}"
+      },
+      {
+        "id": "/Notifications/Categories/Attendance/Excused",
+        "translation": "An absence on {}, L{} was excused"
+      },
+      {
+        "id": "/Notifications/Categories/Attendance/New",
+        "translation": "New attendance \"{}\" on {}, L{}"
+      },
+      {
+        "id": "/Notifications/Categories/Attendance/Changed",
+        "translation": "An attendance \"{}\" on {}, L{} was changed"
+      },
+      {
+        "id": "/Notifications/Categories/Attendance/Removed",
+        "translation": "An attendance \"{}\" on {}, L{} was removed"
+      },
+      {
+        "id": "/Notifications/Categories/Grades/New",
+        "translation": "{} from {}"
+      },
+      {
+        "id": "/Notifications/Categories/Grades/Changed",
+        "translation": "{} from {} was updated"
+      },
+      {
+        "id": "/Notifications/Categories/Grades/Removed",
+        "translation": "{} from {} was removed"
+      },
+      {
+        "id": "/Notifications/Categories/Announcement/New",
+        "translation": "New announcement by {}"
+      },
+      {
+        "id": "/Notifications/Categories/Announcement/Changed",
+        "translation": "An announcement by {} was changed"
+      },
+      {
+        "id": "/Notifications/Categories/Event/New",
+        "translation": "Added \"{}\" on {}"
+      },
+      {
+        "id": "/Notifications/Categories/Event/Changed",
+        "translation": "\"{}\" on {} was changed"
+      },
+      {
+        "id": "/Notifications/Categories/Event/Removed",
+        "translation": "\"{}\" on {} was updated"
+      },
+      {
+        "id": "/Notifications/Categories/Event/Teacher/New",
+        "translation": "{} will be vacant"
+      },
+      {
+        "id": "/Notifications/Categories/Event/Teacher/Changed",
+        "translation": "Changed vacancy of {}"
+      },
+      {
+        "id": "/Notifications/Categories/Event/Teacher/Removed",
+        "translation": "Cancelled vacancy of {}"
+      },
+      {
+        "id": "/Notifications/Captions/Joiners/Lesson",
+        "translation": "{} with {}"
+      },
+      {
+        "id": "/Notifications/Placeholder/Teacher",
+        "translation": "other teacher"
+      },
+      {
+        "id": "/Notifications/Placeholder/Lesson",
+        "translation": "Other lesson"
+      },
+      {
+        "id": "/Notifications/Captions/ViewDetails",
+        "translation": "Click to see more details"
+      },
+      {
+        "id": "/Enums/EventCategory/gathering",
+        "translation": "Gathering"
+      },
+      {
+        "id": "/Enums/EventCategory/lecture",
+        "translation": "Lecture"
+      },
+      {
+        "id": "/Enums/EventCategory/test",
+        "translation": "Test"
+      },
+      {
+        "id": "/Enums/EventCategory/classWork",
+        "translation": "Class work"
+      },
+      {
+        "id": "/Enums/EventCategory/semCorrection",
+        "translation": "Final correction"
+      },
+      {
+        "id": "/Enums/EventCategory/other",
+        "translation": "Other"
+      },
+      {
+        "id": "/Enums/EventCategory/lessonWork",
+        "translation": "Lesson work"
+      },
+      {
+        "id": "/Enums/EventCategory/shortTest",
+        "translation": "Quiz"
+      },
+      {
+        "id": "/Enums/EventCategory/correction",
+        "translation": "Correction"
+      },
+      {
+        "id": "/Enums/EventCategory/onlineLesson",
+        "translation": "Online lesson"
+      },
+      {
+        "id": "/Enums/EventCategory/homework",
+        "translation": "Homework"
+      },
+      {
+        "id": "/Enums/EventCategory/teacher",
+        "translation": "Teacher vacancy"
+      },
+      {
+        "id": "/Enums/EventCategory/freeDay",
+        "translation": "Free day"
+      },
+      {
+        "id": "/Enums/EventCategory/conference",
+        "translation": "Conference"
+      },
+      {
+        "id": "/Enums/EventCategory/admin",
+        "translation": "Admin"
+      },
+      {
+        "id": "/Average",
+        "translation": "Average"
+      },
+      {
+        "id": "/Notes",
+        "translation": "Notes: {}"
+      },
+      {
+        "id": "/Semesters/First",
+        "translation": "Semester 1"
+      },
+      {
+        "id": "/Semesters/Second",
+        "translation": "Semester 2"
+      },
+      {
+        "id": "6BA18B4F-656E-4CC7-9093-9A4CE86A6998",
+        "translation": "Apply"
+      },
+      {
+        "id": "F2399A03-D76A-4C95-ACAB-26458D291779",
+        "translation": "Unsupported type: {}"
+      },
+      {
+        "id": "0E300562-B30B-4E1C-94DD-0E244255DA13",
+        "translation": "Set grade weight to 0 or 1"
+      },
+      {
+        "id": "4E53AD1F-9CEE-4676-947C-35CE59986E21",
+        "translation": "Counts to the average"
+      },
+      {
+        "id": "836100BB-8CC9-4DD0-BE98-9B5E7CBC3525",
+        "translation": "Mark the grade as corrected"
+      },
+      {
+        "id": "E99E0F5D-AFDC-45F0-8B5A-76AD8CA1FE17",
+        "translation": "Resit (corrected grade)"
+      },
+      {
+        "id": "1D6F18B4-5F70-4CF7-8302-C15F111EBA64",
+        "translation": "Grade type"
+      },
+      {
+        "id": "2EBF8EDE-5F5B-40BD-914D-5A47026D2D2D",
+        "translation": "Choose the grade type"
+      },
+      {
+        "id": "41943B1D-B32A-4547-81B0-1882F5495942",
+        "translation": "general"
+      },
+      {
+        "id": "0D37C787-F585-4091-AC3E-CC2AF05A534F",
+        "translation": "semester proposition"
+      },
+      {
+        "id": "83AAE02D-9BDA-4AD1-BD70-7987CF46FECC",
+        "translation": "semester"
+      },
+      {
+        "id": "BB246CED-F0D0-4425-B33B-C5F68E563A04",
+        "translation": "final proposition"
+      },
+      {
+        "id": "23AC622C-A52D-43DD-A764-E74750C3E523",
+        "translation": "final"
+      },
+      {
+        "id": "F9647083-FB1F-450E-AE99-E77C17B75509",
+        "translation": "ERROR"
+      },
+      {
+        "id": "3D0F6617-080E-410B-8650-33E6CB83AE4D",
+        "translation": "ERR"
+      },
+      {
+        "id": "AC106467-0FBE-4916-82B5-594F11D21C8B",
+        "translation": "Grade type:"
+      },
+      {
+        "id": "65233B9B-801B-4145-BDC3-6CA7A4B5736F",
+        "translation": "Optional"
+      },
+      {
+        "id": "C01E0657-4723-487A-8095-382022E441CF",
+        "translation": "Type in any grade comments here..."
+      },
+      {
+        "id": "11340D77-0525-4EEF-A0A0-EB8933553149",
+        "translation": "Select the semester"
+      },
+      {
+        "id": "4456F7D3-1173-4A61-A093-712A2AB21764",
+        "translation": "Semester"
+      },
+      {
+        "id": "0C168486-8BDF-4923-898E-6E8D6E066394",
+        "translation": "first"
+      },
+      {
+        "id": "BD3A0594-129B-4DEE-8F33-E848C4B00E3B",
+        "translation": "second"
+      },
+      {
+        "id": "3C821237-50E2-4764-B61D-489C2E05C7EA",
+        "translation": "Second"
+      },
+      {
+        "id": "8860BA8F-47A4-4723-A786-7FC26B971453",
+        "translation": "First"
+      },
+      {
+        "id": "952C16E3-7C31-4E6D-968B-80FC4C27C292",
+        "translation": "Semester:"
+      },
+      {
+        "id": "394DA71A-A887-46C6-8ECB-D7CFFA5487C2",
+        "translation": "Choose the grade weight"
+      },
+      {
+        "id": "C70BF0CC-9152-4856-9AF3-45DF1CDE0EBA",
+        "translation": "Grade weight"
+      },
+      {
+        "id": "F455E699-B0AA-4718-B6E1-56623B2332CA",
+        "translation": "Weight"
+      },
+      {
+        "id": "36E7AD9C-4766-400D-82E0-D882D8C1DBBE",
+        "translation": "Weight:"
+      },
+      {
+        "id": "828F8EBE-4681-4FC9-9FFE-239540470A97",
+        "translation": "Value"
+      },
+      {
+        "id": "8C49630C-B41B-4D50-87C8-6A3EA3FD6A3D",
+        "translation": "Name"
+      },
+      {
+        "id": "3C50E8E5-1764-48BF-9E6D-47C5DB958A23",
+        "translation": "Not found: {}"
+      },
+      {
+        "id": "5751E462-FFCF-4857-A5EA-EAF4A25B6F11",
+        "translation": "GO FUCK YOURSELF"
+      },
+      {
+        "id": "6FFC787F-7E74-4467-94A7-DE04A8349C1A",
+        "translation": "Start typing..."
+      },
+      {
+        "id": "63C342E6-6583-45CE-B273-8CB402AE5BAD",
+        "translation": "Date:"
+      },
+      {
+        "id": "D91ED34B-BB94-4EFF-8DF8-D5F4FF8906BF",
+        "translation": "Cancel"
+      },
+      {
+        "id": "C9DE7B87-B4B9-410E-AB54-CA6FB5B2F005",
+        "translation": "New custom grade"
+      },
+      {
+        "id": "7B2546FB-BF5A-4390-9ACD-32130F356320",
+        "translation": "Share with class"
+      },
+      {
+        "id": "89C8B5CF-1E70-4084-A04D-1CDBA5D54603",
+        "translation": "Lesson number"
+      },
+      {
+        "id": "AA2B9B71-49B6-45BD-A0FE-707D42A09EC5",
+        "translation": "Classroom"
+      },
+      {
+        "id": "7E2F717D-B138-4E74-A278-8E26F7FC4C4B",
+        "translation": "Not specified"
+      },
+      {
+        "id": "CB7BA3C9-548E-4854-B9CD-E6EA31FC1319",
+        "translation": "When the event ends"
+      },
+      {
+        "id": "87657B56-BFB1-44FB-9B51-9155ED6396E4",
+        "translation": "End time"
+      },
+      {
+        "id": "6D95AC19-4F2C-45C6-A80F-FEECF8A319E3",
+        "translation": "When the event starts"
+      },
+      {
+        "id": "58710A36-F758-4E5F-916E-9F7846ED58BA",
+        "translation": "Start time"
+      },
+      {
+        "id": "BC4C4828-36B3-4009-A06B-14641E292A61",
+        "translation": "not specified"
+      },
+      {
+        "id": "D0B44429-BF9F-4483-8B3A-0540449B227D",
+        "translation": "End time:"
+      },
+      {
+        "id": "E5F106C3-4B5F-44B0-AD28-8545CB9A3EF2",
+        "translation": "Start time:"
+      },
+      {
+        "id": "619C02B6-9564-48DB-B205-FCEE140DF534",
+        "translation": "Event will be shared with others"
+      },
+      {
+        "id": "ED8D10FC-50FE-48C5-AD57-8E7418669AC3",
+        "translation": "Title"
+      },
+      {
+        "id": "8CA8A5B0-F318-46DA-A453-72D162D266E6",
+        "translation": "Type in the event description here..."
+      },
+      {
+        "id": "89DCFE4D-3EBA-4E62-8892-BC5644D639E8",
+        "translation": "Custom category: {}"
+      },
+      {
+        "id": "D6C84B44-B72B-4EEC-A2E9-3C139BBCA8AC",
+        "translation": "Category:"
+      },
+      {
+        "id": "4A36ACC2-773E-49FD-9946-321EF34ADFCB",
+        "translation": "The event date"
+      },
+      {
+        "id": "621EE9A3-68D0-40B1-A990-68FAD150AFAA",
+        "translation": "Back"
+      },
+      {
+        "id": "485689BD-B015-4C7B-AADE-BC9F084B1E2B",
+        "translation": "On {} {}, {} wrote:\n\"{}\n\n{}\""
+      },
+      {
+        "id": "B4118707-9AF7-45E7-8759-59C00CE240C4",
+        "translation": "On {} {} wrote:\n\"{}\n\n{}\""
+      },
+      {
+        "id": "DC48985E-AA43-4507-AF74-DAF3A385B6C1",
+        "translation": "Forward"
+      },
+      {
+        "id": "D1D2C948-7EC7-4966-9AD0-686269DF0BE1",
+        "translation": "Reply"
+      },
+      {
+        "id": "F77E1795-3404-4BCA-A173-80AFF744AAA1",
+        "translation": "Fwd: {}"
+      },
+      {
+        "id": "47FC297B-63E7-46E6-AEF1-7343A8BF8D08",
+        "translation": "Re: {}"
+      },
+      {
+        "id": "C14AF35B-469F-4E81-A8EA-B348267E8455",
+        "translation": "-------\nOn {} {}, {} wrote:\n\"{}\n\n{}\""
+      },
+      {
+        "id": "AF66B98F-C6F5-480F-87F3-49FCFDD3BBA2",
+        "translation": "{}, {}\n\n-------\nOn {} {} wrote:\n\"{}\n\n{}\""
+      },
+      {
+        "id": "2B6C42AB-FD8A-4DC1-A4EE-58D2235AE1FD",
+        "translation": "No content to display"
+      },
+      {
+        "id": "B8C5F980-D32F-42C9-A7E0-FF7667884776",
+        "translation": "New message"
+      },
+      {
+        "id": "F263B8B0-0EFA-4486-836D-ED1FF801B2C2",
+        "translation": "\n\n{}"
+      },
+      {
+        "id": "EECC0427-E5ED-4A10-96D4-734FE2AA7804",
+        "translation": "Type in receivers..."
+      },
+      {
+        "id": "81B09857-201A-4036-807F-7A32F0C23575",
+        "translation": "No receivers matching the query"
+      },
+      {
+        "id": "AC7FCED9-3CEA-4C69-9512-8B409015DF2C",
+        "translation": "Subject"
+      },
+      {
+        "id": "DFE8DC1D-FB74-48C0-9016-0F03A5EBD128",
+        "translation": "Type in your message here..."
+      },
+      {
+        "id": "EB947AC4-561E-4D63-9EAD-7E80C18C48B9",
+        "translation": "No Signature"
+      },
+      {
+        "id": "37DB4F6C-E0AE-44AF-8905-5384B038E522",
+        "translation": "No grades matching the query"
+      },
+      {
+        "id": "9A027181-A1D0-41DA-9E0C-719B3D43B9DF",
+        "translation": "No grades"
+      },
+      {
+        "id": "0440D007-CD66-495E-A1C3-9D290E26F507",
+        "translation": "My average from {} is {}!"
+      },
+      {
+        "id": "79617CAD-C9A1-4BCA-98FC-4F9D1ADE1B35",
+        "translation": "Pytanie o średnią ocen z przedmiotu {}"
+      },
+      {
+        "id": "36C35A24-B8AA-47FB-B564-9B83D2838415",
+        "translation": "{}, {}"
+      },
+      {
+        "id": "86D66F6A-6E4B-4C65-8AB3-EBEACA3FFC90",
+        "translation": "My 1st semester average from {} is {}!"
+      },
+      {
+        "id": "BC6173B0-BD9D-4627-8512-594FB359B983",
+        "translation": "Pytanie o średnią ocen z pierwszego semestru z przedmiotu {}"
+      },
+      {
+        "id": "E02FB126-60E8-4604-B616-69529AB0EE64",
+        "translation": "I got a {} proposition from {}!"
+      },
+      {
+        "id": "9221D91C-83A8-423E-8352-31FEE4C06FD0",
+        "translation": "Pytanie o ocenę proponowaną z przedmiotu {}"
+      },
+      {
+        "id": "B7322EA2-71DE-4CB6-B71C-CDB9E763B32A",
+        "translation": "Proposed grade"
+      },
+      {
+        "id": "94149CBB-5B72-4186-A155-20A9C7FB1B2C",
+        "translation": "Unknown"
+      },
+      {
+        "id": "A7A1CA79-09B4-4EA6-BA6D-ED85243BADDA",
+        "translation": "I got a {} semester proposition from {}!"
+      },
+      {
+        "id": "9F390DDF-CBAB-45FA-B762-BDBBDAC7472D",
+        "translation": "Pytanie o ocenę proponowaną na semestr 1 z przedmiotu {}"
+      },
+      {
+        "id": "C0E5DDF1-1578-41A3-8833-9F6B8F327512",
+        "translation": "I got a {} final from {}!"
+      },
+      {
+        "id": "3A47D98A-3FDF-4BD0-94BE-B97A402AE20B",
+        "translation": "Pytanie o ocenę końcową z przedmiotu {}"
+      },
+      {
+        "id": "3D7343F4-A362-4D50-BC7B-8E2303B50729",
+        "translation": "Final grade"
+      },
+      {
+        "id": "113A072F-2E32-4BBE-8705-4FB4F5B26F6E",
+        "translation": "I got a {} semester from {}!"
+      },
+      {
+        "id": "6023BF44-17D2-463D-870B-759681BA3CA7",
+        "translation": "Pytanie o ocenę semestralną z przedmiotu {}"
+      },
+      {
+        "id": "102472D7-81EC-45F3-816E-D9EE5783A3CF",
+        "translation": "Semester grade"
+      },
+      {
+        "id": "C31AC6D0-D0F1-4902-8CC7-6C911C6508BD",
+        "translation": "No events to display"
+      },
+      {
+        "id": "ACCA97A8-5C58-4D65-A827-6BBE076DDC71",
+        "translation": "No events matching the query"
+      },
+      {
+        "id": "6196CAC4-C4CE-41AB-BDB9-AF6EBBF2A5EF",
+        "translation": "New event"
+      },
+      {
+        "id": "6948FA91-02DD-4CD9-8DD7-1A3B6465D1B9",
+        "translation": "Filters"
+      },
+      {
+        "id": "473A2E48-C7AC-46F5-9652-7257B575BA42",
+        "translation": "Homeworks{}"
+      },
+      {
+        "id": "31BA1A6E-2C39-4312-967B-6C4C1C375689",
+        "translation": "Absent teachers"
+      },
+      {
+        "id": "7D1B6F15-239E-47FE-8935-07376F7FB2C7",
+        "translation": "Agenda"
+      },
+      {
+        "id": "334BC7AB-6780-412F-8604-2C6BAA9F3152",
+        "translation": "No homeworks matching the query"
+      },
+      {
+        "id": "CB4DFBFF-DC80-4787-8DAD-8046F536D65E",
+        "translation": "No teachers matching the query"
+      },
+      {
+        "id": "AD1F219E-A73A-45AA-9F75-574ACBA84522",
+        "translation": "Refresh to synchronize"
+      },
+      {
+        "id": "FEF84AFC-C749-4FF3-A0C2-8B5846ACD189",
+        "translation": "No lessons, yay!"
+      },
+      {
+        "id": "B6173A9C-6BAB-426E-9F38-257AB0F1B573",
+        "translation": "Today"
+      },
+      {
+        "id": "6834A472-D03D-4CC5-A91E-1A65B0C43DF8",
+        "translation": "Agenda{}"
+      },
+      {
+        "id": "3354CC3D-7A3D-4C61-99BB-D346D5755113",
+        "translation": "Load more items..."
+      },
+      {
+        "id": "CEEC04F5-04C3-41B2-9DB8-CCC6B0C42CC8",
+        "translation": "No changes to display"
+      },
+      {
+        "id": "D7969362-9ACF-403C-80E5-9C345711FF16",
+        "translation": "No changes, WTF?!"
+      }
+    ],
+    "splashes": [
+      "May the God bless you",
+      "You will survive!",
+      "Will you survive?",
+      "Brace yourself!",
+      "Keep yourself safe...",
+      "May the force be with you",
+      "Sheeeeeeesh...",
+      "Good luck",
+      "Shh... they're gonna know",
+      "Remember, no absence",
+      "LEEESSSS GOOOOO",
+      "Soon it will end",
+      "Almost there!",
+      "Truancy? Who tf needs it?",
+      "Try Librus! Oh wait...",
+      "Grind those marks!",
+      "Grind never stops...",
+      "A school speedrun?",
+      "School speedrun any%?",
+      "A true genius?",
+      "Lessons speedrun?",
+      "You got this!",
+      "You're doin' it!",
+      "He needs some milk!",
+      "Awesome!",
+      "As expected",
+      "Today is a good day",
+      "|-|3110",
+      "Survive!",
+      "Oh man!",
+      "Difficulty set to high",
+      "Difficulty set to normal",
+      "Difficulty set to low",
+      "Browse some memes...",
+      "Have you checked memes?",
+      "Check todays memes!",
+      "A splash text - for real",
+      "Yes, sir!",
+      "Random splash!",
+      "You can do this!",
+      "sqrt(-1) love you!",
+      "150% hyperbole!",
+      "Cogito ergo sum",
+      "Now supports åäö!",
+      "...!",
+      "Godmode enabled!",
+      "Godmode disabled!",
+      "Like a pro",
+      "Teacher be acting sus",
+      "The teacher is a spy!",
+      "Stay undefeated!",
+      "Stay hydrated!",
+      "Follow the schedule, CJ!",
+      "Leveraging synerg(ia)y!",
+      "Fnord!",
+      "Child's play!",
+      "/give @p hugs 64",
+      "Something funny",
+      "Something encouraging",
+      "All rumors are true!",
+      "Don't worry, be happy!",
+      "Packed your lunch?",
+      "Go to the dentist",
+      "Wash your hands",
+      "Stay safe!",
+      "Stay strong!",
+      "Stay safe and strong!",
+      "Maybe stay home today",
+      "Prepare for learning",
+      "You are valid!",
+      "Glad you're here!",
+      "Hello there!",
+      "You're welcome here",
+      "[Put a splash here]",
+      "Innovate innovation",
+      "You read splash text?",
+      "Mostly harmless",
+      "Is homework done?",
+      "School 2 unconfirmed!",
+      "Crush it!",
+      "Teachers gonna teach",
+      "Learners gonna learn",
+      "Not too cool 4 school!",
+      "Get smarter!",
+      "Sekai de"
+    ],
+    "ending_splashes": [
+      {
+        "title": "Way to go!",
+        "subtitle": "You've survived all {} lessons"
+      },
+      {
+        "title": "It's all over now!",
+        "subtitle": "You've survived all {} lessons"
+      },
+      {
+        "title": "NOWAY!!!1 ITZ OVER!!!",
+        "subtitle": "YOU HAVE JUST SURVIVED ALL {} LESSONS!"
+      },
+      {
+        "title": "It's over. Can you believe it?",
+        "subtitle": "{} lessons, Can you believe it?"
+      },
+      {
+        "title": "School speedrun any%",
+        "subtitle": "You got {} achievements!"
+      },
+      {
+        "title": "You did it",
+        "subtitle": "{} lessons passed"
+      },
+      {
+        "title": "Go home, have some rest",
+        "subtitle": "You've passed all {} lessons today"
+      },
+      {
+        "title": "Supercalifragilisticexpialidocious",
+        "subtitle": "You've survived {} lessons"
+      },
+      {
+        "title": "It's done for today!",
+        "subtitle": "You've survived all {} lessons"
+      },
+      {
+        "title": "That's a nice lesson you had there...",
+        "subtitle": "You've passed all {} lessons today"
+      },
+      {
+        "title": "The evolution of educating and education",
+        "subtitle": "(More likely lack of it) {} lessons passed"
+      },
+      {
+        "title": "You did well today ^.^",
+        "subtitle": "You've survived all {} lessons"
+      },
+      {
+        "title": "At least it's not raining outside...",
+        "subtitle": "You've survived all {} lessons"
+      },
+      {
+        "title": "Send us some feedback on this app!",
+        "subtitle": "You've survived all {} lessons"
+      },
+      {
+        "title": "Keep your head up, there's two of us in that now",
+        "subtitle": "You've passed all {} lessons today"
+      },
+      {
+        "title": "It was a true horror",
+        "subtitle": "You've passed all {} lessons today"
+      },
+      {
+        "title": "Protecc but also attacc",
+        "subtitle": "You've survived {} lessons"
+      },
+      {
+        "title": "We're still working on it",
+        "subtitle": "here, have a lessons passed number - {}"
+      },
+      {
+        "title": "True skill in surviving",
+        "subtitle": "You've survived all {} lessons"
+      },
+      {
+        "title": "[put an ending splash here]",
+        "subtitle": "[put ending splash message here] {}"
+      },
+      {
+        "title": "Now go home and do your homework",
+        "subtitle": "You've passed all {} lessons today"
+      },
+      {
+        "title": "Too EZ",
+        "subtitle": "Gained {} XP"
+      },
+      {
+        "title": "Did you just finished your lessons?",
+        "subtitle": "All {} lessons completed"
+      },
+      {
+        "title": "Use some ChatGPT, surely it will help...",
+        "subtitle": "You've survived all {} lessons"
+      },
+      {
+        "title": "Did you know that...",
+        "subtitle": "You've survived all {} lessons?"
+      },
+      {
+        "title": "Fellas, is it ok to finish school?",
+        "subtitle": "You've survived {} lessons"
+      },
+      {
+        "title": "General Kenobi!",
+        "subtitle": "All {} lessons completed"
+      },
+      {
+        "title": "Good they won't do a sequel...",
+        "subtitle": "All {} lessons completed"
+      },
+      {
+        "title": "[This splash is locked - require lvl 40]",
+        "subtitle": "[This splash message is also locked] - {}"
+      },
+      {
+        "title": "And now what...?",
+        "subtitle": "All {} lessons completed"
+      },
+      {
+        "title": "Hit that new level in that game!",
+        "subtitle": "All {} lessons completed"
+      },
+      {
+        "title": "Stay strong and stay safe!",
+        "subtitle": "You've survived all {} lessons"
+      },
+      {
+        "title": "LEEESSSS GOOOO DAT TOO EZ!",
+        "subtitle": "You've survived all {} lessons"
+      },
+      {
+        "title": "Hey, yoo, look I'm in a splash!",
+        "subtitle": "All {} lessons completed"
+      },
+      {
+        "title": "What did you expect?",
+        "subtitle": "All {} lessons completed"
+      },
+      {
+        "title": "Have a marvelous evening!",
+        "subtitle": "You've passed all {} lessons today"
+      },
+      {
+        "title": "All rumors are true...",
+        "subtitle": "You've survived all {} lessons!"
+      },
+      {
+        "title": "Something's not quite right...",
+        "subtitle": "You survived 've {} all lessons"
+      },
+      {
+        "title": "Imagine here something funny and satisfacting",
+        "subtitle": "You've completed all {} lessons"
+      },
+      {
+        "title": "An illusion! What are you hiding?",
+        "subtitle": "I'm hiding the fact you've survived {} lessons"
+      },
+      {
+        "title": "Don't forget to get some covfefe... covafe...",
+        "subtitle": "You know what you should get - {} lessons completed"
+      },
+      {
+        "title": "HOLY MOLY, you're going too fast!",
+        "subtitle": "You've survived all {} lessons!"
+      },
+      {
+        "title": "Now you can play some games",
+        "subtitle": "All {} lessons completed"
+      },
+      {
+        "title": "Did you know that this splash message is too long to be displayed correctly? Don't believe me? Just look at me! I hope devs won't find it!",
+        "subtitle": "Today you have completed all {} lessons sir"
+      },
+      {
+        "title": "Warning! You've done great today!",
+        "subtitle": "You've survived all {} lessons"
+      },
+      {
+        "title": "One day, somewhere in the future, my work will be quoted!",
+        "subtitle": "You've completed all {} lessons"
+      },
+      {
+        "title": "??????",
+        "subtitle": "{} lessons"
+      },
+      {
+        "title": "hope you're feeling great because",
+        "subtitle": "You've completed all {} lessons"
+      },
+      {
+        "title": "Has ending!",
+        "subtitle": "You've ended today with all {} lessons"
+      },
+      {
+        "title": "You're finally done!",
+        "subtitle": "Today you have completed all {} lessons sir"
+      },
+      {
+        "title": "U812?",
+        "subtitle": "You've ate all {} lessons"
+      },
+      {
+        "title": "It was a pleasure to meet you",
+        "subtitle": "You've completed all {} lessons"
+      },
+      {
+        "title": "Todays lessons were sponsored by RAID SHADOW LEGENDS!",
+        "subtitle": "You've survived {} lessons"
+      },
+      {
+        "title": "Bringing home the bacon",
+        "subtitle": "You've completed all {} lessons"
+      },
+      {
+        "title": "Good ending",
+        "subtitle": "You've survived all {} lessons!"
+      },
+      {
+        "title": "It was a pleasure to accompany you today",
+        "subtitle": "Today you have completed all {} lessons sir"
+      },
+      {
+        "title": "See you tomorrow",
+        "subtitle": "Today you have completed all {} lessons"
+      },
+      {
+        "title": "I hope you learned something...",
+        "subtitle": "{} lessons wasted"
+      },
+      {
+        "title": "I hope you made a good use of that time",
+        "subtitle": "Time wasted: {} x 45min"
+      },
+      {
+        "title": "It's not the end of your mori...",
+        "subtitle": "But of your {} lessons!"
+      }
+    ]
+  }

@@ -70,9 +70,9 @@ stages:
             displayName: Build Oshi for ios-arm64v8-release
 
           - bash: |
-              $(FlutterToolPath)/flutter build apk --release --target-platform android-arm64
+              $(FlutterToolPath)/flutter build apk --release
               mv 'build/app/outputs/flutter-apk/app-release.apk' '$(Build.ArtifactStagingDirectory)/Oshi.apk'
-            displayName: Build Oshi for android-amr64-release
+            displayName: Build Oshi for android-release
 
           - publish: "$(Build.ArtifactStagingDirectory)"
             displayName: Publish Oshi

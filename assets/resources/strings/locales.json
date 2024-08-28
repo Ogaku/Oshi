@@ -3,24 +3,28 @@
         "en": "English",
         "ja": "Japanese",
         "pl": "Polish",
-        "uw": "Engwish"
+        "uw": "Engwish",
+        "de": "German"
     },
     "ja": {
         "en": "英語",
         "ja": "日本語",
         "pl": "ポーランド語",
-        "uw": "英語？"
+        "uw": "英語？",
+        "de": "ドイツ語"
     },
     "pl": {
         "en": "Angielski",
         "ja": "Japoński",
         "pl": "Polski",
-        "uw": "Angweiski"
+        "uw": "Angweiski",
+        "de": "Niemiecki"
     },
     "uw": {
         "en": "Engwish",
         "ja": "Animish",
         "pl": "Powish",
-        "uw": "Engwish"
+        "uw": "Engwish",
+        "de": "Gewman"
     }
 }
