@@ -822,7 +822,7 @@ class LibrusDataReader implements models.IProvider {
                     teachersShim.users!
                         .firstWhereOrDefault((user) => user.userId == int.tryParse(y.receiverId))
                         ?.asTeacher() ??
-                    models.Teacher())
+                    const models.Teacher())
                 .toList());
       }
 

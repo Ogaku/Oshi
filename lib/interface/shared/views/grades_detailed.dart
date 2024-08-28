@@ -4,7 +4,6 @@
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:format/format.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';

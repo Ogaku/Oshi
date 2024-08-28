@@ -65,6 +65,9 @@ dependencies:
   file_picker: ^8.0.7
   loop_page_view: ^1.2.5
 
+  path: any
+  hive: any
+  logging: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

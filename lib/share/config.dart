@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:universal_io/io.dart';
-import 'dart:typed_data';
 
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';

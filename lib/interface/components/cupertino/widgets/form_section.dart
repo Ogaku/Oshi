@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
 import 'package:oshi/interface/shared/containers.dart';
 
 // Used for iOS "Inset Grouped" margin, determined from SwiftUI's Forms in

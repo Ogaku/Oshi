@@ -188,6 +188,7 @@ class _SessionsPageState extends State<SessionsPage> {
             .toList();
 
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
           theme: ThemeData(
             colorScheme: lightColorScheme,
             useMaterial3: true,
@@ -318,18 +319,17 @@ class _SessionsPageState extends State<SessionsPage> {
                 padding: EdgeInsets.only(bottom: 20),
                 child: Table(children: <TableRow>[
                   TableRow(children: [
-                    Expanded(
-                        child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Opacity(
-                                opacity: 0.5,
-                                child: Container(
-                                    margin: EdgeInsets.only(right: 30, left: 30, bottom: 10),
-                                    child: Text(
-                                      '/TrademarkInfo'.localized,
-                                      style: TextStyle(fontSize: 12),
-                                      textAlign: TextAlign.center,
-                                    ))))),
+                    Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Opacity(
+                            opacity: 0.5,
+                            child: Container(
+                                margin: EdgeInsets.only(right: 30, left: 30, bottom: 10),
+                                child: Text(
+                                  '/TrademarkInfo'.localized,
+                                  style: TextStyle(fontSize: 12),
+                                  textAlign: TextAlign.center,
+                                )))),
                   ]),
                   TableRow(children: [
                     Center(
@@ -521,18 +521,17 @@ class _NewSessionPageState extends State<NewSessionPage> {
         padding: EdgeInsets.only(bottom: 20),
         child: Table(children: <TableRow>[
           TableRow(children: [
-            Expanded(
-                child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Opacity(
-                        opacity: 0.5,
-                        child: Container(
-                            margin: EdgeInsets.only(right: 30, left: 30, bottom: 10),
-                            child: Text(
-                              '/TrademarkInfo'.localized,
-                              style: TextStyle(fontSize: 12),
-                              textAlign: TextAlign.center,
-                            ))))),
+            Align(
+                alignment: Alignment.bottomCenter,
+                child: Opacity(
+                    opacity: 0.5,
+                    child: Container(
+                        margin: EdgeInsets.only(right: 30, left: 30, bottom: 10),
+                        child: Text(
+                          '/TrademarkInfo'.localized,
+                          style: TextStyle(fontSize: 12),
+                          textAlign: TextAlign.center,
+                        )))),
           ]),
           TableRow(children: [
             Center(
@@ -560,6 +559,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
       return widget.routed
           ? body
           : MaterialApp(
+              debugShowCheckedModeBanner: false,
               theme: ThemeData(
                 colorScheme: lightColorScheme,
                 useMaterial3: true,

@@ -148,7 +148,7 @@ class Attachment extends Equatable {
   @HiveField(2)
   final String location;
 
-  Attachment({String? name, String? location})
+  const Attachment({String? name, String? location})
       : name = name ?? 'Unknown',
         location = location ?? 'https://youtu.be/dQw4w9WgXcQ?si=2wQpMrQoFsQbQoKk';
 

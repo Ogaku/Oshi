@@ -27,7 +27,7 @@ class Lesson extends Equatable {
     Teacher? teacher,
     List<Grade>? grades,
   })  : hostClass = hostClass ?? Class(),
-        teacher = teacher ?? Teacher(),
+        teacher = teacher ?? const Teacher(),
         grades = grades ?? [];
 
   @HiveField(1)

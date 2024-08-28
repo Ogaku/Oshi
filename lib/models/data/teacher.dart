@@ -7,7 +7,7 @@ part 'teacher.g.dart';
 @HiveType(typeId: 32)
 @JsonSerializable()
 class Teacher extends Equatable {
-  Teacher(
+  const Teacher(
       {this.id = -1, this.userId, this.url = '', this.firstName = '', this.lastName = '', this.isHomeTeacher, this.absent});
 
   @HiveField(1)

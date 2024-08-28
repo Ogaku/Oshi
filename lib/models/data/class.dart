@@ -26,7 +26,7 @@ class Class {
         endFirstSemester = endFirstSemester ?? DateTime(2000),
         endSchoolYear = endSchoolYear ?? DateTime(2000),
         unit = unit ?? Unit(),
-        classTutor = classTutor ?? Teacher(),
+        classTutor = classTutor ?? const Teacher(),
         events = events ?? [],
         averages = averages ?? {};
 

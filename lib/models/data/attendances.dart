@@ -23,7 +23,7 @@ class Attendance extends Equatable {
         date = date ?? DateTime(2000),
         addDate = addDate ?? DateTime(2000),
         type = type ?? AttendanceType.other,
-        teacher = teacher ?? Teacher();
+        teacher = teacher ?? const Teacher();
 
   @HiveField(0)
   final int id;

@@ -43,7 +43,7 @@ class Grade extends Equatable {
   })  : comments = comments ?? [],
         date = date ?? DateTime(2000),
         addDate = addDate ?? DateTime(2000),
-        addedBy = addedBy ?? Teacher(),
+        addedBy = addedBy ?? const Teacher(),
         resitPart = resitPart ?? false;
 
   @HiveField(0)
