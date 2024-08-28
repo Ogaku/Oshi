@@ -1132,6 +1132,18 @@
     {
       "id": "6834A472-D03D-4CC5-A91E-1A65B0C43DF8",
       "translation": "Agenda{}"
+    },
+    {
+      "id": "3354CC3D-7A3D-4C61-99BB-D346D5755113",
+      "translation": "Load more items..."
+    },
+    {
+      "id": "CEEC04F5-04C3-41B2-9DB8-CCC6B0C42CC8",
+      "translation": "No changes to display"
+    },
+    {
+      "id": "D7969362-9ACF-403C-80E5-9C345711FF16",
+      "translation": "No changes, WTF?!"
     }
   ],
   "splashes": [
