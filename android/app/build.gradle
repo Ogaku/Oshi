@@ -43,6 +43,14 @@ android {
         jvmTarget = '1.8'
     }
 
+    // kotlinOptions {
+    //     jvmTarget = '17'
+    // }
+
+    // kotlin {
+    //     jvmToolchain(17)
+    // }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
@@ -51,6 +59,7 @@ android {
         applicationId "com.ogaku.oshi"
         minSdkVersion 28
         targetSdkVersion 34
+        ndkVersion = "26.1.10909125"
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true

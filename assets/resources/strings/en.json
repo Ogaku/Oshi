@@ -1144,6 +1144,591 @@
     {
       "id": "D7969362-9ACF-403C-80E5-9C345711FF16",
       "translation": "No changes, WTF?!"
+    },
+    {
+      "id": "B5AAA3A1-795B-4A81-9DED-4633B9FBD874",
+      "translation": "Settings"
+    },
+    {
+      "id": "DC18CA52-2CF3-47E8-8FBA-5CEF06A841BF",
+      "translation": "Info"
+    },
+    {
+      "id": "CF4A7B81-8294-4616-BF7B-03621E2CB41F",
+      "translation": "Mark as read"
+    },
+    {
+      "id": "6E7A921E-98C1-4C9D-87DD-154E15B06776",
+      "translation": "Appearance settings"
+    },
+    {
+      "id": "DD5CE0F4-775A-451A-B626-22E53029AF33",
+      "translation": "App Style"
+    },
+    {
+      "id": "5C484437-BB3B-4CAF-9E14-669C2A63ACF0",
+      "translation": "Cupertino"
+    },
+    {
+      "id": "A6E7DA42-3D93-4F31-A49A-63A33E9A376B",
+      "translation": "Material"
+    },
+    {
+      "id": "8F02FD98-C601-4CE5-A7F2-5BD05324B0AA",
+      "translation": "Visual theme"
+    },
+    {
+      "id": "F70892E6-2833-4E21-A111-91BADC1A3744",
+      "translation": "Accent Color"
+    },
+    {
+      "id": "A7E5A03F-B158-4213-9371-CD84BE2AC1BF",
+      "translation": "Note, this color may be overridden during certain events, such as Christmas, Easter, or Halloween."
+    },
+    {
+      "id": "F2B4F8E4-9603-4FE9-B4D3-E9A14CEF7D89",
+      "translation": "Language"
+    },
+    {
+      "id": "55AD72A7-31F9-45F6-A1F1-8174F53FBCCB",
+      "translation": "The selected language will only be reflected in the app interface. Grade, event, lesson descriptions and generated messages will not be affected."
+    },
+    {
+      "id": "76A9B9B2-1589-4669-AF3B-B051E1D1E27F",
+      "translation": "Application-wise"
+    },
+    {
+      "id": "FC6B3F0C-DB3D-45BB-8406-33657D48D411",
+      "translation": "Sharing and sync"
+    },
+    {
+      "id": "CD1ECC4D-066E-496C-AA71-8517579A58C4",
+      "translation": "Sync Settings"
+    },
+    {
+      "id": "0E6DB495-34F0-44C6-A012-5EF6A7CD16F1",
+      "translation": "Background synchronization"
+    },
+    {
+      "id": "8A9B267A-DDF2-401B-BD0C-FBEB58328EE3",
+      "translation": "How often should Oshi auto-refresh?"
+    },
+    {
+      "id": "58A14048-EF66-4249-A62D-5DA8AAD5DDA7",
+      "translation": "{}Synchronization will only happen when you have a working internet connection and Oshi is closed."
+    },
+    {
+      "id": "83A587C7-AEA1-440D-81B8-04D9607F5016",
+      "translation": "Note: "
+    },
+    {
+      "id": "DB5D169A-DCAD-4090-9450-31A47E99D7C0",
+      "translation": "Synchronize on Wi-Fi only"
+    },
+    {
+      "id": "D3E2F079-C3E4-4E83-8D4A-55CE7C601C2C",
+      "translation": "Prevents Oshi from using mobile data"
+    },
+    {
+      "id": "BC9CAB49-765A-47AC-A2D5-A756C610C4BF",
+      "translation": "Refresh interval"
+    },
+    {
+      "id": "629FB62F-9A01-4FAE-8D20-58F2C9241CC2",
+      "translation": "Needs background sync enabled"
+    },
+    {
+      "id": "A202A6E9-C043-4450-9AB9-661EB3699F39",
+      "translation": "15 minutes"
+    },
+    {
+      "id": "CC433F26-6A3D-4F62-A931-80A40878AF24",
+      "translation": "Shared Events"
+    },
+    {
+      "id": "4F886B16-A88F-48D3-BEE1-B4148622C60C",
+      "translation": "By courtesy of Szkolny.eu developers, Szkolny.eu apps and Oshi can now share events, notes, and notifications!"
+    },
+    {
+      "id": "6632D1A9-F474-45CA-9150-1ACCB4EF39B1",
+      "translation": "Allow registration"
+    },
+    {
+      "id": "1F1AA2B9-CA28-4728-8D1D-02FA2A4F7E82",
+      "translation": "Enables sharing events with others"
+    },
+    {
+      "id": "F0314F48-F4E7-40CF-AF92-4E538C0516D8",
+      "translation": "Share events by default"
+    },
+    {
+      "id": "32251E7A-D82A-4C14-B0F1-5835411763BA",
+      "translation": "Automatically share new events"
+    },
+    {
+      "id": "66D53114-ACDB-4963-A3AF-323A928FF077",
+      "translation": "Thanks to szkolny.eu"
+    },
+    {
+      "id": "F55B93B2-D401-43DC-B735-5BE1FAC9077F",
+      "translation": "Notifications"
+    },
+    {
+      "id": "29751189-B0EB-4160-B972-12C9A133921E",
+      "translation": "NOTIFICATION FILTERS"
+    },
+    {
+      "id": "725BD5A2-7767-45C6-8B96-B572886EDA30",
+      "translation": "Request notification access"
+    },
+    {
+      "id": "9DC64E89-233B-43BD-8860-4E6A8F964657",
+      "translation": "Click to request notification permission"
+    },
+    {
+      "id": "8028B071-6B39-40E2-AE3C-925D555E4696",
+      "translation": "App updates"
+    },
+    {
+      "id": "808B9438-3098-4218-A0F7-EA4424345D2F",
+      "translation": "Notifications about new app versions"
+    },
+    {
+      "id": "BAFBD98F-2A00-4F6E-8477-1835B9719705",
+      "translation": "Pathetic."
+    },
+    {
+      "id": "5D3C9F9D-00DD-4B39-AF4B-629EC7D203A7",
+      "translation": "You thought you could escape?"
+    },
+    {
+      "id": "F184D4D6-0C94-4E94-A703-8E0D371C8D91",
+      "translation": "Notifications will be sent for the selected categories once the new data is downloaded and there are any changes."
+    },
+    {
+      "id": "0DC2D946-9E89-4F0D-B468-BA98470C14FE",
+      "translation": "Notifications about timetable changes"
+    },
+    {
+      "id": "49F92EF0-7E05-416B-89A7-930342F3F1CB",
+      "translation": "Timetables"
+    },
+    {
+      "id": "E0A11D48-A95B-4713-A5D8-8754980C5ABC",
+      "translation": "Notifications about new grades"
+    },
+    {
+      "id": "F4829933-F3CF-44DE-B872-0A7E6E355697",
+      "translation": "Tests and school or class events"
+    },
+    {
+      "id": "8D247486-323F-42C0-B34C-B4846C4B4B67",
+      "translation": "Events"
+    },
+    {
+      "id": "FED5F29B-1CE3-44B2-84E3-ED4E952B039B",
+      "translation": "Notifications about attendance changes"
+    },
+    {
+      "id": "3437225F-3F91-4DB4-B23D-44A59155378F",
+      "translation": "Notifications about new announcements"
+    },
+    {
+      "id": "1B4B8A55-5D68-419A-AF11-2B9B9DED6ED3",
+      "translation": "Notifications about received messages"
+    },
+    {
+      "id": "CDE7ED74-6C59-42E2-A3D6-BD06161D3E10",
+      "translation": "Select categories"
+    },
+    {
+      "id": "87E61CE0-78E7-4121-A00C-ECE9C18E5DFB",
+      "translation": "User data"
+    },
+    {
+      "id": "D480F8E1-21BA-41AA-80C1-903375A2115D",
+      "translation": "Timetable Settings"
+    },
+    {
+      "id": "B3B19D34-8903-4983-A791-8B396D7DD34A",
+      "translation": "BELL SYNCHRONIZATION"
+    },
+    {
+      "id": "65A82A7E-82EE-439D-AC65-3A9F9A506041",
+      "translation": "Used to calibrate bell times in the app to offsets used by particular schools, format i.e. '10s', '1min, 5s' Don't forget to confirm your input!"
+    },
+    {
+      "id": "466F84DC-AE7A-499E-BE43-F96D13DF9585",
+      "translation": "School bell offset"
+    },
+    {
+      "id": "71A4B268-BA50-4832-BC25-A35F586718AC",
+      "translation": "In seconds, used to adjust bell times"
+    },
+    {
+      "id": "DAFBEF7F-1E93-4BE4-877F-E234EA2F1A0E",
+      "translation": "0 seconds"
+    },
+    {
+      "id": "12EBC2D2-19B3-41FD-9F3A-10D7D3EDF460",
+      "translation": "LESSON CALL TIME"
+    },
+    {
+      "id": "EE454EE2-FC1D-4AF2-AEAB-5B3405F4DF92",
+      "translation": "In minutes, will be used for \"calling\" last X minutes of a lesson. Falls back 15 minutes by default."
+    },
+    {
+      "id": "7B97D3CB-F6A8-4DC1-AD27-319F22D5002F",
+      "translation": "Lesson call time"
+    },
+    {
+      "id": "80F75930-2F66-4E88-91C2-E48DC5143458",
+      "translation": "Counted based on other settings"
+    },
+    {
+      "id": "DF9019BC-3BE4-4208-976B-51FDB364F292",
+      "translation": "CALL SETTINGS"
+    },
+    {
+      "id": "E8B922A6-7122-4328-866F-6729E660A702",
+      "translation": "Note, this is used only for auto-generating preset messages, which may not always be accurate."
+    },
+    {
+      "id": "72AD997F-5207-4D48-AF5F-E900BEC01147",
+      "translation": "Lesson call settings"
+    },
+    {
+      "id": "860D1B1D-980C-4BE6-AFD1-6483C6AC31E5",
+      "translation": "Selected type: {}"
+    },
+    {
+      "id": "E69F660E-D46C-42BE-A8CF-EB20BF5EA040",
+      "translation": "Call type"
+    },
+    {
+      "id": "6BEABF95-FABD-42E6-920C-2057480D3A0A",
+      "translation": "Custom Events"
+    },
+    {
+      "id": "8318318D-060F-4D2D-94FB-9BD3C665BDA0",
+      "translation": "Shared with the class"
+    },
+    {
+      "id": "5CFB8DE5-B4C1-4965-93F9-5EA55F07C098",
+      "translation": "Grades Settings"
+    },
+    {
+      "id": "AC4EDF84-EE04-4B57-B077-DACA7A954384",
+      "translation": "AVERGAE CALCULATION"
+    },
+    {
+      "id": "2AF1719A-8656-4F98-9321-D74F82F7AEBC",
+      "translation": "Average calculation will ignore weights if all of them are 0 for auto-adapt enabled."
+    },
+    {
+      "id": "D30DEFBB-3209-41C2-AED6-A5923D461FBB",
+      "translation": "Use weighted average"
+    },
+    {
+      "id": "363EA29A-52AD-4B1E-B326-907F535F2FC8",
+      "translation": "Use grade weighs for calculation"
+    },
+    {
+      "id": "CCCCCA9E-242A-4059-8DC6-FED14110E23D",
+      "translation": "Auto-adapt to grades"
+    },
+    {
+      "id": "5F3EBC40-EC4E-4101-AF66-28ECAAB544F8",
+      "translation": "Ignore weighs when necessary"
+    },
+    {
+      "id": "2688AB1D-5E3D-4C76-B8C7-A6637CFA0F77",
+      "translation": "YEARLY AVERAGE"
+    },
+    {
+      "id": "DA45DD0A-2781-40A2-A1C6-976F9DF60C8F",
+      "translation": "Note, the average displayed by the app is calculated locally, and may not be respected by every school."
+    },
+    {
+      "id": "04B2FDC7-C76E-430E-8F1C-5CB52852BCB0",
+      "translation": "Yearly average settings"
+    },
+    {
+      "id": "7416F5BF-2B31-4C55-BEEF-EB7A2329402D",
+      "translation": "Selected: {}"
+    },
+    {
+      "id": "5DE48056-3DDE-4939-BE9E-41E6A869C2C5",
+      "translation": "GRADES SIMULATOR"
+    },
+    {
+      "id": "8D5843E5-EF41-4694-AB25-8D2A4DF8BC10",
+      "translation": "Grades added by you here are not synchronized across devices, and have local effect only."
+    },
+    {
+      "id": "181C196F-A8C7-4446-92A8-911CA17014ED",
+      "translation": "Custom Grades"
+    },
+    {
+      "id": "5F65ABD5-E3A1-4A88-9012-178CE9ECD523",
+      "translation": "Grade Settings"
+    },
+    {
+      "id": "38C6F1AA-F9E6-440A-B635-E6981415AD77",
+      "translation": "No grades to display"
+    },
+    {
+      "id": "0197B2E2-A763-4E59-AA64-90C4ED1E051D",
+      "translation": "Manually add new grades"
+    },
+    {
+      "id": "BE7A9E48-8112-4556-85CD-530593066E26",
+      "translation": "Average calculation"
+    },
+    {
+      "id": "F4DA9649-D96E-41CC-8528-040A2917A486",
+      "translation": "Custom Grade Values"
+    },
+    {
+      "id": "EB604C3E-B9CF-475F-8F72-27D936CCC1AD",
+      "translation": "CUSTOM GRADE MODIFIERS"
+    },
+    {
+      "id": "1DD14872-D65A-442B-B048-E171FAE0BF42",
+      "translation": "These values will overwite all default grade modifiers for the specified entries, e.g. count '-' as '-0.25', etc."
+    },
+    {
+      "id": "52681520-1CD1-4547-8BB7-D006AAFF1295",
+      "translation": "CUSTOM GRADE MARGINS"
+    },
+    {
+      "id": "67F7DBDE-6ED3-421F-AD14-85058AA1665D",
+      "translation": "These values will overwite the default grade margins, e.g. make values such as '4.75' count as '5', etc."
+    },
+    {
+      "id": "274B918D-51CF-4C3E-8425-EB0D9FD828FD",
+      "translation": "CUSTOM GRADES"
+    },
+    {
+      "id": "BBF5AE6C-FA29-40FB-B68A-050934D9998F",
+      "translation": "These values will overwite all default grade values for the specified entries, e.g. from 'nb' to '1', etc."
+    },
+    {
+      "id": "838E767C-3D71-4E76-BB86-ADE91B154BF3",
+      "translation": "Plus, minus, and other values"
+    },
+    {
+      "id": "B2C872FA-F50E-4EB5-A646-B5F743603522",
+      "translation": "About"
+    },
+    {
+      "id": "4C9277BD-392C-4ECB-8307-8AF4E09F539A",
+      "translation": "App Info"
+    },
+    {
+      "id": "4F794C4E-204D-4F7F-A7ED-6DC83C95AF3B",
+      "translation": "VERSION INFO"
+    },
+    {
+      "id": "02B0EE84-7869-413F-B3DA-8EF6D1ED8E7A",
+      "translation": "Version"
+    },
+    {
+      "id": "6775F13D-3B63-4175-9432-3356200DD4EC",
+      "translation": "Developers"
+    },
+    {
+      "id": "EF8D269F-FD62-4E77-859D-7ECCCF9DF865",
+      "translation": "FOR DEVELOPERS"
+    },
+    {
+      "id": "41C975B3-8284-4825-A7CE-5BE463E30DDE",
+      "translation": "Developer mode"
+    },
+    {
+      "id": "B482A089-8A28-4481-AC0F-525551459EEF",
+      "translation": "Enables testing features"
+    },
+    {
+      "id": "2A51A33A-F6E7-4EFF-9F96-E27CDF749DD9",
+      "translation": "BACKUP AND RESTORE"
+    },
+    {
+      "id": "43AC10D9-619A-4B0D-A9A9-3745E2B65158",
+      "translation": "Save session data to file"
+    },
+    {
+      "id": "51FCB9F8-ADBF-4562-AF92-13046E6495D0",
+      "translation": "Saves hive data to .hive"
+    },
+    {
+      "id": "1BBE5897-AB9C-4C1C-9182-2F31C11BC1E9",
+      "translation": "Load session data from file"
+    },
+    {
+      "id": "2E20C624-26E9-4BF7-9106-6E1963BDDD8A",
+      "translation": "Please select an output file"
+    },
+    {
+      "id": "1B48C70F-C2B5-402A-87C7-9E57767CDFF9",
+      "translation": "Loads hive data from .hive"
+    },
+    {
+      "id": "44A2572B-0263-4AE7-AFF9-28D2B4070489",
+      "translation": "APPLICATION DIALOG TESTS"
+    },
+    {
+      "id": "02C816FF-C7C1-4A50-8935-879751E84132",
+      "translation": "Toast test"
+    },
+    {
+      "id": "3B71B8E7-6C95-43EE-9435-DAD5647C6130",
+      "translation": "Modal test"
+    },
+    {
+      "id": "09F07DF5-2C66-4F2B-85F5-DE1736C50A4E",
+      "translation": "Content"
+    },
+    {
+      "id": "E6DDB694-ACDA-4912-BCE6-D04B3BF11210",
+      "translation": "Alert test"
+    },
+    {
+      "id": "B57477AA-D271-437D-A814-601DF8B6F4DB",
+      "translation": "Register notification"
+    },
+    {
+      "id": "CC9FD9AF-9C21-4ABB-BC5F-E2D1BB3B62F5",
+      "translation": "Mess/Ann notification"
+    },
+    {
+      "id": "59810958-F149-4D47-BD9F-802D75592E97",
+      "translation": "Other notification"
+    },
+    {
+      "id": "7C52C45D-277C-4F67-9040-E4BCE6248CC3",
+      "translation": "SHARING CODES"
+    },
+    {
+      "id": "22AD0D77-411C-4BCB-80F5-45009292A8E7",
+      "translation": "User code"
+    },
+    {
+      "id": "07ACB1FF-E847-4327-8E26-F26942695A38",
+      "translation": "VIRTUAL CLASS CODES"
+    },
+    {
+      "id": "785EA92C-03D6-47D6-BFA9-A7100998A92B",
+      "translation": "Build"
+    },
+    {
+      "id": "84D8D5E0-43AA-4463-BAE8-FF5453F79FB2",
+      "translation": "CONTRIBUTORS"
+    },
+    {
+      "id": "8C4BC4D5-81A3-432A-9B94-48D20DB8F559",
+      "translation": "Lead Developer"
+    },
+    {
+      "id": "0BF14FC8-EABB-4790-A0A1-CFF39977A8CC",
+      "translation": "Support Developer"
+    },
+    {
+      "id": "213B6431-B649-4837-A089-3E2A037A4625",
+      "translation": "Support"
+    },
+    {
+      "id": "4FAD3DFA-A095-448D-BA21-56726E117111",
+      "translation": "Share the app"
+    },
+    {
+      "id": "B3D579E5-2A27-4B61-A42A-C2DFD6150022",
+      "translation": "Socials"
+    },
+    {
+      "id": "5352613A-B420-4441-A89D-612693727FF6",
+      "translation": "Support Us"
+    },
+    {
+      "id": "3D02B970-3502-495C-B6B8-3D5D33A92EA6",
+      "translation": "Contact Us"
+    },
+    {
+      "id": "461D2804-7071-400A-8D98-06F58B50A826",
+      "translation": "About Me"
+    },
+    {
+      "id": "12F11FD8-0450-4D48-B8F0-6BB1AB98F2F7",
+      "translation": "ACCOUNT DATA"
+    },
+    {
+      "id": "B96EA577-6DBF-491C-9781-9C85CCBD4119",
+      "translation": "Class"
+    },
+    {
+      "id": "AB3F62E5-579B-4E78-9810-5CC31A8AFF25",
+      "translation": "Home teacher"
+    },
+    {
+      "id": "38919EDB-6025-46CC-B6F0-7689137F27BE",
+      "translation": "SCHOOL DATA"
+    },
+    {
+      "id": "288A7361-FF68-4743-88B2-6715F4D56457",
+      "translation": "Name",
+      "translationComment": "As in school name"
+    },
+    {
+      "id": "16288334-3CEC-4208-849D-A62BF00D75BC",
+      "translation": "Head teacher"
+    },
+    {
+      "id": "A15AC36A-0A6A-4E6A-8E14-7185B9CAA157",
+      "translation": "Address"
+    },
+    {
+      "id": "2CE8A48D-BCF7-43E9-86FC-4BFA997D1024",
+      "translation": "Phone"
+    },
+    {
+      "id": "E5A3FE43-E428-4BE8-9E08-48E2149AC5A7",
+      "translation": "E-mail"
+    },
+    {
+      "id": "EC9E3129-A646-46AF-8EBD-73C601AF15AE",
+      "translation": "SUMMARY"
+    },
+    {
+      "id": "F8BACC1A-63F2-4311-AA23-5C6996E826FA",
+      "translation": "Presence times are calculated using only the registered attendances, assuming a lesson is 45 minutes long. The shown average is an average of all subjects\\' averages."
+    },
+    {
+      "id": "E91C42DF-7471-47E1-BAB8-7E3C63713154",
+      "translation": "Unavailable"
+    },
+    {
+      "id": "6F98C4DC-F77D-46A0-9C6F-A95F0FBF9E43",
+      "translation": "Wasted time"
+    },
+    {
+      "id": "CEE6A317-76C4-46E6-8BA3-60A92FFC07AB",
+      "translation": "Gained time"
+    },
+    {
+      "id": "94319EB2-735E-4FDF-B65A-372DC31A4298",
+      "translation": "Total presence"
+    },
+    {
+      "id": "FA7F8284-A75E-46F2-B507-C0ECCB96FB38",
+      "translation": "ATTENDANCE"
+    },
+    {
+      "id": "A9A27655-5B34-41D8-AEA5-BEAC6E8F6212",
+      "translation": "No attendances to display"
+    },
+    {
+      "id": "E31E0161-B2C4-450B-9CA6-047493B87431",
+      "translation": "AVERAGE"
     }
   ],
   "splashes": [

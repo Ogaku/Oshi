@@ -38,13 +38,13 @@ dependencies:
   flutter_swipe_action_cell: ^3.1.2
   duration: ^3.0.13
   equatable: ^2.0.5
-  flutter_local_notifications: ^16.1.0
+  flutter_local_notifications: ^17.2.2
   show_fps: ^1.0.6
   image_picker: ^1.0.4
   maps_launcher: ^2.2.0
   appcenter_sdk_flutter: ^0.5.1
   path_provider: ^2.1.1
-  background_fetch: ^1.2.1
+  background_fetch: ^1.3.5
   connectivity_plus: ^5.0.2
   mutex: ^3.1.0
   flutter_app_installer: ^1.0.0

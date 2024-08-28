@@ -13,6 +13,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:format/format.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -40,6 +41,7 @@ import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:duration/duration.dart';
 
@@ -72,8 +74,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
             DataPageType.keepBackgroundWatchers,
           ].flag,
           setState: setState,
-          title: 'Settings',
-          previousPageTitle: 'Home',
+          title: 'B5AAA3A1-795B-4A81-9DED-4633B9FBD874'.localized,
+          previousPageTitle: '/Titles/Pages/Home'.localized,
           children: [
             // Name and school, avatar picker
             CardContainer(
@@ -186,7 +188,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                   Icon(Icons.switch_account_outlined),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 5),
-                                    child: Text('Sessions'),
+                                    child: Text('/Sessions'.localized),
                                   ),
                                 ])),
                           ),
@@ -201,7 +203,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                   Icon(Icons.person_outline),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 5),
-                                    child: Text('Info'),
+                                    child: Text('DC18CA52-2CF3-47E8-8FBA-5CEF06A841BF'.localized),
                                   ),
                                 ])),
                           ),
@@ -217,7 +219,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                   Icon(Icons.check),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 5),
-                                    child: Text('Mark as read'),
+                                    child: Text('CF4A7B81-8294-4616-BF7B-03621E2CB41F'.localized),
                                   ),
                                 ])),
                           ),
@@ -231,7 +233,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
               margin: EdgeInsets.symmetric(horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
               filled: false,
               additionalDividerMargin: 5,
-              header: Share.settings.appSettings.useCupertino ? '' : 'Appearance settings',
+              header: Share.settings.appSettings.useCupertino ? '' : '6E7A921E-98C1-4C9D-87DD-154E15B06776'.localized,
               children: [
                 AdaptiveCard(
                   regular: true,
@@ -239,12 +241,12 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       ? Navigator.push(
                           context,
                           AdaptivePageRoute(
-                              builder: (context) => ModalPageBase.adaptive(title: 'App Style', children: [
+                              builder: (context) => ModalPageBase.adaptive(title: 'DD5CE0F4-775A-451A-B626-22E53029AF33'.localized, children: [
                                     OptionsForm(
                                         selection: Share.settings.appSettings.useCupertino,
                                         options: [
-                                          OptionEntry(name: 'Cupertino', value: true),
-                                          OptionEntry(name: 'Material', value: false),
+                                          OptionEntry(name: '5C484437-BB3B-4CAF-9E14-669C2A63ACF0'.localized, value: true),
+                                          OptionEntry(name: 'A6E7DA42-3D93-4F31-A49A-63A33E9A376B'.localized, value: false),
                                         ],
                                         update: <T>(v) {
                                           if (Share.settings.appSettings.useCupertino == v) return;
@@ -255,12 +257,12 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                   ])))
                       : showOptionDialog(
                           context: context,
-                          title: 'App Style',
+                          title: 'DD5CE0F4-775A-451A-B626-22E53029AF33'.localized,
                           icon: Icons.style,
                           selection: Share.settings.appSettings.useCupertino,
                           options: [
-                            OptionEntry(name: 'Cupertino', value: true),
-                            OptionEntry(name: 'Material', value: false),
+                            OptionEntry(name: '5C484437-BB3B-4CAF-9E14-669C2A63ACF0'.localized, value: true),
+                            OptionEntry(name: 'A6E7DA42-3D93-4F31-A49A-63A33E9A376B'.localized, value: false),
                           ],
                           onChanged: (v) {
                             if (Share.settings.appSettings.useCupertino == v) return;
@@ -269,8 +271,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                             Navigator.of(context).pop();
                           }),
                   child: 'App Style',
-                  after: Share.settings.appSettings.useCupertino ? 'Cupertino' : 'Visual theme',
-                  trailingElement: Share.settings.appSettings.useCupertino ? null : 'Material',
+                  after: Share.settings.appSettings.useCupertino ? '5C484437-BB3B-4CAF-9E14-669C2A63ACF0'.localized : '8F02FD98-C601-4CE5-A7F2-5BD05324B0AA'.localized,
+                  trailingElement: Share.settings.appSettings.useCupertino ? null : 'A6E7DA42-3D93-4F31-A49A-63A33E9A376B'.localized,
                 ),
                 if (Share.settings.appSettings.useCupertino)
                   AdaptiveCard(
@@ -278,7 +280,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       click: () => Navigator.push(
                           context,
                           AdaptivePageRoute(
-                              builder: (context) => ModalPageBase.adaptive(title: 'Accent Color', children: [
+                              builder: (context) => ModalPageBase.adaptive(title: 'F70892E6-2833-4E21-A111-91BADC1A3744'.localized, children: [
                                     OptionsForm(
                                         selection: Resources.cupertinoAccentColors.entries
                                                 .firstWhereOrDefault((value) =>
@@ -286,7 +288,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                 ?.key ??
                                             0,
                                         description:
-                                            'Note, this color may be overridden during certain events, such as Christmas, Easter, or Halloween.',
+                                            'A7E5A03F-B158-4213-9371-CD84BE2AC1BF'.localized,
                                         options: Resources.cupertinoAccentColors.entries
                                             .select((x, index) => OptionEntry(
                                                 name: x.value.name,
@@ -314,11 +316,11 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       ? Navigator.push(
                           context,
                           AdaptivePageRoute(
-                              builder: (context) => ModalPageBase.adaptive(title: 'Language', children: [
+                              builder: (context) => ModalPageBase.adaptive(title: 'F2B4F8E4-9603-4FE9-B4D3-E9A14CEF7D89'.localized, children: [
                                     OptionsForm(
                                         selection: Share.settings.appSettings.languageCode,
                                         description:
-                                            'The selected language will only be reflected in the app interface. Grade, event, lesson descriptions and generated messages will not be affected.',
+                                            '55AD72A7-31F9-45F6-A1F1-8174F53FBCCB'.localized,
                                         options: Share.translator.supportedLanguages
                                             .select((x, index) => OptionEntry(name: x.name, value: x.code))
                                             .toList(),
@@ -335,7 +337,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                   ])))
                       : showOptionDialog(
                           context: context,
-                          title: 'Language',
+                          title: 'F2B4F8E4-9603-4FE9-B4D3-E9A14CEF7D89'.localized,
                           icon: Icons.language,
                           selection: Share.settings.appSettings.languageCode,
                           options: Share.translator.supportedLanguages
@@ -350,7 +352,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                             }); // Refresh
                           }),
                   child: 'Language',
-                  after: Share.settings.appSettings.useCupertino ? Share.translator.localeName : 'Application-wise',
+                  after: Share.settings.appSettings.useCupertino ? Share.translator.localeName : '76A9B9B2-1589-4669-AF3B-B051E1D1E27F'.localized,
                   trailingElement: Share.settings.appSettings.useCupertino ? null : Share.translator.localeName,
                 ),
               ],
@@ -360,7 +362,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
               margin: EdgeInsets.symmetric(horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
               filled: false,
               additionalDividerMargin: 5,
-              header: Share.settings.appSettings.useCupertino ? '' : 'Sharing and sync',
+              header: Share.settings.appSettings.useCupertino ? '' : 'FC6B3F0C-DB3D-45BB-8406-33657D48D411'.localized,
               children: [
                 AdaptiveCard(
                   regular: true,
@@ -368,7 +370,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       context,
                       AdaptivePageRoute(
                           builder: (context) => StatefulBuilder(
-                              builder: ((context, setState) => ModalPageBase.adaptive(title: 'Sync Settings', children: [
+                              builder: ((context, setState) => ModalPageBase.adaptive(title: 'CD1ECC4D-066E-496C-AA71-8517579A58C4'.localized, children: [
                                     CardContainer(
                                         margin: EdgeInsets.symmetric(
                                             horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
@@ -376,8 +378,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                         additionalDividerMargin: 5,
                                         children: [
                                           AdaptiveFormRow(
-                                              title: 'Background synchronization',
-                                              helper: 'How often should Oshi auto-refresh?',
+                                              title: '0E6DB495-34F0-44C6-A012-5EF6A7CD16F1'.localized,
+                                              helper: '8A9B267A-DDF2-401B-BD0C-FBEB58328EE3'.localized,
                                               value: Share.session.settings.enableBackgroundSync,
                                               onChanged: <T>(s) =>
                                                   setState(() => Share.session.settings.enableBackgroundSync = s)),
@@ -388,18 +390,18 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                         filled: false,
                                         additionalDividerMargin: 5,
                                         footer:
-                                            '${Share.settings.appSettings.useCupertino ? '' : 'Note: '}Synchronization will only happen when you have a working internet connection and Oshi is closed.',
+                                            '58A14048-EF66-4249-A62D-5DA8AAD5DDA7'.localized.format(Share.settings.appSettings.useCupertino ? '' : '83A587C7-AEA1-440D-81B8-04D9607F5016'.localized),
                                         children: [
                                           AdaptiveFormRow(
-                                              title: 'Synchronize on Wi-Fi only',
-                                              helper: 'Prevents Oshi from using mobile data',
+                                              title: 'DB5D169A-DCAD-4090-9450-31A47E99D7C0'.localized,
+                                              helper: 'D3E2F079-C3E4-4E83-8D4A-55CE7C601C2C'.localized,
                                               value: Share.session.settings.backgroundSyncWiFiOnly,
                                               onChanged: <T>(s) =>
                                                   setState(() => Share.session.settings.backgroundSyncWiFiOnly = s)),
                                           AdaptiveFormRow(
-                                              title: 'Refresh interval',
-                                              helper: 'Needs background sync enabled',
-                                              placeholder: '15 minutes',
+                                              title: 'BC9CAB49-765A-47AC-A2D5-A756C610C4BF'.localized,
+                                              helper: '629FB62F-9A01-4FAE-8D20-58F2C9241CC2'.localized,
+                                              placeholder: 'A202A6E9-C043-4450-9AB9-661EB3699F39'.localized,
                                               onChanged: <T>(value) {
                                                 var result = tryParseDuration(value);
                                                 if (result != null &&
@@ -433,8 +435,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                           EnglishDurationLocale())),
                                         ])
                                   ]))))),
-                  child: 'Sync Settings',
-                  after: Share.settings.appSettings.useCupertino ? '' : 'Background synchronization',
+                  child: 'CD1ECC4D-066E-496C-AA71-8517579A58C4'.localized,
+                  after: Share.settings.appSettings.useCupertino ? '' : '0E6DB495-34F0-44C6-A012-5EF6A7CD16F1'.localized,
                 ),
                 AdaptiveCard(
                   regular: true,
@@ -442,7 +444,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       context,
                       AdaptivePageRoute(
                           builder: (context) => StatefulBuilder(
-                              builder: ((context, setState) => ModalPageBase.adaptive(title: 'Shared Events', children: [
+                              builder: ((context, setState) => ModalPageBase.adaptive(title: 'CC433F26-6A3D-4F62-A931-80A40878AF24'.localized, children: [
                                     CardContainer(
                                         margin: EdgeInsets.symmetric(
                                             horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
@@ -466,17 +468,17 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                         filled: false,
                                         additionalDividerMargin: 5,
                                         footer:
-                                            'By courtesy of Szkolny.eu developers, Szkolny.eu apps and Oshi can now share events, notes, and notifications!',
+                                            '4F886B16-A88F-48D3-BEE1-B4148622C60C'.localized,
                                         children: [
                                           AdaptiveFormRow(
-                                              title: 'Allow registration',
-                                              helper: 'Enables sharing events with others',
+                                              title: '6632D1A9-F474-45CA-9150-1ACCB4EF39B1'.localized,
+                                              helper: '1F1AA2B9-CA28-4728-8D1D-02FA2A4F7E82'.localized,
                                               value: Share.session.settings.allowSzkolnyIntegration,
                                               onChanged: <T>(s) =>
                                                   setState(() => Share.session.settings.allowSzkolnyIntegration = s)),
                                           AdaptiveFormRow(
-                                              title: 'Share events by default',
-                                              helper: 'Automatically share new events',
+                                              title: 'F0314F48-F4E7-40CF-AF92-4E538C0516D8'.localized,
+                                              helper: '32251E7A-D82A-4C14-B0F1-5835411763BA'.localized,
                                               value: Share.session.settings.allowSzkolnyIntegration &&
                                                   Share.session.settings.shareEventsByDefault,
                                               onChanged: Share.session.settings.allowSzkolnyIntegration
@@ -484,8 +486,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                   : <T>(_) {}),
                                         ])
                                   ]))))),
-                  child: 'Shared Events',
-                  after: Share.settings.appSettings.useCupertino ? '' : 'Thanks to szkolny.eu',
+                  child: 'CC433F26-6A3D-4F62-A931-80A40878AF24'.localized,
+                  after: Share.settings.appSettings.useCupertino ? '' : '66D53114-ACDB-4963-A3AF-323A928FF077'.localized,
                 ),
                 AdaptiveCard(
                   regular: true,
@@ -493,21 +495,21 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       context,
                       AdaptivePageRoute(
                           builder: (context) => StatefulBuilder(
-                              builder: ((context, setState) => ModalPageBase.adaptive(title: 'Notifications', children: [
+                              builder: ((context, setState) => ModalPageBase.adaptive(title: 'F55B93B2-D401-43DC-B735-5BE1FAC9077F'.localized, children: [
                                     CardContainer(
                                         margin: EdgeInsets.symmetric(
                                             horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
                                         filled: false,
                                         additionalDividerMargin: 5,
                                         largeHeader: false,
-                                        header: 'NOTIFICATION FILTERS',
+                                        header: '29751189-B0EB-4160-B972-12C9A133921E'.localized,
                                         children: [
                                           AdaptiveCard(
                                             regular: true,
-                                            child: 'Request notification access',
+                                            child: '725BD5A2-7767-45C6-8B96-B572886EDA30'.localized,
                                             after: Share.settings.appSettings.useCupertino
                                                 ? null
-                                                : 'Click to request notification permission',
+                                                : '9DC64E89-233B-43BD-8860-4E6A8F964657'.localized,
                                             click: () => NotificationController.requestNotificationAccess(),
                                           )
                                         ]),
@@ -518,12 +520,12 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                         additionalDividerMargin: 5,
                                         children: [
                                           AdaptiveFormRow(
-                                              title: 'App updates',
-                                              helper: 'Notifications about new app versions',
+                                              title: '8028B071-6B39-40E2-AE3C-925D555E4696'.localized,
+                                              helper: '808B9438-3098-4218-A0F7-EA4424345D2F'.localized,
                                               value: true,
                                               onChanged: <T>(s) => NotificationController.sendNotification(
-                                                  title: 'Pathetic.',
-                                                  content: 'You thought you could escape?',
+                                                  title: 'BAFBD98F-2A00-4F6E-8477-1835B9719705'.localized,
+                                                  content: '5D3C9F9D-00DD-4B39-AF4B-629EC7D203A7'.localized,
                                                   category: NotificationCategories.other)),
                                         ]),
                                     CardContainer(
@@ -532,48 +534,48 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                         filled: false,
                                         additionalDividerMargin: 5,
                                         footer:
-                                            'Notifications will be sent for the selected categories once the new data is downloaded and there are any changes.',
+                                            'F184D4D6-0C94-4E94-A703-8E0D371C8D91'.localized,
                                         children: [
                                           AdaptiveFormRow(
-                                              title: 'Timetables',
-                                              helper: 'Notifications about timetable changes',
+                                              title: '49F92EF0-7E05-416B-89A7-930342F3F1CB'.localized,
+                                              helper: '0DC2D946-9E89-4F0D-B468-BA98470C14FE'.localized,
                                               value: Share.session.settings.enableTimetableNotifications,
                                               onChanged: <T>(s) =>
                                                   setState(() => Share.session.settings.enableTimetableNotifications = s)),
                                           AdaptiveFormRow(
-                                              title: 'Grades',
-                                              helper: 'Notifications about new grades',
+                                              title: '/Titles/Pages/Grades'.localized,
+                                              helper: 'E0A11D48-A95B-4713-A5D8-8754980C5ABC'.localized,
                                               value: Share.session.settings.enableGradesNotifications,
                                               onChanged: <T>(s) =>
                                                   setState(() => Share.session.settings.enableGradesNotifications = s)),
                                           AdaptiveFormRow(
-                                              title: 'Events',
-                                              helper: 'Tests and school or class events',
+                                              title: '8D247486-323F-42C0-B34C-B4846C4B4B67'.localized,
+                                              helper: 'F4829933-F3CF-44DE-B872-0A7E6E355697'.localized,
                                               value: Share.session.settings.enableEventsNotifications,
                                               onChanged: <T>(s) =>
                                                   setState(() => Share.session.settings.enableEventsNotifications = s)),
                                           AdaptiveFormRow(
-                                              title: 'Attendance',
-                                              helper: 'Notifications about attendance changes',
+                                              title: '/Page/Absences/Attendance'.localized,
+                                              helper: 'FED5F29B-1CE3-44B2-84E3-ED4E952B039B'.localized,
                                               value: Share.session.settings.enableAttendanceNotifications,
                                               onChanged: <T>(s) =>
                                                   setState(() => Share.session.settings.enableAttendanceNotifications = s)),
                                           AdaptiveFormRow(
-                                              title: 'Announcements',
-                                              helper: 'Notifications about new announcements',
+                                              title: '/Titles/Pages/Messages/Announcements'.localized,
+                                              helper: '3437225F-3F91-4DB4-B23D-44A59155378F'.localized,
                                               value: Share.session.settings.enableAnnouncementsNotifications,
                                               onChanged: <T>(s) => setState(
                                                   () => Share.session.settings.enableAnnouncementsNotifications = s)),
                                           AdaptiveFormRow(
-                                              title: 'Messages',
-                                              helper: 'Notifications about received messages',
+                                              title: '/Titles/Pages/Messages'.localized,
+                                              helper: '1B4B8A55-5D68-419A-AF11-2B9B9DED6ED3'.localized,
                                               value: Share.session.settings.enableMessagesNotifications,
                                               onChanged: <T>(s) =>
                                                   setState(() => Share.session.settings.enableMessagesNotifications = s)),
                                         ])
                                   ]))))),
-                  child: 'Notifications',
-                  after: Share.settings.appSettings.useCupertino ? '' : 'Select categories',
+                  child: 'F55B93B2-D401-43DC-B735-5BE1FAC9077F'.localized,
+                  after: Share.settings.appSettings.useCupertino ? '' : 'CDE7ED74-6C59-42E2-A3D6-BD06161D3E10'.localized,
                 )
               ],
             ),
@@ -582,28 +584,28 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
               margin: EdgeInsets.symmetric(horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
               filled: false,
               additionalDividerMargin: 5,
-              header: Share.settings.appSettings.useCupertino ? '' : 'User data',
+              header: Share.settings.appSettings.useCupertino ? '' : '87E61CE0-78E7-4121-A00C-ECE9C18E5DFB'.localized,
               children: [
                 AdaptiveCard(
                   regular: true,
                   click: () => Navigator.push(
                       context,
                       AdaptivePageRoute(
-                          builder: (context) => ModalPageBase.adaptive(title: 'Timetable Settings', children: [
+                          builder: (context) => ModalPageBase.adaptive(title: 'D480F8E1-21BA-41AA-80C1-903375A2115D'.localized, children: [
                                 CardContainer(
                                     margin: EdgeInsets.symmetric(
                                         horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
                                     filled: false,
                                     additionalDividerMargin: 5,
                                     largeHeader: false,
-                                    header: 'BELL SYNCHRONIZATION',
+                                    header: 'B3B19D34-8903-4983-A791-8B396D7DD34A'.localized,
                                     footer:
-                                        'Used to calibrate bell times in the app to offsets used by particular schools, format i.e. \'10s\', \'1min, 5s\' Don\'t forget to confirm your input!',
+                                        '65A82A7E-82EE-439D-AC65-3A9F9A506041'.localized,
                                     children: [
                                       AdaptiveFormRow(
-                                          title: 'School bell offset',
-                                          helper: 'In seconds, used to adjust bell times',
-                                          placeholder: '0 seconds',
+                                          title: '466F84DC-AE7A-499E-BE43-F96D13DF9585'.localized,
+                                          helper: '71A4B268-BA50-4832-BC25-A35F586718AC'.localized,
+                                          placeholder: 'DAFBEF7F-1E93-4BE4-877F-E234EA2F1A0E'.localized,
                                           onChanged: <T>(value) {
                                             var result = tryParseDuration(value);
                                             if (result != null &&
@@ -641,14 +643,14 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                     filled: false,
                                     additionalDividerMargin: 5,
                                     largeHeader: false,
-                                    header: 'LESSON CALL TIME',
+                                    header: '12EBC2D2-19B3-41FD-9F3A-10D7D3EDF460'.localized,
                                     footer:
-                                        'In minutes, will be used for "calling" last X minutes of a lesson. Falls back 15 minutes by default.',
+                                        'EE454EE2-FC1D-4AF2-AEAB-5B3405F4DF92'.localized,
                                     children: [
                                       AdaptiveFormRow(
-                                          title: 'Lesson call time',
-                                          helper: 'Counted based on other settings',
-                                          placeholder: '15 minutes',
+                                          title: '7B97D3CB-F6A8-4DC1-AD27-319F22D5002F'.localized,
+                                          helper: '80F75930-2F66-4E88-91C2-E48DC5143458'.localized,
+                                          placeholder: 'A202A6E9-C043-4450-9AB9-661EB3699F39'.localized,
                                           onChanged: <T>(value) {
                                             var result = tryParseDuration(value);
                                             if (result != null &&
@@ -683,10 +685,10 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 if (Share.settings.appSettings.useCupertino)
                                   OptionsForm(
                                       pop: false,
-                                      header: 'CALL SETTINGS',
+                                      header: 'DF9019BC-3BE4-4208-976B-51FDB364F292'.localized,
                                       selection: Share.session.settings.lessonCallType,
                                       description:
-                                          'Note, this is used only for auto-generating preset messages, which may not always be accurate.',
+                                          'E8B922A6-7122-4328-866F-6729E660A702'.localized,
                                       options: LessonCallTypes.values
                                           .select((x, index) => OptionEntry(name: x.name, value: x))
                                           .toList(),
@@ -698,16 +700,16 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                   CardContainer(
                                       filled: false,
                                       footer:
-                                          'Note, this is used only for auto-generating preset messages, which may not always be accurate.',
+                                          'E8B922A6-7122-4328-866F-6729E660A702'.localized,
                                       children: [
                                         AdaptiveCard(
                                           regular: true,
-                                          child: 'Lesson call settings',
+                                          child: '72AD997F-5207-4D48-AF5F-E900BEC01147'.localized,
                                           after:
-                                              'Selected type: ${Share.session.settings.lessonCallType.name.toLowerCase()}',
+                                              '860D1B1D-980C-4BE6-AFD1-6483C6AC31E5'.localized.format(Share.session.settings.lessonCallType.name.toLowerCase()),
                                           click: () => showOptionDialog(
                                               context: context,
-                                              title: 'Call type',
+                                              title: 'E69F660E-D46C-42BE-A8CF-EB20BF5EA040'.localized,
                                               icon: Icons.timer,
                                               selection: Share.session.settings.lessonCallType,
                                               options: LessonCallTypes.values
@@ -720,8 +722,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                         ),
                                       ])
                               ]))),
-                  child: 'Timetable Settings',
-                  after: Share.settings.appSettings.useCupertino ? '' : 'School bell offset',
+                  child: 'D480F8E1-21BA-41AA-80C1-903375A2115D'.localized,
+                  after: Share.settings.appSettings.useCupertino ? '' : '466F84DC-AE7A-499E-BE43-F96D13DF9585'.localized,
                 ),
                 AdaptiveCard(
                   regular: true,
@@ -730,7 +732,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       AdaptivePageRoute(
                           builder: (context) => StatefulBuilder(
                               builder: ((context, setState) => ModalPageBase.adaptive(
-                                  title: 'Custom Events',
+                                  title: '6BEABF95-FABD-42E6-920C-2057480D3A0A'.localized,
                                   trailing: SafeArea(
                                       child: GestureDetector(
                                     onTap: () => showCupertinoModalBottomSheet(
@@ -762,23 +764,23 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                               // No messages to display
                                               ? [
                                                   AdaptiveCard(
-                                                      secondary: true, centered: true, child: 'No events to display'),
+                                                      secondary: true, centered: true, child: 'C31AC6D0-D0F1-4902-8CC7-6C911C6508BD'.localized),
                                                 ]
                                               // Bindable messages layout
                                               : element
                                                   .toList()
-                                                  .asEventWidgets(null, '', 'No events matching the query', setState)))
+                                                  .asEventWidgets(null, '', 'ACCA97A8-5C58-4D65-A827-6BBE076DDC71'.localized, setState)))
                                       .appendIfEmpty(CardContainer(
                                           margin: EdgeInsets.symmetric(
                                               horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
                                           filled: false,
                                           additionalDividerMargin: 5,
                                           children: [
-                                            AdaptiveCard(secondary: true, centered: true, child: 'No events to display'),
+                                            AdaptiveCard(secondary: true, centered: true, child: 'C31AC6D0-D0F1-4902-8CC7-6C911C6508BD'.localized),
                                           ]))
                                       .toList()))))),
-                  child: 'Custom Events',
-                  after: Share.settings.appSettings.useCupertino ? '' : 'Shared with the class',
+                  child: '6BEABF95-FABD-42E6-920C-2057480D3A0A'.localized,
+                  after: Share.settings.appSettings.useCupertino ? '' : '8318318D-060F-4D2D-94FB-9BD3C665BDA0'.localized,
                 ),
                 AdaptiveCard(
                   regular: true,
@@ -786,29 +788,29 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       context,
                       AdaptivePageRoute(
                           builder: (context) => StatefulBuilder(
-                              builder: ((context, setState) => ModalPageBase.adaptive(title: 'Grades Settings', children: [
+                              builder: ((context, setState) => ModalPageBase.adaptive(title: '5CFB8DE5-B4C1-4965-93F9-5EA55F07C098'.localized, children: [
                                     CardContainer(
                                         margin: EdgeInsets.symmetric(
                                             horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
                                         filled: false,
                                         additionalDividerMargin: 5,
                                         largeHeader: false,
-                                        header: 'AVERGAE CALCULATION',
+                                        header: 'AC4EDF84-EE04-4B57-B077-DACA7A954384'.localized,
                                         footer:
-                                            'Average calculation will ignore weights if all of them are 0 for auto-adapt enabled.',
+                                            '2AF1719A-8656-4F98-9321-D74F82F7AEBC'.localized,
                                         children: [
                                           AdaptiveFormRow(
-                                              title: 'Use weighted average',
+                                              title: 'D30DEFBB-3209-41C2-AED6-A5923D461FBB'.localized,
                                               helper: Share.settings.appSettings.useCupertino
                                                   ? ''
-                                                  : 'Use grade weighs for calculation',
+                                                  : '363EA29A-52AD-4B1E-B326-907F535F2FC8'.localized,
                                               value: Share.session.settings.weightedAverage,
                                               onChanged: (s) => setState(() => Share.session.settings.weightedAverage = s)),
                                           AdaptiveFormRow(
-                                              title: 'Auto-adapt to grades',
+                                              title: 'CCCCCA9E-242A-4059-8DC6-FED14110E23D'.localized,
                                               helper: Share.settings.appSettings.useCupertino
                                                   ? ''
-                                                  : 'Ignore weighs when necessary',
+                                                  : '5F3EBC40-EC4E-4101-AF66-28ECAAB544F8'.localized,
                                               value: Share.session.settings.autoArithmeticAverage,
                                               onChanged: (s) =>
                                                   setState(() => Share.session.settings.autoArithmeticAverage = s)),
@@ -816,10 +818,10 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                     if (Share.settings.appSettings.useCupertino)
                                       OptionsForm(
                                           pop: false,
-                                          header: 'YEARLY AVERAGE',
+                                          header: '2688AB1D-5E3D-4C76-B8C7-A6637CFA0F77'.localized,
                                           selection: Share.session.settings.yearlyAverageMethod,
                                           description:
-                                              'Note, the average displayed by the app is calculated locally, and may not be respected by every school.',
+                                              'DA45DD0A-2781-40A2-A1C6-976F9DF60C8F'.localized,
                                           options: YearlyAverageMethods.values
                                               .select((x, index) => OptionEntry(name: x.name, value: x))
                                               .toList(),
@@ -831,16 +833,16 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                       CardContainer(
                                           filled: false,
                                           footer:
-                                              'Note, the average displayed by the app is calculated locally, and may not be respected by every school.',
+                                              'DA45DD0A-2781-40A2-A1C6-976F9DF60C8F'.localized,
                                           children: [
                                             AdaptiveCard(
                                               regular: true,
-                                              child: 'Yearly average settings',
+                                              child: '04B2FDC7-C76E-430E-8F1C-5CB52852BCB0'.localized,
                                               after:
-                                                  'Selected: ${Share.session.settings.yearlyAverageMethod.name.toLowerCase()}',
+                                                  '7416F5BF-2B31-4C55-BEEF-EB7A2329402D'.localized.format(Share.session.settings.yearlyAverageMethod.name.toLowerCase()),
                                               click: () => showOptionDialog(
                                                   context: context,
-                                                  title: 'Call type',
+                                                  title: 'E69F660E-D46C-42BE-A8CF-EB20BF5EA040'.localized,
                                                   icon: Icons.timer,
                                                   selection: Share.session.settings.yearlyAverageMethod,
                                                   options: YearlyAverageMethods.values
@@ -858,9 +860,9 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                         filled: false,
                                         additionalDividerMargin: 5,
                                         largeHeader: false,
-                                        header: 'GRADES SIMULATOR',
+                                        header: '5DE48056-3DDE-4939-BE9E-41E6A869C2C5'.localized,
                                         footer:
-                                            'Grades added by you here are not synchronized across devices, and have local effect only.',
+                                            '8D5843E5-EF41-4694-AB25-8D2A4DF8BC10'.localized,
                                         children: [
                                           AdaptiveCard(
                                             regular: true,
@@ -869,8 +871,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                 AdaptivePageRoute(
                                                     builder: (context) => StatefulBuilder(
                                                         builder: ((context, setState) => ModalPageBase.adaptive(
-                                                            title: 'Custom Grades',
-                                                            previousPageTitle: 'Grade Settings',
+                                                            title: '181C196F-A8C7-4446-92A8-911CA17014ED'.localized,
+                                                            previousPageTitle: '5F65ABD5-E3A1-4A88-9012-178CE9ECD523'.localized,
                                                             trailing: SafeArea(
                                                                 child: GestureDetector(
                                                               onTap: () => showCupertinoModalBottomSheet(
@@ -906,7 +908,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                             AdaptiveCard(
                                                                                 secondary: true,
                                                                                 centered: true,
-                                                                                child: 'No grades to display'),
+                                                                                child: '38C6F1AA-F9E6-440A-B635-E6981415AD77'.localized),
                                                                           ]
                                                                         // Bindable messages layout
                                                                         : element
@@ -925,29 +927,29 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                       AdaptiveCard(
                                                                           secondary: true,
                                                                           centered: true,
-                                                                          child: 'No grades to display'),
+                                                                          child: '38C6F1AA-F9E6-440A-B635-E6981415AD77'.localized),
                                                                     ]))
                                                                 .toList()))))),
-                                            child: 'Custom Grades',
-                                            after: Share.settings.appSettings.useCupertino ? '' : 'Manually add new grades',
+                                            child: '181C196F-A8C7-4446-92A8-911CA17014ED'.localized,
+                                            after: Share.settings.appSettings.useCupertino ? '' : '0197B2E2-A763-4E59-AA64-90C4ED1E051D'.localized,
                                           ),
                                         ]),
                                   ]))))),
-                  child: 'Grades Settings',
-                  after: Share.settings.appSettings.useCupertino ? '' : 'Average calculation',
+                  child: '5CFB8DE5-B4C1-4965-93F9-5EA55F07C098'.localized,
+                  after: Share.settings.appSettings.useCupertino ? '' : 'BE7A9E48-8112-4556-85CD-530593066E26'.localized,
                 ),
                 AdaptiveCard(
                   regular: true,
                   click: () => Navigator.push(
                       context,
                       AdaptivePageRoute(
-                          builder: (context) => ModalPageBase.adaptive(title: 'Custom Grade Values', children: [
+                          builder: (context) => ModalPageBase.adaptive(title: 'F4DA9649-D96E-41CC-8528-040A2917A486'.localized, children: [
                                 // Custom grade values
                                 EntriesForm<double>(
-                                    header: 'CUSTOM GRADE MODIFIERS',
+                                    header: 'EB604C3E-B9CF-475F-8F72-27D936CCC1AD'.localized,
                                     description:
-                                        'These values will overwite all default grade modifiers for the specified entries, e.g. count \'-\' as \'-0.25\', etc.',
-                                    placeholder: 'Value',
+                                        '1DD14872-D65A-442B-B048-E171FAE0BF42'.localized,
+                                    placeholder: '828F8EBE-4681-4FC9-9FFE-239540470A97'.localized,
                                     maxKeyLength: 1,
                                     update: <T>([v]) => (Share.session.settings.customGradeModifierValues =
                                             v?.cast() ?? Share.session.settings.customGradeModifierValues)
@@ -955,9 +957,9 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                     validate: (v) => double.tryParse(v)),
                                 // Custom grade values
                                 EntriesForm<double>(
-                                    header: 'CUSTOM GRADE MARGINS',
+                                    header: '52681520-1CD1-4547-8BB7-D006AAFF1295'.localized,
                                     description:
-                                        'These values will overwite the default grade margins, e.g. make values such as \'4.75\' count as \'5\', etc.',
+                                        '67F7DBDE-6ED3-421F-AD14-85058AA1665D'.localized,
                                     placeholder: 'Value',
                                     update: <T>([v]) => (Share.session.settings.customGradeMarginValues =
                                             v?.cast() ?? Share.session.settings.customGradeMarginValues)
@@ -965,17 +967,17 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                     validate: (v) => double.tryParse(v)),
                                 // Custom grade values
                                 EntriesForm<double>(
-                                    header: 'CUSTOM GRADES',
+                                    header: '274B918D-51CF-4C3E-8425-EB0D9FD828FD'.localized,
                                     description:
-                                        'These values will overwite all default grade values for the specified entries, e.g. from \'nb\' to \'1\', etc.',
-                                    placeholder: 'Value',
+                                        'BBF5AE6C-FA29-40FB-B68A-050934D9998F'.localized,
+                                    placeholder: '828F8EBE-4681-4FC9-9FFE-239540470A97'.localized,
                                     update: <T>([v]) => (Share.session.settings.customGradeValues =
                                             v?.cast() ?? Share.session.settings.customGradeValues)
                                         .cast(),
                                     validate: (v) => double.tryParse(v))
                               ]))),
-                  child: 'Custom Grade Values',
-                  after: Share.settings.appSettings.useCupertino ? '' : 'Plus, minus, and other values',
+                  child: 'F4DA9649-D96E-41CC-8528-040A2917A486'.localized,
+                  after: Share.settings.appSettings.useCupertino ? '' : '838E767C-3D71-4E76-BB86-ADE91B154BF3'.localized,
                 )
               ],
             ),
@@ -984,25 +986,25 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
               margin: EdgeInsets.symmetric(horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
               filled: false,
               additionalDividerMargin: 5,
-              header: Share.settings.appSettings.useCupertino ? '' : 'About',
+              header: Share.settings.appSettings.useCupertino ? '' : 'B2C872FA-F50E-4EB5-A646-B5F743603522'.localized,
               children: [
                 AdaptiveCard(
                     regular: true,
                     click: () => Navigator.push(
                         context,
                         AdaptivePageRoute(
-                            builder: (context) => ModalPageBase.adaptive(title: 'App Info', children: [
+                            builder: (context) => ModalPageBase.adaptive(title: '4C9277BD-392C-4ECB-8307-8AF4E09F539A'.localized, children: [
                                   CardContainer(
                                     margin: EdgeInsets.symmetric(
                                         horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
                                     filled: false,
                                     additionalDividerMargin: 5,
                                     largeHeader: false,
-                                    header: 'VERSION INFO',
+                                    header: '4F794C4E-204D-4F7F-A7ED-6DC83C95AF3B'.localized,
                                     children: [
                                       AdaptiveCard(
                                           regular: true,
-                                          child: 'Version',
+                                          child: '02B0EE84-7869-413F-B3DA-8EF6D1ED8E7A'.localized,
                                           after: Share.buildNumber,
                                           hideChevron: true,
                                           click: () => Navigator.push(
@@ -1010,8 +1012,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                               AdaptivePageRoute(
                                                   builder: (context) => StatefulBuilder(
                                                       builder: ((context, setState) => ModalPageBase.adaptive(
-                                                          title: 'Developers',
-                                                          previousPageTitle: 'App Info',
+                                                          title: '6775F13D-3B63-4175-9432-3356200DD4EC'.localized,
+                                                          previousPageTitle: '4C9277BD-392C-4ECB-8307-8AF4E09F539A'.localized,
                                                           children: [
                                                             // Developer mode
                                                             CardContainer(
@@ -1019,7 +1021,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                 filled: false,
                                                                 additionalDividerMargin: 5,
                                                                 largeHeader: false,
-                                                                header: 'FOR DEVELOPERS',
+                                                                header: 'EF8D269F-FD62-4E77-859D-7ECCCF9DF865'.localized,
                                                                 children: [
                                                                   AdaptiveFormRow(
                                                                       value: Share.session.settings.devMode,
@@ -1027,21 +1029,21 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                         setState(() => Share.session.settings.devMode = s);
                                                                         Share.refreshBase.broadcast(); // Refresh everything
                                                                       },
-                                                                      title: 'Developer mode',
-                                                                      helper: 'Enables testing features')
+                                                                      title: '41C975B3-8284-4825-A7CE-5BE463E30DDE'.localized,
+                                                                      helper: 'B482A089-8A28-4481-AC0F-525551459EEF'.localized)
                                                                 ]),
                                                             CardContainer(
                                                                 margin: EdgeInsets.symmetric(horizontal: 18, vertical: 15),
                                                                 filled: false,
                                                                 additionalDividerMargin: 5,
                                                                 largeHeader: false,
-                                                                header: 'BACKUP AND RESTORE',
+                                                                header: '2A51A33A-F6E7-4EFF-9F96-E27CDF749DD9'.localized,
                                                                 children: [
                                                                   AdaptiveCard(
-                                                                    child: 'Save session data to file',
+                                                                    child: '43AC10D9-619A-4B0D-A9A9-3745E2B65158'.localized,
                                                                     after: Share.settings.appSettings.useCupertino
                                                                         ? null
-                                                                        : 'Saves hive data to .hive',
+                                                                        : '51FCB9F8-ADBF-4562-AF92-13046E6495D0'.localized,
                                                                     click: () async {
                                                                       try {
                                                                         await Share.settingsMutex.protect<void>(() async {
@@ -1053,7 +1055,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                           if (path != null) {
                                                                             var file = await File(path).readAsBytes();
                                                                             var result = await FilePicker.platform.saveFile(
-                                                                                dialogTitle: 'Please select an output file',
+                                                                                dialogTitle: '2E20C624-26E9-4BF7-9106-6E1963BDDD8A'.localized,
                                                                                 fileName: 'sessions.hive',
                                                                                 bytes: file);
                                                                             if (Platform.isWindows && result != null) {
@@ -1067,10 +1069,10 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                     },
                                                                   ),
                                                                   AdaptiveCard(
-                                                                    child: 'Load session data from file',
+                                                                    child: '1BBE5897-AB9C-4C1C-9182-2F31C11BC1E9'.localized,
                                                                     after: Share.settings.appSettings.useCupertino
                                                                         ? null
-                                                                        : 'Loads hive data from .hive',
+                                                                        : '1B48C70F-C2B5-402A-87C7-9E57767CDFF9'.localized,
                                                                     click: () async {
                                                                       try {
                                                                         await Share.settingsMutex.protect<void>(() async {
@@ -1112,7 +1114,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                 filled: false,
                                                                 additionalDividerMargin: 5,
                                                                 largeHeader: false,
-                                                                header: 'APPLICATION DIALOG TESTS',
+                                                                header: '44A2572B-0263-4AE7-AFF9-28D2B4070489'.localized,
                                                                 children: [
                                                                   // Toasts
                                                                   AdaptiveCard(
@@ -1120,7 +1122,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                       after: Column(children: [
                                                                         AdaptiveTextField(
                                                                             controller: _noTitleController,
-                                                                            placeholder: 'Title'),
+                                                                            placeholder: 'ED8D10FC-50FE-48C5-AD57-8E7418669AC3'.localized),
                                                                       ]),
                                                                       child: Flexible(
                                                                           flex: 2,
@@ -1138,7 +1140,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                                 }
                                                                               },
                                                                               padding: EdgeInsets.zero,
-                                                                              child: Text('Toast test',
+                                                                              child: Text('02C816FF-C7C1-4A50-8935-879751E84132'.localized,
                                                                                   maxLines: 1,
                                                                                   overflow: TextOverflow.ellipsis)))),
                                                                   // Modal dialog
@@ -1147,7 +1149,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                       after: Column(children: [
                                                                         AdaptiveTextField(
                                                                             controller: _noTitleController,
-                                                                            placeholder: 'Title'),
+                                                                            placeholder: 'ED8D10FC-50FE-48C5-AD57-8E7418669AC3'.localized),
                                                                       ]),
                                                                       child: Flexible(
                                                                           flex: 2,
@@ -1168,7 +1170,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                                 }
                                                                               },
                                                                               padding: EdgeInsets.zero,
-                                                                              child: Text('Modal test',
+                                                                              child: Text('3B71B8E7-6C95-43EE-9435-DAD5647C6130'.localized,
                                                                                   maxLines: 1,
                                                                                   overflow: TextOverflow.ellipsis)))),
                                                                   // Alert dialog
@@ -1177,12 +1179,12 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                       after: Column(children: [
                                                                         AdaptiveTextField(
                                                                             controller: _noTitleController,
-                                                                            placeholder: 'Title'),
+                                                                            placeholder: 'ED8D10FC-50FE-48C5-AD57-8E7418669AC3'.localized),
                                                                         Container(
                                                                             margin: EdgeInsets.only(top: 6),
                                                                             child: AdaptiveTextField(
                                                                                 controller: _noContentController,
-                                                                                placeholder: 'Content')),
+                                                                                placeholder: '09F07DF5-2C66-4F2B-85F5-DE1736C50A4E'.localized)),
                                                                       ]),
                                                                       child: Flexible(
                                                                           flex: 2,
@@ -1199,7 +1201,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                                 }
                                                                               },
                                                                               padding: EdgeInsets.zero,
-                                                                              child: Text('Alert test',
+                                                                              child: Text('E6DDB694-ACDA-4912-BCE6-D04B3BF11210'.localized,
                                                                                   maxLines: 1,
                                                                                   overflow: TextOverflow.ellipsis)))),
                                                                   // Notifications
@@ -1208,12 +1210,12 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                       after: Column(children: [
                                                                         AdaptiveTextField(
                                                                             controller: _noTitleController,
-                                                                            placeholder: 'Title'),
+                                                                            placeholder: 'ED8D10FC-50FE-48C5-AD57-8E7418669AC3'.localized),
                                                                         Container(
                                                                             margin: EdgeInsets.only(top: 6),
                                                                             child: AdaptiveTextField(
                                                                                 controller: _noContentController,
-                                                                                placeholder: 'Content')),
+                                                                                placeholder: '09F07DF5-2C66-4F2B-85F5-DE1736C50A4E'.localized)),
                                                                       ]),
                                                                       child: Flexible(
                                                                           flex: 2,
@@ -1239,7 +1241,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                                     }
                                                                                   },
                                                                                   padding: EdgeInsets.zero,
-                                                                                  child: Text('Register notification',
+                                                                                  child: Text('B57477AA-D271-437D-A814-601DF8B6F4DB'.localized,
                                                                                       maxLines: 1,
                                                                                       overflow: TextOverflow.ellipsis)),
                                                                               CupertinoButton(
@@ -1271,7 +1273,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                                     }
                                                                                   },
                                                                                   padding: EdgeInsets.zero,
-                                                                                  child: Text('Mess/Ann notification',
+                                                                                  child: Text('CC9FD9AF-9C21-4ABB-BC5F-E2D1BB3B62F5'.localized,
                                                                                       maxLines: 1,
                                                                                       overflow: TextOverflow.ellipsis)),
                                                                               CupertinoButton(
@@ -1290,7 +1292,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                                     }
                                                                                   },
                                                                                   padding: EdgeInsets.zero,
-                                                                                  child: Text('Other notification',
+                                                                                  child: Text('59810958-F149-4D47-BD9F-802D75592E97'.localized,
                                                                                       maxLines: 1,
                                                                                       overflow: TextOverflow.ellipsis))
                                                                             ],
@@ -1302,11 +1304,11 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                 filled: false,
                                                                 additionalDividerMargin: 5,
                                                                 largeHeader: false,
-                                                                header: 'SHARING CODES',
+                                                                header: '7C52C45D-277C-4F67-9040-E4BCE6248CC3'.localized,
                                                                 children: [
                                                                   AdaptiveCard(
                                                                       regular: true,
-                                                                      child: 'User code',
+                                                                      child: '22AD0D77-411C-4BCB-80F5-45009292A8E7'.localized,
                                                                       after: Share.session.data.student.userCode)
                                                                 ]),
                                                           ].appendAllIf([
@@ -1316,13 +1318,13 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                 filled: false,
                                                                 additionalDividerMargin: 5,
                                                                 largeHeader: false,
-                                                                header: 'VIRTUAL CLASS CODES',
+                                                                header: '07ACB1FF-E847-4327-8E26-F26942695A38'.localized,
                                                                 children: Share.session.data.student.teamCodes.entries
                                                                     .select((x, _) => AdaptiveCard(
                                                                         regular: true, child: x.value, after: x.key))
                                                                     .toList()),
                                                           ], Share.session.data.student.teamCodes.isNotEmpty))))))),
-                                      AdaptiveCard(regular: true, child: 'Build', after: Share.buildNumber.split('.').last)
+                                      AdaptiveCard(regular: true, child: '785EA92C-03D6-47D6-BFA9-A7100998A92B'.localized, after: Share.buildNumber.split('.').last)
                                     ],
                                   ),
                                   CardContainer(
@@ -1331,7 +1333,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                     filled: false,
                                     additionalDividerMargin: 5,
                                     largeHeader: false,
-                                    header: 'CONTRIBUTORS',
+                                    header: '84D8D5E0-43AA-4463-BAE8-FF5453F79FB2'.localized,
                                     children: [
                                       AdaptiveCard(
                                         regular: true,
@@ -1343,7 +1345,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                           }
                                         },
                                         child: '公彦赤屋先',
-                                        after: 'Lead Developer',
+                                        after: '8C4BC4D5-81A3-432A-9B94-48D20DB8F559'.localized,
                                       ),
                                       AdaptiveCard(
                                         regular: true,
@@ -1355,7 +1357,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                           }
                                         },
                                         child: 'Faiafokkusu',
-                                        after: 'Support Developer',
+                                        after: '0BF14FC8-EABB-4790-A0A1-CFF39977A8CC'.localized,
                                       ),
                                       AdaptiveCard(
                                         regular: true,
@@ -1367,12 +1369,12 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                           }
                                         },
                                         child: 'AAhockey',
-                                        after: 'Support',
+                                        after: '213B6431-B649-4837-A089-3E2A037A4625'.localized,
                                       )
                                     ],
                                   )
                                 ]))),
-                    child: 'App Info',
+                    child: '4C9277BD-392C-4ECB-8307-8AF4E09F539A'.localized,
                     after: Share.buildNumber),
                 AdaptiveCard(
                     regular: true,
@@ -1407,8 +1409,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 },
                               ),
                             )),
-                    child: 'Share',
-                    after: 'Share the app'),
+                    child: '/Share'.localized,
+                    after: '4FAD3DFA-A095-448D-BA21-56726E117111'.localized),
                 AdaptiveCard(
                     regular: true,
                     click: () {
@@ -1418,7 +1420,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                         // ignored
                       }
                     },
-                    child: 'Socials',
+                    child: 'B3D579E5-2A27-4B61-A42A-C2DFD6150022'.localized,
                     after: 'GitHub'),
                 AdaptiveCard(
                     regular: true,
@@ -1429,7 +1431,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                         // ignored
                       }
                     },
-                    child: 'Support Us',
+                    child: '5352613A-B420-4441-A89D-612693727FF6'.localized,
                     after: 'Ko-fi'),
                 AdaptiveCard(
                     regular: true,
@@ -1440,7 +1442,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                         // ignored
                       }
                     },
-                    child: 'Contact Us',
+                    child: '3D02B970-3502-495C-B6B8-3D5D33A92EA6'.localized,
                     after: 'Discord'),
               ],
             ),
@@ -1449,23 +1451,23 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
   FutureOr<void> profilePageHandler() => Navigator.push(
       context,
       AdaptivePageRoute(
-          builder: (context) => ModalPageBase.adaptive(title: 'About Me', children: [
+          builder: (context) => ModalPageBase.adaptive(title: '461D2804-7071-400A-8D98-06F58B50A826'.localized, children: [
                 CardContainer(
                   margin: EdgeInsets.symmetric(horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
                   filled: false,
                   additionalDividerMargin: 5,
                   largeHeader: false,
-                  header: 'ACCOUNT DATA',
+                  header: '12F11FD8-0450-4D48-B8F0-6BB1AB98F2F7'.localized,
                   children: [
-                    AdaptiveCard(regular: true, child: 'Name', after: Share.session.data.student.account.name),
+                    AdaptiveCard(regular: true, child: '8C49630C-B41B-4D50-87C8-6A3EA3FD6A3D'.localized, after: Share.session.data.student.account.name),
                     AdaptiveCard(
                       regular: true,
-                      child: 'Class',
+                      child: 'B96EA577-6DBF-491C-9781-9C85CCBD4119'.localized,
                       after: Share.session.data.student.mainClass.className,
                     ),
                     AdaptiveCard(
                       regular: true,
-                      child: 'Home teacher',
+                      child: 'AB3F62E5-579B-4E78-9810-5CC31A8AFF25'.localized,
                       after: Share.session.data.student.mainClass.classTutor.name,
                     ),
                   ],
@@ -1475,21 +1477,21 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                   filled: false,
                   additionalDividerMargin: 5,
                   largeHeader: false,
-                  header: 'SCHOOL DATA',
+                  header: '38919EDB-6025-46CC-B6F0-7689137F27BE'.localized,
                   children: [
                     AdaptiveCard(
                       regular: true,
-                      child: 'Name',
+                      child: '288A7361-FF68-4743-88B2-6715F4D56457'.localized,
                       after: Share.session.data.student.mainClass.unit.name,
                     ),
                     AdaptiveCard(
                       regular: true,
-                      child: 'Head teacher',
+                      child: '16288334-3CEC-4208-849D-A62BF00D75BC'.localized,
                       after: Share.session.data.student.mainClass.unit.principalName,
                     ),
                     AdaptiveCard(
                       regular: true,
-                      child: 'Address',
+                      child: 'A15AC36A-0A6A-4E6A-8E14-7185B9CAA157'.localized,
                       click: () {
                         try {
                           MapsLauncher.launchQuery(
@@ -1502,7 +1504,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                     ),
                     AdaptiveCard(
                       regular: true,
-                      child: 'Phone',
+                      child: '2CE8A48D-BCF7-43E9-86FC-4BFA997D1024'.localized,
                       click: () {
                         try {
                           launchUrlString('tel:${Share.session.data.student.mainClass.unit.phone}');
@@ -1514,7 +1516,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                     ),
                     AdaptiveCard(
                       regular: true,
-                      child: 'E-mail',
+                      child: 'E5A3FE43-E428-4BE8-9E08-48E2149AC5A7'.localized,
                       click: () {
                         try {
                           launchUrlString('mailto:${Share.session.data.student.mainClass.unit.email}');
@@ -1531,22 +1533,22 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                   filled: false,
                   additionalDividerMargin: 5,
                   largeHeader: false,
-                  header: 'SUMMARY',
+                  header: 'EC9E3129-A646-46AF-8EBD-73C601AF15AE'.localized,
                   footer:
-                      'Presence times are calculated using only the registered attendances, assuming a lesson is 45 minutes long. The shown average is an average of all subjects\' averages.',
+                      'F8BACC1A-63F2-4311-AA23-5C6996E826FA'.localized,
                   children: [
                     AdaptiveCard(
                         regular: true,
-                        child: 'Average',
+                        child: '/Average'.localized,
                         after: () {
                           var majors = Share.session.data.student.subjects
                               .where((x) => x.hasMajor)
                               .select((x, _) => x.topMajor!.asValue);
-                          return majors.isNotEmpty ? majors.average().toStringAsFixed(2) : 'Unavailable';
+                          return majors.isNotEmpty ? majors.average().toStringAsFixed(2) : 'E91C42DF-7471-47E1-BAB8-7E3C63713154'.localized;
                         }()),
                     AdaptiveCard(
                         regular: true,
-                        child: 'Wasted time',
+                        child: '6F98C4DC-F77D-46A0-9C6F-A95F0FBF9E43'.localized,
                         after: prettyDuration(
                             tersity: DurationTersity.minute,
                             upperTersity: DurationTersity.day,
@@ -1560,7 +1562,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 EnglishDurationLocale())),
                     AdaptiveCard(
                         regular: true,
-                        child: 'Gained time',
+                        child: 'CEE6A317-76C4-46E6-8BA3-60A92FFC07AB'.localized,
                         after: prettyDuration(
                             tersity: DurationTersity.minute,
                             upperTersity: DurationTersity.day,
@@ -1574,7 +1576,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 EnglishDurationLocale())),
                     AdaptiveCard(
                         regular: true,
-                        child: 'Total presence',
+                        child: '94319EB2-735E-4FDF-B65A-372DC31A4298'.localized,
                         after:
                             '${(100 * (Share.session.data.student.attendances?.count((x) => x.type == AttendanceType.present) ?? 0) / (Share.session.data.student.attendances?.count() ?? 1)).toStringAsFixed(1)}%'),
                   ],
@@ -1585,9 +1587,9 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                     filled: false,
                     additionalDividerMargin: 5,
                     largeHeader: false,
-                    header: 'ATTENDANCE',
+                    header: 'FA7F8284-A75E-46F2-B507-C0ECCB96FB38'.localized,
                     children: (Share.session.data.student.attendances
-                                ?.groupBy((element) => element.lesson.subject?.name ?? 'Unknown')
+                                ?.groupBy((element) => element.lesson.subject?.name ?? '94149CBB-5B72-4186-A155-20A9C7FB1B2C'.localized)
                                 .select((element, index) => (
                                       lesson: element.key,
                                       value: element.toList().count((x) => x.type == AttendanceType.present) / element.count
@@ -1614,7 +1616,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 .toList() ??
                             [])
                         .appendIfEmpty(
-                      AdaptiveCard(regular: true, child: '', after: 'No attendances to display'),
+                      AdaptiveCard(regular: true, child: '', after: 'A9A27655-5B34-41D8-AEA5-BEAC6E8F6212'.localized),
                     )),
                 CardContainer(
                     margin:
@@ -1622,7 +1624,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                     filled: false,
                     additionalDividerMargin: 5,
                     largeHeader: false,
-                    header: 'AVERAGE',
+                    header: 'E31E0161-B2C4-450B-9CA6-047493B87431'.localized,
                     children: (Share.session.data.student.subjects
                             .select((element, index) => (lesson: element.name, value: element.gradesAverage))
                             .orderBy((element) => element.lesson)
@@ -1654,11 +1656,11 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                   }))))
                                       : element.value >= 0
                                           ? element.value.toStringAsFixed(2)
-                                          : 'Unavailable'),
+                                          : 'E91C42DF-7471-47E1-BAB8-7E3C63713154'.localized),
                             )
                             .toList())
                         .appendIfEmpty(
-                      AdaptiveCard(regular: true, child: '', after: 'No attendances to display'),
+                      AdaptiveCard(regular: true, child: '', after: 'A9A27655-5B34-41D8-AEA5-BEAC6E8F6212'.localized),
                     ))
               ])));
 }

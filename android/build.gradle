@@ -1,3 +1,16 @@
+// subprojects {
+//     afterEvaluate { project ->
+//         if (project.hasProperty('android')) {
+//             project.android {
+//                 if (namespace == null) {
+//                     namespace project.group
+//                 }
+//                 experimentalProperties["android.ndk.suppressMinSdkVersionError"] = 21
+//             }
+//         }
+//     }
+// }
+
 allprojects {
     repositories {
         google()
@@ -11,6 +24,16 @@ allprojects {
 
 rootProject.buildDir = '../build'
 subprojects {
+    afterEvaluate { project ->
+        if (project.plugins.hasPlugin("com.android.application") || project.plugins.hasPlugin("com.android.library")) {
+            project.android {
+                compileSdkVersion 34
+                buildToolsVersion "34.0.0"
+            }
+        }
+    }
+}
+subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
 subprojects {
@@ -20,3 +43,17 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+gradle.projectsEvaluated {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.freeCompilerArgs += "-Xjvm-default=enable"
+        // kotlinOptions.jvmTargetValidationMode = "IGNORE"
+    }
+}
+
+// configurations.all {
+//     resolutionStrategy {
+//         force 'androidx.core:core-ktx:1.6.0'
+//     }
+// }
