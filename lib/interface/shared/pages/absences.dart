@@ -134,26 +134,35 @@ class _AbsencesPageState extends State<AbsencesPage> {
         children: attendances
             .select(
               (x, _) => CardContainer(
-                header: x.key.contains('\n')
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Flexible(child: Text(x.key.split('\n').first, maxLines: 1, overflow: TextOverflow.ellipsis)),
-                          Container(
-                              margin: EdgeInsets.only(left: 3),
-                              child: Text(x.key.split('\n').last,
-                                  style: TextStyle(
-                                      color: CupertinoColors.inactiveGray, fontWeight: FontWeight.w400, fontSize: 16)))
-                        ],
-                      )
-                    : Text(x.key),
+                regularOverride: true,
+                filled: false,
+                capitalize: false,
+                header: Share.settings.appSettings.useCupertino
+                    ? (x.key.contains('\n')
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Flexible(child: Text(x.key.split('\n').first, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                              Container(
+                                  margin: EdgeInsets.only(left: 3),
+                                  child: Text(x.key.split('\n').last,
+                                      style: TextStyle(
+                                          color: CupertinoColors.inactiveGray, fontWeight: FontWeight.w400, fontSize: 16)))
+                            ],
+                          )
+                        : x.key)
+                    : (x.key.contains('\n') ? x.key.replaceAll('\n', ' ー ') : x.key),
                 additionalDividerMargin: 5,
                 children: x.isEmpty
                     // No messages to display
                     ? []
                     // Bindable messages layout
-                    : x.select((x, index) => AdaptiveCard(child: x.asAttendanceWidget(context))).toList(),
+                    : x
+                        .select((x, index) => Share.settings.appSettings.useCupertino
+                            ? AdaptiveCard(child: x.asAttendanceWidget(context))
+                            : x.asAttendanceWidget(context))
+                        .toList(),
               ),
             )
             .cast<Widget>()

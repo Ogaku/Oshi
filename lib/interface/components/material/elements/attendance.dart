@@ -169,7 +169,7 @@ extension LessonWidgetExtension on Attendance {
                   padding: EdgeInsets.only(top: 5, left: 10),
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                             flex: 2,
@@ -180,20 +180,17 @@ extension LessonWidgetExtension on Attendance {
                                 children: [
                                   Visibility(
                                       visible: (lesson.subject?.name.isNotEmpty ?? false),
-                                      child: Opacity(
-                                          opacity: 0.5,
-                                          child: Container(
-                                              margin: EdgeInsets.only(left: 35, top: 4),
-                                              child: Text(
-                                                lesson.subject?.name ?? 'Unknown lesson',
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 2,
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontStyle: markModified ? FontStyle.italic : null,
-                                                    decoration: markRemoved ? TextDecoration.lineThrough : null),
-                                              )))),
+                                      child: Text(
+                                        lesson.subject?.name ?? 'Unknown lesson',
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w400,
+                                            fontStyle: markModified ? FontStyle.italic : null,
+                                            decoration: markRemoved ? TextDecoration.lineThrough : null),
+                                      )),
                                   Opacity(
                                       opacity: 0.5,
                                       child: Container(

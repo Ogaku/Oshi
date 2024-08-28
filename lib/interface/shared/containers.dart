@@ -25,6 +25,7 @@ class CardContainer extends StatefulWidget {
     this.margin,
     this.regularOverride,
     this.radius,
+    this.capitalize = true,
   });
 
   final bool largeHeader;
@@ -41,6 +42,7 @@ class CardContainer extends StatefulWidget {
 
   final Color? backgroundColor;
   final EdgeInsets? margin;
+  final bool capitalize;
 
   @override
   State<CardContainer> createState() => _CardContainerState();
@@ -93,7 +95,7 @@ class _CardContainerState extends State<CardContainer> {
               Container(
                 margin: regular ? EdgeInsets.only(left: 23, top: 25, bottom: 10) : EdgeInsets.only(left: 5, top: 10),
                 child: Text(
-                  (widget.header as String).toLowerCase().capitalize(),
+                  widget.capitalize ? (widget.header as String).toLowerCase().capitalize() : (widget.header as String),
                   style: TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),
               ),

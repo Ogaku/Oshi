@@ -50,6 +50,18 @@ extension ListAppendExtension<T> on Iterable<T> {
     return prependIf(element, isEmpty).toList();
   }
 
+  List<T> appendIfNotEmpty(T element) {
+    return appendIf(element, isNotEmpty).toList();
+  }
+
+  List<T> appendIfNotEmptyAnd(T element, bool condition) {
+    return appendIf(element, isNotEmpty && condition).toList();
+  }
+
+  List<T> prependIfNotEmpty(T element) {
+    return prependIf(element, isNotEmpty).toList();
+  }
+
   List<T> appendAllIfEmpty(Iterable<T> element) {
     return appendAllIf(element, isEmpty).toList();
   }
@@ -80,15 +92,17 @@ extension LessonNumber on int {
       RegisterChangeTypes.removed => '/Removed',
       _ => '/Both',
     };
+    var num = this > 5 ? '5+' : this;
     return switch (this) {
-      1 => '$this ${"/Timeline/Lang/Counters/Timetables$modifier/Singular".localized}', // "lekcja"
+      _ when this > 5 => '$num ${"/Timeline/Lang/Counters/Timetables$modifier/Plural/End".localized}', // "lekcji"
+      1 => '$num ${"/Timeline/Lang/Counters/Timetables$modifier/Singular".localized}', // "lekcja"
       >= 2 && < 5 ||
       _ when this % 10 >= 2 && this % 10 < 5 =>
-        '$this ${"/Timeline/Lang/Counters/Timetables$modifier/Plural/Start".localized}', // "lekcje"
+        '$num ${"/Timeline/Lang/Counters/Timetables$modifier/Plural/Start".localized}', // "lekcje"
       >= 5 && < 22 ||
       _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
-        '$this ${"/Timeline/Lang/Counters/Timetables$modifier/Plural/End".localized}', // "lekcji"
-      _ => '$this ${"/Timeline/Lang/Counters/Timetables$modifier/Plural/End".localized}' // "lekcji"
+        '$num ${"/Timeline/Lang/Counters/Timetables$modifier/Plural/End".localized}', // "lekcji"
+      _ => '$num ${"/Timeline/Lang/Counters/Timetables$modifier/Plural/End".localized}' // "lekcji"
       // Note for other languages:
       // stackoverflow.com/a/76413634
     };
@@ -101,15 +115,17 @@ extension LessonNumber on int {
       RegisterChangeTypes.removed => '/Removed',
       _ => '/Both',
     };
+    var num = this > 5 ? '5+' : this;
     return switch (this) {
-      1 => '$this ${"/Timeline/Lang/Counters/Grades$modifier/Singular".localized}', // "lekcja"
+      _ when this > 5 => '$num ${"/Timeline/Lang/Counters/Grades$modifier/Plural/End".localized}', // "lekcji"
+      1 => '$num ${"/Timeline/Lang/Counters/Grades$modifier/Singular".localized}', // "lekcja"
       >= 2 && < 5 ||
       _ when this % 10 >= 2 && this % 10 < 5 =>
-        '$this ${"/Timeline/Lang/Counters/Grades$modifier/Plural/Start".localized}', // "lekcje"
+        '$num ${"/Timeline/Lang/Counters/Grades$modifier/Plural/Start".localized}', // "lekcje"
       >= 5 && < 22 ||
       _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
-        '$this ${"/Timeline/Lang/Counters/Grades$modifier/Plural/End".localized}', // "lekcji"
-      _ => '$this ${"/Timeline/Lang/Counters/Grades$modifier/Plural/End".localized}' // "lekcji"
+        '$num ${"/Timeline/Lang/Counters/Grades$modifier/Plural/End".localized}', // "lekcji"
+      _ => '$num ${"/Timeline/Lang/Counters/Grades$modifier/Plural/End".localized}' // "lekcji"
       // Note for other languages:
       // stackoverflow.com/a/76413634
     };
@@ -122,15 +138,17 @@ extension LessonNumber on int {
       RegisterChangeTypes.removed => '/Removed',
       _ => '/Both',
     };
+    var num = this > 5 ? '5+' : this;
     return switch (this) {
-      1 => '$this ${"/Timeline/Lang/Counters/Events$modifier/Singular".localized}', // "lekcja"
+      _ when this > 5 => '$num ${"/Timeline/Lang/Counters/Events$modifier/Plural/End".localized}', // "lekcji"
+      1 => '$num ${"/Timeline/Lang/Counters/Events$modifier/Singular".localized}', // "lekcja"
       >= 2 && < 5 ||
       _ when this % 10 >= 2 && this % 10 < 5 =>
-        '$this ${"/Timeline/Lang/Counters/Events$modifier/Plural/Start".localized}', // "lekcje"
+        '$num ${"/Timeline/Lang/Counters/Events$modifier/Plural/Start".localized}', // "lekcje"
       >= 5 && < 22 ||
       _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
-        '$this ${"/Timeline/Lang/Counters/Events$modifier/Plural/End".localized}', // "lekcji"
-      _ => '$this ${"/Timeline/Lang/Counters/Events$modifier/Plural/End".localized}' // "lekcji"
+        '$num ${"/Timeline/Lang/Counters/Events$modifier/Plural/End".localized}', // "lekcji"
+      _ => '$num ${"/Timeline/Lang/Counters/Events$modifier/Plural/End".localized}' // "lekcji"
       // Note for other languages:
       // stackoverflow.com/a/76413634
     };
@@ -143,15 +161,17 @@ extension LessonNumber on int {
       RegisterChangeTypes.removed => '/Removed',
       _ => '/Both',
     };
+    var num = this > 5 ? '5+' : this;
     return switch (this) {
-      1 => '$this ${"/Timeline/Lang/Counters/Announcements$modifier/Singular".localized}', // "lekcja"
+      _ when this > 5 => '$num ${"/Timeline/Lang/Counters/Announcements$modifier/Plural/End".localized}', // "lekcji"
+      1 => '$num ${"/Timeline/Lang/Counters/Announcements$modifier/Singular".localized}', // "lekcja"
       >= 2 && < 5 ||
       _ when this % 10 >= 2 && this % 10 < 5 =>
-        '$this ${"/Timeline/Lang/Counters/Announcements$modifier/Plural/Start".localized}', // "lekcje"
+        '$num ${"/Timeline/Lang/Counters/Announcements$modifier/Plural/Start".localized}', // "lekcje"
       >= 5 && < 22 ||
       _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
-        '$this ${"/Timeline/Lang/Counters/Announcements$modifier/Plural/End".localized}', // "lekcji"
-      _ => '$this ${"/Timeline/Lang/Counters/Announcements$modifier/Plural/End".localized}' // "lekcji"
+        '$num ${"/Timeline/Lang/Counters/Announcements$modifier/Plural/End".localized}', // "lekcji"
+      _ => '$num ${"/Timeline/Lang/Counters/Announcements$modifier/Plural/End".localized}' // "lekcji"
       // Note for other languages:
       // stackoverflow.com/a/76413634
     };
@@ -164,15 +184,17 @@ extension LessonNumber on int {
       RegisterChangeTypes.removed => '/Removed',
       _ => '/Both',
     };
+    var num = this > 5 ? '5+' : this;
     return switch (this) {
-      1 => '$this ${"/Timeline/Lang/Counters/Messages$modifier/Singular".localized}', // "lekcja"
+      _ when this > 5 => '$num ${"/Timeline/Lang/Counters/Messages$modifier/Plural/End".localized}', // "lekcji"
+      1 => '$num ${"/Timeline/Lang/Counters/Messages$modifier/Singular".localized}', // "lekcja"
       >= 2 && < 5 ||
       _ when this % 10 >= 2 && this % 10 < 5 =>
-        '$this ${"/Timeline/Lang/Counters/Messages$modifier/Plural/Start".localized}', // "lekcje"
+        '$num ${"/Timeline/Lang/Counters/Messages$modifier/Plural/Start".localized}', // "lekcje"
       >= 5 && < 22 ||
       _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
-        '$this ${"/Timeline/Lang/Counters/Messages$modifier/Plural/End".localized}', // "lekcji"
-      _ => '$this ${"/Timeline/Lang/Counters/Messages$modifier/Plural/End".localized}' // "lekcji"
+        '$num ${"/Timeline/Lang/Counters/Messages$modifier/Plural/End".localized}', // "lekcji"
+      _ => '$num ${"/Timeline/Lang/Counters/Messages$modifier/Plural/End".localized}' // "lekcji"
       // Note for other languages:
       // stackoverflow.com/a/76413634
     };
@@ -185,15 +207,17 @@ extension LessonNumber on int {
       RegisterChangeTypes.removed => '/Removed',
       _ => '/Both',
     };
+    var num = this > 5 ? '5+' : this;
     return switch (this) {
-      1 => '$this ${"/Timeline/Lang/Counters/Attendances$modifier/Singular".localized}', // "lekcja"
+      _ when this > 5 => '$num ${"/Timeline/Lang/Counters/Attendances$modifier/Plural/End".localized}', // "lekcji"
+      1 => '$num ${"/Timeline/Lang/Counters/Attendances$modifier/Singular".localized}', // "lekcja"
       >= 2 && < 5 ||
       _ when this % 10 >= 2 && this % 10 < 5 =>
-        '$this ${"/Timeline/Lang/Counters/Attendances$modifier/Plural/Start".localized}', // "lekcje"
+        '$num ${"/Timeline/Lang/Counters/Attendances$modifier/Plural/Start".localized}', // "lekcje"
       >= 5 && < 22 ||
       _ when (this % 10 >= 5 && this % 10 < 9) || (this % 10 >= 0 && this % 10 < 2) =>
-        '$this ${"/Timeline/Lang/Counters/Attendances$modifier/Plural/End".localized}', // "lekcji"
-      _ => '$this ${"/Timeline/Lang/Counters/Attendances$modifier/Plural/End".localized}' // "lekcji"
+        '$num ${"/Timeline/Lang/Counters/Attendances$modifier/Plural/End".localized}', // "lekcji"
+      _ => '$num ${"/Timeline/Lang/Counters/Attendances$modifier/Plural/End".localized}' // "lekcji"
       // Note for other languages:
       // stackoverflow.com/a/76413634
     };
