@@ -135,6 +135,7 @@ class _BaseAppState extends State<BaseApp> {
 
                 return SafeArea(
                   top: false,
+                  bottom: kIsWeb,
                   child: CupertinoTabScaffold(
                       controller: tabController,
                       tabBar: CupertinoTabBar(
