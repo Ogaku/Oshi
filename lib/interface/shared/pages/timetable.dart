@@ -105,7 +105,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
     // Homeworks for the selected day/date
     var homeworksToday = Share.session.events
         .where((x) => x.category == EventCategory.homework)
-        .where((x) => x.timeTo?.asDate() == selectedDate)
+        .where((x) => x.timeTo?.asDate() == selectedDate || (x.timeTo == null && x.date?.asDate() == selectedDate))
         .where((x) =>
             x.titleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
             x.subtitleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
