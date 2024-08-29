@@ -212,7 +212,7 @@ class _BaseAppState extends State<BaseApp> {
             ),
           ),
           home: Builder(builder: (context) {
-            ErrorWidget.builder = errorView;
+            ErrorWidget.builder = (e) => errorView(context, e);
 
             // Re-subscribe to all events - update
             Share.checkUpdates.unsubscribeAll();
@@ -419,18 +419,38 @@ class _UnreadDotState extends State<UnreadDot> {
 
  */
 
-Widget errorView(FlutterErrorDetails details) => CupertinoAlertDialog(
-      title: Text('A fucksy-wucksie occurd!'),
-      content: Column(children: [
-        Container(margin: EdgeInsets.only(top: 15, bottom: 10), child: Text(details.exceptionAsString())),
-        Opacity(opacity: 0.6, child: Text(details.stack.toString())),
-      ]),
-      actions: [
-        CupertinoButton(
-            onPressed: () async {
-              await Clipboard.setData(ClipboardData(text: '${details.exceptionAsString()}\n\n${details.stack.toString()}'));
-              await apps.AppCenterCrashes.trackException(message: details.exceptionAsString(), stackTrace: details.stack);
-            },
-            child: const Text('Press F to pay respects', style: TextStyle(color: CupertinoColors.destructiveRed)))
-      ],
+Widget errorView(BuildContext context, FlutterErrorDetails details) => Center(
+      child: SizedBox(
+        height: 70,
+        child: TextButton(
+            onPressed: () => showDialog(
+                builder: (context) => AlertDialog(
+                      title: Text('86620B1A-0C68-4A5B-AA47-D245E8BA2C2B'.localized),
+                      content: SingleChildScrollView(
+                          child: Column(children: [
+                        Container(margin: EdgeInsets.only(top: 15, bottom: 10), child: Text(details.exceptionAsString())),
+                        Opacity(opacity: 0.6, child: Text(details.stack.toString())),
+                      ])),
+                      actions: [
+                        CupertinoButton(
+                            onPressed: () async {
+                              await Clipboard.setData(
+                                  ClipboardData(text: '${details.exceptionAsString()}\n\n${details.stack.toString()}'));
+                              await apps.AppCenterCrashes.trackException(
+                                  message: details.exceptionAsString(), stackTrace: details.stack);
+                            },
+                            child: Text('94C48AF6-3B13-4BF6-8A09-EF1443E845FD'.localized,
+                                style: TextStyle(color: CupertinoColors.destructiveRed)))
+                      ],
+                    ),
+                context: context),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text('FDEEAC65-8E80-46B5-85F7-05C785197B13'.localized, maxLines: 1, style: TextStyle(fontSize: 17)),
+                Text('F9C64DE4-CE7F-4A3A-8889-B7822D513DEA'.localized, maxLines: 1, style: TextStyle(fontSize: 14))
+              ],
+            )),
+      ),
     );

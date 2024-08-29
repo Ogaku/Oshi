@@ -231,7 +231,7 @@ class _GradesPageState extends State<GradesPage> {
                   after: () {
                     var majors =
                         Share.session.data.student.subjects.where((x) => x.hasMajor).select((x, _) => x.topMajor!.asValue);
-                    return majors.isNotEmpty ? majors.average().toStringAsFixed(2) : 'Unavailable';
+                    return majors.isNotEmpty ? majors.average().toStringAsFixed(2) : 'E91C42DF-7471-47E1-BAB8-7E3C63713154'.localized;
                   }())
             ],
           ),
@@ -314,7 +314,7 @@ class _LineChart extends StatelessWidget {
           sideTitles: SideTitles(showTitles: false),
         ),
         leftTitles: AxisTitles(
-            sideTitles: leftTitles(), axisNameWidget: Opacity(opacity: 0.7, child: Text('Class average')), axisNameSize: 30),
+            sideTitles: leftTitles(), axisNameWidget: Opacity(opacity: 0.7, child: Text('FA1FD209-AE46-4E58-82C9-463A42D4B035'.localized)), axisNameSize: 30),
       );
 
   List<LineChartBarData> get lineBarsData2 => [lineChartBarData2_1, lineChartBarData2_2];

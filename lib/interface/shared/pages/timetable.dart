@@ -2,8 +2,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'dart:async';
-import 'dart:math';
-
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
@@ -39,25 +37,36 @@ class TimetablePage extends StatefulWidget {
 }
 
 class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
+  bool get isBeforeSchoolYear => DateTime.now().asDate().isBefore(Share.session.data.student.mainClass.beginSchoolYear);
+  bool get isAfterSchoolYear => DateTime.now().asDate().isAfter(Share.session.data.student.mainClass.endSchoolYear);
+  bool get isSchoolYear => !isBeforeSchoolYear && !isAfterSchoolYear;
+
   final searchController = TextEditingController(); // Notg even used anymore
   late final SegmentController segmentController;
   final pageController = PageController(
-      initialPage: DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays);
+      initialPage: DateTime.now().asDate().isBefore(Share.session.data.student.mainClass.beginSchoolYear)
+          ? 0
+          : DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays);
 
   Timer? _everySecond;
   bool isWorking = false;
 
-  int dayDifference =
-      DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays;
+  int dayDifference = DateTime.now().asDate().isBefore(Share.session.data.student.mainClass.beginSchoolYear)
+      ? 0
+      : DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays;
 
   DateTime get selectedDate =>
-      Share.session.data.student.mainClass.beginSchoolYear.asDate(utc: true).add(Duration(days: dayDifference)).asDate();
+      (isBeforeSchoolYear ? DateTime.now().asDate() : Share.session.data.student.mainClass.beginSchoolYear.asDate(utc: true))
+          .add(Duration(days: dayDifference))
+          .asDate();
 
   @override
   void initState() {
     super.initState();
     segmentController = SegmentController(
-        segment: DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays,
+        segment: isBeforeSchoolYear
+            ? 0
+            : DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays,
         scrollable: true);
 
     segmentController.removeListener(() => setState(() => dayDifference = segmentController.segment));
@@ -336,10 +345,12 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                     icon: CupertinoIcons.calendar_today,
                     onTap: () => animateToPage(
                         null,
-                        DateTime.now()
-                            .asDate()
-                            .difference(Share.session.data.student.mainClass.beginSchoolYear.asDate())
-                            .inDays),
+                        isBeforeSchoolYear
+                            ? 0
+                            : DateTime.now()
+                                .asDate()
+                                .difference(Share.session.data.student.mainClass.beginSchoolYear.asDate())
+                                .inDays),
                   ),
                   AdaptiveMenuItem(
                     title: '6834A472-D03D-4CC5-A91E-1A65B0C43DF8'.localized.format(
@@ -375,18 +386,23 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
               pageChanged: (value) => setState(() => dayDifference = value))
       ],
       segments: List.generate(
-          max(
-                  Share.session.data.student.mainClass.beginSchoolYear
-                      .difference(Share.session.data.student.mainClass.beginSchoolYear)
-                      .inDays
-                      .abs(),
-                  DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays) +
-              1,
+          Share.session.data.student.mainClass.beginSchoolYear
+                  .difference(Share.session.data.student.mainClass.endSchoolYear)
+                  .inDays
+                  .abs() +
+              (isSchoolYear
+                  ? 0
+                  : (isBeforeSchoolYear
+                      ? ((DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays).abs() +
+                          1)
+                      : ((DateTime.now().asDate().difference(Share.session.data.student.mainClass.endSchoolYear.asDate()).inDays)
+                              .abs() +
+                          1))),
           (index) =>
               index).toMap((x) => MapEntry(
           x,
-          DateFormat('EEEEE, d.MM', Share.settings.appSettings.localeCode)
-              .format(Share.session.data.student.mainClass.beginSchoolYear.add(Duration(days: x))))),
+          DateFormat('EEEEE, d.MM', Share.settings.appSettings.localeCode).format(
+              (isBeforeSchoolYear ? DateTime.now().asDate() : Share.session.data.student.mainClass.beginSchoolYear).add(Duration(days: x))))),
       segmentController: segmentController,
       pageBuilder: Share.settings.appSettings.useCupertino ? null : timetableBuilder,
     );

@@ -1700,7 +1700,7 @@
     },
     {
       "id": "F8BACC1A-63F2-4311-AA23-5C6996E826FA",
-      "translation": "Presence times are calculated using only the registered attendances, assuming a lesson is 45 minutes long. The shown average is an average of all subjects\\' averages."
+      "translation": "Presence times are calculated using only the registered attendances, assuming a lesson is 45 minutes long. The shown average is an average of all subjects' averages."
     },
     {
       "id": "E91C42DF-7471-47E1-BAB8-7E3C63713154",
@@ -1729,6 +1729,442 @@
     {
       "id": "E31E0161-B2C4-450B-9CA6-047493B87431",
       "translation": "AVERAGE"
+    },
+    {
+      "id": "A18E9952-C55B-4E12-ADB2-80F88ED52F15",
+      "translation": "No announcements matching the query"
+    },
+    {
+      "id": "D9FC52D6-1D73-44DB-A789-2ACECD10ED94",
+      "translation": "No messages matching the query"
+    },
+    {
+      "id": "E6375F05-CF51-46F1-A77F-872A5731178C",
+      "translation": "No announcements, yet..."
+    },
+    {
+      "id": "E40E9F85-A1C6-4B83-BC7C-C517B1F7BA30",
+      "translation": "No messages, yet..."
+    },
+    {
+      "id": "7A49BCB7-61FF-4472-985A-9952A67F03C8",
+      "translation": "On {} {}, {} wrote:\n\"{}\n\n{}[...]\""
+    },
+    {
+      "id": "2C484334-1DAB-468B-A8CE-81C148EDC280",
+      "translation": "On {} {} wrote:\n\"{}\n\n{}[...]\""
+    },
+    {
+      "id": "E9113B8D-3AD9-467B-94BD-A180F46A01BD",
+      "translation": "New"
+    },
+    {
+      "id": "6D852D45-7E29-4E26-844D-6DC40ACD66BD",
+      "translation": "Folders"
+    },
+    {
+      "id": "051E9264-0BFC-40AC-8D4C-A96B7BF42729",
+      "translation": "Really gonna do 'em?"
+    },
+    {
+      "id": "98AE748D-E539-4DBF-8A26-A474C04106E6",
+      "translation": "Recent grades"
+    },
+    {
+      "id": "99502949-BAED-435F-A8EA-817023BFFB88",
+      "translation": "No recent grades"
+    },
+    {
+      "id": "7D9D0AEC-2A8D-4838-9913-2B6193FBAD8F",
+      "translation": "Nothing's here yet!"
+    },
+    {
+      "id": "BA4EF611-069D-43F3-8DB8-2B7E3A7EC876",
+      "translation": "How's it going?"
+    },
+    {
+      "id": "BDE00629-ED81-4F59-9817-FB7E418A5D8F",
+      "translation": "Upcoming events"
+    },
+    {
+      "id": "9786DC11-E0E1-4553-8ECB-38FC41188B31",
+      "translation": "It's quiet, too quiet..."
+    },
+    {
+      "id": "33FB0AEC-6AC4-480A-8FC5-E91F621FBA88",
+      "translation": "Nothing! You win!"
+    },
+    {
+      "id": "5180735D-EF0D-4995-9FCE-D08761751788",
+      "translation": "Seems crowded, innit?"
+    },
+    {
+      "id": "C33F8288-5BAD-4574-9C53-B54FED6757AC",
+      "translation": "in {}"
+    },
+    {
+      "id": "D8F15F8A-2EA6-474D-80B8-E71625B3D121",
+      "translation": "First:"
+    },
+    {
+      "id": "6B3280B8-EDDB-44E2-A2D5-824FE98E8247",
+      "translation": "Last:"
+    },
+    {
+      "id": "2754A69F-9E60-4FDA-903B-95CFAB85E982",
+      "translation": "Next up:"
+    },
+    {
+      "id": "80E2F22C-D43B-470A-8923-A929CEB9E3A3",
+      "translation": "Tomorrow: {}"
+    },
+    {
+      "id": "B7D8B155-CAAC-48DC-994F-0B5480685B32",
+      "translation": "Later: {}"
+    },
+    {
+      "id": "92D8278F-5542-484D-9E83-F83AF78A1FEF",
+      "translation": "until {}"
+    },
+    {
+      "id": "30056001-7DB8-4FA5-8CBF-C48B1EB6B1A5",
+      "translation": "Today, "
+    },
+    {
+      "id": "E6D0B910-1B31-4EB2-BAC7-9F43988F8D92",
+      "translation": "Accounts"
+    },
+    {
+      "id": "E0D4EF7E-F274-4537-BB45-B79F860A5D2A",
+      "translation": "The current lesson"
+    },
+    {
+      "id": "8B4E1BC4-9285-4B01-83B5-5A96BE637648",
+      "translation": "ends in {}"
+    },
+    {
+      "id": "3A3FBB60-F5E8-40DF-B090-7533FE53D987",
+      "translation": "The next lesson"
+    },
+    {
+      "id": "A18B44F4-86EF-4CF5-9213-2AB3707AD396",
+      "translation": "starts in {}"
+    },
+    {
+      "id": "4DA64D9B-1158-4C46-9D49-D5F8EC50D9FE",
+      "translation": "starts at {}"
+    },
+    {
+      "id": "12E94DED-6C9E-44FE-8722-D936893518F2",
+      "translation": "It's a free real estate!"
+    },
+    {
+      "id": "305710B7-2557-4E62-8FA2-774E1CA393ED",
+      "translation": "God, you're pathetic..."
+    },
+    {
+      "id": "80FF2479-CF35-4609-B375-B05015924990",
+      "translation": "C'mon, do something..."
+    },
+    {
+      "id": "DCE2F11F-CC27-4BE9-8A38-3D4AACA3B69E",
+      "translation": "{}, you're absent!"
+    },
+    {
+      "id": "3587C576-D4BC-426E-A971-430912B6A91C",
+      "translation": "だって Happy Halloween!"
+    },
+    {
+      "id": "C1EB8AF3-E69F-4109-8306-1295AC063EAB",
+      "translation": "Merry Christmas!"
+    },
+    {
+      "id": "83597164-46C0-4BD3-AE5B-1F6E1000C91F",
+      "translation": "Prepare for tomorrow..."
+    },
+    {
+      "id": "4D0CC0C8-8B5F-4CED-9FC5-58D9EF65F813",
+      "translation": "Back at it again, tomorrow..."
+    },
+    {
+      "id": "3A9D76DA-A971-48BB-B6F6-24D6A749D1F9",
+      "translation": "No lessons today!"
+    },
+    {
+      "id": "F2A3AB37-ED80-478A-AF17-76BF541CE3D2",
+      "translation": "Don't lose your head!"
+    },
+    {
+      "id": "9D0D5D62-94E0-40A2-B41B-D60F80EA16DE",
+      "translation": "You're on the finish line!"
+    },
+    {
+      "id": "03B67D51-1176-4A46-9978-7B914F58FD58",
+      "translation": "You're the lucky one!"
+    },
+    {
+      "id": "50C5BBB8-AE89-457C-BE62-22E092F71900",
+      "translation": "You'll be lucky tomorrow!"
+    },
+    {
+      "id": "DCCC082E-0A01-4795-ADA5-3E51717B7629",
+      "translation": "Alone on a friday night?"
+    },
+    {
+      "id": "FA1FD209-AE46-4E58-82C9-463A42D4B035",
+      "translation": "Class average"
+    },
+    {
+      "id": "D8AE1252-CB76-4815-9587-B48D42DADE0B",
+      "translation": "Unknown subject"
+    },
+    {
+      "id": "0BD1858E-3655-4199-8691-9FC68573B274",
+      "translation": "Excuse all"
+    },
+    {
+      "id": "CC111EE5-B18F-46EB-A6FF-09E3ABFA1FA1",
+      "translation": "Usprawiedliwienie"
+    },
+    {
+      "id": "4D925D2C-7A80-42CA-B8A9-A21BB9082378",
+      "translation": "Dzień dobry,\n\nProszę o usprawiedliwienie moich nieobecności w dniach:\n{} ({} - {} godzina lekcyjna' : '{} godzina lekcyjna'}) \n').join()}"
+    },
+    {
+      "id": "3E0C235F-9615-4152-A5BB-5B5A93596E9D",
+      "translation": "Dzień dobry,\n\nProszę o usprawiedliwienie moich nieobecności w dniach:\n{}"
+    },
+    {
+      "id": "0E517324-ACF9-4F1A-9B74-4D002235C964",
+      "translation": "Dziękuję,\n\nZ poważaniem,\n{}, {}"
+    },
+    {
+      "id": "FA15D556-4A83-487B-B9C2-8ABCD1DC5C90",
+      "translation": "Error loading data!"
+    },
+    {
+      "id": "EFB7E8DF-1BBC-442F-9D83-DAF1C70A028E",
+      "translation": "An exception \"{}\" occurred and settings couldn't be read.\n\nStack trace:\n{}"
+    },
+    {
+      "id": "F7C404C2-2C11-452C-9267-623A5E1B76C0",
+      "translation": "Log in to {}"
+    },
+    {
+      "id": "86620B1A-0C68-4A5B-AA47-D245E8BA2C2B",
+      "translation": "A fucksy-wucksie occurd!"
+    },
+    {
+      "id": "94C48AF6-3B13-4BF6-8A09-EF1443E845FD",
+      "translation": "Press F to pay respects"
+    },
+    {
+      "id": "F9C64DE4-CE7F-4A3A-8889-B7822D513DEA",
+      "translation": "Click to view details"
+    },
+    {
+      "id": "FDEEAC65-8E80-46B5-85F7-05C785197B13",
+      "translation": "OWO, what's this?"
+    },
+    {
+      "id": "720C70E6-DB4D-44F7-878A-484DDF8A5648",
+      "translation": "I got a {} on {}!"
+    },
+    {
+      "id": "F0FFE57B-4458-4D41-9577-C72533B62C61",
+      "translation": "Edit"
+    },
+    {
+      "id": "B0FB564D-E5AF-451E-855F-5988D86C8A6A",
+      "translation": "Pytanie o ocenę {} z dnia {}"
+    },
+    {
+      "id": "6B4CAC68-F3A1-48AE-ACBD-91322857C8BE",
+      "translation": "Grade"
+    },
+    {
+      "id": "CF24D610-547A-409C-924B-20C958D973D3",
+      "translation": "{}, weight {}"
+    },
+    {
+      "id": "EAA46482-26C0-440A-BB59-52F062B7A975",
+      "translation": "Description"
+    },
+    {
+      "id": "1A7CB2F1-E6D8-424C-B26D-EA0BF172E5A8",
+      "translation": "Comments"
+    },
+    {
+      "id": "621D8FEF-5DAF-4EDD-B9A4-3EBF3D18AD1C",
+      "translation": "No description"
+    },
+    {
+      "id": "AC9923BF-1F1A-4FCD-A658-821CC220E4E6",
+      "translation": "There's a \"{} on {} {}\") : \"at school\"}"
+    },
+    {
+      "id": "A70900F1-79A1-432D-AC6D-137794074CCE",
+      "translation": "There's a \"{}\" on {} {}"
+    },
+    {
+      "id": "50FD3CEB-CAA5-4AD2-AEC5-61C16308FE41",
+      "translation": "Mark as done"
+    },
+    {
+      "id": "374BEB81-88EB-4C1C-A3B3-0E24DB13E0E4",
+      "translation": "Add to calendar"
+    },
+    {
+      "id": "C834975A-FECF-4FA1-A099-242BC18FB55C",
+      "translation": "Pytanie o wydarzenie w dniu {}"
+    },
+    {
+      "id": "6FEE9962-29D9-4566-A44B-D9913F1CB412",
+      "translation": "Subtitle"
+    },
+    {
+      "id": "2F324FD4-CC19-4F9C-89CD-F372258AEF3C",
+      "translation": "Teacher"
+    },
+    {
+      "id": "BF38C0A9-D585-46AE-A37B-F42F1655B0AF",
+      "translation": "last {} min"
+    },
+    {
+      "id": "D761036A-4380-47BA-B8B3-E85CBBAC5DED",
+      "translation": "first {} min"
+    },
+    {
+      "id": "4A1B9B79-8787-4A49-BAAF-6C98F86795DD",
+      "translation": "half the lesson"
+    },
+    {
+      "id": "4192A962-C0A5-4276-89BC-7A68CA727370",
+      "translation": "whole lesson"
+    },
+    {
+      "id": "4C63899A-2106-49F7-8E70-7DEFE2348C9B",
+      "translation": "ostatnich {} minut lekcji"
+    },
+    {
+      "id": "744D287F-E683-4E60-A01C-03F3379ED8C8",
+      "translation": "pierwszych {} minut lekcji"
+    },
+    {
+      "id": "9DA6EABD-96E7-4561-8164-706DE026FD19",
+      "translation": "połowy"
+    },
+    {
+      "id": "28C22BA4-22F1-4685-B999-A35BD36767FA",
+      "translation": "całej"
+    },
+    {
+      "id": "5E6CA4CB-4757-46BC-80F3-2B208CE822DD",
+      "translation": "There's {} on {} with {}"
+    },
+    {
+      "id": "6BB62617-7000-4A27-A499-534F1E04764E",
+      "translation": "Lesson on {}"
+    },
+    {
+      "id": "567C490D-B7D0-403A-99A1-9E21F7F77EB8",
+      "translation": "Create event"
+    },
+    {
+      "id": "3B6E8151-45FD-48B3-97CB-99E556E02F3E",
+      "translation": "Call {}"
+    },
+    {
+      "id": "4DF5CFE9-2B5F-4AE1-AEFC-B4B8888A09ED",
+      "translation": "Zwolnienie z {} w dniu {}, L{}"
+    },
+    {
+      "id": "7955E73E-D260-43BA-8E2F-88CD43348BBD",
+      "translation": "Dzień dobry,\n\nProszę o zwolnienie mnie z {} lekcji {} w dniu {}, na {} godzinie lekcyjnej."
+    },
+    {
+      "id": "50CFA04B-E8EB-4BC9-80F1-C5EF39FE8F3A",
+      "translation": "Pytanie o lekcję w dniu {}, L{}"
+    },
+    {
+      "id": "4CCE58F6-2805-4D44-B97A-556679808477",
+      "translation": "Lesson no."
+    },
+    {
+      "id": "3098FAAF-7223-4E86-AB19-431882A7985C",
+      "translation": "Original lesson"
+    },
+    {
+      "id": "58787B41-324C-4E3D-97AE-5EC23D058A5B",
+      "translation": "Original teacher"
+    },
+    {
+      "id": "8A2F8A9D-1428-4EAA-BA31-CE64A64789C6",
+      "translation": "Moved from"
+    },
+    {
+      "id": "43026DF3-97E9-4449-BD20-D1E256C42F89",
+      "translation": "Moved to"
+    },
+    {
+      "id": "947A950F-6638-4194-91B2-99BCB42ADA86",
+      "translation": "This lesson was cancelled"
+    },
+    {
+      "id": "ED264A1F-5CAA-4673-8FA2-F440C6995841",
+      "translation": "/Page/Home/Homework/share"
+    },
+    {
+      "id": "58F3C0BE-AC60-4176-A06D-CB9B58FE99B6",
+      "translation": "Pytanie o pracę domową na dzień {}"
+    },
+    {
+      "id": "1D35A7A3-301A-48F7-9ACA-C1986E63D1CF",
+      "translation": "I got {} from {} last week!"
+    },
+    {
+      "id": "7AE5B440-ADC8-49F7-AB1F-3E3CEDD78DC8",
+      "translation": "Pytanie o {} {} z przedmiotu {}"
+    },
+    {
+      "id": "6D0701F1-1754-4897-9902-B701EB2038CD",
+      "translation": "ocenę"
+    },
+    {
+      "id": "DA7A5A8C-9A1D-4378-8BC1-AB6A9E2E8B67",
+      "translation": "oceny"
+    },
+    {
+      "id": "55FCBDA9-6905-49C9-A3E8-426058041A8B",
+      "translation": "at school"
+    },
+    {
+      "id": "89BEEDA5-3774-4BC0-B827-72D3AA2E31CC",
+      "translation": "Pytanie o obecność z dnia {}, L{}"
+    },
+    {
+      "id": "853265A9-1B40-43F2-82B5-E9E238EF8A5B",
+      "translation": "Dzień dobry,\n\nProszę o usprawiedliwienie mojej nieobecności\nw dniu {} na {} godzinie lekcyjnej."
+    },
+    {
+      "id": "F491D698-DFB6-4E62-B100-1546660AB6D1",
+      "translation": "Dziękuję,\n\nZ poważaniem,\n{}, {}"
+    },
+    {
+      "id": "C1D03748-4568-4AB9-843A-86707294BCA5",
+      "translation": "Unknown lesson"
+    },
+    {
+      "id": "B67B6882-D514-4395-8953-9CD2FC973878",
+      "translation": "{}, weight {}"
+    },
+    {
+      "id": "0ED15CBE-83CA-4E47-818F-61FCD06CBADA",
+      "translation": "a teacher"
+    },
+    {
+      "id": "25EFC95E-A925-4F98-BE8B-AB646D266E25",
+      "translation": "a lesson"
     }
   ],
   "splashes": [

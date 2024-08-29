@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/cupertino.dart';
+import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
@@ -11,6 +12,7 @@ import 'package:oshi/interface/shared/views/new_grade.dart';
 import 'package:oshi/models/data/grade.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
 import 'package:uuid/uuid.dart';
 
@@ -22,17 +24,17 @@ extension GradeBodyExtension on Grade {
           actions: [
             CupertinoContextMenuAction(
               onPressed: () {
-                sharing.Share.share('I got a $value on ${DateFormat("EEEE, MMM d, y").format(date)}!');
+                sharing.Share.share('720C70E6-DB4D-44F7-878A-484DDF8A5648'.localized.format(value, DateFormat("EEEE, MMM d, y").format(date)));
                 Navigator.of(context, rootNavigator: true).pop();
               },
               trailingIcon: CupertinoIcons.share,
-              child: const Text('Share'),
+              child: Text('/Share'.localized),
             ),
           ]
               .appendIf(
                   CupertinoContextMenuAction(
                     trailingIcon: CupertinoIcons.pencil,
-                    child: const Text('Edit'),
+                    child: Text('F0FFE57B-4458-4D41-9577-C72533B62C61'.localized),
                     onPressed: () {
                       Navigator.of(context, rootNavigator: true).pop();
                       try {
@@ -51,14 +53,14 @@ extension GradeBodyExtension on Grade {
                   CupertinoContextMenuAction(
                     isDestructiveAction: true,
                     trailingIcon: CupertinoIcons.chat_bubble_2,
-                    child: const Text('Inquiry'),
+                    child: Text('/Inquiry'.localized),
                     onPressed: () {
                       Navigator.of(context, rootNavigator: true).pop();
                       showCupertinoModalBottomSheet(
                           context: context,
                           builder: (context) => MessageComposePage(
                               receivers: [addedBy],
-                              subject: 'Pytanie o ocenę $value z dnia ${DateFormat("y.M.d").format(addDate)}',
+                              subject: 'B0FB564D-E5AF-451E-855F-5988D86C8A6A'.localized.format(value, DateFormat("y.M.d").format(addDate)),
                               signature:
                                   '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                     },
@@ -68,7 +70,7 @@ extension GradeBodyExtension on Grade {
                   CupertinoContextMenuAction(
                     isDestructiveAction: true,
                     trailingIcon: CupertinoIcons.delete,
-                    child: const Text('Delete'),
+                    child: Text('/Delete'.localized),
                     onPressed: () {
                       Navigator.of(context, rootNavigator: true).pop();
                       setState(() {
@@ -130,18 +132,18 @@ extension GradeBodyExtension on Grade {
                                       child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Container(margin: EdgeInsets.only(right: 3), child: Text('Grade')),
+                                      Container(margin: EdgeInsets.only(right: 3), child: Text('6B4CAC68-F3A1-48AE-ACBD-91322857C8BE'.localized)),
                                       Flexible(
                                           child: Opacity(
                                               opacity: 0.5,
-                                              child: Text('$value, weight $weight', maxLines: 2, textAlign: TextAlign.end)))
+                                              child: Text('B67B6882-D514-4395-8953-9CD2FC973878'.localized.format(value, weight), maxLines: 2, textAlign: TextAlign.end)))
                                     ],
                                   )),
                                   AdaptiveCard(
                                       child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Container(margin: EdgeInsets.only(right: 3), child: Text('Added by')),
+                                      Container(margin: EdgeInsets.only(right: 3), child: Text('/AddedBy'.localized)),
                                       Flexible(
                                           child: Opacity(
                                               opacity: 0.5,
@@ -152,7 +154,7 @@ extension GradeBodyExtension on Grade {
                                       child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Container(margin: EdgeInsets.only(right: 3), child: Text('Date')),
+                                      Container(margin: EdgeInsets.only(right: 3), child: Text('/Date'.localized)),
                                       Flexible(
                                           child: Opacity(
                                               opacity: 0.5,
@@ -166,7 +168,7 @@ extension GradeBodyExtension on Grade {
                                       child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Container(margin: EdgeInsets.only(right: 3), child: Text('Added')),
+                                      Container(margin: EdgeInsets.only(right: 3), child: Text('/Added'.localized)),
                                       Flexible(
                                           child: Opacity(
                                               opacity: 0.5,
@@ -182,7 +184,7 @@ extension GradeBodyExtension on Grade {
                                             child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text('Description'),
+                                            Text('EAA46482-26C0-440A-BB59-52F062B7A975'.localized),
                                             Flexible(
                                                 child: Container(
                                                     margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
@@ -198,7 +200,7 @@ extension GradeBodyExtension on Grade {
                                             child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text('Comments'),
+                                            Text('1A7CB2F1-E6D8-424C-B26D-EA0BF172E5A8'.localized),
                                             Flexible(
                                                 child: Container(
                                                     margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
@@ -216,7 +218,7 @@ extension GradeBodyExtension on Grade {
                                             Flexible(
                                                 child: Container(
                                                     margin: EdgeInsets.only(right: 3),
-                                                    child: Text('Counts to the average'))),
+                                                    child: Text('4E53AD1F-9CEE-4676-947C-35CE59986E21'.localized))),
                                             Opacity(opacity: 0.5, child: Text(countsToAverage.toString()))
                                           ],
                                         )),
@@ -272,7 +274,7 @@ extension GradeBodyExtension on Grade {
                                           child: Opacity(
                                               opacity: name.isNotEmpty ? 1.0 : 0.5,
                                               child: Text(
-                                                name.isNotEmpty ? name.capitalize() : 'No description',
+                                                name.isNotEmpty ? name.capitalize() : '621D8FEF-5DAF-4EDD-B9A4-3EBF3D18AD1C'.localized,
                                                 textAlign: TextAlign.end,
                                                 style: TextStyle(
                                                     fontSize: 17,

@@ -31,21 +31,27 @@ extension EventBodyExtension on List<data.Event> {
           itemBuilder: (context) => [
                 AdaptiveMenuItem(
                   onTap: () {
-                    sharing.Share.share(
-                        'There\'s a "${x.titleString}" on ${DateFormat("EEEE, MMM d, y").format(x.timeFrom)} ${(x.classroom?.name.isNotEmpty ?? false) ? ("in ${x.classroom?.name ?? ""}") : "at school"}');
+                    sharing.Share.share('A70900F1-79A1-432D-AC6D-137794074CCE'.localized.format(
+                        x.titleString,
+                        DateFormat("EEEE, MMM d, y").format(x.timeFrom),
+                        (x.classroom?.name.isNotEmpty ?? false)
+                            ? ('C33F8288-5BAD-4574-9C53-B54FED6757AC'.localized.format(x.classroom?.name ?? ""))
+                            : '55FCBDA9-6905-49C9-A3E8-426058041A8B'.localized));
                   },
                   icon: CupertinoIcons.share,
-                  title: 'Share',
+                  title: '/Share'.localized,
                 ),
                 AdaptiveMenuItem(
                   icon: CupertinoIcons.chat_bubble_2,
-                  title: 'Inquiry',
+                  title: '/Inquiry'.localized,
                   onTap: () {
                     showMaterialModalBottomSheet(
                         context: context,
                         builder: (context) => MessageComposePage(
                             receivers: x.sender != null ? [x.sender!] : [],
-                            subject: 'Pytanie o wydarzenie w dniu ${DateFormat("y.M.d").format(x.date ?? x.timeFrom)}',
+                            subject: 'C834975A-FECF-4FA1-A099-242BC18FB55C'
+                                .localized
+                                .format(DateFormat("y.M.d").format(x.date ?? x.timeFrom)),
                             signature:
                                 '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                   },
@@ -79,7 +85,7 @@ extension EventBodyExtension on List<data.Event> {
                       ],
                     ),
                     Visibility(
-                        visible: false, // TODO
+                        visible: false,
                         child: Flexible(
                             child: Container(
                                 margin: EdgeInsets.only(left: 5, right: 5, bottom: 7),
@@ -100,7 +106,8 @@ extension EventBodyExtension on List<data.Event> {
           itemBuilder: (context) => [
                 AdaptiveMenuItem(
                   onTap: () {
-                    sharing.Share.share('/Page/Home/Homework/share'
+                    sharing.Share.share('ED264A1F-5CAA-4673-8FA2-F440C6995841'
+                        .localized
                         .localized
                         .format(x.titleString, DateFormat("EEEE, MMM d, y").format(x.timeFrom)));
                   },
@@ -115,8 +122,9 @@ extension EventBodyExtension on List<data.Event> {
                         context: context,
                         builder: (context) => MessageComposePage(
                             receivers: x.sender != null ? [x.sender!] : [],
-                            subject:
-                                'Pytanie o pracę domową na dzień ${DateFormat("y.M.d").format(x.timeTo ?? x.date ?? x.timeFrom)}',
+                            subject: '58F3C0BE-AC60-4176-A06D-CB9B58FE99B6'
+                                .localized
+                                .format(DateFormat("y.M.d").format(x.timeTo ?? x.date ?? x.timeFrom)),
                             signature:
                                 '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                   },
@@ -206,22 +214,27 @@ extension GradeBodyExtension on List<({List<Grade> grades, Lesson lesson})> {
           itemBuilder: (context) => [
                 AdaptiveMenuItem(
                   onTap: () {
-                    sharing.Share.share(
-                        'I got ${x.grades.select((y, s) => y.value).join(", ")} from ${x.lesson.name} last week!');
+                    sharing.Share.share('1D35A7A3-301A-48F7-9ACA-C1986E63D1CF'
+                        .localized
+                        .format(x.grades.select((y, s) => y.value).join(", "), x.lesson.name));
                   },
                   icon: CupertinoIcons.share,
-                  title: 'Share',
+                  title: '/Share'.localized,
                 ),
                 AdaptiveMenuItem(
                   icon: CupertinoIcons.chat_bubble_2,
-                  title: 'Inquiry',
+                  title: '/Inquiry'.localized,
                   onTap: () {
                     showMaterialModalBottomSheet(
                         context: context,
                         builder: (context) => MessageComposePage(
                             receivers: [x.lesson.teacher],
-                            subject:
-                                'Pytanie o ${x.grades.length > 1 ? "oceny" : "ocenę"} ${x.grades.select((y, index) => y.value).join(', ')} z przedmiotu ${x.lesson.name}',
+                            subject: '7AE5B440-ADC8-49F7-AB1F-3E3CEDD78DC8'.localized.format(
+                                x.grades.length > 1
+                                    ? 'DA7A5A8C-9A1D-4378-8BC1-AB6A9E2E8B67'.localized
+                                    : '6D0701F1-1754-4897-9902-B701EB2038CD'.localized,
+                                x.grades.select((y, index) => y.value).join(', '),
+                                x.lesson.name),
                             signature:
                                 '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                   },

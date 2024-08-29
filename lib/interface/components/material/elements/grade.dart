@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
@@ -13,6 +14,7 @@ import 'package:oshi/interface/shared/views/new_grade.dart';
 import 'package:oshi/models/data/grade.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
 import 'package:uuid/uuid.dart';
 
@@ -22,15 +24,15 @@ extension GradeBodyExtension on Grade {
       AdaptiveMenuButton(
           itemBuilder: (context) => [
                 AdaptiveMenuItem(
-                  onTap: () => sharing.Share.share('I got a $value on ${DateFormat("EEEE, MMM d, y").format(date)}!'),
+                  onTap: () => sharing.Share.share('720C70E6-DB4D-44F7-878A-484DDF8A5648'.localized.format(value, DateFormat("EEEE, MMM d, y").format(date))),
                   icon: CupertinoIcons.share,
-                  title: 'Share',
+                  title: '/Share'.localized,
                 ),
               ]
                   .appendIf(
                       AdaptiveMenuItem(
                         icon: CupertinoIcons.pencil,
-                        title: 'Edit',
+                        title: 'F0FFE57B-4458-4D41-9577-C72533B62C61'.localized,
                         onTap: () {
                           try {
                             showMaterialModalBottomSheet(
@@ -47,12 +49,12 @@ extension GradeBodyExtension on Grade {
                   .appendIf(
                       AdaptiveMenuItem(
                         icon: CupertinoIcons.chat_bubble_2,
-                        title: 'Inquiry',
+                        title: '/Inquiry'.localized,
                         onTap: () => showMaterialModalBottomSheet(
                             context: context,
                             builder: (context) => MessageComposePage(
                                 receivers: [addedBy],
-                                subject: 'Pytanie o ocenę $value z dnia ${DateFormat("y.M.d").format(addDate)}',
+                                subject: 'B0FB564D-E5AF-451E-855F-5988D86C8A6A'.localized.format(value, DateFormat("y.M.d").format(addDate)),
                                 signature:
                                     '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}')),
                       ),
@@ -60,7 +62,7 @@ extension GradeBodyExtension on Grade {
                   .appendIf(
                       AdaptiveMenuItem(
                         icon: CupertinoIcons.delete,
-                        title: 'Delete',
+                        title: '/Delete'.localized,
                         onTap: () {
                           setState(() {
                             Share.session.customGrades[customLesson]?.remove(this);
@@ -121,22 +123,22 @@ extension GradeBodyExtension on Grade {
                                   Divider(),
                                   AdaptiveCard(
                                     regular: true,
-                                    child: 'Grade',
-                                    after: '$value, weight $weight',
+                                    child: '6B4CAC68-F3A1-48AE-ACBD-91322857C8BE'.localized,
+                                    after: 'CF24D610-547A-409C-924B-20C958D973D3'.localized.format(value, weight),
                                   ),
                                   AdaptiveCard(
                                     regular: true,
-                                    child: 'Added by',
+                                    child: '/AddedBy'.localized,
                                     after: addedBy.name,
                                   ),
                                   AdaptiveCard(
                                     regular: true,
-                                    child: 'Date',
+                                    child: '/Date'.localized,
                                     after: DateFormat.yMMMEd(Share.settings.appSettings.localeCode).format(date),
                                   ),
                                   AdaptiveCard(
                                     regular: true,
-                                    child: 'Added',
+                                    child: '/Added'.localized,
                                     after:
                                         '${DateFormat.Hm(Share.settings.appSettings.localeCode).format(addDate)}, ${DateFormat.yMMMd(Share.settings.appSettings.localeCode).format(addDate)}',
                                   ),
@@ -144,21 +146,21 @@ extension GradeBodyExtension on Grade {
                                     .appendIf(
                                         AdaptiveCard(
                                           regular: true,
-                                          child: 'Description',
+                                          child: 'EAA46482-26C0-440A-BB59-52F062B7A975'.localized,
                                           after: name.capitalize(),
                                         ),
                                         name.isNotEmpty)
                                     .appendIf(
                                         AdaptiveCard(
                                           regular: true,
-                                          child: 'Comments',
+                                          child: '1A7CB2F1-E6D8-424C-B26D-EA0BF172E5A8'.localized,
                                           after: commentsString,
                                         ),
                                         commentsString.isNotEmpty)
                                     .appendIf(
                                         AdaptiveCard(
                                             regular: true,
-                                            child: 'Counts to the average',
+                                            child: '4E53AD1F-9CEE-4676-947C-35CE59986E21'.localized,
                                             after: countsToAverage.toString()),
                                         true))
                           ])
@@ -187,7 +189,7 @@ extension GradeBodyExtension on Grade {
                                       child: Opacity(
                                           opacity: name.isNotEmpty ? 1.0 : 0.5,
                                           child: Text(
-                                            name.isNotEmpty ? name.capitalize() : 'No description',
+                                            name.isNotEmpty ? name.capitalize() : '621D8FEF-5DAF-4EDD-B9A4-3EBF3D18AD1C'.localized,
                                             textAlign: TextAlign.start,
                                             style: TextStyle(
                                                 fontSize: 17,

@@ -2,6 +2,7 @@
 import 'package:darq/darq.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
@@ -18,6 +19,7 @@ import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
 import 'package:add_2_calendar/add_2_calendar.dart' as calendar;
+import 'package:oshi/share/translator.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:uuid/uuid.dart';
@@ -116,11 +118,15 @@ extension EventWidgetExtension on Event {
           itemBuilder: (context) => [
                 AdaptiveMenuItem(
                   onTap: () {
-                    sharing.Share.share(
-                        'There\'s a "$titleString" on ${DateFormat("EEEE, MMM d, y").format(timeFrom)} ${(classroom?.name.isNotEmpty ?? false) ? ("in ${classroom?.name ?? ""}") : "at school"}');
+                    sharing.Share.share('A70900F1-79A1-432D-AC6D-137794074CCE'.localized.format(
+                        titleString,
+                        DateFormat("EEEE, MMM d, y").format(timeFrom),
+                        (classroom?.name.isNotEmpty ?? false)
+                            ? ('C33F8288-5BAD-4574-9C53-B54FED6757AC'.localized.format(classroom?.name ?? ""))
+                            : '55FCBDA9-6905-49C9-A3E8-426058041A8B'.localized));
                   },
                   icon: CupertinoIcons.share,
-                  title: 'Share',
+                  title: '/Share'.localized,
                 ),
                 category == EventCategory.homework
                     // Homework - mark as done
@@ -149,7 +155,7 @@ extension EventWidgetExtension on Event {
                           }
                         },
                         icon: CupertinoIcons.check_mark,
-                        title: 'Mark as done',
+                        title: '50FD3CEB-CAA5-4AD2-AEC5-61C16308FE41'.localized,
                       )
                     // Event - add to calendar
                     : AdaptiveMenuItem(
@@ -166,13 +172,13 @@ extension EventWidgetExtension on Event {
                           }
                         },
                         icon: CupertinoIcons.calendar,
-                        title: 'Add to calendar',
+                        title: '374BEB81-88EB-4C1C-A3B3-0E24DB13E0E4'.localized,
                       ),
               ]
                   .appendIf(
                       AdaptiveMenuItem(
                         icon: CupertinoIcons.pencil,
-                        title: 'Edit',
+                        title: 'F0FFE57B-4458-4D41-9577-C72533B62C61'.localized,
                         onTap: () {
                           try {
                             showMaterialModalBottomSheet(
@@ -189,13 +195,15 @@ extension EventWidgetExtension on Event {
                   .appendIf(
                       AdaptiveMenuItem(
                         icon: CupertinoIcons.chat_bubble_2,
-                        title: 'Inquiry',
+                        title: '/Inquiry'.localized,
                         onTap: () {
                           showMaterialModalBottomSheet(
                               context: context,
                               builder: (context) => MessageComposePage(
                                   receivers: sender != null ? [sender!] : [],
-                                  subject: 'Pytanie o wydarzenie w dniu ${DateFormat("y.M.d").format(date ?? timeFrom)}',
+                                  subject: 'C834975A-FECF-4FA1-A099-242BC18FB55C'
+                                      .localized
+                                      .format(DateFormat("y.M.d").format(date ?? timeFrom)),
                                   signature:
                                       '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                         },
@@ -204,7 +212,7 @@ extension EventWidgetExtension on Event {
                   .appendIf(
                       AdaptiveMenuItem(
                         icon: CupertinoIcons.delete,
-                        title: 'Delete',
+                        title: '/Delete'.localized,
                         onTap: () {
                           setState(() => Share.session.customEvents.remove(this));
                           Share.settings.save();
@@ -214,7 +222,7 @@ extension EventWidgetExtension on Event {
                   .appendIf(
                       AdaptiveMenuItem(
                         icon: CupertinoIcons.delete,
-                        title: 'Delete',
+                        title: '/Delete'.localized,
                         onTap: () {
                           setState(() => Share.session.sharedEvents.remove(this));
                           Share.settings.save();
@@ -306,46 +314,51 @@ extension EventWidgetExtension on Event {
                                       children: <Widget>[
                                         Divider(),
                                         AdaptiveCard(
-                                          child: 'Title',
+                                          child: 'ED8D10FC-50FE-48C5-AD57-8E7418669AC3'.localized,
                                           regular: true,
                                           after: titleString,
                                         ),
                                       ]
                                           .appendIf(
                                               AdaptiveCard(
-                                                child: 'Subtitle',
+                                                child: '6FEE9962-29D9-4566-A44B-D9913F1CB412'.localized,
                                                 regular: true,
                                                 after: subtitleString,
                                               ),
                                               subtitleString.isNotEmpty)
                                           .appendIf(
                                               AdaptiveCard(
-                                                child: category == EventCategory.teacher ? 'Teacher' : 'Added by',
+                                                child: category == EventCategory.teacher
+                                                    ? '2F324FD4-CC19-4F9C-89CD-F372258AEF3C'.localized
+                                                    : '/AddedBy'.localized,
                                                 regular: true,
                                                 after: sender?.name ?? '',
                                               ),
                                               sender?.name.isNotEmpty ?? false)
                                           .appendIf(
                                               AdaptiveCard(
-                                                child: 'Date',
+                                                child: '/Date'.localized,
                                                 regular: true,
                                                 after: DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode)
                                                     .format(date ?? timeFrom),
                                               ),
                                               date != null)
                                           .appendIf(
-                                              AdaptiveCard(child: 'Classroom', regular: true, after: classroom?.name ?? ''),
+                                              AdaptiveCard(
+                                                  child: 'AA2B9B71-49B6-45BD-A0FE-707D42A09EC5'.localized,
+                                                  regular: true,
+                                                  after: classroom?.name ?? ''),
                                               classroom?.name.isNotEmpty ?? false)
                                           .appendIf(
                                               AdaptiveCard(
-                                                child: 'Start time',
+                                                child: '58710A36-F758-4E5F-916E-9F7846ED58BA'.localized,
                                                 regular: true,
                                                 after: DateFormat.Hm(Share.settings.appSettings.localeCode).format(timeFrom),
                                               ),
                                               timeFrom.hour != 0)
                                           .appendIf(
                                               AdaptiveCard(
-                                                child: 'End time',
+                                                child: '87657B56-BFB1-44FB-9B51-9155ED6396E4'.localized,
                                                 regular: true,
                                                 after: DateFormat.Hm(Share.settings.appSettings.localeCode)
                                                     .format(timeTo ?? timeFrom),
@@ -496,45 +509,52 @@ extension LessonWidgetExtension on TimetableLesson {
       BuildContext context, DateTime? selectedDate, TimetableDay? selectedDay, void Function(VoidCallback fn) setState,
       {bool markRemoved = false, bool markModified = false, Function()? onTap}) {
     var lessonCallButtonString = switch (Share.session.settings.lessonCallType) {
-      LessonCallTypes.countFromEnd => 'last ${Share.session.settings.lessonCallTime} min',
-      LessonCallTypes.countFromStart => 'first ${Share.session.settings.lessonCallTime} min',
-      LessonCallTypes.halfLesson => 'half the lesson',
-      LessonCallTypes.wholeLesson => 'whole lesson'
+      LessonCallTypes.countFromEnd =>
+        'BF38C0A9-D585-46AE-A37B-F42F1655B0AF'.localized.format(Share.session.settings.lessonCallTime),
+      LessonCallTypes.countFromStart =>
+        'D761036A-4380-47BA-B8B3-E85CBBAC5DED'.localized.format(Share.session.settings.lessonCallTime),
+      LessonCallTypes.halfLesson => '4A1B9B79-8787-4A49-BAAF-6C98F86795DD'.localized,
+      LessonCallTypes.wholeLesson => '4192A962-C0A5-4276-89BC-7A68CA727370'.localized
     };
 
     var lessonCallMessageString = switch (Share.session.settings.lessonCallType) {
-      LessonCallTypes.countFromEnd => 'ostatnich ${Share.session.settings.lessonCallTime} minut lekcji',
-      LessonCallTypes.countFromStart => 'pierwszych ${Share.session.settings.lessonCallTime} minut lekcji',
-      LessonCallTypes.halfLesson => 'połowy',
-      LessonCallTypes.wholeLesson => 'całej'
+      LessonCallTypes.countFromEnd =>
+        '4C63899A-2106-49F7-8E70-7DEFE2348C9B'.localized.format(Share.session.settings.lessonCallTime),
+      LessonCallTypes.countFromStart =>
+        '744D287F-E683-4E60-A01C-03F3379ED8C8'.localized.format(Share.session.settings.lessonCallTime),
+      LessonCallTypes.halfLesson => '9DA6EABD-96E7-4561-8164-706DE026FD19'.localized,
+      LessonCallTypes.wholeLesson => '28C22BA4-22F1-4685-B999-A35BD36767FA'.localized
     };
 
     return AdaptiveMenuButton(
         itemBuilder: (context) => [
               AdaptiveMenuItem(
                 onTap: () {
-                  sharing.Share.share(
-                      'There\'s ${subject?.name ?? "a lesson"} on ${DateFormat("EEEE, MMM d, y").format(date)} with ${teacher?.name ?? "a teacher"}');
-                  
+                  sharing.Share.share('5E6CA4CB-4757-46BC-80F3-2B208CE822DD'.localized.format(
+                      subject?.name ?? '25EFC95E-A925-4F98-BE8B-AB646D266E25'.localized,
+                      DateFormat("EEEE, MMM d, y").format(date),
+                      teacher?.name ?? '0ED15CBE-83CA-4E47-818F-61FCD06CBADA'.localized));
                 },
                 icon: CupertinoIcons.share,
-                title: 'Share',
+                title: '/Share'.localized,
               ),
               AdaptiveMenuItem(
                 onTap: () {
                   try {
                     calendar.Add2Calendar.addEvent2Cal(calendar.Event(
-                        title: subject?.name ?? 'Lesson on ${DateFormat("EEEE, MMM d, y").format(date)}',
+                        title: subject?.name ??
+                            '6BB62617-7000-4A27-A499-534F1E04764E'
+                                .localized
+                                .format(DateFormat("EEEE, MMM d, y").format(date)),
                         location: classroom?.name,
                         startDate: timeFrom ?? date,
                         endDate: timeTo ?? date));
                   } catch (ex) {
                     // ignored
                   }
-                  
                 },
                 icon: CupertinoIcons.calendar,
-                title: 'Add to calendar',
+                title: '374BEB81-88EB-4C1C-A3B3-0E24DB13E0E4'.localized,
               ),
               AdaptiveMenuItem(
                 onTap: () {
@@ -551,38 +571,39 @@ extension LessonWidgetExtension on TimetableLesson {
                   } catch (ex) {
                     // ignored
                   }
-                  
                 },
                 icon: CupertinoIcons.add,
-                title: 'Create event',
+                title: '567C490D-B7D0-403A-99A1-9E21F7F77EB8'.localized,
               ),
               AdaptiveMenuItem(
                 icon: CupertinoIcons.timer,
-                title: 'Call $lessonCallButtonString',
+                title: '3B6E8151-45FD-48B3-97CB-99E556E02F3E'.localized.format(lessonCallButtonString),
                 onTap: () {
-                  
                   showMaterialModalBottomSheet(
                       context: context,
                       builder: (context) => MessageComposePage(
                           receivers: teacher != null ? [teacher!] : [],
-                          subject:
-                              'Zwolnienie z $lessonCallMessageString w dniu ${DateFormat("y.M.d").format(date)}, L$lessonNo',
-                          message:
-                              'Dzień dobry,\n\nProszę o zwolnienie mnie z $lessonCallMessageString lekcji ${subject?.name} w dniu ${DateFormat("y.M.d").format(date)}, na $lessonNo godzinie lekcyjnej.',
+                          subject: '4DF5CFE9-2B5F-4AE1-AEFC-B4B8888A09ED'
+                              .localized
+                              .format(lessonCallMessageString, DateFormat("y.M.d").format(date), lessonNo),
+                          message: '7955E73E-D260-43BA-8E2F-88CD43348BBD'
+                              .localized
+                              .format(lessonCallMessageString, subject?.name, DateFormat("y.M.d").format(date), lessonNo),
                           signature:
                               '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                 },
               ),
               AdaptiveMenuItem(
                 icon: CupertinoIcons.chat_bubble_2,
-                title: 'Inquiry',
+                title: '/Inquiry'.localized,
                 onTap: () {
-                  
                   showMaterialModalBottomSheet(
                       context: context,
                       builder: (context) => MessageComposePage(
                           receivers: teacher != null ? [teacher!] : [],
-                          subject: 'Pytanie o lekcję w dniu ${DateFormat("y.M.d").format(date)}, L$lessonNo',
+                          subject: '50CFA04B-E8EB-4BC9-80F1-C5EF39FE8F3A'
+                              .localized
+                              .format(DateFormat("y.M.d").format(date), lessonNo),
                           signature:
                               '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                 },
@@ -642,28 +663,28 @@ extension LessonWidgetExtension on TimetableLesson {
                                       children: <Widget>[]
                                           .appendIf(
                                               AdaptiveCard(
-                                                child: 'Subject',
+                                                child: 'AC7FCED9-3CEA-4C69-9512-8B409015DF2C'.localized,
                                                 regular: true,
                                                 after: subject?.name ?? '',
                                               ),
                                               subject?.name.isNotEmpty ?? false)
                                           .appendIf(
                                               AdaptiveCard(
-                                                child: 'Teacher',
+                                                child: '2F324FD4-CC19-4F9C-89CD-F372258AEF3C'.localized,
                                                 regular: true,
                                                 after: teacher?.name ?? '',
                                               ),
                                               teacher?.name.isNotEmpty ?? false)
                                           .appendIf(
                                               AdaptiveCard(
-                                                child: 'Classroom',
+                                                child: 'AA2B9B71-49B6-45BD-A0FE-707D42A09EC5'.localized,
                                                 regular: true,
                                                 after: classroom?.name ?? '',
                                               ),
                                               classroom?.name.isNotEmpty ?? false)
                                           .appendIf(
                                               AdaptiveCard(
-                                                child: 'Lesson no.',
+                                                child: '4CCE58F6-2805-4D44-B97A-556679808477'.localized,
                                                 regular: true,
                                                 after: lessonNo.toString(),
                                               ),
@@ -671,7 +692,7 @@ extension LessonWidgetExtension on TimetableLesson {
                                           // Substitution details - original lesson
                                           .appendIf(
                                               AdaptiveCard(
-                                                  child: 'Original lesson',
+                                                  child: '3098FAAF-7223-4E86-AB19-431882A7985C'.localized,
                                                   regular: true,
                                                   after: substitutionDetails?.originalSubject?.name ?? ''),
                                               (isCanceled || modifiedSchedule) &&
@@ -680,7 +701,7 @@ extension LessonWidgetExtension on TimetableLesson {
                                           // Substitution details - original teacher
                                           .appendIf(
                                               AdaptiveCard(
-                                                child: 'Original teacher',
+                                                child: '58787B41-324C-4E3D-97AE-5EC23D058A5B'.localized,
                                                 regular: true,
                                                 after: substitutionDetails?.originalTeacher?.name ?? '',
                                               ),
@@ -690,7 +711,9 @@ extension LessonWidgetExtension on TimetableLesson {
                                           // Substitution details - moved lesson
                                           .appendIf(
                                               AdaptiveCard(
-                                                child: isCanceled ? 'Moved to' : 'Moved from',
+                                                child: isCanceled
+                                                    ? '43026DF3-97E9-4449-BD20-D1E256C42F89'.localized
+                                                    : '8A2F8A9D-1428-4EAA-BA31-CE64A64789C6'.localized,
                                                 regular: true,
                                                 after:
                                                     '${DateFormat.yMd(Share.settings.appSettings.localeCode).format(substitutionDetails?.originalDate ?? DateTime.now().asDate())}${substitutionDetails?.originalLessonNo != null ? ', L${substitutionDetails?.originalLessonNo.toString()}' : ''}',
@@ -700,7 +723,7 @@ extension LessonWidgetExtension on TimetableLesson {
                                           .appendIf(
                                               AdaptiveCard(
                                                 centered: true,
-                                                child: 'This lesson has been cancelled',
+                                                child: '947A950F-6638-4194-91B2-99BCB42ADA86'.localized,
                                               ),
                                               isCanceled && !isMovedLesson))
                                 ]),
@@ -750,7 +773,7 @@ extension LessonWidgetExtension on TimetableLesson {
                                     Expanded(
                                         flex: 2,
                                         child: Text(
-                                          subject?.name ?? 'Unknown',
+                                          subject?.name ?? '94149CBB-5B72-4186-A155-20A9C7FB1B2C'.localized,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(

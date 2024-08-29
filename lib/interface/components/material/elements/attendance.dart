@@ -74,7 +74,7 @@ extension LessonWidgetExtension on Attendance {
                           context: context,
                           builder: (context) => MessageComposePage(
                               receivers: [teacher],
-                              subject: 'Pytanie o obecność z dnia ${DateFormat("y.M.d").format(date)}, L$lessonNo',
+                              subject: '89BEEDA5-3774-4BC0-B827-72D3AA2E31CC'.localized.format(DateFormat("y.M.d").format(date), lessonNo),
                               signature:
                                   '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                     }),
@@ -87,11 +87,11 @@ extension LessonWidgetExtension on Attendance {
                             context: context,
                             builder: (context) => MessageComposePage(
                                 receivers: [Share.session.data.student.mainClass.classTutor],
-                                subject: 'Usprawiedliwienie',
+                                subject: 'CC111EE5-B18F-46EB-A6FF-09E3ABFA1FA1'.localized,
                                 message:
-                                    'Dzień dobry,\n\nProszę o usprawiedliwienie mojej nieobecności\nw dniu ${DateFormat("y.M.dd").format(date)} na $lessonNo godzinie lekcyjnej.',
+                                    '853265A9-1B40-43F2-82B5-E9E238EF8A5B'.localized.format(DateFormat("y.M.dd").format(date), lessonNo),
                                 signature:
-                                    'Dziękuję,\n\nZ poważaniem,\n${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                                    'F491D698-DFB6-4E62-B100-1546660AB6D1'.localized.format(Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
                       }),
                   type == AttendanceType.absent),
           longPressOnly: true,
@@ -181,7 +181,7 @@ extension LessonWidgetExtension on Attendance {
                                   Visibility(
                                       visible: (lesson.subject?.name.isNotEmpty ?? false),
                                       child: Text(
-                                        lesson.subject?.name ?? 'Unknown lesson',
+                                        lesson.subject?.name ?? 'C1D03748-4568-4AB9-843A-86707294BCA5'.localized,
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 2,
                                         textAlign: TextAlign.start,

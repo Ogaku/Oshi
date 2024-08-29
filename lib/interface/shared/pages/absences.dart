@@ -7,6 +7,7 @@ import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/interface/components/shim/elements/attendance.dart';
@@ -61,7 +62,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
     // Group by subjects, or at least what we can access right now
     var attendancesToDisplayByLesson = Share.session.data.student.attendances
             ?.orderByDescending((x) => x.date)
-            .groupBy((x) => x.lesson.subject?.name ?? 'Unknown subject')
+            .groupBy((x) => x.lesson.subject?.name ?? 'D8AE1252-CB76-4815-9587-B48D42DADE0B'.localized)
             .select((x, index) => Grouping(
                 x.elements,
                 "${x.key}\n${(100 * x.elements.where((y) => y.type == AttendanceType.present).count() / x.elements.count()).round()}%",
@@ -109,12 +110,12 @@ class _AbsencesPageState extends State<AbsencesPage> {
             : AdaptiveMenuButton(
                 itemBuilder: (context) => [
                   AdaptiveMenuItem(
-                    title: 'Mark as read',
+                    title: 'CF4A7B81-8294-4616-BF7B-03621E2CB41F'.localized,
                     icon: CupertinoIcons.checkmark_circle,
                     onTap: () => Share.session.unreadChanges.markAsRead(attendaceOnly: true),
                   ),
                   AdaptiveMenuItem(
-                    title: 'Excuse all',
+                    title: '0BD1858E-3655-4199-8691-9FC68573B274'.localized,
                     icon: CupertinoIcons.doc_on_clipboard,
                     onTap: () {
                       if (Share.session.data.student.attendances?.isEmpty ?? true) return;
@@ -122,11 +123,11 @@ class _AbsencesPageState extends State<AbsencesPage> {
                           context: context,
                           builder: (context) => MessageComposePage(
                               receivers: [Share.session.data.student.mainClass.classTutor],
-                              subject: 'Usprawiedliwienie',
+                              subject: 'CC111EE5-B18F-46EB-A6FF-09E3ABFA1FA1'.localized,
                               message:
-                                  'Dzień dobry,\n\nProszę o usprawiedliwienie moich nieobecności w dniach:\n${Share.session.data.student.attendances!.where((x) => x.type == AttendanceType.absent).groupBy((x) => x.date).select((x, index) => ' - ${DateFormat("y.M.dd").format(x.key)} (${x.count > 1 ? '${x.orderBy((x) => x.lessonNo).first.lessonNo} - ${x.orderBy((x) => x.lessonNo).last.lessonNo} godzina lekcyjna' : '${x.first.lessonNo} godzina lekcyjna'}) \n').join()}',
+                                  '3E0C235F-9615-4152-A5BB-5B5A93596E9D'.localized.format(Share.session.data.student.attendances!.where((x) => x.type == AttendanceType.absent).groupBy((x) => x.date).select((x, index) => ' - ${DateFormat("y.M.dd").format(x.key)} (${x.count > 1 ? '${x.orderBy((x) => x.lessonNo).first.lessonNo} - ${x.orderBy((x) => x.lessonNo).last.lessonNo} godzina lekcyjna' : '${x.first.lessonNo} godzina lekcyjna'}) \n').join()),
                               signature:
-                                  'Dziękuję,\n\nZ poważaniem,\n${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                                  '0E517324-ACF9-4F1A-9B74-4D002235C964'.localized.format(Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
                     },
                   ),
                 ],

@@ -696,6 +696,1451 @@
         {
             "id": "/Semesters/Second",
             "translation": "Semestr 2"
+        },
+        {
+          "id": "6BA18B4F-656E-4CC7-9093-9A4CE86A6998",
+          "translation": "Apply"
+        },
+        {
+          "id": "F2399A03-D76A-4C95-ACAB-26458D291779",
+          "translation": "Unsupported type: {}"
+        },
+        {
+          "id": "0E300562-B30B-4E1C-94DD-0E244255DA13",
+          "translation": "Set grade weight to 0 or 1"
+        },
+        {
+          "id": "4E53AD1F-9CEE-4676-947C-35CE59986E21",
+          "translation": "Counts to the average"
+        },
+        {
+          "id": "836100BB-8CC9-4DD0-BE98-9B5E7CBC3525",
+          "translation": "Mark the grade as corrected"
+        },
+        {
+          "id": "E99E0F5D-AFDC-45F0-8B5A-76AD8CA1FE17",
+          "translation": "Resit (corrected grade)"
+        },
+        {
+          "id": "1D6F18B4-5F70-4CF7-8302-C15F111EBA64",
+          "translation": "Grade type"
+        },
+        {
+          "id": "2EBF8EDE-5F5B-40BD-914D-5A47026D2D2D",
+          "translation": "Choose the grade type"
+        },
+        {
+          "id": "41943B1D-B32A-4547-81B0-1882F5495942",
+          "translation": "general"
+        },
+        {
+          "id": "0D37C787-F585-4091-AC3E-CC2AF05A534F",
+          "translation": "semester proposition"
+        },
+        {
+          "id": "83AAE02D-9BDA-4AD1-BD70-7987CF46FECC",
+          "translation": "semester"
+        },
+        {
+          "id": "BB246CED-F0D0-4425-B33B-C5F68E563A04",
+          "translation": "final proposition"
+        },
+        {
+          "id": "23AC622C-A52D-43DD-A764-E74750C3E523",
+          "translation": "final"
+        },
+        {
+          "id": "F9647083-FB1F-450E-AE99-E77C17B75509",
+          "translation": "ERROR"
+        },
+        {
+          "id": "3D0F6617-080E-410B-8650-33E6CB83AE4D",
+          "translation": "ERR"
+        },
+        {
+          "id": "AC106467-0FBE-4916-82B5-594F11D21C8B",
+          "translation": "Grade type:"
+        },
+        {
+          "id": "65233B9B-801B-4145-BDC3-6CA7A4B5736F",
+          "translation": "Optional"
+        },
+        {
+          "id": "C01E0657-4723-487A-8095-382022E441CF",
+          "translation": "Type in any grade comments here..."
+        },
+        {
+          "id": "11340D77-0525-4EEF-A0A0-EB8933553149",
+          "translation": "Select the semester"
+        },
+        {
+          "id": "4456F7D3-1173-4A61-A093-712A2AB21764",
+          "translation": "Semester"
+        },
+        {
+          "id": "0C168486-8BDF-4923-898E-6E8D6E066394",
+          "translation": "first"
+        },
+        {
+          "id": "BD3A0594-129B-4DEE-8F33-E848C4B00E3B",
+          "translation": "second"
+        },
+        {
+          "id": "3C821237-50E2-4764-B61D-489C2E05C7EA",
+          "translation": "Second"
+        },
+        {
+          "id": "8860BA8F-47A4-4723-A786-7FC26B971453",
+          "translation": "First"
+        },
+        {
+          "id": "952C16E3-7C31-4E6D-968B-80FC4C27C292",
+          "translation": "Semester:"
+        },
+        {
+          "id": "394DA71A-A887-46C6-8ECB-D7CFFA5487C2",
+          "translation": "Choose the grade weight"
+        },
+        {
+          "id": "C70BF0CC-9152-4856-9AF3-45DF1CDE0EBA",
+          "translation": "Grade weight"
+        },
+        {
+          "id": "F455E699-B0AA-4718-B6E1-56623B2332CA",
+          "translation": "Weight"
+        },
+        {
+          "id": "36E7AD9C-4766-400D-82E0-D882D8C1DBBE",
+          "translation": "Weight:"
+        },
+        {
+          "id": "828F8EBE-4681-4FC9-9FFE-239540470A97",
+          "translation": "Value"
+        },
+        {
+          "id": "8C49630C-B41B-4D50-87C8-6A3EA3FD6A3D",
+          "translation": "Name"
+        },
+        {
+          "id": "3C50E8E5-1764-48BF-9E6D-47C5DB958A23",
+          "translation": "Not found: {}"
+        },
+        {
+          "id": "5751E462-FFCF-4857-A5EA-EAF4A25B6F11",
+          "translation": "GO FUCK YOURSELF"
+        },
+        {
+          "id": "6FFC787F-7E74-4467-94A7-DE04A8349C1A",
+          "translation": "Start typing..."
+        },
+        {
+          "id": "63C342E6-6583-45CE-B273-8CB402AE5BAD",
+          "translation": "Date:"
+        },
+        {
+          "id": "D91ED34B-BB94-4EFF-8DF8-D5F4FF8906BF",
+          "translation": "Cancel"
+        },
+        {
+          "id": "C9DE7B87-B4B9-410E-AB54-CA6FB5B2F005",
+          "translation": "New custom grade"
+        },
+        {
+          "id": "7B2546FB-BF5A-4390-9ACD-32130F356320",
+          "translation": "Share with class"
+        },
+        {
+          "id": "89C8B5CF-1E70-4084-A04D-1CDBA5D54603",
+          "translation": "Lesson number"
+        },
+        {
+          "id": "AA2B9B71-49B6-45BD-A0FE-707D42A09EC5",
+          "translation": "Classroom"
+        },
+        {
+          "id": "7E2F717D-B138-4E74-A278-8E26F7FC4C4B",
+          "translation": "Not specified"
+        },
+        {
+          "id": "CB7BA3C9-548E-4854-B9CD-E6EA31FC1319",
+          "translation": "When the event ends"
+        },
+        {
+          "id": "87657B56-BFB1-44FB-9B51-9155ED6396E4",
+          "translation": "End time"
+        },
+        {
+          "id": "6D95AC19-4F2C-45C6-A80F-FEECF8A319E3",
+          "translation": "When the event starts"
+        },
+        {
+          "id": "58710A36-F758-4E5F-916E-9F7846ED58BA",
+          "translation": "Start time"
+        },
+        {
+          "id": "BC4C4828-36B3-4009-A06B-14641E292A61",
+          "translation": "not specified"
+        },
+        {
+          "id": "D0B44429-BF9F-4483-8B3A-0540449B227D",
+          "translation": "End time:"
+        },
+        {
+          "id": "E5F106C3-4B5F-44B0-AD28-8545CB9A3EF2",
+          "translation": "Start time:"
+        },
+        {
+          "id": "619C02B6-9564-48DB-B205-FCEE140DF534",
+          "translation": "Event will be shared with others"
+        },
+        {
+          "id": "ED8D10FC-50FE-48C5-AD57-8E7418669AC3",
+          "translation": "Title"
+        },
+        {
+          "id": "8CA8A5B0-F318-46DA-A453-72D162D266E6",
+          "translation": "Type in the event description here..."
+        },
+        {
+          "id": "89DCFE4D-3EBA-4E62-8892-BC5644D639E8",
+          "translation": "Custom category: {}"
+        },
+        {
+          "id": "D6C84B44-B72B-4EEC-A2E9-3C139BBCA8AC",
+          "translation": "Category:"
+        },
+        {
+          "id": "4A36ACC2-773E-49FD-9946-321EF34ADFCB",
+          "translation": "The event date"
+        },
+        {
+          "id": "621EE9A3-68D0-40B1-A990-68FAD150AFAA",
+          "translation": "Back"
+        },
+        {
+          "id": "485689BD-B015-4C7B-AADE-BC9F084B1E2B",
+          "translation": "On {} {}, {} wrote:\n\"{}\n\n{}\""
+        },
+        {
+          "id": "B4118707-9AF7-45E7-8759-59C00CE240C4",
+          "translation": "On {} {} wrote:\n\"{}\n\n{}\""
+        },
+        {
+          "id": "DC48985E-AA43-4507-AF74-DAF3A385B6C1",
+          "translation": "Forward"
+        },
+        {
+          "id": "D1D2C948-7EC7-4966-9AD0-686269DF0BE1",
+          "translation": "Reply"
+        },
+        {
+          "id": "F77E1795-3404-4BCA-A173-80AFF744AAA1",
+          "translation": "Fwd: {}"
+        },
+        {
+          "id": "47FC297B-63E7-46E6-AEF1-7343A8BF8D08",
+          "translation": "Re: {}"
+        },
+        {
+          "id": "C14AF35B-469F-4E81-A8EA-B348267E8455",
+          "translation": "-------\nOn {} {}, {} wrote:\n\"{}\n\n{}\""
+        },
+        {
+          "id": "AF66B98F-C6F5-480F-87F3-49FCFDD3BBA2",
+          "translation": "{}, {}\n\n-------\nOn {} {} wrote:\n\"{}\n\n{}\""
+        },
+        {
+          "id": "2B6C42AB-FD8A-4DC1-A4EE-58D2235AE1FD",
+          "translation": "No content to display"
+        },
+        {
+          "id": "B8C5F980-D32F-42C9-A7E0-FF7667884776",
+          "translation": "New message"
+        },
+        {
+          "id": "F263B8B0-0EFA-4486-836D-ED1FF801B2C2",
+          "translation": "\n\n{}"
+        },
+        {
+          "id": "EECC0427-E5ED-4A10-96D4-734FE2AA7804",
+          "translation": "Type in receivers..."
+        },
+        {
+          "id": "81B09857-201A-4036-807F-7A32F0C23575",
+          "translation": "No receivers matching the query"
+        },
+        {
+          "id": "AC7FCED9-3CEA-4C69-9512-8B409015DF2C",
+          "translation": "Subject"
+        },
+        {
+          "id": "DFE8DC1D-FB74-48C0-9016-0F03A5EBD128",
+          "translation": "Type in your message here..."
+        },
+        {
+          "id": "EB947AC4-561E-4D63-9EAD-7E80C18C48B9",
+          "translation": "No Signature"
+        },
+        {
+          "id": "37DB4F6C-E0AE-44AF-8905-5384B038E522",
+          "translation": "No grades matching the query"
+        },
+        {
+          "id": "9A027181-A1D0-41DA-9E0C-719B3D43B9DF",
+          "translation": "No grades"
+        },
+        {
+          "id": "0440D007-CD66-495E-A1C3-9D290E26F507",
+          "translation": "My average from {} is {}!"
+        },
+        {
+          "id": "79617CAD-C9A1-4BCA-98FC-4F9D1ADE1B35",
+          "translation": "Pytanie o średnią ocen z przedmiotu {}"
+        },
+        {
+          "id": "36C35A24-B8AA-47FB-B564-9B83D2838415",
+          "translation": "{}, {}"
+        },
+        {
+          "id": "86D66F6A-6E4B-4C65-8AB3-EBEACA3FFC90",
+          "translation": "My 1st semester average from {} is {}!"
+        },
+        {
+          "id": "BC6173B0-BD9D-4627-8512-594FB359B983",
+          "translation": "Pytanie o średnią ocen z pierwszego semestru z przedmiotu {}"
+        },
+        {
+          "id": "E02FB126-60E8-4604-B616-69529AB0EE64",
+          "translation": "I got a {} proposition from {}!"
+        },
+        {
+          "id": "9221D91C-83A8-423E-8352-31FEE4C06FD0",
+          "translation": "Pytanie o ocenę proponowaną z przedmiotu {}"
+        },
+        {
+          "id": "B7322EA2-71DE-4CB6-B71C-CDB9E763B32A",
+          "translation": "Proposed grade"
+        },
+        {
+          "id": "94149CBB-5B72-4186-A155-20A9C7FB1B2C",
+          "translation": "Unknown"
+        },
+        {
+          "id": "A7A1CA79-09B4-4EA6-BA6D-ED85243BADDA",
+          "translation": "I got a {} semester proposition from {}!"
+        },
+        {
+          "id": "9F390DDF-CBAB-45FA-B762-BDBBDAC7472D",
+          "translation": "Pytanie o ocenę proponowaną na semestr 1 z przedmiotu {}"
+        },
+        {
+          "id": "C0E5DDF1-1578-41A3-8833-9F6B8F327512",
+          "translation": "I got a {} final from {}!"
+        },
+        {
+          "id": "3A47D98A-3FDF-4BD0-94BE-B97A402AE20B",
+          "translation": "Pytanie o ocenę końcową z przedmiotu {}"
+        },
+        {
+          "id": "3D7343F4-A362-4D50-BC7B-8E2303B50729",
+          "translation": "Final grade"
+        },
+        {
+          "id": "113A072F-2E32-4BBE-8705-4FB4F5B26F6E",
+          "translation": "I got a {} semester from {}!"
+        },
+        {
+          "id": "6023BF44-17D2-463D-870B-759681BA3CA7",
+          "translation": "Pytanie o ocenę semestralną z przedmiotu {}"
+        },
+        {
+          "id": "102472D7-81EC-45F3-816E-D9EE5783A3CF",
+          "translation": "Semester grade"
+        },
+        {
+          "id": "C31AC6D0-D0F1-4902-8CC7-6C911C6508BD",
+          "translation": "No events to display"
+        },
+        {
+          "id": "ACCA97A8-5C58-4D65-A827-6BBE076DDC71",
+          "translation": "No events matching the query"
+        },
+        {
+          "id": "6196CAC4-C4CE-41AB-BDB9-AF6EBBF2A5EF",
+          "translation": "New event"
+        },
+        {
+          "id": "6948FA91-02DD-4CD9-8DD7-1A3B6465D1B9",
+          "translation": "Filters"
+        },
+        {
+          "id": "473A2E48-C7AC-46F5-9652-7257B575BA42",
+          "translation": "Homeworks{}"
+        },
+        {
+          "id": "31BA1A6E-2C39-4312-967B-6C4C1C375689",
+          "translation": "Absent teachers"
+        },
+        {
+          "id": "7D1B6F15-239E-47FE-8935-07376F7FB2C7",
+          "translation": "Agenda"
+        },
+        {
+          "id": "334BC7AB-6780-412F-8604-2C6BAA9F3152",
+          "translation": "No homeworks matching the query"
+        },
+        {
+          "id": "CB4DFBFF-DC80-4787-8DAD-8046F536D65E",
+          "translation": "No teachers matching the query"
+        },
+        {
+          "id": "AD1F219E-A73A-45AA-9F75-574ACBA84522",
+          "translation": "Refresh to synchronize"
+        },
+        {
+          "id": "FEF84AFC-C749-4FF3-A0C2-8B5846ACD189",
+          "translation": "No lessons, yay!"
+        },
+        {
+          "id": "B6173A9C-6BAB-426E-9F38-257AB0F1B573",
+          "translation": "Today"
+        },
+        {
+          "id": "6834A472-D03D-4CC5-A91E-1A65B0C43DF8",
+          "translation": "Agenda{}"
+        },
+        {
+          "id": "3354CC3D-7A3D-4C61-99BB-D346D5755113",
+          "translation": "Load more items..."
+        },
+        {
+          "id": "CEEC04F5-04C3-41B2-9DB8-CCC6B0C42CC8",
+          "translation": "No changes to display"
+        },
+        {
+          "id": "D7969362-9ACF-403C-80E5-9C345711FF16",
+          "translation": "No changes, WTF?!"
+        },
+        {
+          "id": "B5AAA3A1-795B-4A81-9DED-4633B9FBD874",
+          "translation": "Settings"
+        },
+        {
+          "id": "DC18CA52-2CF3-47E8-8FBA-5CEF06A841BF",
+          "translation": "Info"
+        },
+        {
+          "id": "CF4A7B81-8294-4616-BF7B-03621E2CB41F",
+          "translation": "Mark as read"
+        },
+        {
+          "id": "6E7A921E-98C1-4C9D-87DD-154E15B06776",
+          "translation": "Appearance settings"
+        },
+        {
+          "id": "DD5CE0F4-775A-451A-B626-22E53029AF33",
+          "translation": "App Style"
+        },
+        {
+          "id": "5C484437-BB3B-4CAF-9E14-669C2A63ACF0",
+          "translation": "Cupertino"
+        },
+        {
+          "id": "A6E7DA42-3D93-4F31-A49A-63A33E9A376B",
+          "translation": "Material"
+        },
+        {
+          "id": "8F02FD98-C601-4CE5-A7F2-5BD05324B0AA",
+          "translation": "Visual theme"
+        },
+        {
+          "id": "F70892E6-2833-4E21-A111-91BADC1A3744",
+          "translation": "Accent Color"
+        },
+        {
+          "id": "A7E5A03F-B158-4213-9371-CD84BE2AC1BF",
+          "translation": "Note, this color may be overridden during certain events, such as Christmas, Easter, or Halloween."
+        },
+        {
+          "id": "F2B4F8E4-9603-4FE9-B4D3-E9A14CEF7D89",
+          "translation": "Language"
+        },
+        {
+          "id": "55AD72A7-31F9-45F6-A1F1-8174F53FBCCB",
+          "translation": "The selected language will only be reflected in the app interface. Grade, event, lesson descriptions and generated messages will not be affected."
+        },
+        {
+          "id": "76A9B9B2-1589-4669-AF3B-B051E1D1E27F",
+          "translation": "Application-wise"
+        },
+        {
+          "id": "FC6B3F0C-DB3D-45BB-8406-33657D48D411",
+          "translation": "Sharing and sync"
+        },
+        {
+          "id": "CD1ECC4D-066E-496C-AA71-8517579A58C4",
+          "translation": "Sync Settings"
+        },
+        {
+          "id": "0E6DB495-34F0-44C6-A012-5EF6A7CD16F1",
+          "translation": "Background synchronization"
+        },
+        {
+          "id": "8A9B267A-DDF2-401B-BD0C-FBEB58328EE3",
+          "translation": "How often should Oshi auto-refresh?"
+        },
+        {
+          "id": "58A14048-EF66-4249-A62D-5DA8AAD5DDA7",
+          "translation": "{}Synchronization will only happen when you have a working internet connection and Oshi is closed."
+        },
+        {
+          "id": "83A587C7-AEA1-440D-81B8-04D9607F5016",
+          "translation": "Note: "
+        },
+        {
+          "id": "DB5D169A-DCAD-4090-9450-31A47E99D7C0",
+          "translation": "Synchronize on Wi-Fi only"
+        },
+        {
+          "id": "D3E2F079-C3E4-4E83-8D4A-55CE7C601C2C",
+          "translation": "Prevents Oshi from using mobile data"
+        },
+        {
+          "id": "BC9CAB49-765A-47AC-A2D5-A756C610C4BF",
+          "translation": "Refresh interval"
+        },
+        {
+          "id": "629FB62F-9A01-4FAE-8D20-58F2C9241CC2",
+          "translation": "Needs background sync enabled"
+        },
+        {
+          "id": "A202A6E9-C043-4450-9AB9-661EB3699F39",
+          "translation": "15 minutes"
+        },
+        {
+          "id": "CC433F26-6A3D-4F62-A931-80A40878AF24",
+          "translation": "Shared Events"
+        },
+        {
+          "id": "4F886B16-A88F-48D3-BEE1-B4148622C60C",
+          "translation": "By courtesy of Szkolny.eu developers, Szkolny.eu apps and Oshi can now share events, notes, and notifications!"
+        },
+        {
+          "id": "6632D1A9-F474-45CA-9150-1ACCB4EF39B1",
+          "translation": "Allow registration"
+        },
+        {
+          "id": "1F1AA2B9-CA28-4728-8D1D-02FA2A4F7E82",
+          "translation": "Enables sharing events with others"
+        },
+        {
+          "id": "F0314F48-F4E7-40CF-AF92-4E538C0516D8",
+          "translation": "Share events by default"
+        },
+        {
+          "id": "32251E7A-D82A-4C14-B0F1-5835411763BA",
+          "translation": "Automatically share new events"
+        },
+        {
+          "id": "66D53114-ACDB-4963-A3AF-323A928FF077",
+          "translation": "Thanks to szkolny.eu"
+        },
+        {
+          "id": "F55B93B2-D401-43DC-B735-5BE1FAC9077F",
+          "translation": "Notifications"
+        },
+        {
+          "id": "29751189-B0EB-4160-B972-12C9A133921E",
+          "translation": "NOTIFICATION FILTERS"
+        },
+        {
+          "id": "725BD5A2-7767-45C6-8B96-B572886EDA30",
+          "translation": "Request notification access"
+        },
+        {
+          "id": "9DC64E89-233B-43BD-8860-4E6A8F964657",
+          "translation": "Click to request notification permission"
+        },
+        {
+          "id": "8028B071-6B39-40E2-AE3C-925D555E4696",
+          "translation": "App updates"
+        },
+        {
+          "id": "808B9438-3098-4218-A0F7-EA4424345D2F",
+          "translation": "Notifications about new app versions"
+        },
+        {
+          "id": "BAFBD98F-2A00-4F6E-8477-1835B9719705",
+          "translation": "Pathetic."
+        },
+        {
+          "id": "5D3C9F9D-00DD-4B39-AF4B-629EC7D203A7",
+          "translation": "You thought you could escape?"
+        },
+        {
+          "id": "F184D4D6-0C94-4E94-A703-8E0D371C8D91",
+          "translation": "Notifications will be sent for the selected categories once the new data is downloaded and there are any changes."
+        },
+        {
+          "id": "0DC2D946-9E89-4F0D-B468-BA98470C14FE",
+          "translation": "Notifications about timetable changes"
+        },
+        {
+          "id": "49F92EF0-7E05-416B-89A7-930342F3F1CB",
+          "translation": "Timetables"
+        },
+        {
+          "id": "E0A11D48-A95B-4713-A5D8-8754980C5ABC",
+          "translation": "Notifications about new grades"
+        },
+        {
+          "id": "F4829933-F3CF-44DE-B872-0A7E6E355697",
+          "translation": "Tests and school or class events"
+        },
+        {
+          "id": "8D247486-323F-42C0-B34C-B4846C4B4B67",
+          "translation": "Events"
+        },
+        {
+          "id": "FED5F29B-1CE3-44B2-84E3-ED4E952B039B",
+          "translation": "Notifications about attendance changes"
+        },
+        {
+          "id": "3437225F-3F91-4DB4-B23D-44A59155378F",
+          "translation": "Notifications about new announcements"
+        },
+        {
+          "id": "1B4B8A55-5D68-419A-AF11-2B9B9DED6ED3",
+          "translation": "Notifications about received messages"
+        },
+        {
+          "id": "CDE7ED74-6C59-42E2-A3D6-BD06161D3E10",
+          "translation": "Select categories"
+        },
+        {
+          "id": "87E61CE0-78E7-4121-A00C-ECE9C18E5DFB",
+          "translation": "User data"
+        },
+        {
+          "id": "D480F8E1-21BA-41AA-80C1-903375A2115D",
+          "translation": "Timetable Settings"
+        },
+        {
+          "id": "B3B19D34-8903-4983-A791-8B396D7DD34A",
+          "translation": "BELL SYNCHRONIZATION"
+        },
+        {
+          "id": "65A82A7E-82EE-439D-AC65-3A9F9A506041",
+          "translation": "Used to calibrate bell times in the app to offsets used by particular schools, format i.e. '10s', '1min, 5s' Don't forget to confirm your input!"
+        },
+        {
+          "id": "466F84DC-AE7A-499E-BE43-F96D13DF9585",
+          "translation": "School bell offset"
+        },
+        {
+          "id": "71A4B268-BA50-4832-BC25-A35F586718AC",
+          "translation": "In seconds, used to adjust bell times"
+        },
+        {
+          "id": "DAFBEF7F-1E93-4BE4-877F-E234EA2F1A0E",
+          "translation": "0 seconds"
+        },
+        {
+          "id": "12EBC2D2-19B3-41FD-9F3A-10D7D3EDF460",
+          "translation": "LESSON CALL TIME"
+        },
+        {
+          "id": "EE454EE2-FC1D-4AF2-AEAB-5B3405F4DF92",
+          "translation": "In minutes, will be used for \"calling\" last X minutes of a lesson. Falls back 15 minutes by default."
+        },
+        {
+          "id": "7B97D3CB-F6A8-4DC1-AD27-319F22D5002F",
+          "translation": "Lesson call time"
+        },
+        {
+          "id": "80F75930-2F66-4E88-91C2-E48DC5143458",
+          "translation": "Counted based on other settings"
+        },
+        {
+          "id": "DF9019BC-3BE4-4208-976B-51FDB364F292",
+          "translation": "CALL SETTINGS"
+        },
+        {
+          "id": "E8B922A6-7122-4328-866F-6729E660A702",
+          "translation": "Note, this is used only for auto-generating preset messages, which may not always be accurate."
+        },
+        {
+          "id": "72AD997F-5207-4D48-AF5F-E900BEC01147",
+          "translation": "Lesson call settings"
+        },
+        {
+          "id": "860D1B1D-980C-4BE6-AFD1-6483C6AC31E5",
+          "translation": "Selected type: {}"
+        },
+        {
+          "id": "E69F660E-D46C-42BE-A8CF-EB20BF5EA040",
+          "translation": "Call type"
+        },
+        {
+          "id": "6BEABF95-FABD-42E6-920C-2057480D3A0A",
+          "translation": "Custom Events"
+        },
+        {
+          "id": "8318318D-060F-4D2D-94FB-9BD3C665BDA0",
+          "translation": "Shared with the class"
+        },
+        {
+          "id": "5CFB8DE5-B4C1-4965-93F9-5EA55F07C098",
+          "translation": "Grades Settings"
+        },
+        {
+          "id": "AC4EDF84-EE04-4B57-B077-DACA7A954384",
+          "translation": "AVERGAE CALCULATION"
+        },
+        {
+          "id": "2AF1719A-8656-4F98-9321-D74F82F7AEBC",
+          "translation": "Average calculation will ignore weights if all of them are 0 for auto-adapt enabled."
+        },
+        {
+          "id": "D30DEFBB-3209-41C2-AED6-A5923D461FBB",
+          "translation": "Use weighted average"
+        },
+        {
+          "id": "363EA29A-52AD-4B1E-B326-907F535F2FC8",
+          "translation": "Use grade weighs for calculation"
+        },
+        {
+          "id": "CCCCCA9E-242A-4059-8DC6-FED14110E23D",
+          "translation": "Auto-adapt to grades"
+        },
+        {
+          "id": "5F3EBC40-EC4E-4101-AF66-28ECAAB544F8",
+          "translation": "Ignore weighs when necessary"
+        },
+        {
+          "id": "2688AB1D-5E3D-4C76-B8C7-A6637CFA0F77",
+          "translation": "YEARLY AVERAGE"
+        },
+        {
+          "id": "DA45DD0A-2781-40A2-A1C6-976F9DF60C8F",
+          "translation": "Note, the average displayed by the app is calculated locally, and may not be respected by every school."
+        },
+        {
+          "id": "04B2FDC7-C76E-430E-8F1C-5CB52852BCB0",
+          "translation": "Yearly average settings"
+        },
+        {
+          "id": "7416F5BF-2B31-4C55-BEEF-EB7A2329402D",
+          "translation": "Selected: {}"
+        },
+        {
+          "id": "5DE48056-3DDE-4939-BE9E-41E6A869C2C5",
+          "translation": "GRADES SIMULATOR"
+        },
+        {
+          "id": "8D5843E5-EF41-4694-AB25-8D2A4DF8BC10",
+          "translation": "Grades added by you here are not synchronized across devices, and have local effect only."
+        },
+        {
+          "id": "181C196F-A8C7-4446-92A8-911CA17014ED",
+          "translation": "Custom Grades"
+        },
+        {
+          "id": "5F65ABD5-E3A1-4A88-9012-178CE9ECD523",
+          "translation": "Grade Settings"
+        },
+        {
+          "id": "38C6F1AA-F9E6-440A-B635-E6981415AD77",
+          "translation": "No grades to display"
+        },
+        {
+          "id": "0197B2E2-A763-4E59-AA64-90C4ED1E051D",
+          "translation": "Manually add new grades"
+        },
+        {
+          "id": "BE7A9E48-8112-4556-85CD-530593066E26",
+          "translation": "Average calculation"
+        },
+        {
+          "id": "F4DA9649-D96E-41CC-8528-040A2917A486",
+          "translation": "Custom Grade Values"
+        },
+        {
+          "id": "EB604C3E-B9CF-475F-8F72-27D936CCC1AD",
+          "translation": "CUSTOM GRADE MODIFIERS"
+        },
+        {
+          "id": "1DD14872-D65A-442B-B048-E171FAE0BF42",
+          "translation": "These values will overwite all default grade modifiers for the specified entries, e.g. count '-' as '-0.25', etc."
+        },
+        {
+          "id": "52681520-1CD1-4547-8BB7-D006AAFF1295",
+          "translation": "CUSTOM GRADE MARGINS"
+        },
+        {
+          "id": "67F7DBDE-6ED3-421F-AD14-85058AA1665D",
+          "translation": "These values will overwite the default grade margins, e.g. make values such as '4.75' count as '5', etc."
+        },
+        {
+          "id": "274B918D-51CF-4C3E-8425-EB0D9FD828FD",
+          "translation": "CUSTOM GRADES"
+        },
+        {
+          "id": "BBF5AE6C-FA29-40FB-B68A-050934D9998F",
+          "translation": "These values will overwite all default grade values for the specified entries, e.g. from 'nb' to '1', etc."
+        },
+        {
+          "id": "838E767C-3D71-4E76-BB86-ADE91B154BF3",
+          "translation": "Plus, minus, and other values"
+        },
+        {
+          "id": "B2C872FA-F50E-4EB5-A646-B5F743603522",
+          "translation": "About"
+        },
+        {
+          "id": "4C9277BD-392C-4ECB-8307-8AF4E09F539A",
+          "translation": "App Info"
+        },
+        {
+          "id": "4F794C4E-204D-4F7F-A7ED-6DC83C95AF3B",
+          "translation": "VERSION INFO"
+        },
+        {
+          "id": "02B0EE84-7869-413F-B3DA-8EF6D1ED8E7A",
+          "translation": "Version"
+        },
+        {
+          "id": "6775F13D-3B63-4175-9432-3356200DD4EC",
+          "translation": "Developers"
+        },
+        {
+          "id": "EF8D269F-FD62-4E77-859D-7ECCCF9DF865",
+          "translation": "FOR DEVELOPERS"
+        },
+        {
+          "id": "41C975B3-8284-4825-A7CE-5BE463E30DDE",
+          "translation": "Developer mode"
+        },
+        {
+          "id": "B482A089-8A28-4481-AC0F-525551459EEF",
+          "translation": "Enables testing features"
+        },
+        {
+          "id": "2A51A33A-F6E7-4EFF-9F96-E27CDF749DD9",
+          "translation": "BACKUP AND RESTORE"
+        },
+        {
+          "id": "43AC10D9-619A-4B0D-A9A9-3745E2B65158",
+          "translation": "Save session data to file"
+        },
+        {
+          "id": "51FCB9F8-ADBF-4562-AF92-13046E6495D0",
+          "translation": "Saves hive data to .hive"
+        },
+        {
+          "id": "1BBE5897-AB9C-4C1C-9182-2F31C11BC1E9",
+          "translation": "Load session data from file"
+        },
+        {
+          "id": "2E20C624-26E9-4BF7-9106-6E1963BDDD8A",
+          "translation": "Please select an output file"
+        },
+        {
+          "id": "1B48C70F-C2B5-402A-87C7-9E57767CDFF9",
+          "translation": "Loads hive data from .hive"
+        },
+        {
+          "id": "44A2572B-0263-4AE7-AFF9-28D2B4070489",
+          "translation": "APPLICATION DIALOG TESTS"
+        },
+        {
+          "id": "02C816FF-C7C1-4A50-8935-879751E84132",
+          "translation": "Toast test"
+        },
+        {
+          "id": "3B71B8E7-6C95-43EE-9435-DAD5647C6130",
+          "translation": "Modal test"
+        },
+        {
+          "id": "09F07DF5-2C66-4F2B-85F5-DE1736C50A4E",
+          "translation": "Content"
+        },
+        {
+          "id": "E6DDB694-ACDA-4912-BCE6-D04B3BF11210",
+          "translation": "Alert test"
+        },
+        {
+          "id": "B57477AA-D271-437D-A814-601DF8B6F4DB",
+          "translation": "Register notification"
+        },
+        {
+          "id": "CC9FD9AF-9C21-4ABB-BC5F-E2D1BB3B62F5",
+          "translation": "Mess/Ann notification"
+        },
+        {
+          "id": "59810958-F149-4D47-BD9F-802D75592E97",
+          "translation": "Other notification"
+        },
+        {
+          "id": "7C52C45D-277C-4F67-9040-E4BCE6248CC3",
+          "translation": "SHARING CODES"
+        },
+        {
+          "id": "22AD0D77-411C-4BCB-80F5-45009292A8E7",
+          "translation": "User code"
+        },
+        {
+          "id": "07ACB1FF-E847-4327-8E26-F26942695A38",
+          "translation": "VIRTUAL CLASS CODES"
+        },
+        {
+          "id": "785EA92C-03D6-47D6-BFA9-A7100998A92B",
+          "translation": "Build"
+        },
+        {
+          "id": "84D8D5E0-43AA-4463-BAE8-FF5453F79FB2",
+          "translation": "CONTRIBUTORS"
+        },
+        {
+          "id": "8C4BC4D5-81A3-432A-9B94-48D20DB8F559",
+          "translation": "Lead Developer"
+        },
+        {
+          "id": "0BF14FC8-EABB-4790-A0A1-CFF39977A8CC",
+          "translation": "Support Developer"
+        },
+        {
+          "id": "213B6431-B649-4837-A089-3E2A037A4625",
+          "translation": "Support"
+        },
+        {
+          "id": "4FAD3DFA-A095-448D-BA21-56726E117111",
+          "translation": "Share the app"
+        },
+        {
+          "id": "B3D579E5-2A27-4B61-A42A-C2DFD6150022",
+          "translation": "Socials"
+        },
+        {
+          "id": "5352613A-B420-4441-A89D-612693727FF6",
+          "translation": "Support Us"
+        },
+        {
+          "id": "3D02B970-3502-495C-B6B8-3D5D33A92EA6",
+          "translation": "Contact Us"
+        },
+        {
+          "id": "461D2804-7071-400A-8D98-06F58B50A826",
+          "translation": "About Me"
+        },
+        {
+          "id": "12F11FD8-0450-4D48-B8F0-6BB1AB98F2F7",
+          "translation": "ACCOUNT DATA"
+        },
+        {
+          "id": "B96EA577-6DBF-491C-9781-9C85CCBD4119",
+          "translation": "Class"
+        },
+        {
+          "id": "AB3F62E5-579B-4E78-9810-5CC31A8AFF25",
+          "translation": "Home teacher"
+        },
+        {
+          "id": "38919EDB-6025-46CC-B6F0-7689137F27BE",
+          "translation": "SCHOOL DATA"
+        },
+        {
+          "id": "288A7361-FF68-4743-88B2-6715F4D56457",
+          "translation": "Name",
+          "translationComment": "As in school name"
+        },
+        {
+          "id": "16288334-3CEC-4208-849D-A62BF00D75BC",
+          "translation": "Head teacher"
+        },
+        {
+          "id": "A15AC36A-0A6A-4E6A-8E14-7185B9CAA157",
+          "translation": "Address"
+        },
+        {
+          "id": "2CE8A48D-BCF7-43E9-86FC-4BFA997D1024",
+          "translation": "Phone"
+        },
+        {
+          "id": "E5A3FE43-E428-4BE8-9E08-48E2149AC5A7",
+          "translation": "E-mail"
+        },
+        {
+          "id": "EC9E3129-A646-46AF-8EBD-73C601AF15AE",
+          "translation": "SUMMARY"
+        },
+        {
+          "id": "F8BACC1A-63F2-4311-AA23-5C6996E826FA",
+          "translation": "Presence times are calculated using only the registered attendances, assuming a lesson is 45 minutes long. The shown average is an average of all subjects' averages."
+        },
+        {
+          "id": "E91C42DF-7471-47E1-BAB8-7E3C63713154",
+          "translation": "Unavailable"
+        },
+        {
+          "id": "6F98C4DC-F77D-46A0-9C6F-A95F0FBF9E43",
+          "translation": "Wasted time"
+        },
+        {
+          "id": "CEE6A317-76C4-46E6-8BA3-60A92FFC07AB",
+          "translation": "Gained time"
+        },
+        {
+          "id": "94319EB2-735E-4FDF-B65A-372DC31A4298",
+          "translation": "Total presence"
+        },
+        {
+          "id": "FA7F8284-A75E-46F2-B507-C0ECCB96FB38",
+          "translation": "ATTENDANCE"
+        },
+        {
+          "id": "A9A27655-5B34-41D8-AEA5-BEAC6E8F6212",
+          "translation": "No attendances to display"
+        },
+        {
+          "id": "E31E0161-B2C4-450B-9CA6-047493B87431",
+          "translation": "AVERAGE"
+        },
+        {
+          "id": "A18E9952-C55B-4E12-ADB2-80F88ED52F15",
+          "translation": "No announcements matching the query"
+        },
+        {
+          "id": "D9FC52D6-1D73-44DB-A789-2ACECD10ED94",
+          "translation": "No messages matching the query"
+        },
+        {
+          "id": "E6375F05-CF51-46F1-A77F-872A5731178C",
+          "translation": "No announcements, yet..."
+        },
+        {
+          "id": "E40E9F85-A1C6-4B83-BC7C-C517B1F7BA30",
+          "translation": "No messages, yet..."
+        },
+        {
+          "id": "7A49BCB7-61FF-4472-985A-9952A67F03C8",
+          "translation": "On {} {}, {} wrote:\n\"{}\n\n{}[...]\""
+        },
+        {
+          "id": "2C484334-1DAB-468B-A8CE-81C148EDC280",
+          "translation": "On {} {} wrote:\n\"{}\n\n{}[...]\""
+        },
+        {
+          "id": "E9113B8D-3AD9-467B-94BD-A180F46A01BD",
+          "translation": "New"
+        },
+        {
+          "id": "6D852D45-7E29-4E26-844D-6DC40ACD66BD",
+          "translation": "Folders"
+        },
+        {
+          "id": "051E9264-0BFC-40AC-8D4C-A96B7BF42729",
+          "translation": "Really gonna do 'em?"
+        },
+        {
+          "id": "98AE748D-E539-4DBF-8A26-A474C04106E6",
+          "translation": "Recent grades"
+        },
+        {
+          "id": "99502949-BAED-435F-A8EA-817023BFFB88",
+          "translation": "No recent grades"
+        },
+        {
+          "id": "7D9D0AEC-2A8D-4838-9913-2B6193FBAD8F",
+          "translation": "Nothing's here yet!"
+        },
+        {
+          "id": "BA4EF611-069D-43F3-8DB8-2B7E3A7EC876",
+          "translation": "How's it going?"
+        },
+        {
+          "id": "BDE00629-ED81-4F59-9817-FB7E418A5D8F",
+          "translation": "Upcoming events"
+        },
+        {
+          "id": "9786DC11-E0E1-4553-8ECB-38FC41188B31",
+          "translation": "It's quiet, too quiet..."
+        },
+        {
+          "id": "33FB0AEC-6AC4-480A-8FC5-E91F621FBA88",
+          "translation": "Nothing! You win!"
+        },
+        {
+          "id": "5180735D-EF0D-4995-9FCE-D08761751788",
+          "translation": "Seems crowded, innit?"
+        },
+        {
+          "id": "C33F8288-5BAD-4574-9C53-B54FED6757AC",
+          "translation": "in {}"
+        },
+        {
+          "id": "D8F15F8A-2EA6-474D-80B8-E71625B3D121",
+          "translation": "First:"
+        },
+        {
+          "id": "6B3280B8-EDDB-44E2-A2D5-824FE98E8247",
+          "translation": "Last:"
+        },
+        {
+          "id": "2754A69F-9E60-4FDA-903B-95CFAB85E982",
+          "translation": "Next up:"
+        },
+        {
+          "id": "80E2F22C-D43B-470A-8923-A929CEB9E3A3",
+          "translation": "Tomorrow: {}"
+        },
+        {
+          "id": "B7D8B155-CAAC-48DC-994F-0B5480685B32",
+          "translation": "Later: {}"
+        },
+        {
+          "id": "92D8278F-5542-484D-9E83-F83AF78A1FEF",
+          "translation": "until {}"
+        },
+        {
+          "id": "30056001-7DB8-4FA5-8CBF-C48B1EB6B1A5",
+          "translation": "Today, "
+        },
+        {
+          "id": "E6D0B910-1B31-4EB2-BAC7-9F43988F8D92",
+          "translation": "Accounts"
+        },
+        {
+          "id": "E0D4EF7E-F274-4537-BB45-B79F860A5D2A",
+          "translation": "The current lesson"
+        },
+        {
+          "id": "8B4E1BC4-9285-4B01-83B5-5A96BE637648",
+          "translation": "ends in {}"
+        },
+        {
+          "id": "3A3FBB60-F5E8-40DF-B090-7533FE53D987",
+          "translation": "The next lesson"
+        },
+        {
+          "id": "A18B44F4-86EF-4CF5-9213-2AB3707AD396",
+          "translation": "starts in {}"
+        },
+        {
+          "id": "4DA64D9B-1158-4C46-9D49-D5F8EC50D9FE",
+          "translation": "starts at {}"
+        },
+        {
+          "id": "12E94DED-6C9E-44FE-8722-D936893518F2",
+          "translation": "It's a free real estate!"
+        },
+        {
+          "id": "305710B7-2557-4E62-8FA2-774E1CA393ED",
+          "translation": "God, you're pathetic..."
+        },
+        {
+          "id": "80FF2479-CF35-4609-B375-B05015924990",
+          "translation": "C'mon, do something..."
+        },
+        {
+          "id": "DCE2F11F-CC27-4BE9-8A38-3D4AACA3B69E",
+          "translation": "{}, you're absent!"
+        },
+        {
+          "id": "3587C576-D4BC-426E-A971-430912B6A91C",
+          "translation": "だって Happy Halloween!"
+        },
+        {
+          "id": "C1EB8AF3-E69F-4109-8306-1295AC063EAB",
+          "translation": "Merry Christmas!"
+        },
+        {
+          "id": "83597164-46C0-4BD3-AE5B-1F6E1000C91F",
+          "translation": "Prepare for tomorrow..."
+        },
+        {
+          "id": "4D0CC0C8-8B5F-4CED-9FC5-58D9EF65F813",
+          "translation": "Back at it again, tomorrow..."
+        },
+        {
+          "id": "3A9D76DA-A971-48BB-B6F6-24D6A749D1F9",
+          "translation": "No lessons today!"
+        },
+        {
+          "id": "F2A3AB37-ED80-478A-AF17-76BF541CE3D2",
+          "translation": "Don't lose your head!"
+        },
+        {
+          "id": "9D0D5D62-94E0-40A2-B41B-D60F80EA16DE",
+          "translation": "You're on the finish line!"
+        },
+        {
+          "id": "03B67D51-1176-4A46-9978-7B914F58FD58",
+          "translation": "You're the lucky one!"
+        },
+        {
+          "id": "50C5BBB8-AE89-457C-BE62-22E092F71900",
+          "translation": "You'll be lucky tomorrow!"
+        },
+        {
+          "id": "DCCC082E-0A01-4795-ADA5-3E51717B7629",
+          "translation": "Alone on a friday night?"
+        },
+        {
+          "id": "FA1FD209-AE46-4E58-82C9-463A42D4B035",
+          "translation": "Class average"
+        },
+        {
+          "id": "D8AE1252-CB76-4815-9587-B48D42DADE0B",
+          "translation": "Unknown subject"
+        },
+        {
+          "id": "0BD1858E-3655-4199-8691-9FC68573B274",
+          "translation": "Excuse all"
+        },
+        {
+          "id": "CC111EE5-B18F-46EB-A6FF-09E3ABFA1FA1",
+          "translation": "Usprawiedliwienie"
+        },
+        {
+          "id": "4D925D2C-7A80-42CA-B8A9-A21BB9082378",
+          "translation": "Dzień dobry,\n\nProszę o usprawiedliwienie moich nieobecności w dniach:\n{} ({} - {} godzina lekcyjna' : '{} godzina lekcyjna'}) \n').join()}"
+        },
+        {
+          "id": "3E0C235F-9615-4152-A5BB-5B5A93596E9D",
+          "translation": "Dzień dobry,\n\nProszę o usprawiedliwienie moich nieobecności w dniach:\n{}"
+        },
+        {
+          "id": "0E517324-ACF9-4F1A-9B74-4D002235C964",
+          "translation": "Dziękuję,\n\nZ poważaniem,\n{}, {}"
+        },
+        {
+          "id": "FA15D556-4A83-487B-B9C2-8ABCD1DC5C90",
+          "translation": "Error loading data!"
+        },
+        {
+          "id": "EFB7E8DF-1BBC-442F-9D83-DAF1C70A028E",
+          "translation": "An exception \"{}\" occurred and settings couldn't be read.\n\nStack trace:\n{}"
+        },
+        {
+          "id": "F7C404C2-2C11-452C-9267-623A5E1B76C0",
+          "translation": "Log in to {}"
+        },
+        {
+          "id": "86620B1A-0C68-4A5B-AA47-D245E8BA2C2B",
+          "translation": "A fucksy-wucksie occurd!"
+        },
+        {
+          "id": "94C48AF6-3B13-4BF6-8A09-EF1443E845FD",
+          "translation": "Press F to pay respects"
+        },
+        {
+          "id": "F9C64DE4-CE7F-4A3A-8889-B7822D513DEA",
+          "translation": "Click to view details"
+        },
+        {
+          "id": "FDEEAC65-8E80-46B5-85F7-05C785197B13",
+          "translation": "OWO, what's this?"
+        },
+        {
+          "id": "720C70E6-DB4D-44F7-878A-484DDF8A5648",
+          "translation": "I got a {} on {}!"
+        },
+        {
+          "id": "F0FFE57B-4458-4D41-9577-C72533B62C61",
+          "translation": "Edit"
+        },
+        {
+          "id": "B0FB564D-E5AF-451E-855F-5988D86C8A6A",
+          "translation": "Pytanie o ocenę {} z dnia {}"
+        },
+        {
+          "id": "6B4CAC68-F3A1-48AE-ACBD-91322857C8BE",
+          "translation": "Grade"
+        },
+        {
+          "id": "CF24D610-547A-409C-924B-20C958D973D3",
+          "translation": "{}, weight {}"
+        },
+        {
+          "id": "EAA46482-26C0-440A-BB59-52F062B7A975",
+          "translation": "Description"
+        },
+        {
+          "id": "1A7CB2F1-E6D8-424C-B26D-EA0BF172E5A8",
+          "translation": "Comments"
+        },
+        {
+          "id": "621D8FEF-5DAF-4EDD-B9A4-3EBF3D18AD1C",
+          "translation": "No description"
+        },
+        {
+          "id": "AC9923BF-1F1A-4FCD-A658-821CC220E4E6",
+          "translation": "There's a \"{} on {} {}\") : \"at school\"}"
+        },
+        {
+          "id": "A70900F1-79A1-432D-AC6D-137794074CCE",
+          "translation": "There's a \"{}\" on {} {}"
+        },
+        {
+          "id": "50FD3CEB-CAA5-4AD2-AEC5-61C16308FE41",
+          "translation": "Mark as done"
+        },
+        {
+          "id": "374BEB81-88EB-4C1C-A3B3-0E24DB13E0E4",
+          "translation": "Add to calendar"
+        },
+        {
+          "id": "C834975A-FECF-4FA1-A099-242BC18FB55C",
+          "translation": "Pytanie o wydarzenie w dniu {}"
+        },
+        {
+          "id": "6FEE9962-29D9-4566-A44B-D9913F1CB412",
+          "translation": "Subtitle"
+        },
+        {
+          "id": "2F324FD4-CC19-4F9C-89CD-F372258AEF3C",
+          "translation": "Teacher"
+        },
+        {
+          "id": "BF38C0A9-D585-46AE-A37B-F42F1655B0AF",
+          "translation": "last {} min"
+        },
+        {
+          "id": "D761036A-4380-47BA-B8B3-E85CBBAC5DED",
+          "translation": "first {} min"
+        },
+        {
+          "id": "4A1B9B79-8787-4A49-BAAF-6C98F86795DD",
+          "translation": "half the lesson"
+        },
+        {
+          "id": "4192A962-C0A5-4276-89BC-7A68CA727370",
+          "translation": "whole lesson"
+        },
+        {
+          "id": "4C63899A-2106-49F7-8E70-7DEFE2348C9B",
+          "translation": "ostatnich {} minut lekcji"
+        },
+        {
+          "id": "744D287F-E683-4E60-A01C-03F3379ED8C8",
+          "translation": "pierwszych {} minut lekcji"
+        },
+        {
+          "id": "9DA6EABD-96E7-4561-8164-706DE026FD19",
+          "translation": "połowy"
+        },
+        {
+          "id": "28C22BA4-22F1-4685-B999-A35BD36767FA",
+          "translation": "całej"
+        },
+        {
+          "id": "5E6CA4CB-4757-46BC-80F3-2B208CE822DD",
+          "translation": "There's {} on {} with {}"
+        },
+        {
+          "id": "6BB62617-7000-4A27-A499-534F1E04764E",
+          "translation": "Lesson on {}"
+        },
+        {
+          "id": "567C490D-B7D0-403A-99A1-9E21F7F77EB8",
+          "translation": "Create event"
+        },
+        {
+          "id": "3B6E8151-45FD-48B3-97CB-99E556E02F3E",
+          "translation": "Call {}"
+        },
+        {
+          "id": "4DF5CFE9-2B5F-4AE1-AEFC-B4B8888A09ED",
+          "translation": "Zwolnienie z {} w dniu {}, L{}"
+        },
+        {
+          "id": "7955E73E-D260-43BA-8E2F-88CD43348BBD",
+          "translation": "Dzień dobry,\n\nProszę o zwolnienie mnie z {} lekcji {} w dniu {}, na {} godzinie lekcyjnej."
+        },
+        {
+          "id": "50CFA04B-E8EB-4BC9-80F1-C5EF39FE8F3A",
+          "translation": "Pytanie o lekcję w dniu {}, L{}"
+        },
+        {
+          "id": "4CCE58F6-2805-4D44-B97A-556679808477",
+          "translation": "Lesson no."
+        },
+        {
+          "id": "3098FAAF-7223-4E86-AB19-431882A7985C",
+          "translation": "Original lesson"
+        },
+        {
+          "id": "58787B41-324C-4E3D-97AE-5EC23D058A5B",
+          "translation": "Original teacher"
+        },
+        {
+          "id": "8A2F8A9D-1428-4EAA-BA31-CE64A64789C6",
+          "translation": "Moved from"
+        },
+        {
+          "id": "43026DF3-97E9-4449-BD20-D1E256C42F89",
+          "translation": "Moved to"
+        },
+        {
+          "id": "947A950F-6638-4194-91B2-99BCB42ADA86",
+          "translation": "This lesson was cancelled"
+        },
+        {
+          "id": "ED264A1F-5CAA-4673-8FA2-F440C6995841",
+          "translation": "/Page/Home/Homework/share"
+        },
+        {
+          "id": "58F3C0BE-AC60-4176-A06D-CB9B58FE99B6",
+          "translation": "Pytanie o pracę domową na dzień {}"
+        },
+        {
+          "id": "1D35A7A3-301A-48F7-9ACA-C1986E63D1CF",
+          "translation": "I got {} from {} last week!"
+        },
+        {
+          "id": "7AE5B440-ADC8-49F7-AB1F-3E3CEDD78DC8",
+          "translation": "Pytanie o {} {} z przedmiotu {}"
+        },
+        {
+          "id": "6D0701F1-1754-4897-9902-B701EB2038CD",
+          "translation": "ocenę"
+        },
+        {
+          "id": "DA7A5A8C-9A1D-4378-8BC1-AB6A9E2E8B67",
+          "translation": "oceny"
+        },
+        {
+          "id": "55FCBDA9-6905-49C9-A3E8-426058041A8B",
+          "translation": "at school"
+        },
+        {
+          "id": "89BEEDA5-3774-4BC0-B827-72D3AA2E31CC",
+          "translation": "Pytanie o obecność z dnia {}, L{}"
+        },
+        {
+          "id": "853265A9-1B40-43F2-82B5-E9E238EF8A5B",
+          "translation": "Dzień dobry,\n\nProszę o usprawiedliwienie mojej nieobecności\nw dniu {} na {} godzinie lekcyjnej."
+        },
+        {
+          "id": "F491D698-DFB6-4E62-B100-1546660AB6D1",
+          "translation": "Dziękuję,\n\nZ poważaniem,\n{}, {}"
+        },
+        {
+          "id": "C1D03748-4568-4AB9-843A-86707294BCA5",
+          "translation": "Unknown lesson"
+        },
+        {
+          "id": "B67B6882-D514-4395-8953-9CD2FC973878",
+          "translation": "{}, weight {}"
+        },
+        {
+          "id": "0ED15CBE-83CA-4E47-818F-61FCD06CBADA",
+          "translation": "a teacher"
+        },
+        {
+          "id": "25EFC95E-A925-4F98-BE8B-AB646D266E25",
+          "translation": "a lesson"
         }
     ],
     "splashes": [

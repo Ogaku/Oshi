@@ -180,7 +180,7 @@ class _SessionsPageState extends State<SessionsPage> {
         theme: _eventfulColorTheme,
         debugShowCheckedModeBanner: false,
         home: Builder(builder: (context) {
-          ErrorWidget.builder = errorView;
+            ErrorWidget.builder = (e) => errorView(context, e);
 
           // Re-subscribe to all events - modals
           Share.showErrorModal.unsubscribeAll();
@@ -531,7 +531,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
             theme: _eventfulColorTheme,
             debugShowCheckedModeBanner: false,
             home: Builder(builder: (context) {
-              ErrorWidget.builder = errorView;
+            ErrorWidget.builder = (e) => errorView(context, e);
 
               // Re-subscribe to all events - modals
               Share.showErrorModal.unsubscribeAll();

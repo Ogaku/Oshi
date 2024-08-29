@@ -6,6 +6,7 @@ import 'package:enum_flag/enum_flag.dart';
 import 'package:event/event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/interface/components/shim/elements/attendance.dart';
 import 'package:oshi/interface/components/shim/elements/compact.dart';
@@ -171,7 +172,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                       color: Theme.of(context).colorScheme.primary,
                                     )),
                                 if (homeworksWeek.isEmpty) Text('/Homeworks/Done'.localized),
-                                if (homeworksWeek.isNotEmpty) Text('Really gonna do \'em?'),
+                                if (homeworksWeek.isNotEmpty) Text('051E9264-0BFC-40AC-8D4C-A96B7BF42729'.localized),
                               ],
                             ),
                           ],
@@ -186,7 +187,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
             regularOverride: true,
             filled: false,
             additionalDividerMargin: 0,
-            header: 'Recent grades',
+            header: '98AE748D-E539-4DBF-8A26-A474C04106E6'.localized,
             children: gradesWeek.isEmpty
                 // No grades to display
                 ? [
@@ -194,7 +195,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                       regular: true,
                       secondary: true,
                       centered: true,
-                      child: 'No recent grades',
+                      child: '99502949-BAED-435F-A8EA-817023BFFB88'.localized,
                     )
                   ]
                 // Bindable grades layout
@@ -225,14 +226,14 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Recent grades',
+                                Text('98AE748D-E539-4DBF-8A26-A474C04106E6'.localized,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18,
                                       color: Theme.of(context).colorScheme.primary,
                                     )),
-                                if (gradesWeek.isEmpty) Text('Nothing\'s here yet!'),
-                                if (gradesWeek.isNotEmpty) Text('How\'s it going?'),
+                                if (gradesWeek.isEmpty) Text('7D9D0AEC-2A8D-4838-9913-2B6193FBAD8F'.localized),
+                                if (gradesWeek.isNotEmpty) Text('BA4EF611-069D-43F3-8DB8-2B7E3A7EC876'.localized),
                               ],
                             ),
                           ],
@@ -247,7 +248,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
             regularOverride: true,
             filled: false,
             dividerMargin: 35,
-            header: 'Upcoming events',
+            header: 'BDE00629-ED81-4F59-9817-FB7E418A5D8F'.localized,
             children: eventsWeek.isEmpty
                 // No events to display
                 ? [
@@ -255,7 +256,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                       regular: true,
                       secondary: true,
                       centered: true,
-                      child: 'It\'s quiet, too quiet...',
+                      child: '9786DC11-E0E1-4553-8ECB-38FC41188B31'.localized,
                     )
                   ]
                 // Bindable event layout
@@ -286,14 +287,14 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Upcoming events',
+                                Text('BDE00629-ED81-4F59-9817-FB7E418A5D8F'.localized,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18,
                                       color: Theme.of(context).colorScheme.primary,
                                     )),
-                                if (eventsWeek.isEmpty) Text('Nothing! You win!'),
-                                if (eventsWeek.isNotEmpty) Text('Seems crowded, innit?'),
+                                if (eventsWeek.isEmpty) Text('33FB0AEC-6AC4-480A-8FC5-E91F621FBA88'.localized),
+                                if (eventsWeek.isNotEmpty) Text('5180735D-EF0D-4995-9FCE-D08761751788'.localized),
                               ],
                             ),
                           ],
@@ -431,12 +432,15 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                   child: Container(
                                                       margin: EdgeInsets.only(right: 3, left: 3),
                                                       child: Text(
-                                                        currentLesson?.subject?.name ?? 'Other lesson',
+                                                        currentLesson?.subject?.name ??
+                                                            '/Notifications/Placeholder/Lesson'.localized,
                                                         style: TextStyle(fontWeight: FontWeight.w500),
                                                       ))),
                                             ].appendIf(
                                                     Text(
-                                                      'in ${currentLesson?.classroom?.name ?? "the otherworld"}',
+                                                      'C33F8288-5BAD-4574-9C53-B54FED6757AC'
+                                                          .localized
+                                                          .format(currentLesson?.classroom?.name ?? "the otherworld"),
                                                       style: TextStyle(fontWeight: FontWeight.w400),
                                                     ),
                                                     currentLesson?.classroom?.name.isNotEmpty ?? false)))),
@@ -456,7 +460,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                                         (l) => l?.any((x) => !x.isCanceled) ?? false)
                                                                     ?.any((x) => x == nextLesson) ??
                                                                 false))
-                                                        ? 'First:'
+                                                        ? 'D8F15F8A-2EA6-474D-80B8-E71625B3D121'.localized
                                                         : // If the "next" lesson is the last one
                                                         (nextLesson != null &&
                                                                 (currentDay?.lessonsStrippedCancelled
@@ -464,20 +468,23 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                                             (l) => l?.any((x) => !x.isCanceled) ?? false)
                                                                         ?.any((x) => x == nextLesson) ??
                                                                     false))
-                                                            ? 'Last:'
-                                                            : 'Next up:',
+                                                            ? '6B3280B8-EDDB-44E2-A2D5-824FE98E8247'.localized
+                                                            : '2754A69F-9E60-4FDA-903B-95CFAB85E982'.localized,
                                                     style: TextStyle(fontWeight: FontWeight.w500),
                                                   ),
                                                   Flexible(
                                                       child: Container(
                                                           margin: EdgeInsets.only(right: 3, left: 3),
                                                           child: Text(
-                                                            nextLesson?.subject?.name ?? 'Other lesson',
+                                                            nextLesson?.subject?.name ??
+                                                                '/Notifications/Placeholder/Lesson'.localized,
                                                             style: TextStyle(fontWeight: FontWeight.w500),
                                                           ))),
                                                 ].appendIf(
                                                         Text(
-                                                          'in ${nextLesson?.classroom?.name ?? "the otherworld"}',
+                                                          'C33F8288-5BAD-4574-9C53-B54FED6757AC'
+                                                              .localized
+                                                              .format(nextLesson?.classroom?.name ?? "the otherworld"),
                                                           style: TextStyle(fontWeight: FontWeight.w400),
                                                         ),
                                                         nextLesson?.classroom?.name.isNotEmpty ?? false)))))
@@ -506,7 +513,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                     Row(
                                         children: [
                                       Text(
-                                        'First:',
+                                        'D8F15F8A-2EA6-474D-80B8-E71625B3D121'.localized,
                                         style: TextStyle(fontWeight: FontWeight.w500),
                                       ),
                                       Flexible(
@@ -518,12 +525,18 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                         ?.firstWhereOrDefault((x) => !x.isCanceled)
                                                         ?.subject
                                                         ?.name ??
-                                                    'Other lesson',
+                                                    '/Notifications/Placeholder/Lesson'.localized,
                                                 style: TextStyle(fontWeight: FontWeight.w500),
                                               ))),
                                     ].appendIf(
                                             Text(
-                                              'in ${nextDay?.lessonsStrippedCancelled.firstWhereOrDefault((x) => x?.any((y) => !y.isCanceled) ?? false)?.firstWhereOrDefault((x) => !x.isCanceled)?.classroom?.name ?? "the otherworld"}',
+                                              'C33F8288-5BAD-4574-9C53-B54FED6757AC'.localized.format(nextDay
+                                                      ?.lessonsStrippedCancelled
+                                                      .firstWhereOrDefault((x) => x?.any((y) => !y.isCanceled) ?? false)
+                                                      ?.firstWhereOrDefault((x) => !x.isCanceled)
+                                                      ?.classroom
+                                                      ?.name ??
+                                                  "the otherworld"),
                                               style: TextStyle(fontWeight: FontWeight.w400),
                                             ),
                                             nextDay?.lessonsStrippedCancelled
@@ -557,14 +570,30 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                       margin: EdgeInsets.only(right: 3),
                                       child: Text(
                                         DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)
-                                            ? 'Tomorrow: ${nextDay?.lessonsNumber.asLessonNumber()}'
-                                            : 'Later: ${((currentDay?.lessonsStrippedCancelled.where((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.timeFrom)) ?? false).count((x) => (x?.isNotEmpty ?? false) && (x?.any((y) => !y.isCanceled) ?? false)) ?? 1) - 1).asLessonNumber()}',
+                                            ? '80E2F22C-D43B-470A-8923-A929CEB9E3A3'
+                                                .localized
+                                                .format((nextDay?.lessonsNumber ?? 0).asLessonNumber())
+                                            : 'B7D8B155-CAAC-48DC-994F-0B5480685B32'.localized.format(((currentDay
+                                                            ?.lessonsStrippedCancelled
+                                                            .where((x) =>
+                                                                x?.any((y) => DateTime.now().isBeforeOrSame(y.timeFrom)) ??
+                                                                false)
+                                                            .count((x) =>
+                                                                (x?.isNotEmpty ?? false) &&
+                                                                (x?.any((y) => !y.isCanceled) ?? false)) ??
+                                                        1) -
+                                                    1)
+                                                .asLessonNumber()),
                                         style: TextStyle(fontWeight: FontWeight.w400),
                                       ))),
                               Text(
                                 DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)
-                                    ? 'until ${DateFormat("H:mm").format(nextDay?.dayEnd ?? DateTime.now())}'
-                                    : 'until ${DateFormat("H:mm").format(currentDay?.dayEnd ?? DateTime.now())}',
+                                    ? '92D8278F-5542-484D-9E83-F83AF78A1FEF'
+                                        .localized
+                                        .format(DateFormat("H:mm").format(nextDay?.dayEnd ?? DateTime.now()))
+                                    : '92D8278F-5542-484D-9E83-F83AF78A1FEF'
+                                        .localized
+                                        .format(DateFormat("H:mm").format(currentDay?.dayEnd ?? DateTime.now())),
                                 style: TextStyle(
                                     fontWeight: FontWeight.w400, fontSize: 15, color: CupertinoColors.inactiveGray),
                               ),
@@ -722,12 +751,15 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                         child: Container(
                                                             margin: EdgeInsets.only(right: 3, left: 3),
                                                             child: Text(
-                                                              currentLesson?.subject?.name ?? 'Other lesson',
+                                                              currentLesson?.subject?.name ??
+                                                                  '/Notifications/Placeholder/Lesson'.localized,
                                                               style: TextStyle(fontWeight: FontWeight.w500),
                                                             ))),
                                                   ].appendIf(
                                                           Text(
-                                                            'in ${currentLesson?.classroom?.name ?? "the otherworld"}',
+                                                            'C33F8288-5BAD-4574-9C53-B54FED6757AC'
+                                                                .localized
+                                                                .format(currentLesson?.classroom?.name ?? "the otherworld"),
                                                             style: TextStyle(fontWeight: FontWeight.w400),
                                                           ),
                                                           currentLesson?.classroom?.name.isNotEmpty ?? false)))),
@@ -747,7 +779,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                                               (l) => l?.any((x) => !x.isCanceled) ?? false)
                                                                           ?.any((x) => x == nextLesson) ??
                                                                       false))
-                                                              ? 'First:'
+                                                              ? 'D8F15F8A-2EA6-474D-80B8-E71625B3D121'.localized
                                                               : // If the "next" lesson is the last one
                                                               (nextLesson != null &&
                                                                       (currentDay?.lessonsStrippedCancelled
@@ -755,20 +787,23 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                                                   l?.any((x) => !x.isCanceled) ?? false)
                                                                               ?.any((x) => x == nextLesson) ??
                                                                           false))
-                                                                  ? 'Last:'
-                                                                  : 'Next up:',
+                                                                  ? '6B3280B8-EDDB-44E2-A2D5-824FE98E8247'.localized
+                                                                  : '2754A69F-9E60-4FDA-903B-95CFAB85E982'.localized,
                                                           style: TextStyle(fontWeight: FontWeight.w500),
                                                         ),
                                                         Flexible(
                                                             child: Container(
                                                                 margin: EdgeInsets.only(right: 3, left: 3),
                                                                 child: Text(
-                                                                  nextLesson?.subject?.name ?? 'Other lesson',
+                                                                  nextLesson?.subject?.name ??
+                                                                      '/Notifications/Placeholder/Lesson'.localized,
                                                                   style: TextStyle(fontWeight: FontWeight.w500),
                                                                 ))),
                                                       ].appendIf(
                                                               Text(
-                                                                'in ${nextLesson?.classroom?.name ?? "the otherworld"}',
+                                                                'C33F8288-5BAD-4574-9C53-B54FED6757AC'
+                                                                    .localized
+                                                                    .format(nextLesson?.classroom?.name ?? "the otherworld"),
                                                                 style: TextStyle(fontWeight: FontWeight.w400),
                                                               ),
                                                               nextLesson?.classroom?.name.isNotEmpty ?? false)))))
@@ -810,12 +845,19 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                               ?.firstWhereOrDefault((x) => !x.isCanceled)
                                                               ?.subject
                                                               ?.name ??
-                                                          'Other lesson',
+                                                          '/Notifications/Placeholder/Lesson'.localized,
                                                       style: TextStyle(fontWeight: FontWeight.w500),
                                                     ))),
                                           ].appendIf(
                                                   Text(
-                                                    'in ${nextDay?.lessonsStrippedCancelled.firstWhereOrDefault((x) => x?.any((y) => !y.isCanceled) ?? false)?.firstWhereOrDefault((x) => !x.isCanceled)?.classroom?.name ?? "the otherworld"}',
+                                                    'C33F8288-5BAD-4574-9C53-B54FED6757AC'.localized.format(nextDay
+                                                            ?.lessonsStrippedCancelled
+                                                            .firstWhereOrDefault(
+                                                                (x) => x?.any((y) => !y.isCanceled) ?? false)
+                                                            ?.firstWhereOrDefault((x) => !x.isCanceled)
+                                                            ?.classroom
+                                                            ?.name ??
+                                                        "the otherworld"),
                                                     style: TextStyle(fontWeight: FontWeight.w400),
                                                   ),
                                                   nextDay?.lessonsStrippedCancelled
@@ -850,14 +892,31 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                             child: Text(
                                               DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
                                                       (nextDay?.hasLessons ?? false)
-                                                  ? 'Tomorrow: ${nextDay?.lessonsNumber.asLessonNumber()}'
-                                                  : 'Later: ${((currentDay?.lessonsStrippedCancelled.where((x) => x?.any((y) => DateTime.now().isBeforeOrSame(y.timeFrom)) ?? false).count((x) => (x?.isNotEmpty ?? false) && (x?.any((y) => !y.isCanceled) ?? false)) ?? 1) - 1).asLessonNumber()}',
+                                                  ? '80E2F22C-D43B-470A-8923-A929CEB9E3A3'
+                                                      .localized
+                                                      .format((nextDay?.lessonsNumber ?? 0).asLessonNumber())
+                                                  : 'B7D8B155-CAAC-48DC-994F-0B5480685B32'.localized.format(((currentDay
+                                                                  ?.lessonsStrippedCancelled
+                                                                  .where((x) =>
+                                                                      x?.any((y) =>
+                                                                          DateTime.now().isBeforeOrSame(y.timeFrom)) ??
+                                                                      false)
+                                                                  .count((x) =>
+                                                                      (x?.isNotEmpty ?? false) &&
+                                                                      (x?.any((y) => !y.isCanceled) ?? false)) ??
+                                                              1) -
+                                                          1)
+                                                      .asLessonNumber()),
                                               style: TextStyle(fontWeight: FontWeight.w400),
                                             ))),
                                     Text(
                                       DateTime.now().isAfterOrSame(currentDay?.dayEnd) && (nextDay?.hasLessons ?? false)
-                                          ? 'until ${DateFormat("H:mm").format(nextDay?.dayEnd ?? DateTime.now())}'
-                                          : 'until ${DateFormat("H:mm").format(currentDay?.dayEnd ?? DateTime.now())}',
+                                          ? '92D8278F-5542-484D-9E83-F83AF78A1FEF'
+                                              .localized
+                                              .format(DateFormat("H:mm").format(nextDay?.dayEnd ?? DateTime.now()))
+                                          : '92D8278F-5542-484D-9E83-F83AF78A1FEF'
+                                              .localized
+                                              .format(DateFormat("H:mm").format(currentDay?.dayEnd ?? DateTime.now())),
                                       style: TextStyle(
                                           fontWeight: FontWeight.w400, fontSize: 15, color: CupertinoColors.inactiveGray),
                                     ),
@@ -910,13 +969,17 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
             regularOverride: true,
             filled: false,
             header: Share.settings.appSettings.useCupertino
-                ? (x.refreshDate.asDate() == DateTime.now().asDate() ? 'Today, ' : '') +
+                ? (x.refreshDate.asDate() == DateTime.now().asDate()
+                        ? '30056001-7DB8-4FA5-8CBF-C48B1EB6B1A5'.localized
+                        : '') +
                     DateFormat(x.refreshDate.asDate() == DateTime.now().asDate() ? 'h:mm a' : 'EEE, MMM d, h:mm a')
                         .format(x.refreshDate)
                 : Padding(
                     padding: const EdgeInsets.only(top: 55.0),
                     child: Text(
-                      (x.refreshDate.asDate() == DateTime.now().asDate() ? 'Today, ' : '') +
+                      (x.refreshDate.asDate() == DateTime.now().asDate()
+                              ? '30056001-7DB8-4FA5-8CBF-C48B1EB6B1A5'.localized
+                              : '') +
                           DateFormat(x.refreshDate.asDate() == DateTime.now().asDate() ? 'h:mm a' : 'EEE, MMM d, h:mm a')
                               .format(x.refreshDate),
                       textAlign: TextAlign.center,
@@ -994,7 +1057,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                 // Some are new, some are changed
                                 > 0 when changes > 0 => (news + changes).asMessagesNumber(),
                                 // Shouldn't happen, but we need a _ case
-                                _ => 'No changes, WTF?!'
+                                _ => 'D7969362-9ACF-403C-80E5-9C345711FF16'.localized
                               };
                             }(),
                             children: x.messagesChanged
@@ -1096,7 +1159,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                 // Some are new, some are changed
                                 > 0 when changes > 0 => (news + changes).asAttendancesNumber(),
                                 // Shouldn't happen, but we need a _ case
-                                _ => 'No changes, WTF?!'
+                                _ => 'D7969362-9ACF-403C-80E5-9C345711FF16'.localized
                               };
                             }(),
                             children: x.attendancesChanged
@@ -1150,7 +1213,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                 // Some are new, some are changed
                                 > 0 when changes > 0 => (news + changes).asGradesNumber(),
                                 // Shouldn't happen, but we need a _ case
-                                _ => 'No changes, WTF?!'
+                                _ => 'D7969362-9ACF-403C-80E5-9C345711FF16'.localized
                               };
                             }(),
                             children: x.gradesChanged
@@ -1211,7 +1274,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                 // Some are new, some are changed
                                 > 0 when changes > 0 => (news + changes).asAnnouncementsNumber(),
                                 // Shouldn't happen, but we need a _ case
-                                _ => 'No changes, WTF?!'
+                                _ => 'D7969362-9ACF-403C-80E5-9C345711FF16'.localized
                               };
                             }(),
                             children: x.announcementsChanged
@@ -1411,19 +1474,19 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
           ? AdaptiveMenuButton(
               itemBuilder: (context) => [
                 AdaptiveMenuItem(
-                    title: 'Settings',
+                    title: 'B5AAA3A1-795B-4A81-9DED-4633B9FBD874'.localized,
                     icon: CupertinoIcons.gear,
                     onTap: () => Navigator.of(context, rootNavigator: true)
                         .push(AdaptivePageRoute(builder: (context) => SettingsPage()))),
                 PullDownMenuDivider.large(),
-                PullDownMenuTitle(title: Text('Accounts')),
+                PullDownMenuTitle(title: Text('E6D0B910-1B31-4EB2-BAC7-9F43988F8D92'.localized)),
                 AdaptiveMenuItem(
-                  title: 'Sessions',
+                  title: '/Sessions'.localized,
                   icon: CupertinoIcons.rectangle_stack_person_crop,
                   onTap: () => Share.changeBase.broadcast(Value(() => sessionsPage)),
                 ),
                 AdaptiveMenuItem(
-                  title: 'Mark as read',
+                  title: 'CF4A7B81-8294-4616-BF7B-03621E2CB41F'.localized,
                   icon: CupertinoIcons.checkmark_circle,
                   onTap: () => Share.session.unreadChanges.markAsRead(),
                 ),
@@ -1460,18 +1523,23 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     // Current lesson's end time
     if (currentLesson != null) {
       return (
-        flexible: currentLesson.subject?.name ?? 'The current lesson',
-        standard: 'ends in ${DateTime.now().difference(currentLesson.timeTo ?? DateTime.now()).prettyBellString}'
+        flexible: currentLesson.subject?.name ?? 'E0D4EF7E-F274-4537-BB45-B79F860A5D2A'.localized,
+        standard: '8B4E1BC4-9285-4B01-83B5-5A96BE637648'
+            .localized
+            .format(DateTime.now().difference(currentLesson.timeTo ?? DateTime.now()).prettyBellString)
       );
     }
 
     // Next lesson's start time
     if (nextLesson != null) {
       return (
-        flexible: nextLesson.subject?.name ?? 'The next lesson',
+        flexible: nextLesson.subject?.name ?? '3A3FBB60-F5E8-40DF-B090-7533FE53D987'.localized,
         standard: DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).inMinutes.abs() < 20
-            ? 'starts in ${DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).prettyBellString}'
-            : 'starts at ${DateFormat("HH:mm").format((nextLesson.timeFrom ?? DateTime.now()).add(Share.session.settings.bellOffset))}'
+            ? 'A18B44F4-86EF-4CF5-9213-2AB3707AD396'
+                .localized
+                .format(DateTime.now().difference(nextLesson.timeFrom ?? DateTime.now()).prettyBellString)
+            : '4DA64D9B-1158-4C46-9D49-D5F8EC50D9FE'.localized.format(
+                DateFormat("HH:mm").format((nextLesson.timeFrom ?? DateTime.now()).add(Share.session.settings.bellOffset)))
       );
     }
 
@@ -1484,7 +1552,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
 
     // No lessons today or tomorrow - T5
     if (!(currentDay?.hasLessons ?? false) && !(nextDay?.hasLessons ?? false)) {
-      return (flexible: "It's a free real estate!", standard: '');
+      return (flexible: '12E94DED-6C9E-44FE-8722-D936893518F2'.localized, standard: '');
     }
 
     // Or lessons tomorrow - T6
@@ -1498,11 +1566,11 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
 
     // Easter eggs?
     if (DateTime.now().weekday == DateTime.friday && DateTime.now().hour > 18) {
-      return (flexible: "God, you're pathetic...", standard: '');
+      return (flexible: '305710B7-2557-4E62-8FA2-774E1CA393ED'.localized, standard: '');
     }
 
     // Other options, possibly?
-    return (flexible: 'C\'mon, do something...', standard: '');
+    return (flexible: '80FF2479-CF35-4609-B375-B05015924990'.localized, standard: '');
   }
 
   // Glance widget's main title
@@ -1522,17 +1590,17 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                 x.lessonNo == currentLesson.lessonNo &&
                 x.type == AttendanceType.absent) ??
             false)) {
-      return "${Share.session.data.student.account.firstName}, you're absent!";
+      return 'DCE2F11F-CC27-4BE9-8A38-3D4AACA3B69E'.localized.format(Share.session.data.student.account.firstName);
     }
 
     // Halloween theme
     if (DateTime.now().month == DateTime.october && DateTime.now().day == 31) {
-      return 'だって Happy Halloween!';
+      return '3587C576-D4BC-426E-A971-430912B6A91C'.localized;
     }
 
     // Christmas theme
     if (DateTime.now().month == DateTime.december && (DateTime.now().day >= 20 && DateTime.now().day <= 30)) {
-      return 'Merry Christmas!';
+      return 'C1EB8AF3-E69F-4109-8306-1295AC063EAB'.localized;
     }
 
     // Lessons have just ended - 7.1
@@ -1547,50 +1615,50 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
         (nextDay?.hasLessons ?? false) &&
         DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
         DateTime.now().difference(currentDay?.dayEnd ?? DateTime.now()).inHours >= 2) {
-      return 'Prepare for tomorrow...';
+      return '83597164-46C0-4BD3-AE5B-1F6E1000C91F'.localized;
     }
 
     // Lessons tomorrow - 6
     if ((DateTime.now().isAfterOrSame(currentDay?.dayEnd) || !(currentDay?.hasLessons ?? false)) &&
         (nextDay?.hasLessons ?? false)) {
-      return "Back at it again, tomorrow...";
+      return '4D0CC0C8-8B5F-4CED-9FC5-58D9EF65F813'.localized;
     }
 
     // No lessons today - 5
     if (!(currentDay?.hasLessons ?? false)) {
-      return 'No lessons today!';
+      return '3A9D76DA-A971-48BB-B6F6-24D6A749D1F9'.localized;
     }
 
     // Good morning - 3
     if (currentDay?.dayStart != null &&
         DateTime.now().isBeforeOrSame(currentDay!.dayStart) &&
         currentDay.dayStart!.difference(DateTime.now()) > Duration(hours: 1)) {
-      return "Don't forget the obentō!";
+      return 'F2A3AB37-ED80-478A-AF17-76BF541CE3D2'.localized;
     }
 
     // The last lesson - 2
     if (currentLesson != null &&
         (currentDay?.lessonsStrippedCancelled.lastOrDefault()?.any((x) => x == currentLesson) ?? false)) {
-      return "You're on the finish line!";
+      return '9D0D5D62-94E0-40A2-B41B-D60F80EA16DE'.localized;
     }
 
     // Lucy number - today - 0
     if (DateTime.now().isBeforeOrSame(currentDay?.dayStart) &&
         Share.session.data.student.account.number == Share.session.data.student.mainClass.unit.luckyNumber &&
         !Share.session.data.student.mainClass.unit.luckyNumberTomorrow) {
-      return "You're the lucky one!";
+      return '03B67D51-1176-4A46-9978-7B914F58FD58'.localized;
     }
 
     // Lucy number - tomorrow - 0
     if (DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
         Share.session.data.student.account.number == Share.session.data.student.mainClass.unit.luckyNumber &&
         Share.session.data.student.mainClass.unit.luckyNumberTomorrow) {
-      return "You'll be lucky tomorrow!";
+      return '50C5BBB8-AE89-457C-BE62-22E092F71900'.localized;
     }
 
     // Easter eggs?
     if (DateTime.now().weekday == DateTime.friday && DateTime.now().hour > 18) {
-      return "Alone on a friday night?";
+      return 'DCCC082E-0A01-4795-ADA5-3E51717B7629'.localized;
     }
 
     // Other options, possibly?

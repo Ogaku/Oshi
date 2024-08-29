@@ -5,6 +5,7 @@ import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
@@ -104,8 +105,12 @@ class _MessagesPageState extends State<MessagesPage> {
                     regular: true,
                     padding: EdgeInsets.only(),
                     child: folder == MessageFolders.announcements
-                        ? (query.isEmpty ? 'No announcements, yet...' : 'No announcements matching the query')
-                        : (query.isEmpty ? 'No messages, yet...' : 'No messages matching the query'))
+                        ? (query.isEmpty
+                            ? 'E6375F05-CF51-46F1-A77F-872A5731178C'.localized
+                            : 'A18E9952-C55B-4E12-ADB2-80F88ED52F15'.localized)
+                        : (query.isEmpty
+                            ? 'E40E9F85-A1C6-4B83-BC7C-C517B1F7BA30'.localized
+                            : 'D9FC52D6-1D73-44DB-A789-2ACECD10ED94'.localized))
               ]
             // Bindable messages layout
             : messagesToDisplay
@@ -169,12 +174,22 @@ class _MessagesPageState extends State<MessagesPage> {
                               ),
                             ),
                             onTap: (CompletionHandler handler) => sharing.Share.share(folder == MessageFolders.outbox
-                                ? 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate)} ${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name} wrote:\n"${x.message.topic}\n\n${x.message.preview}[...]"'
-                                : 'On ${DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate)} ${x.message.sender?.name} wrote:\n"${x.message.topic}\n\n${x.message.preview}[...]"'),
+                                ? '7A49BCB7-61FF-4472-985A-9952A67F03C8'.localized.format(
+                                    DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate),
+                                    Share.session.data.student.account.name,
+                                    Share.session.data.student.mainClass.name,
+                                    x.message.topic,
+                                    x.message.preview)
+                                : '2C484334-1DAB-468B-A8CE-81C148EDC280'.localized.format(
+                                    DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate),
+                                    x.message.sender?.name,
+                                    x.message.topic,
+                                    x.message.preview)),
                             color: CupertinoColors.systemBlue))
                         .toList(),
                     child: AdaptiveCard(
-                        click: () => openMessage(message: x.message, announcement: x.announcement, folder: folder),
+                        click: () =>
+                            openMessage(context: context, message: x.message, announcement: x.announcement, folder: folder),
                         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                         child: Container(
                           decoration: Share.settings.appSettings.useCupertino
@@ -277,6 +292,7 @@ class _MessagesPageState extends State<MessagesPage> {
       setState(
           () => _folder = ((args?.value.receivers?.isNotEmpty ?? false) ? MessageFolders.outbox : MessageFolders.inbox));
       openMessage(
+          context: context,
           message: args?.value,
           folder: ((args?.value.receivers?.isNotEmpty ?? false) ? MessageFolders.outbox : MessageFolders.inbox));
     });
@@ -284,7 +300,11 @@ class _MessagesPageState extends State<MessagesPage> {
     Share.messagesNavigateAnnouncement.unsubscribeAll();
     Share.messagesNavigateAnnouncement.subscribe((args) {
       setState(() => _folder = MessageFolders.announcements);
-      openMessage(message: args?.value.message, announcement: args?.value.parent, folder: MessageFolders.announcements);
+      openMessage(
+          context: context,
+          message: args?.value.message,
+          announcement: args?.value.parent,
+          folder: MessageFolders.announcements);
     });
 
     if (!Share.settings.appSettings.useCupertino) {
@@ -329,7 +349,7 @@ class _MessagesPageState extends State<MessagesPage> {
                   ? AdaptiveMenuButton(
                       itemBuilder: (context) => [
                         AdaptiveMenuItem(
-                          title: 'New',
+                          title: 'E9113B8D-3AD9-467B-94BD-A180F46A01BD'.localized,
                           icon: CupertinoIcons.add,
                           onTap: () {
                             (Share.settings.appSettings.useCupertino
@@ -342,7 +362,7 @@ class _MessagesPageState extends State<MessagesPage> {
                           },
                         ),
                         PullDownMenuDivider.large(),
-                        PullDownMenuTitle(title: Text('Folders')),
+                        PullDownMenuTitle(title: Text('6D852D45-7E29-4E26-844D-6DC40ACD66BD'.localized)),
                         AdaptiveMenuItem(
                           title: '/Titles/Pages/Messages/Inbox'.localized +
                               (Share.session.data.messages.received.any((x) => !x.read)
@@ -402,7 +422,8 @@ class _MessagesPageState extends State<MessagesPage> {
     );
   }
 
-  void openMessage({Message? message, Announcement? announcement, required MessageFolders folder}) {
+  void openMessage(
+      {Message? message, Announcement? announcement, required MessageFolders folder, required BuildContext context}) {
     if (message == null || isWorking) return;
     if (Navigator.of(context).canPop()) Navigator.of(context).pop();
 
@@ -452,13 +473,16 @@ class _MessagesPageState extends State<MessagesPage> {
                 Message.from(other: result.result, readDate: DateTime.now());
           }
 
-          Navigator.push(
-              context,
-              AdaptivePageRoute(
-                  builder: (context) => MessageDetailsPage(
-                        message: result.result ?? (message!),
-                        isByMe: folder == MessageFolders.outbox,
-                      )));
+          if (mounted) {
+            Navigator.push(
+                // ignore: use_build_context_synchronously
+                context,
+                AdaptivePageRoute(
+                    builder: (context) => MessageDetailsPage(
+                          message: result.result ?? (message!),
+                          isByMe: folder == MessageFolders.outbox,
+                        )));
+          }
 
           Share.settings.save();
         });

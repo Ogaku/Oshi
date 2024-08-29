@@ -208,7 +208,7 @@ class _SessionsPageState extends State<SessionsPage> {
             ),
           ),
           home: Builder(builder: (context) {
-            ErrorWidget.builder = errorView;
+            ErrorWidget.builder = (e) => errorView(context, e);
 
             // Re-subscribe to all events - modals
             Share.showErrorModal.unsubscribeAll();
@@ -240,6 +240,7 @@ class _SessionsPageState extends State<SessionsPage> {
             });
 
             AppCenter.checkForUpdates().then((value) {
+              // ignore: use_build_context_synchronously
               if (value.result) _showAlertDialog(context, value.download);
             }).catchError((ex) {});
 
@@ -399,13 +400,14 @@ class _NewSessionPageState extends State<NewSessionPage> {
 
       if (Share.settingsLoadError != null) {
         Share.showErrorModal.broadcast(Value((
-          title: 'Error loading data!',
-          message:
-              'An exception "${Share.settingsLoadError?.exception.toString()}" occurred and settings couldn\'t be read.\n\nStack trace:\n${Share.settingsLoadError?.trace.toString() ?? "Unavailable"}',
+          title: 'FA15D556-4A83-487B-B9C2-8ABCD1DC5C90'.localized,
+          message: 'EFB7E8DF-1BBC-442F-9D83-DAF1C70A028E'.localized.format(
+              Share.settingsLoadError?.exception.toString() ?? '',
+              Share.settingsLoadError?.trace.toString() ?? 'E91C42DF-7471-47E1-BAB8-7E3C63713154'.localized),
           actions: {
-            'Copy Exception': () async =>
+            '/Session/Login/Error/Exception'.localized: () async =>
                 await Clipboard.setData(ClipboardData(text: Share.settingsLoadError?.exception.toString() ?? '')),
-            'Copy Stack Trace': () async =>
+            '/Session/Login/Error/Stack'.localized: () async =>
                 await Clipboard.setData(ClipboardData(text: Share.settingsLoadError?.trace.toString() ?? '')),
           }
         )));
@@ -625,9 +627,9 @@ class _LoginPageState extends State<LoginPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            _progressMessage ?? 'Log in to ${widget.instance.providerName}',
+            _progressMessage ?? 'F7C404C2-2C11-452C-9267-623A5E1B76C0'.localized.format(widget.instance.providerName),
             style: TextStyle(fontSize: _progressMessage != null ? 14 : 22),
-          ), // TODO: Translate
+          ),
           actions: [
             Container(
               padding: EdgeInsets.only(right: 10),
