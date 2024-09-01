@@ -1500,7 +1500,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
               icon: Icon(
                 Icons.settings,
                 size: 25,
-                color: Theme.of(context).colorScheme.onSurface,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             )),
       children: segmentController.segment == HomepageSegments.home ? homePageChildren : timelineChildren,

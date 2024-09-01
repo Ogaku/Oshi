@@ -106,8 +106,7 @@ extension EventBodyExtension on List<data.Event> {
           itemBuilder: (context) => [
                 AdaptiveMenuItem(
                   onTap: () {
-                    sharing.Share.share('ED264A1F-5CAA-4673-8FA2-F440C6995841'
-                        .localized
+                    sharing.Share.share('/Page/Home/Homework/share'
                         .localized
                         .format(x.titleString, DateFormat("EEEE, MMM d, y").format(x.timeFrom)));
                   },

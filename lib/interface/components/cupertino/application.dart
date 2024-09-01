@@ -284,6 +284,7 @@ class _BaseAppState extends State<BaseApp> {
 
   void _checkforUpdates(BuildContext context) {
     AppCenter.checkForUpdates().then((value) {
+      // ignore: use_build_context_synchronously
       if (value.result) _showAlertDialog(context, value.download);
     }).catchError((ex) {});
   }

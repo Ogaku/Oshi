@@ -14,6 +14,7 @@ import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
+import 'package:oshi/interface/shared/views/grades_detailed.dart';
 import 'package:oshi/interface/shared/views/new_event.dart';
 import 'package:oshi/interface/components/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/interface/components/cupertino/widgets/text_chip.dart';
@@ -395,14 +396,15 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                   : (isBeforeSchoolYear
                       ? ((DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays).abs() +
                           1)
-                      : ((DateTime.now().asDate().difference(Share.session.data.student.mainClass.endSchoolYear.asDate()).inDays)
-                              .abs() +
+                      : ((DateTime.now().asDate().difference(Share.session.data.student.mainClass.endSchoolYear.asDate()).inDays).abs() +
                           1))),
           (index) =>
               index).toMap((x) => MapEntry(
           x,
-          DateFormat('EEEEE, d.MM', Share.settings.appSettings.localeCode).format(
-              (isBeforeSchoolYear ? DateTime.now().asDate() : Share.session.data.student.mainClass.beginSchoolYear).add(Duration(days: x))))),
+          DateFormat('EEEEE, d.MM', Share.settings.appSettings.localeCode)
+              .format((isBeforeSchoolYear ? DateTime.now().asDate() : Share.session.data.student.mainClass.beginSchoolYear)
+                  .add(Duration(days: x)))
+              .capitalize())),
       segmentController: segmentController,
       pageBuilder: Share.settings.appSettings.useCupertino ? null : timetableBuilder,
     );

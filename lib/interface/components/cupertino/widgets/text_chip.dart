@@ -41,6 +41,7 @@ class _NavState extends State<TextChip> {
           padding: const EdgeInsets.all(5.0),
           child: Text(
             widget.text,
+            textScaler: const TextScaler.linear(1.0),
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: CupertinoTheme.of(context).primaryColor,
