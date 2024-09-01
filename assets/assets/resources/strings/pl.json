@@ -2161,6 +2161,138 @@
     {
       "id": "25EFC95E-A925-4F98-BE8B-AB646D266E25",
       "translation": "lekcja"
+    },
+    {
+      "id": "1850951C-DEEC-4D29-A71A-16CBD1BB786B",
+      "translation": "Rozpoczęto sesję telemetrii"
+    },
+    {
+      "id": "05ABEB49-7597-47DB-B200-C9F64799ED5A",
+      "translation": "Pobieranie Oshi {}"
+    },
+    {
+      "id": "7F2D0551-2391-4676-ADED-FAECF0CB89D7",
+      "translation": "Może to chwilę potrwać..."
+    },
+    {
+      "id": "2C4D5FB8-EA44-472A-BF73-1701C8C066D0",
+      "translation": "Nowe Oshi już gotowe!"
+    },
+    {
+      "id": "B9F622DB-5DFD-4056-871E-2E7AFD0B982C",
+      "translation": "Kliknij aby zainstalować Oshi {}"
+    },
+    {
+      "id": "25C82C3D-4C3E-44A1-B2CC-F29FC76B79FC",
+      "translation": "Aktualizacja nie powiodła się!"
+    },
+    {
+      "id": "17EE54B1-00DA-4A47-82AD-FF03D11312F9",
+      "translation": "Wystąpił błąd i nie można było pobrać aktualizacji..."
+    },
+    {
+      "id": "099A022C-1072-426E-B729-02E99DF75B84",
+      "translation": "Nowe Oshi już czeka!"
+    },
+    {
+      "id": "2602BCBF-D632-41A9-81BF-C27B03756DED",
+      "translation": "Kliknij aby pobrać Oshi {}"
+    },
+    {
+      "id": "D870CFEB-F16B-4091-9084-9620E5BACE22",
+      "translation": "Cachowanie twoich credentiali..."
+    },
+    {
+      "id": "440FA18A-AD7D-47B4-B4FF-C2FE934479DA",
+      "translation": "Inspektowanie twojego żałosnego hasła..."
+    },
+    {
+      "id": "395B01AF-19EE-43BE-880D-1EAE925B33C2",
+      "translation": "Wysyłanie listu do maga setupu..."
+    },
+    {
+      "id": "E15B042C-B7C1-43AB-9557-EA1B1F08CE9C",
+      "translation": "Brak danych do zalogowania!"
+    },
+    {
+      "id": "1DBA54DA-C4D2-4D21-B072-89AAFCC4758D",
+      "translation": "Nie podano prawidłowego proxy!"
+    },
+    {
+      "id": "C5FDD0D8-771D-4DCE-8FCE-62D1BA4A6C93",
+      "translation": "Sesja nie zalogowana."
+    },
+    {
+      "id": "9395EE9D-253E-4795-9F7D-DFA49D161EA8",
+      "translation": "Sprawdzanie z ilu lekcji uciekasz..."
+    },
+    {
+      "id": "4C6CC778-B7FE-4B76-BE87-BCFC9E1E2F7B",
+      "translation": "Wysyłanie dyrektora w zaświaty..."
+    },
+    {
+      "id": "65F39C72-B55D-4970-986B-69DDA8135FF7",
+      "translation": "Liczenie wszystkich pozostałych lekcji..."
+    },
+    {
+      "id": "8966023D-0F77-4B9D-B31B-385A201EB05A",
+      "translation": "Poszukiwanie wydarzeń wartych uwagi..."
+    },
+    {
+      "id": "166B3D1B-90DF-446D-87F6-B27BF62D2C23",
+      "translation": "Zapełnianie tajnego folderu \"Prace domowe\"..."
+    },
+    {
+      "id": "A081AE97-83F2-4B70-98E6-1654A12455C5",
+      "translation": "Szukanie bezszkolnych dni..."
+    },
+    {
+      "id": "10B640EC-6CBF-42CF-A20B-7CA5E97E8AFE",
+      "translation": "Liczenie twoich żałosnych ocen..."
+    },
+    {
+      "id": "3543FC9A-32FB-446F-8CB8-FEF95248CD2C",
+      "translation": "Podsmażanie danych, dodawanie MSG..."
+    },
+    {
+      "id": "135991AA-5B53-42EA-8A2B-5406B249CC40",
+      "translation": "Cachowanie czego się tylko da..."
+    },
+    {
+      "id": "75A471A9-DA5B-4C1D-B078-6B57988F9244",
+      "translation": "Przywoływanie tych zapomnianych..."
+    },
+    {
+      "id": "55E2F1C8-AD9E-4D3B-B700-0DB1493C8B07",
+      "translation": "Przeliczanie strat Librusa..."
+    },
+    {
+      "id": "C8C69498-3A64-4560-A275-3ACDCCCF1B90",
+      "translation": "Bruteforceowanie twojego hasła..."
+    },
+    {
+      "id": "9A7C2236-A7DC-4668-81F2-FEF1FF9B0AAE",
+      "translation": "Przyznawanie globalnych uprawnień..."
+    },
+    {
+      "id": "41D4096F-11CA-4385-8191-436DB9BF8A07",
+      "translation": "Hodowanie tokenów dostępu..."
+    },
+    {
+      "id": "5DA166B8-F9B9-40A1-8E90-22ED84E498A3",
+      "translation": "Tokenizowanie wszsytkich tokenów..."
+    },
+    {
+      "id": "FB716D2D-FFFA-41C5-91B5-02678F6D0FA5",
+      "translation": "Pisanie do modułu wiadomości..."
+    },
+    {
+      "id": "4D52E8BC-6C25-4C8F-B031-777844C73315",
+      "translation": "Dzielenie się ciasteczkami..."
+    },
+    {
+      "id": "64D1FFB7-0CF9-43D1-8B74-998F2AB6CAA6",
+      "translation": "Sesja użytkownika wygasła!"
     }
   ],
   "splashes": [

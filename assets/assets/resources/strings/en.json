@@ -2161,6 +2161,138 @@
     {
       "id": "25EFC95E-A925-4F98-BE8B-AB646D266E25",
       "translation": "a lesson"
+    },
+    {
+      "id": "1850951C-DEEC-4D29-A71A-16CBD1BB786B",
+      "translation": "Telemetry session started"
+    },
+    {
+      "id": "05ABEB49-7597-47DB-B200-C9F64799ED5A",
+      "translation": "Downloading Oshi {}"
+    },
+    {
+      "id": "7F2D0551-2391-4676-ADED-FAECF0CB89D7",
+      "translation": "Please wait a while..."
+    },
+    {
+      "id": "2C4D5FB8-EA44-472A-BF73-1701C8C066D0",
+      "translation": "The latest Oshi is ready!"
+    },
+    {
+      "id": "B9F622DB-5DFD-4056-871E-2E7AFD0B982C",
+      "translation": "Click to install Oshi {}"
+    },
+    {
+      "id": "25C82C3D-4C3E-44A1-B2CC-F29FC76B79FC",
+      "translation": "Update failed!"
+    },
+    {
+      "id": "17EE54B1-00DA-4A47-82AD-FF03D11312F9",
+      "translation": "An error occurred and Oshi couldn't download the latest update..."
+    },
+    {
+      "id": "099A022C-1072-426E-B729-02E99DF75B84",
+      "translation": "The latest Oshi is waiting for you!"
+    },
+    {
+      "id": "2602BCBF-D632-41A9-81BF-C27B03756DED",
+      "translation": "Click to download Oshi {}"
+    },
+    {
+      "id": "D870CFEB-F16B-4091-9084-9620E5BACE22",
+      "translation": "Caching all your credentials..."
+    },
+    {
+      "id": "440FA18A-AD7D-47B4-B4FF-C2FE934479DA",
+      "translation": "Looking at your pathetic password..."
+    },
+    {
+      "id": "395B01AF-19EE-43BE-880D-1EAE925B33C2",
+      "translation": "Contracting the setup wizard..."
+    },
+    {
+      "id": "E15B042C-B7C1-43AB-9557-EA1B1F08CE9C",
+      "translation": "No data to log in with!"
+    },
+    {
+      "id": "1DBA54DA-C4D2-4D21-B072-89AAFCC4758D",
+      "translation": "No valid proxy provided!"
+    },
+    {
+      "id": "C5FDD0D8-771D-4DCE-8FCE-62D1BA4A6C93",
+      "translation": "Not logged in."
+    },
+    {
+      "id": "9395EE9D-253E-4795-9F7D-DFA49D161EA8",
+      "translation": "Checking how many lessons you've skipped..."
+    },
+    {
+      "id": "4C6CC778-B7FE-4B76-BE87-BCFC9E1E2F7B",
+      "translation": "Spiriting your school principal away..."
+    },
+    {
+      "id": "65F39C72-B55D-4970-986B-69DDA8135FF7",
+      "translation": "Counting all the long lessons remaining..."
+    },
+    {
+      "id": "8966023D-0F77-4B9D-B31B-385A201EB05A",
+      "translation": "Looking for any interesting events right there..."
+    },
+    {
+      "id": "166B3D1B-90DF-446D-87F6-B27BF62D2C23",
+      "translation": "Filling up the hidden 'homework' folder..."
+    },
+    {
+      "id": "A081AE97-83F2-4B70-98E6-1654A12455C5",
+      "translation": "Looking for any nice, free, and school-less days..."
+    },
+    {
+      "id": "10B640EC-6CBF-42CF-A20B-7CA5E97E8AFE",
+      "translation": "Counting all your pathetic grades..."
+    },
+    {
+      "id": "3543FC9A-32FB-446F-8CB8-FEF95248CD2C",
+      "translation": "Sautéeing the data sauce, adding MSG..."
+    },
+    {
+      "id": "135991AA-5B53-42EA-8A2B-5406B249CC40",
+      "translation": "Caching all the cache we possibly have..."
+    },
+    {
+      "id": "75A471A9-DA5B-4C1D-B078-6B57988F9244",
+      "translation": "Summoning the forgotten ones..."
+    },
+    {
+      "id": "55E2F1C8-AD9E-4D3B-B700-0DB1493C8B07",
+      "translation": "API'ing the Librus OAuth API..."
+    },
+    {
+      "id": "C8C69498-3A64-4560-A275-3ACDCCCF1B90",
+      "translation": "Bruteforcing your damn password..."
+    },
+    {
+      "id": "9A7C2236-A7DC-4668-81F2-FEF1FF9B0AAE",
+      "translation": "Grating the global access..."
+    },
+    {
+      "id": "41D4096F-11CA-4385-8191-436DB9BF8A07",
+      "translation": "Salvaging the access tokens..."
+    },
+    {
+      "id": "5DA166B8-F9B9-40A1-8E90-22ED84E498A3",
+      "translation": "Tokenizing all the tokens..."
+    },
+    {
+      "id": "FB716D2D-FFFA-41C5-91B5-02678F6D0FA5",
+      "translation": "Messaging the messages module..."
+    },
+    {
+      "id": "4D52E8BC-6C25-4C8F-B031-777844C73315",
+      "translation": "Sharing cookies with the others..."
+    },
+    {
+      "id": "64D1FFB7-0CF9-43D1-8B74-998F2AB6CAA6",
+      "translation": "User session not active!"
     }
   ],
   "splashes": [
