@@ -6,6 +6,7 @@ import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
+import 'package:oshi/interface/components/material/data_page.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
@@ -373,7 +374,9 @@ extension EventWidgetExtension on Event {
                                               timeTo != null && timeTo?.hour != 0))
                                 ]))
                                 .toList()))),
-        margin: EdgeInsets.only(left: 15, top: 5, bottom: 5, right: 20),
+        margin: !Share.settings.appSettings.useCupertino && isHorizontalPhoneMode(context)
+            ? EdgeInsets.only(left: 5, right: 5)
+            : EdgeInsets.only(left: 15, top: 5, bottom: 5, right: 20),
         child: ConstrainedBox(
             constraints: BoxConstraints(
                 maxHeight: (animation?.value ?? 0) < CupertinoContextMenu.animationOpensAt ? double.infinity : 100,
@@ -418,7 +421,10 @@ extension EventWidgetExtension on Event {
                                           flex: 2,
                                           child: Text(
                                             titleString,
-                                            maxLines: 1,
+                                            maxLines:
+                                                !Share.settings.appSettings.useCupertino && isHorizontalPhoneMode(context)
+                                                    ? 3
+                                                    : 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                                 fontSize: 17,
@@ -740,7 +746,9 @@ extension LessonWidgetExtension on TimetableLesson {
                                               isCanceled && !isMovedLesson))
                                 ]),
                                 true)))),
-        margin: EdgeInsets.only(left: 15, top: 3, bottom: 3, right: 20),
+        margin: !Share.settings.appSettings.useCupertino && isHorizontalPhoneMode(context)
+            ? EdgeInsets.only(left: 5, right: 5)
+            : EdgeInsets.only(left: 15, top: 3, bottom: 3, right: 20),
         child: Opacity(
             opacity: (isCanceled ||
                     (date == DateTime.now().asDate() &&

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/interface/components/material/data_page.dart';
 import 'package:oshi/interface/components/shim/elements/event.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/interface/shared/containers.dart';
@@ -167,52 +168,57 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
               .toList(),
     );
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        (searchController.text.isEmpty ? lessonsWidget : Container()),
-        if (!Share.settings.appSettings.useCupertino &&
-            (homeworksToday.isNotEmpty || eventsToday.isNotEmpty || teachersAbsentToday.isNotEmpty))
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Divider(indent: 23, endIndent: 23),
-          ),
-        // Homeworks for today
-        Visibility(
-            visible: homeworksToday.isNotEmpty,
-            child: Container(
-                margin: EdgeInsets.only(top: Share.settings.appSettings.useCupertino ? 20 : 0),
-                child: CardContainer(
-                  filled: false,
-                  regularOverride: true,
-                  additionalDividerMargin: 5,
-                  children: homeworksToday.isNotEmpty ? homeworksToday : [Text('')],
-                ))),
-        // Events for today
-        Visibility(
-            visible: eventsToday.isNotEmpty,
-            child: Container(
-                margin: EdgeInsets.only(top: Share.settings.appSettings.useCupertino ? 20 : 0),
-                child: CardContainer(
-                  filled: false,
-                  regularOverride: true,
-                  additionalDividerMargin: 5,
-                  children: eventsToday.isNotEmpty ? eventsToday : [Text('')],
-                ))),
-        // Teachers absent today
-        Visibility(
-            visible: teachersAbsentToday.isNotEmpty,
-            child: Container(
-                margin: EdgeInsets.only(top: Share.settings.appSettings.useCupertino ? 20 : 0),
-                child: CardContainer(
-                  filled: false,
-                  regularOverride: true,
-                  additionalDividerMargin: 5,
-                  children: teachersAbsentToday.isNotEmpty ? teachersAbsentToday : [Text('')],
-                ))),
-      ],
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(
+          textScaler:
+              TextScaler.linear(!Share.settings.appSettings.useCupertino && isHorizontalPhoneMode(context) ? 0.7 : 1.0)),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          (searchController.text.isEmpty ? lessonsWidget : Container()),
+          if (!Share.settings.appSettings.useCupertino &&
+              (homeworksToday.isNotEmpty || eventsToday.isNotEmpty || teachersAbsentToday.isNotEmpty))
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Divider(indent: 23, endIndent: 23),
+            ),
+          // Homeworks for today
+          Visibility(
+              visible: homeworksToday.isNotEmpty,
+              child: Container(
+                  margin: EdgeInsets.only(top: Share.settings.appSettings.useCupertino ? 20 : 0),
+                  child: CardContainer(
+                    filled: false,
+                    regularOverride: true,
+                    additionalDividerMargin: 5,
+                    children: homeworksToday.isNotEmpty ? homeworksToday : [Text('')],
+                  ))),
+          // Events for today
+          Visibility(
+              visible: eventsToday.isNotEmpty,
+              child: Container(
+                  margin: EdgeInsets.only(top: Share.settings.appSettings.useCupertino ? 20 : 0),
+                  child: CardContainer(
+                    filled: false,
+                    regularOverride: true,
+                    additionalDividerMargin: 5,
+                    children: eventsToday.isNotEmpty ? eventsToday : [Text('')],
+                  ))),
+          // Teachers absent today
+          Visibility(
+              visible: teachersAbsentToday.isNotEmpty,
+              child: Container(
+                  margin: EdgeInsets.only(top: Share.settings.appSettings.useCupertino ? 20 : 0),
+                  child: CardContainer(
+                    filled: false,
+                    regularOverride: true,
+                    additionalDividerMargin: 5,
+                    children: teachersAbsentToday.isNotEmpty ? teachersAbsentToday : [Text('')],
+                  ))),
+        ],
+      ),
     );
   }
 

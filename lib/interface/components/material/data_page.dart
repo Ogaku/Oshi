@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+import 'package:autoscale_tabbarview/autoscale_tabbarview.dart';
 import 'package:darq/darq.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:enum_flag/enum_flag.dart';
@@ -203,7 +204,26 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
                       tabAlignment:
                           (widget.segmentController?.scrollable ?? false) ? TabAlignment.center : TabAlignment.fill,
                       labelPadding: EdgeInsets.symmetric(horizontal: 20),
-                      tabs: widget.segments!.values.select((x, _) => Tab(text: x)).toList(),
+                      tabs: widget.segments!.values
+                          .select((x, index) => Tab(
+                                text: (!Share.settings.appSettings.useCupertino &&
+                                        isHorizontalPhoneMode(context) &&
+                                        widget.pageBuilder != null)
+                                    ? null
+                                    : x,
+                                child: (!Share.settings.appSettings.useCupertino &&
+                                        isHorizontalPhoneMode(context) &&
+                                        widget.pageBuilder != null)
+                                    ? Text(x,
+                                        style: TextStyle(
+                                            color: tabController.index == index
+                                                ? Theme.of(context).colorScheme.primary
+                                                : ((tabController.index - index).abs() < 4
+                                                    ? Theme.of(context).colorScheme.secondary
+                                                    : Theme.of(context).colorScheme.onSurfaceVariant)))
+                                    : null,
+                              ))
+                          .toList(),
                       controller: tabController,
                     )
                   : null,
@@ -214,23 +234,27 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
             ),
           if (widget.pageFlags.hasFlag(DataPageType.segmented) && widget.pageBuilder != null)
             SliverFillRemaining(
-              child: TabBarView(
-                controller: tabController,
-                viewportFraction: MediaQuery.of(context).size.width >= 640 ? (1 / 3) : 1.0,
-                children: List.generate(widget.segments!.length,
-                    (index) => widget.pageBuilder!(context, widget.segments!.keys.elementAt(index))),
-              ),
-              // hasScrollBody: false,
-              // child: Column(
-              //   children: [
-              //     AutoScaleTabBarView(
-              //       controller: tabController,
-              //       // viewportFraction: MediaQuery.of(context).size.width >= 640 ? (1 / 3) : 1.0,
-              //       children: List.generate(widget.segments!.length,
-              //           (index) => widget.pageBuilder!(context, widget.segments!.keys.elementAt(index))),
-              //     ),
-              //   ],
-              // ),
+              hasScrollBody: false,
+              child: isHorizontalPhoneMode(context)
+                  ? SizedBox(
+                      height: 2000,
+                      child: TabBarView(
+                        controller: tabController,
+                        viewportFraction: isHorizontalPhoneMode(context) ? (1 / 7) : 1.0,
+                        children: List.generate(widget.segments!.length,
+                            (index) => widget.pageBuilder!(context, widget.segments!.keys.elementAt(index))),
+                      ),
+                    )
+                  : Column(
+                      children: [
+                        AutoScaleTabBarView(
+                          controller: tabController,
+                          // viewportFraction: MediaQuery.of(context).size.width >= 640 ? (1 / 3) : 1.0,
+                          children: List.generate(widget.segments!.length,
+                              (index) => widget.pageBuilder!(context, widget.segments!.keys.elementAt(index))),
+                        ),
+                      ],
+                    ),
             ),
         ],
       );
@@ -262,4 +286,8 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
       );
     });
   }
+}
+
+bool isHorizontalPhoneMode(BuildContext context) {
+  return MediaQuery.of(context).size.width >= 640 && MediaQuery.of(context).size.height < MediaQuery.of(context).size.width;
 }
