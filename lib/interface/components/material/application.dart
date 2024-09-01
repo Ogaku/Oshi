@@ -296,7 +296,8 @@ class _BaseAppState extends State<BaseApp> {
                                 return NavigationRailDestination(
                                   icon: x.icon,
                                   selectedIcon: x.selectedIcon,
-                                  label: Text(x.label),
+                                  label: Text(x.label,
+                                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13)),
                                 );
                               }).toList()),
                           MediaQuery.of(context).size.width >= 640),

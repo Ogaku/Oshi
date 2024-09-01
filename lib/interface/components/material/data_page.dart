@@ -1,5 +1,4 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:darq/darq.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:enum_flag/enum_flag.dart';
@@ -112,79 +111,79 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
             pinned: true,
             snap: false,
             floating: false,
-            flexibleSpace: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-              var top = constraints.biggest.height;
-              var padding = 100.0 - ((constraints.maxHeight - 64) * 100 / (242 - 64));
-
-              return FlexibleSpaceBar(
-                  centerTitle: false,
-                  titlePadding: EdgeInsets.only(left: (isChildPage ?? false) ? padding : 20, bottom: 15, right: 20),
-                  title: AnimatedOpacity(
-                      duration: Duration(milliseconds: 250),
-                      opacity: (top > 110 || widget.leading == null) ? 1.0 : 0.0,
-                      child: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis)),
-                  background: Stack(children: <Widget>[
-                    // Search icon
-                    if (widget.pageFlags.hasFlag(DataPageType.searchable))
-                      SearchAnchor(
-                        isFullScreen: true,
-                        builder: (context, controller) => Padding(
-                          padding: (isChildPage ?? false) && widget.trailing != null
-                              ? const EdgeInsets.only(left: 65, top: 17)
-                              : const EdgeInsets.all(15.0),
-                          child: Align(
-                              alignment:
-                                  (isChildPage ?? false) && widget.trailing == null ? Alignment.topRight : Alignment.topLeft,
-                              child: SafeArea(
-                                  child: Icon(
-                                Icons.search,
-                                size: 25,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ))),
+            flexibleSpace: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) => FlexibleSpaceBar(
+                    centerTitle: false,
+                    titlePadding: EdgeInsets.only(
+                        left: (isChildPage ?? false) ? (100.0 - ((constraints.maxHeight - 64) * 100 / (242 - 64))) : 20,
+                        bottom: 15,
+                        right: 20),
+                    title: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    background: Stack(children: <Widget>[
+                      // Search icon
+                      if (widget.pageFlags.hasFlag(DataPageType.searchable))
+                        SearchAnchor(
+                          isFullScreen: true,
+                          builder: (context, controller) => Padding(
+                            padding: (isChildPage ?? false) && widget.trailing != null
+                                ? const EdgeInsets.only(left: 65, top: 17)
+                                : const EdgeInsets.all(15.0),
+                            child: Align(
+                                alignment: (isChildPage ?? false) && widget.trailing == null
+                                    ? Alignment.topRight
+                                    : Alignment.topLeft,
+                                child: SafeArea(
+                                    child: Icon(
+                                  Icons.search,
+                                  size: 25,
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                ))),
+                          ),
+                          suggestionsBuilder: widget.searchBuilder ??
+                              (context, controller) => (widget.children ?? []).prepend(SizedBox(height: 15)),
                         ),
-                        suggestionsBuilder: widget.searchBuilder ??
-                            (context, controller) => (widget.children ?? []).prepend(SizedBox(height: 15)),
-                      ),
-                    // Refresh progress status
-                    if ((Share.session.refreshStatus.progressStatus?.isNotEmpty ?? false) &&
-                        widget.pageFlags.hasFlag(DataPageType.refreshable))
-                      SafeArea(
-                        child: Padding(
-                          padding: switch (isChildPage ?? false) {
-                            false when widget.pageFlags.hasFlag(DataPageType.searchable) =>
-                              const EdgeInsets.only(left: 45), // Search icon only
-                            false when !widget.pageFlags.hasFlag(DataPageType.searchable) =>
-                              const EdgeInsets.only(left: 5), // Nothing in the way
-                            true when widget.pageFlags.hasFlag(DataPageType.searchable) && widget.trailing == null =>
-                              const EdgeInsets.only(left: 45), // Back icon only
-                            true when widget.pageFlags.hasFlag(DataPageType.searchable) && widget.trailing != null =>
-                              const EdgeInsets.only(left: 100), // Two icons ::before
-                            _ => const EdgeInsets.all(0),
-                          },
-                          child: Container(
-                              margin: const EdgeInsets.only(top: 10, left: 10),
-                              child: ConstrainedBox(
-                                  constraints: const BoxConstraints(maxWidth: 150),
-                                  child: Text(
-                                    Share.session.refreshStatus.progressStatus ?? '',
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                        color: CupertinoColors.inactiveGray, fontSize: 13, fontWeight: FontWeight.w300),
-                                  ))),
+                      // Refresh progress status
+                      if ((Share.session.refreshStatus.progressStatus?.isNotEmpty ?? false) &&
+                          widget.pageFlags.hasFlag(DataPageType.refreshable))
+                        SafeArea(
+                          child: Padding(
+                            padding: switch (isChildPage ?? false) {
+                              false when widget.pageFlags.hasFlag(DataPageType.searchable) =>
+                                const EdgeInsets.only(left: 45), // Search icon only
+                              false when !widget.pageFlags.hasFlag(DataPageType.searchable) =>
+                                const EdgeInsets.only(left: 5), // Nothing in the way
+                              true when widget.pageFlags.hasFlag(DataPageType.searchable) && widget.trailing == null =>
+                                const EdgeInsets.only(left: 45), // Back icon only
+                              true when widget.pageFlags.hasFlag(DataPageType.searchable) && widget.trailing != null =>
+                                const EdgeInsets.only(left: 100), // Two icons ::before
+                              _ => const EdgeInsets.all(0),
+                            },
+                            child: Container(
+                                margin: const EdgeInsets.only(top: 10, left: 10),
+                                child: ConstrainedBox(
+                                    constraints: const BoxConstraints(maxWidth: 150),
+                                    child: Row(children: [
+                                      Flexible(
+                                          child: Text(
+                                        Share.session.refreshStatus.progressStatus ?? '',
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                            color: CupertinoColors.inactiveGray, fontSize: 13, fontWeight: FontWeight.w300),
+                                      ))
+                                    ]))),
+                          ),
                         ),
-                      ),
-                    if (widget.leading != null &&
-                        (!widget.pageFlags.hasFlag(DataPageType.refreshable) ||
-                            (Share.session.refreshStatus.progressStatus?.isEmpty ?? true)))
-                      SafeArea(
-                        child: SizedBox(
-                            height: 60,
-                            width: 150,
-                            child: Container(margin: EdgeInsets.only(left: 10, top: 3, bottom: 1), child: widget.leading)),
-                      ),
-                  ]));
-            }),
+                      if (widget.leading != null &&
+                          (!widget.pageFlags.hasFlag(DataPageType.refreshable) ||
+                              (Share.session.refreshStatus.progressStatus?.isEmpty ?? true)))
+                        SafeArea(
+                          child: SizedBox(
+                              height: 60,
+                              width: 150,
+                              child: Container(margin: EdgeInsets.only(left: 10, top: 3, bottom: 1), child: widget.leading)),
+                        ),
+                    ]))),
             leadingWidth: widget.leading != null ? 150 : null,
             leading: widget.leading != null ? Container() : null,
             actions: <Widget>[Container(margin: EdgeInsets.only(right: 10), child: widget.trailing)],
@@ -217,9 +216,21 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
             SliverFillRemaining(
               child: TabBarView(
                 controller: tabController,
+                viewportFraction: MediaQuery.of(context).size.width >= 640 ? (1 / 3) : 1.0,
                 children: List.generate(widget.segments!.length,
                     (index) => widget.pageBuilder!(context, widget.segments!.keys.elementAt(index))),
               ),
+              // hasScrollBody: false,
+              // child: Column(
+              //   children: [
+              //     AutoScaleTabBarView(
+              //       controller: tabController,
+              //       // viewportFraction: MediaQuery.of(context).size.width >= 640 ? (1 / 3) : 1.0,
+              //       children: List.generate(widget.segments!.length,
+              //           (index) => widget.pageBuilder!(context, widget.segments!.keys.elementAt(index))),
+              //     ),
+              //   ],
+              // ),
             ),
         ],
       );

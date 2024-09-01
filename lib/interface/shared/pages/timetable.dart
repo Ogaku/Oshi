@@ -160,7 +160,10 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
             ]
           // Bindable messages layout
           : lessonsToDisplay
-              .select((x, index) => AdaptiveCard(child: x.asLessonWidget(context, selectedDate, selectedDay, setState)))
+              .select((x, index) => AdaptiveCard(
+                  regular: true,
+                  margin: EdgeInsets.only(left: 8, right: 8),
+                  child: x.asLessonWidget(context, selectedDate, selectedDay, setState)))
               .toList(),
     );
 

@@ -124,6 +124,7 @@ extension EventWidgetExtension on Event {
                         (classroom?.name.isNotEmpty ?? false)
                             ? ('C33F8288-5BAD-4574-9C53-B54FED6757AC'.localized.format(classroom?.name ?? ""))
                             : '55FCBDA9-6905-49C9-A3E8-426058041A8B'.localized));
+                    Navigator.of(context).pop();
                   },
                   icon: CupertinoIcons.share,
                   title: '/Share'.localized,
@@ -153,6 +154,7 @@ extension EventWidgetExtension on Event {
                               // ignored
                             }
                           }
+                          Navigator.of(context).pop();
                         },
                         icon: CupertinoIcons.check_mark,
                         title: '50FD3CEB-CAA5-4AD2-AEC5-61C16308FE41'.localized,
@@ -170,6 +172,7 @@ extension EventWidgetExtension on Event {
                           } catch (ex) {
                             // ignored
                           }
+                          Navigator.of(context).pop();
                         },
                         icon: CupertinoIcons.calendar,
                         title: '374BEB81-88EB-4C1C-A3B3-0E24DB13E0E4'.localized,
@@ -189,6 +192,7 @@ extension EventWidgetExtension on Event {
                           } catch (ex) {
                             // ignored
                           }
+                          Navigator.of(context).pop();
                         },
                       ),
                       isOwnEvent || isSharedEvent)
@@ -206,6 +210,7 @@ extension EventWidgetExtension on Event {
                                       .format(DateFormat("y.M.d").format(date ?? timeFrom)),
                                   signature:
                                       '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                          Navigator.of(context).pop();
                         },
                       ),
                       !isOwnEvent)
@@ -216,6 +221,7 @@ extension EventWidgetExtension on Event {
                         onTap: () {
                           setState(() => Share.session.customEvents.remove(this));
                           Share.settings.save();
+                          Navigator.of(context).pop();
                         },
                       ),
                       isOwnEvent)
@@ -227,6 +233,7 @@ extension EventWidgetExtension on Event {
                           setState(() => Share.session.sharedEvents.remove(this));
                           Share.settings.save();
                           unshare(); // Unshare the event using the API
+                          Navigator.of(context).pop();
                         },
                       ),
                       isSharedEvent),
@@ -256,7 +263,7 @@ extension EventWidgetExtension on Event {
                             children: [
                           TableRow(children: [
                             Container(
-                                margin: EdgeInsets.only(top: 15, left: 10, right: 10),
+                                margin: EdgeInsets.only(top: 15, left: 10, right: 10, bottom: 5),
                                 child: Hero(
                                     tag: tag,
                                     child: eventBody(isNotEmpty, day, context,
@@ -534,6 +541,7 @@ extension LessonWidgetExtension on TimetableLesson {
                       subject?.name ?? '25EFC95E-A925-4F98-BE8B-AB646D266E25'.localized,
                       DateFormat("EEEE, MMM d, y").format(date),
                       teacher?.name ?? '0ED15CBE-83CA-4E47-818F-61FCD06CBADA'.localized));
+                  Navigator.of(context).pop();
                 },
                 icon: CupertinoIcons.share,
                 title: '/Share'.localized,
@@ -552,6 +560,7 @@ extension LessonWidgetExtension on TimetableLesson {
                   } catch (ex) {
                     // ignored
                   }
+                  Navigator.of(context).pop();
                 },
                 icon: CupertinoIcons.calendar,
                 title: '374BEB81-88EB-4C1C-A3B3-0E24DB13E0E4'.localized,
@@ -571,6 +580,7 @@ extension LessonWidgetExtension on TimetableLesson {
                   } catch (ex) {
                     // ignored
                   }
+                  Navigator.of(context).pop();
                 },
                 icon: CupertinoIcons.add,
                 title: '567C490D-B7D0-403A-99A1-9E21F7F77EB8'.localized,
@@ -591,6 +601,7 @@ extension LessonWidgetExtension on TimetableLesson {
                               .format(lessonCallMessageString, subject?.name, DateFormat("y.M.d").format(date), lessonNo),
                           signature:
                               '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                  Navigator.of(context).pop();
                 },
               ),
               AdaptiveMenuItem(
@@ -606,6 +617,7 @@ extension LessonWidgetExtension on TimetableLesson {
                               .format(DateFormat("y.M.d").format(date), lessonNo),
                           signature:
                               '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                  Navigator.of(context).pop();
                 },
               ),
             ],
@@ -644,7 +656,7 @@ extension LessonWidgetExtension on TimetableLesson {
                             children: <TableRow>[
                           TableRow(children: [
                             Container(
-                                margin: EdgeInsets.only(top: 15, left: 10, right: 10),
+                                margin: EdgeInsets.only(top: 15, left: 10, right: 10, bottom: 10),
                                 child: Hero(
                                     tag: tag,
                                     child: lessonBody(context, selectedDate, selectedDay,
@@ -728,7 +740,7 @@ extension LessonWidgetExtension on TimetableLesson {
                                               isCanceled && !isMovedLesson))
                                 ]),
                                 true)))),
-        margin: EdgeInsets.only(left: 15, top: 5, bottom: 5, right: 20),
+        margin: EdgeInsets.only(left: 15, top: 3, bottom: 3, right: 20),
         child: Opacity(
             opacity: (isCanceled ||
                     (date == DateTime.now().asDate() &&

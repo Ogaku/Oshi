@@ -62,128 +62,124 @@ class _SessionsPageState extends State<SessionsPage> {
       return Builder(builder: (context) {
         var sessionsList = Share.settings.sessions.sessions.keys
             .select(
-              (x, index) => Container(
-                  margin: EdgeInsets.only(left: 20, right: 20, top: 5),
-                  child: Builder(
-                      builder: (context) => Visibility(
-                          visible: Share.settings.sessions.sessions[x] != null,
-                          child: MaterialButton(
-                              padding: EdgeInsets.only(),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              onPressed: () async {
-                                if (isWorking) return; // Already handling something, give up
-                                setState(() {
-                                  // Mark as working, the 1st refresh is gonna take a while
-                                  isWorking = true;
-                                });
+              (x, index) => Builder(
+                  builder: (context) => Visibility(
+                      visible: Share.settings.sessions.sessions[x] != null,
+                      child: MaterialButton(
+                          padding: EdgeInsets.only(),
+                          onPressed: () async {
+                            if (isWorking) return; // Already handling something, give up
+                            setState(() {
+                              // Mark as working, the 1st refresh is gonna take a while
+                              isWorking = true;
+                            });
 
-                                var progress = Progress<({double? progress, String? message})>();
-                                progress.progressChanged
-                                    .subscribe((args) => setState(() => _progressMessage = args?.value.message));
+                            var progress = Progress<({double? progress, String? message})>();
+                            progress.progressChanged
+                                .subscribe((args) => setState(() => _progressMessage = args?.value.message));
 
-                                // showCupertinoModalBottomSheet(context: context, builder: (context) => LoginPage(provider: x));
-                                Share.settings.sessions.lastSessionId = x; // Update
-                                Share.session = Share.settings.sessions.lastSession!;
-                                await Share.settings.save(); // Save our settings now
+                            // showCupertinoModalBottomSheet(context: context, builder: (context) => LoginPage(provider: x));
+                            Share.settings.sessions.lastSessionId = x; // Update
+                            Share.session = Share.settings.sessions.lastSession!;
+                            await Share.settings.save(); // Save our settings now
 
-                                // Suppress all errors, we must have already logged in at least once
-                                await Share.session.tryLogin(progress: progress, showErrors: false);
-                                await Share.session.refreshAll(progress: progress, showErrors: false);
+                            // Suppress all errors, we must have already logged in at least once
+                            await Share.session.tryLogin(progress: progress, showErrors: false);
+                            await Share.session.refreshAll(progress: progress, showErrors: false);
 
-                                // Reset the animation in case we go back somehow
-                                setState(() => isWorking = false);
-                                progress.progressChanged.unsubscribeAll();
-                                _progressMessage = null; // Reset the message
+                            // Reset the animation in case we go back somehow
+                            setState(() => isWorking = false);
+                            progress.progressChanged.unsubscribeAll();
+                            _progressMessage = null; // Reset the message
 
-                                // Change the main page to the base application
-                                Share.changeBase.broadcast(Value(() => baseApplication));
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                                ),
-                                child: SwipeActionCell(
-                                    key: UniqueKey(),
-                                    backgroundColor: Colors.transparent,
-                                    trailingActions: <SwipeAction>[
-                                      SwipeAction(
-                                          performsFirstActionWithFullSwipe: true,
-                                          content: Container(
-                                            width: 50,
-                                            height: 50,
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(25),
-                                              color: Colors.red,
-                                            ),
-                                            child: Icon(
-                                              Icons.delete,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          onTap: (CompletionHandler handler) async {
-                                            // Remove the session
-                                            Share.settings.sessions.sessions.remove(x);
-                                            if (Share.settings.sessions.lastSessionId == x) {
-                                              Share.settings.sessions.lastSessionId =
-                                                  Share.settings.sessions.sessions.keys.firstOrDefault(defaultValue: null);
-                                            }
+                            // Change the main page to the base application
+                            Share.changeBase.broadcast(Value(() => baseApplication));
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                            ),
+                            child: SwipeActionCell(
+                                key: UniqueKey(),
+                                backgroundColor: Colors.transparent,
+                                trailingActions: <SwipeAction>[
+                                  SwipeAction(
+                                      performsFirstActionWithFullSwipe: true,
+                                      content: Container(
+                                        width: 50,
+                                        height: 50,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(25),
+                                          color: Colors.red,
+                                        ),
+                                        child: Icon(
+                                          Icons.delete,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      onTap: (CompletionHandler handler) async {
+                                        // Remove the session
+                                        Share.settings.sessions.sessions.remove(x);
+                                        if (Share.settings.sessions.lastSessionId == x) {
+                                          Share.settings.sessions.lastSessionId =
+                                              Share.settings.sessions.sessions.keys.firstOrDefault(defaultValue: null);
+                                        }
 
-                                            // Save our session changes
-                                            await Share.settings.save();
-                                            setState(() {}); // Reload
-                                          },
-                                          color: CupertinoColors.destructiveRed)
-                                    ],
-                                    child: Container(
-                                      padding: EdgeInsets.only(right: 10, left: 22),
-                                      child: ConstrainedBox(
-                                          constraints: BoxConstraints(maxHeight: 100, maxWidth: 300),
-                                          child: Row(children: [
-                                            ConstrainedBox(
-                                                constraints: BoxConstraints(
-                                                    maxWidth: 120, maxHeight: 80, minWidth: 120, minHeight: 80),
-                                                child: Container(
-                                                    margin: EdgeInsets.only(top: 20, bottom: 20),
-                                                    child: Visibility(
-                                                        visible: Share
-                                                                .settings.sessions.sessions[x]?.provider.providerBannerUri !=
+                                        // Save our session changes
+                                        await Share.settings.save();
+                                        setState(() {}); // Reload
+                                      },
+                                      color: CupertinoColors.destructiveRed)
+                                ],
+                                child: Container(
+                                  padding: EdgeInsets.only(right: 10, left: 30),
+                                  child: ConstrainedBox(
+                                      constraints: BoxConstraints(maxHeight: 100, maxWidth: 300),
+                                      child: Row(children: [
+                                        ConstrainedBox(
+                                            constraints:
+                                                BoxConstraints(maxWidth: 120, maxHeight: 80, minWidth: 120, minHeight: 80),
+                                            child: Container(
+                                                margin: EdgeInsets.only(top: 20, bottom: 20),
+                                                child: Visibility(
+                                                    visible:
+                                                        Share.settings.sessions.sessions[x]?.provider.providerBannerUri !=
                                                             null,
-                                                        child: FadeInImage.memoryNetwork(
-                                                            height: 37,
-                                                            placeholder: kTransparentImage,
-                                                            image: Share.settings.sessions.sessions[x]?.provider
-                                                                    .providerBannerUri
-                                                                    ?.toString() ??
-                                                                'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg')))),
-                                            Visibility(
-                                                visible:
-                                                    Share.settings.sessions.sessions[x]?.provider.providerBannerUri != null,
-                                                child: Container(
-                                                  width: 1,
-                                                  height: 40,
-                                                  margin: EdgeInsets.only(left: 20, right: 20),
-                                                  decoration: const BoxDecoration(
-                                                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                                                      color: Color(0x33AAAAAA)),
-                                                )),
-                                            Flexible(
-                                                child: Container(
-                                                    margin: EdgeInsets.only(right: 20),
-                                                    child: Text(
-                                                      Share.settings.sessions.sessions[x]?.sessionName ?? '',
-                                                      overflow: TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                          fontWeight: FontWeight.w600,
-                                                          fontSize: 15,
-                                                          color: CupertinoDynamicColor.resolve(
-                                                              CupertinoDynamicColor.withBrightness(
-                                                                  color: CupertinoColors.black,
-                                                                  darkColor: CupertinoColors.white),
-                                                              context)),
-                                                    )))
-                                          ])),
-                                    )),
-                              ))))),
+                                                    child: FadeInImage.memoryNetwork(
+                                                        height: 37,
+                                                        placeholder: kTransparentImage,
+                                                        image: Share
+                                                                .settings.sessions.sessions[x]?.provider.providerBannerUri
+                                                                ?.toString() ??
+                                                            'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg')))),
+                                        Visibility(
+                                            visible: Share.settings.sessions.sessions[x]?.provider.providerBannerUri != null,
+                                            child: Container(
+                                              width: 1,
+                                              height: 40,
+                                              margin: EdgeInsets.only(left: 20, right: 20),
+                                              decoration: const BoxDecoration(
+                                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                                  color: Color(0x33AAAAAA)),
+                                            )),
+                                        Flexible(
+                                            child: Container(
+                                                margin: EdgeInsets.only(right: 20),
+                                                child: Text(
+                                                  Share.settings.sessions.sessions[x]?.sessionName ?? '',
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.w600,
+                                                      fontSize: 15,
+                                                      color: CupertinoDynamicColor.resolve(
+                                                          CupertinoDynamicColor.withBrightness(
+                                                              color: CupertinoColors.black,
+                                                              darkColor: CupertinoColors.white),
+                                                          context)),
+                                                )))
+                                      ])),
+                                )),
+                          )))),
             )
             .toList();
 
@@ -292,26 +288,22 @@ class _SessionsPageState extends State<SessionsPage> {
                   ),
                   SliverList.list(
                     children: sessionsList
-                        .append(Container(
-                            margin: EdgeInsets.only(left: 20, right: 20, top: 5),
-                            child: Builder(
-                                builder: (context) => MaterialButton(
-                                      padding: EdgeInsets.only(left: 20),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                      child: Align(
-                                          alignment: Alignment.center,
-                                          child: Container(
-                                            margin: EdgeInsets.all(25),
-                                            child: Icon(
-                                              CupertinoIcons.add_circled,
-                                              color: Theme.of(context).colorScheme.primary,
-                                            ),
-                                          )),
-                                      onPressed: () {
-                                        Navigator.push(
-                                            context, MaterialPageRoute(builder: (context) => NewSessionPage(routed: true)));
-                                      },
-                                    ))))
+                        .append(Builder(
+                            builder: (context) => MaterialButton(
+                                  child: Align(
+                                      alignment: Alignment.center,
+                                      child: Container(
+                                        margin: EdgeInsets.all(25),
+                                        child: Icon(
+                                          Icons.add_circle_outline,
+                                          color: Theme.of(context).colorScheme.primary,
+                                        ),
+                                      )),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context, MaterialPageRoute(builder: (context) => NewSessionPage(routed: true)));
+                                  },
+                                )))
                         .toList(),
                   ),
                 ],
@@ -422,53 +414,49 @@ class _NewSessionPageState extends State<NewSessionPage> {
     var providersList = Share.providers.keys
         .where((x) => enableFake || x != 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER')
         .select(
-          (x, index) => Container(
-            margin: EdgeInsets.only(left: 20, right: 20, top: 5),
-            child: Builder(
-                builder: (context) => MaterialButton(
-                      padding: EdgeInsets.only(left: 30),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      child: Row(children: [
-                        ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: 120, maxHeight: 80, minWidth: 120, minHeight: 80),
-                            child: Container(
-                                margin: EdgeInsets.only(top: 20, bottom: 20),
-                                child: FadeInImage.memoryNetwork(
-                                    height: 37,
-                                    placeholder: kTransparentImage,
-                                    image: Share.providers[x]!.instance.providerBannerUri?.toString() ??
-                                        'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg'))),
-                        Container(
-                          width: 1,
-                          height: 40,
-                          margin: EdgeInsets.only(left: 20, right: 20),
-                          decoration: const BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(10)), color: Color(0x55AAAAAA)),
-                        ),
-                        Flexible(
-                            child: Container(
-                                margin: EdgeInsets.only(right: 20),
-                                child: Text(
-                                  Share.providers[x]!.instance.providerName,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 15,
-                                      color: CupertinoDynamicColor.resolve(
-                                          CupertinoDynamicColor.withBrightness(
-                                              color: CupertinoColors.black, darkColor: CupertinoColors.white),
-                                          context)),
-                                )))
-                      ]),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    LoginPageBase.adaptive(instance: Share.providers[x]!.instance, providerGuid: x)));
-                      },
-                    )),
-          ),
+          (x, index) => Builder(
+              builder: (context) => MaterialButton(
+                    padding: EdgeInsets.only(left: 30),
+                    child: Row(children: [
+                      ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: 120, maxHeight: 80, minWidth: 120, minHeight: 80),
+                          child: Container(
+                              margin: EdgeInsets.only(top: 20, bottom: 20),
+                              child: FadeInImage.memoryNetwork(
+                                  height: 37,
+                                  placeholder: kTransparentImage,
+                                  image: Share.providers[x]!.instance.providerBannerUri?.toString() ??
+                                      'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg'))),
+                      Container(
+                        width: 1,
+                        height: 40,
+                        margin: EdgeInsets.only(left: 20, right: 20),
+                        decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)), color: Color(0x55AAAAAA)),
+                      ),
+                      Flexible(
+                          child: Container(
+                              margin: EdgeInsets.only(right: 20),
+                              child: Text(
+                                Share.providers[x]!.instance.providerName,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15,
+                                    color: CupertinoDynamicColor.resolve(
+                                        CupertinoDynamicColor.withBrightness(
+                                            color: CupertinoColors.black, darkColor: CupertinoColors.white),
+                                        context)),
+                              )))
+                    ]),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  LoginPageBase.adaptive(instance: Share.providers[x]!.instance, providerGuid: x)));
+                    },
+                  )),
         )
         .selectMany((x, index) => [
               x,

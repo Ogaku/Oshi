@@ -125,41 +125,49 @@ class _AdaptiveMenuButtonState extends State<AdaptiveMenuButton> with SingleTick
             child: widget.child,
           ),
         )
-      : MenuAnchor(
-          controller: _menuController,
-          onClose: _animationController.reset,
-          onOpen: _animationController.forward,
-          builder: (_, controller, child) => widget.longPressOnly
-              ? GestureDetector(
-                  onLongPress: () {
-                    if (_animationController.status case AnimationStatus.forward || AnimationStatus.completed) {
-                      _animationController.reverse();
-                    } else {
-                      _animationController.forward();
-                    }
-                  },
-                  child: widget.child,
-                )
-              : IconButton(
-                  onPressed: () {
-                    if (_animationController.status case AnimationStatus.forward || AnimationStatus.completed) {
-                      _animationController.reverse();
-                    } else {
-                      _animationController.forward();
-                    }
-                  },
-                  icon: widget.child,
-                ),
-          menuChildren: [
-            FadeTransition(
-                opacity: _animationController,
-                child: Column(
-                    children: widget
-                        .itemBuilder(context)
-                        .where((x) => x is AdaptiveMenuItem || Share.settings.appSettings.useCupertino)
-                        .toList()))
-          ],
-        );
+      : (widget.longPressOnly
+          ? GestureDetector(
+              onLongPressStart: (offset) => showOptionDialog(context, offset.globalPosition),
+              child: widget.child,
+            )
+          : MenuAnchor(
+              controller: _menuController,
+              onClose: _animationController.reset,
+              onOpen: _animationController.forward,
+              builder: (_, controller, child) => IconButton(
+                onPressed: () {
+                  if (_animationController.status case AnimationStatus.forward || AnimationStatus.completed) {
+                    _animationController.reverse();
+                  } else {
+                    _animationController.forward();
+                  }
+                },
+                icon: widget.child,
+              ),
+              menuChildren: [
+                FadeTransition(
+                    opacity: _animationController,
+                    child: Column(
+                        children: widget
+                            .itemBuilder(context)
+                            .where((x) => x is AdaptiveMenuItem || Share.settings.appSettings.useCupertino)
+                            .toList()))
+              ],
+            ));
+
+  void showOptionDialog(BuildContext context, Offset offset) {
+    final RenderObject overlay = Overlay.of(context).context.findRenderObject()!;
+    showMenu(
+        context: context,
+        position: RelativeRect.fromRect(Rect.fromLTWH(offset.dx, offset.dy, 30, 30),
+            Rect.fromLTWH(0, 0, overlay.paintBounds.size.width, overlay.paintBounds.size.height)),
+        items: widget
+            .itemBuilder(context)
+            .where((x) => x is AdaptiveMenuItem || Share.settings.appSettings.useCupertino)
+            .select((x, index) =>
+                PopupMenuItem(value: index, padding: EdgeInsets.only(), child: widget.itemBuilder(context)[index]))
+            .toList());
+  }
 }
 
 class AdaptiveMenuItem extends StatelessWidget implements PullDownMenuEntry {

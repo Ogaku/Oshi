@@ -74,7 +74,9 @@ extension LessonWidgetExtension on Attendance {
                           context: context,
                           builder: (context) => MessageComposePage(
                               receivers: [teacher],
-                              subject: '89BEEDA5-3774-4BC0-B827-72D3AA2E31CC'.localized.format(DateFormat("y.M.d").format(date), lessonNo),
+                              subject: '89BEEDA5-3774-4BC0-B827-72D3AA2E31CC'
+                                  .localized
+                                  .format(DateFormat("y.M.d").format(date), lessonNo),
                               signature:
                                   '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                     }),
@@ -88,10 +90,12 @@ extension LessonWidgetExtension on Attendance {
                             builder: (context) => MessageComposePage(
                                 receivers: [Share.session.data.student.mainClass.classTutor],
                                 subject: 'CC111EE5-B18F-46EB-A6FF-09E3ABFA1FA1'.localized,
-                                message:
-                                    '853265A9-1B40-43F2-82B5-E9E238EF8A5B'.localized.format(DateFormat("y.M.dd").format(date), lessonNo),
-                                signature:
-                                    'F491D698-DFB6-4E62-B100-1546660AB6D1'.localized.format(Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
+                                message: '853265A9-1B40-43F2-82B5-E9E238EF8A5B'
+                                    .localized
+                                    .format(DateFormat("y.M.dd").format(date), lessonNo),
+                                signature: 'F491D698-DFB6-4E62-B100-1546660AB6D1'.localized.format(
+                                    Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
+                        Navigator.of(context).pop();
                       }),
                   type == AttendanceType.absent),
           longPressOnly: true,

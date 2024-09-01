@@ -24,7 +24,12 @@ extension GradeBodyExtension on Grade {
       AdaptiveMenuButton(
           itemBuilder: (context) => [
                 AdaptiveMenuItem(
-                  onTap: () => sharing.Share.share('720C70E6-DB4D-44F7-878A-484DDF8A5648'.localized.format(value, DateFormat("EEEE, MMM d, y").format(date))),
+                  onTap: () {
+                    sharing.Share.share('720C70E6-DB4D-44F7-878A-484DDF8A5648'
+                        .localized
+                        .format(value, DateFormat("EEEE, MMM d, y").format(date)));
+                    Navigator.of(context).pop();
+                  },
                   icon: CupertinoIcons.share,
                   title: '/Share'.localized,
                 ),
@@ -43,6 +48,7 @@ extension GradeBodyExtension on Grade {
                           } catch (ex) {
                             // ignored
                           }
+                          Navigator.of(context).pop();
                         },
                       ),
                       isOwnGrade)
@@ -50,13 +56,18 @@ extension GradeBodyExtension on Grade {
                       AdaptiveMenuItem(
                         icon: CupertinoIcons.chat_bubble_2,
                         title: '/Inquiry'.localized,
-                        onTap: () => showMaterialModalBottomSheet(
-                            context: context,
-                            builder: (context) => MessageComposePage(
-                                receivers: [addedBy],
-                                subject: 'B0FB564D-E5AF-451E-855F-5988D86C8A6A'.localized.format(value, DateFormat("y.M.d").format(addDate)),
-                                signature:
-                                    '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}')),
+                        onTap: () {
+                          showMaterialModalBottomSheet(
+                              context: context,
+                              builder: (context) => MessageComposePage(
+                                  receivers: [addedBy],
+                                  subject: 'B0FB564D-E5AF-451E-855F-5988D86C8A6A'
+                                      .localized
+                                      .format(value, DateFormat("y.M.d").format(addDate)),
+                                  signature:
+                                      '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                          Navigator.of(context).pop();
+                        },
                       ),
                       !isOwnGrade)
                   .appendIf(
@@ -69,6 +80,7 @@ extension GradeBodyExtension on Grade {
                             Share.session.customGrades[customLesson]?.removeWhere((x) => x.id != -1 && x.id == id);
                           });
                           Share.settings.save();
+                          Navigator.of(context).pop();
                         },
                       ),
                       isOwnGrade),
@@ -189,7 +201,9 @@ extension GradeBodyExtension on Grade {
                                       child: Opacity(
                                           opacity: name.isNotEmpty ? 1.0 : 0.5,
                                           child: Text(
-                                            name.isNotEmpty ? name.capitalize() : '621D8FEF-5DAF-4EDD-B9A4-3EBF3D18AD1C'.localized,
+                                            name.isNotEmpty
+                                                ? name.capitalize()
+                                                : '621D8FEF-5DAF-4EDD-B9A4-3EBF3D18AD1C'.localized,
                                             textAlign: TextAlign.start,
                                             style: TextStyle(
                                                 fontSize: 17,

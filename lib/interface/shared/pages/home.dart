@@ -622,7 +622,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
             .appendIf(homeworksWidget, homeworksLast)
             .toList()
         :
-        // ---------- Material home screen ----------
+        // ---------- Material home screen ---------- 
         <Widget>[
             CardContainer(
                 radius: 25,
@@ -633,95 +633,96 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                       regularOverride: true,
                       filled: false,
                       children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
-                          child: AdaptiveCard(
-                              hideChevron: true,
-                              regular: true,
-                              margin: EdgeInsets.symmetric(horizontal: 17, vertical: 0),
-                              click: () {
-                                Share.tabsNavigatePage.broadcast(Value(2));
-                                Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay
-                                    .broadcast(Value(DateTime.now().asDate(utc: true).add(Duration(
-                                        days: (DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
-                                                    (nextDay?.hasLessons ?? false)) ||
-                                                (!(currentDay?.hasLessons ?? false) && (nextDay?.hasLessons ?? false))
-                                            ? 1
-                                            : 0)))));
-                              },
-                              child: Container(
-                                  margin: EdgeInsets.only(top: 3, bottom: 15),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                        Expanded(
-                                            child: Container(
-                                          margin: EdgeInsets.only(top: 10),
-                                          child: Text(glanceTitle,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18,
-                                                color: Theme.of(context).colorScheme.primary,
-                                              )),
-                                        )),
-                                        Container(
-                                            margin: EdgeInsets.only(top: isLucky ? 0 : 5),
-                                            child: Visibility(
-                                                visible: Share.session.data.student.mainClass.unit.luckyNumber != null,
-                                                child: Stack(alignment: Alignment.center, children: [
-                                                  Transform.scale(
-                                                      scale: isLucky ? 4.5 : 1.4,
-                                                      child: isLucky
-                                                          ? Icon(CupertinoIcons.star_fill,
-                                                              color: CupertinoColors.systemYellow.withAlpha(70))
-                                                          : Icon(CupertinoIcons.circle_fill, color: Color(0x22777777))),
-                                                  Container(
-                                                      margin: EdgeInsets.only(),
-                                                      child: Text(
-                                                          Share.session.data.student.mainClass.unit.luckyNumber
-                                                                  ?.toString() ??
-                                                              '69',
-                                                          style: TextStyle(
-                                                            fontSize: 17,
-                                                            fontWeight: FontWeight.w600,
-                                                            color: CupertinoDynamicColor.resolve(
-                                                                CupertinoDynamicColor.withBrightness(
-                                                                    color: CupertinoColors.black,
-                                                                    darkColor: CupertinoColors.white),
-                                                                context),
-                                                            shadows: [
-                                                              Shadow(
-                                                                color: CupertinoColors.black,
-                                                                blurRadius: 3.0,
-                                                                offset: Offset(0.0, 0.0),
-                                                              ),
-                                                            ],
-                                                          ))),
-                                                ])))
-                                      ]),
+                        AdaptiveCard(
+                            hideChevron: true,
+                            regular: true,
+                            roundedFocus: false,
+                            margin: EdgeInsets.symmetric(horizontal: 22, vertical: 0),
+                            click: () {
+                              Share.tabsNavigatePage.broadcast(Value(2));
+                              Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay.broadcast(
+                                  Value(DateTime.now().asDate(utc: true).add(Duration(
+                                      days: (DateTime.now().isAfterOrSame(currentDay?.dayEnd) &&
+                                                  (nextDay?.hasLessons ?? false)) ||
+                                              (!(currentDay?.hasLessons ?? false) && (nextDay?.hasLessons ?? false))
+                                          ? 1
+                                          : 0)))));
+                            },
+                            child: Container(
+                                margin: EdgeInsets.only(bottom: 11),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                      Expanded(
+                                          child: Container(
+                                        margin: EdgeInsets.only(top: 10),
+                                        child: Text(glanceTitle,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                              color: Theme.of(context).colorScheme.primary,
+                                            )),
+                                      )),
                                       Container(
-                                          margin: EdgeInsets.only(top: 2),
-                                          child: Row(children: [
-                                            Flexible(
-                                                child: Container(
-                                                    margin: EdgeInsets.only(right: 3),
+                                          margin: EdgeInsets.only(top: isLucky ? 0 : 5),
+                                          child: Visibility(
+                                              visible: Share.session.data.student.mainClass.unit.luckyNumber != null,
+                                              child: Stack(alignment: Alignment.center, children: [
+                                                Transform.scale(
+                                                    scale: isLucky ? 4.5 : 1.4,
+                                                    child: isLucky
+                                                        ? Icon(CupertinoIcons.star_fill,
+                                                            color: CupertinoColors.systemYellow.withAlpha(70))
+                                                        : Icon(CupertinoIcons.circle_fill, color: Color(0x22777777))),
+                                                Container(
+                                                    margin: EdgeInsets.only(),
                                                     child: Text(
-                                                      glanceSubtitle.flexible,
-                                                      style: TextStyle(fontWeight: FontWeight.w400),
-                                                    ))),
-                                            Text(
-                                              glanceSubtitle.standard,
-                                              style: TextStyle(fontWeight: FontWeight.w400),
-                                            )
-                                          ])),
-                                    ],
-                                  ))),
-                        )
+                                                        Share.session.data.student.mainClass.unit.luckyNumber?.toString() ??
+                                                            '69',
+                                                        style: TextStyle(
+                                                          fontSize: 17,
+                                                          fontWeight: FontWeight.w600,
+                                                          color: CupertinoDynamicColor.resolve(
+                                                              CupertinoDynamicColor.withBrightness(
+                                                                  color: CupertinoColors.black,
+                                                                  darkColor: CupertinoColors.white),
+                                                              context),
+                                                          shadows: [
+                                                            Shadow(
+                                                              color: CupertinoColors.black,
+                                                              blurRadius: 3.0,
+                                                              offset: Offset(0.0, 0.0),
+                                                            ),
+                                                          ],
+                                                        ))),
+                                              ])))
+                                    ]),
+                                    Container(
+                                        margin: EdgeInsets.only(top: 2),
+                                        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                          Flexible(
+                                              child: Container(
+                                                  margin: EdgeInsets.only(right: 3),
+                                                  child: Text(
+                                                    glanceSubtitle.flexible,
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(fontWeight: FontWeight.w400),
+                                                  ))),
+                                          Text(
+                                            glanceSubtitle.standard,
+                                            style: TextStyle(fontWeight: FontWeight.w400),
+                                          )
+                                        ])),
+                                  ],
+                                )))
                       ]
                           .appendIf(
                               AdaptiveCard(
                                   hideChevron: true,
+                                  roundedFocus: false,
+                                  margin: EdgeInsets.only(left: 23, right: 23, bottom: 8, top: 5),
                                   click: () {
                                     Share.tabsNavigatePage.broadcast(Value(2));
                                     Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay
@@ -732,26 +733,68 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                 ? 1
                                                 : 0)))));
                                   },
-                                  child: Container(
-                                      margin: EdgeInsets.only(top: 10, bottom: 10),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Visibility(
-                                              visible: currentLesson != null,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Visibility(
+                                          visible: currentLesson != null,
+                                          child: Container(
+                                              margin: EdgeInsets.only(bottom: 5),
+                                              child: Row(
+                                                  children: [
+                                                Text(
+                                                  '/Now'.localized,
+                                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                                ),
+                                                Flexible(
+                                                    child: Container(
+                                                        margin: EdgeInsets.only(right: 3, left: 3),
+                                                        child: Text(
+                                                          currentLesson?.subject?.name ??
+                                                              '/Notifications/Placeholder/Lesson'.localized,
+                                                          style: TextStyle(fontWeight: FontWeight.w500),
+                                                        ))),
+                                              ].appendIf(
+                                                      Text(
+                                                        'C33F8288-5BAD-4574-9C53-B54FED6757AC'
+                                                            .localized
+                                                            .format(currentLesson?.classroom?.name ?? "the otherworld"),
+                                                        style: TextStyle(fontWeight: FontWeight.w400),
+                                                      ),
+                                                      currentLesson?.classroom?.name.isNotEmpty ?? false)))),
+                                      Visibility(
+                                          visible: nextLesson != null,
+                                          child: Opacity(
+                                              opacity: 0.5,
                                               child: Container(
-                                                  margin: EdgeInsets.only(bottom: 5),
+                                                  margin: EdgeInsets.only(),
                                                   child: Row(
                                                       children: [
                                                     Text(
-                                                      '/Now'.localized,
+                                                      // If the "next" lesson is the first one
+                                                      (nextLesson != null &&
+                                                              (currentDay?.lessonsStrippedCancelled
+                                                                      .firstWhereOrDefault(
+                                                                          (l) => l?.any((x) => !x.isCanceled) ?? false)
+                                                                      ?.any((x) => x == nextLesson) ??
+                                                                  false))
+                                                          ? 'D8F15F8A-2EA6-474D-80B8-E71625B3D121'.localized
+                                                          : // If the "next" lesson is the last one
+                                                          (nextLesson != null &&
+                                                                  (currentDay?.lessonsStrippedCancelled
+                                                                          .lastWhereOrDefault(
+                                                                              (l) => l?.any((x) => !x.isCanceled) ?? false)
+                                                                          ?.any((x) => x == nextLesson) ??
+                                                                      false))
+                                                              ? '6B3280B8-EDDB-44E2-A2D5-824FE98E8247'.localized
+                                                              : '2754A69F-9E60-4FDA-903B-95CFAB85E982'.localized,
                                                       style: TextStyle(fontWeight: FontWeight.w500),
                                                     ),
                                                     Flexible(
                                                         child: Container(
                                                             margin: EdgeInsets.only(right: 3, left: 3),
                                                             child: Text(
-                                                              currentLesson?.subject?.name ??
+                                                              nextLesson?.subject?.name ??
                                                                   '/Notifications/Placeholder/Lesson'.localized,
                                                               style: TextStyle(fontWeight: FontWeight.w500),
                                                             ))),
@@ -759,61 +802,19 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                           Text(
                                                             'C33F8288-5BAD-4574-9C53-B54FED6757AC'
                                                                 .localized
-                                                                .format(currentLesson?.classroom?.name ?? "the otherworld"),
+                                                                .format(nextLesson?.classroom?.name ?? "the otherworld"),
                                                             style: TextStyle(fontWeight: FontWeight.w400),
                                                           ),
-                                                          currentLesson?.classroom?.name.isNotEmpty ?? false)))),
-                                          Visibility(
-                                              visible: nextLesson != null,
-                                              child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Container(
-                                                      margin: EdgeInsets.only(),
-                                                      child: Row(
-                                                          children: [
-                                                        Text(
-                                                          // If the "next" lesson is the first one
-                                                          (nextLesson != null &&
-                                                                  (currentDay?.lessonsStrippedCancelled
-                                                                          .firstWhereOrDefault(
-                                                                              (l) => l?.any((x) => !x.isCanceled) ?? false)
-                                                                          ?.any((x) => x == nextLesson) ??
-                                                                      false))
-                                                              ? 'D8F15F8A-2EA6-474D-80B8-E71625B3D121'.localized
-                                                              : // If the "next" lesson is the last one
-                                                              (nextLesson != null &&
-                                                                      (currentDay?.lessonsStrippedCancelled
-                                                                              .lastWhereOrDefault((l) =>
-                                                                                  l?.any((x) => !x.isCanceled) ?? false)
-                                                                              ?.any((x) => x == nextLesson) ??
-                                                                          false))
-                                                                  ? '6B3280B8-EDDB-44E2-A2D5-824FE98E8247'.localized
-                                                                  : '2754A69F-9E60-4FDA-903B-95CFAB85E982'.localized,
-                                                          style: TextStyle(fontWeight: FontWeight.w500),
-                                                        ),
-                                                        Flexible(
-                                                            child: Container(
-                                                                margin: EdgeInsets.only(right: 3, left: 3),
-                                                                child: Text(
-                                                                  nextLesson?.subject?.name ??
-                                                                      '/Notifications/Placeholder/Lesson'.localized,
-                                                                  style: TextStyle(fontWeight: FontWeight.w500),
-                                                                ))),
-                                                      ].appendIf(
-                                                              Text(
-                                                                'C33F8288-5BAD-4574-9C53-B54FED6757AC'
-                                                                    .localized
-                                                                    .format(nextLesson?.classroom?.name ?? "the otherworld"),
-                                                                style: TextStyle(fontWeight: FontWeight.w400),
-                                                              ),
-                                                              nextLesson?.classroom?.name.isNotEmpty ?? false)))))
-                                        ],
-                                      ))),
+                                                          nextLesson?.classroom?.name.isNotEmpty ?? false)))))
+                                    ],
+                                  )),
                               // Show during lessons and breaks (between lessons)
                               nextLesson != null || currentLesson != null)
                           .appendIf(
                               AdaptiveCard(
                                   hideChevron: true,
+                                  roundedFocus: false,
+                                  margin: EdgeInsets.symmetric(horizontal: 23),
                                   click: () {
                                     Share.tabsNavigatePage.broadcast(Value(2));
                                     Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay
@@ -875,6 +876,8 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                           .appendIf(
                               AdaptiveCard(
                                   hideChevron: true,
+                                  roundedFocus: false,
+                                  margin: EdgeInsets.symmetric(horizontal: 23),
                                   click: () {
                                     Share.tabsNavigatePage.broadcast(Value(2));
                                     Future.delayed(Duration(milliseconds: 250)).then((arg) => Share.timetableNavigateDay
