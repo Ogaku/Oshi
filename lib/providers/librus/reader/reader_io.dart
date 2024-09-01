@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:format/format.dart';
 import 'package:oshi/models/progress.dart';
+import 'package:oshi/share/translator.dart';
 import 'package:universal_io/io.dart';
 import '../constants.dart';
 
@@ -171,7 +172,7 @@ class LibrusLogin extends reader.LibrusLogin {
     synergiaData.cookieJar = CookieJar();
 
     synergiaData.session.interceptors.add(CookieManager(synergiaData.cookieJar));
-    progress?.report((progress: 0.3, message: "API'ing the Librus OAuth API..."));
+    progress?.report((progress: 0.3, message: '55E2F1C8-AD9E-4D3B-B700-0DB1493C8B07'.localized));
 
 //#region OAuth Setup
     try {
@@ -184,7 +185,7 @@ class LibrusLogin extends reader.LibrusLogin {
       if (kDebugMode) print(e);
     }
 
-    progress?.report((progress: 0.4, message: "Bruteforcing your damn password..."));
+    progress?.report((progress: 0.4, message: 'C8C69498-3A64-4560-A275-3ACDCCCF1B90'.localized));
 
     try {
       // Post the login data for OAuth authorization
@@ -200,32 +201,33 @@ class LibrusLogin extends reader.LibrusLogin {
     }
 
     // Acquire all required authorization headers here
-    progress?.report((progress: 0.5, message: "Grating the global access..."));
+    progress?.report((progress: 0.5, message: '9A7C2236-A7DC-4668-81F2-FEF1FF9B0AAE'.localized));
     await synergiaData.session.get(librusOAuthGrantUri, queryParameters: {'client_id': 46});
 //#endregion
 
 //#region Gateway
     // Activate the API access - get the user ID
-    progress?.report((progress: 0.6, message: "Salvaging the access tokens..."));
+    progress?.report((progress: 0.6, message: '41D4096F-11CA-4385-8191-436DB9BF8A07'.localized));
     var tokenResponse = await synergiaData.session.get(gatewayTokenInfoUri);
 
     // Activate the API access - authenticate using the ID
-    progress?.report((progress: 0.7, message: "Tokenizing all the tokens..."));
+    progress?.report((progress: 0.7, message: '5DA166B8-F9B9-40A1-8E90-22ED84E498A3'.localized));
     var authResponse = await synergiaData.session.get(format(gatewayTokenGrantUri, tokenResponse.data['UserIdentifier']));
 
     // Validate the user still has access to the API
-    if (authResponse.data['UserState'] != 'ACTIVE') throw Exception('User session not active!');
+    if (authResponse.data['UserState'] != 'ACTIVE') throw Exception('64D1FFB7-0CF9-43D1-8B74-998F2AB6CAA6'.localized);
 //#endregion
 
 //#region Messages
     // Make the first request - used to gain general authorization
-    progress?.report((progress: 0.8, message: "Messaging the messages module..."));
+    progress?.report((progress: 0.8, message: 'FB716D2D-FFFA-41C5-91B5-02678F6D0FA5'.localized));
     await synergiaData.session.get(messagesActivationUri);
 
     // Copy all cookies from the authorization session
-    progress?.report((progress: 0.9, message: "Sharing the cookies with others..."));
+    progress?.report((progress: 0.9, message: '4D52E8BC-6C25-4C8F-B031-777844C73315'.localized));
     synergiaData.cookieJar.saveFromResponse(
         Uri.parse(messagesCookieUrl), await synergiaData.cookieJar.loadForRequest(Uri.parse(synergiaCookieUrl)));
+    await Future.delayed(const Duration(milliseconds: 400));
 //#endregion
 
     // Sample API responses for partial testing

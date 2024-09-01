@@ -31,6 +31,7 @@ import 'package:oshi/models/data/event.dart' as models;
 import 'package:oshi/models/data/grade.dart' as models;
 import 'package:oshi/models/data/messages.dart' as models;
 import 'package:oshi/models/provider.dart' as models;
+import 'package:oshi/share/translator.dart';
 
 import 'models/shim/classrooms.dart' show Classrooms, Classroom;
 import 'models/shim/event_categories.dart' show EventCategories;
@@ -69,7 +70,7 @@ class LibrusDataReader implements models.IProvider {
       {Map<String, String>? credentials, IProgress<({double? progress, String? message})>? progress}) async {
     data = SynergiaData(); // Reset
 
-    progress?.report((progress: 0.1, message: "Caching all your credentials..."));
+    progress?.report((progress: 0.1, message: 'D870CFEB-F16B-4091-9084-9620E5BACE22'.localized));
 
     // Grab our credentials from the map
     var username = credentials?['login'];
@@ -78,20 +79,20 @@ class LibrusDataReader implements models.IProvider {
 
     // Check the provided proxy URL if running on web
     if (kIsWeb && Uri.tryParse(proxy ?? '') == null)
-      return (success: false, message: Exception('No valid proxy provided!'));
+      return (success: false, message: Exception('1DBA54DA-C4D2-4D21-B072-89AAFCC4758D'.localized));
     else
       data = SynergiaData(credentials?['proxy'] ?? ''); // Reset again
 
     // Instantiate a portal login
-    progress?.report((progress: 0.2, message: "Looking at your pathetic password..."));
+    progress?.report((progress: 0.2, message: '440FA18A-AD7D-47B4-B4FF-C2FE934479DA'.localized));
     data?.synergiaLogin = LibrusLogin(synergiaData: data, login: username, pass: password, proxyUrl: proxy);
 
     // Check whether there is data to log in with
     if ((username?.isEmpty ?? true) || (password?.isEmpty ?? true))
-      return (success: false, message: Exception('No data to log in with!'));
+      return (success: false, message: Exception('E15B042C-B7C1-43AB-9557-EA1B1F08CE9C'.localized));
 
     // Validate the credentials and extract the API token
-    progress?.report((progress: 0.3, message: "Contracting the setup wizard..."));
+    progress?.report((progress: 0.3, message: '395B01AF-19EE-43BE-880D-1EAE925B33C2'.localized));
     await data!.synergiaLogin!.setupToken(progress: progress);
 
     // Create a new instance of the portal API scraper
@@ -104,7 +105,7 @@ class LibrusDataReader implements models.IProvider {
   @override
   Future<({Exception? message, bool success})> refresh(
       {DateTime? weekStart, IProgress<({String? message, double? progress})>? progress}) async {
-    if (data?.librusApi == null) throw Exception('Not logged in.');
+    if (data?.librusApi == null) throw Exception('C5FDD0D8-771D-4DCE-8FCE-62D1BA4A6C93'.localized);
 
 //#region Basics
 
@@ -138,7 +139,7 @@ class LibrusDataReader implements models.IProvider {
     }
 //#endregion
 
-    progress?.report((progress: 0.1, message: "Checking how many lessons you've skipped..."));
+    progress?.report((progress: 0.1, message: '9395EE9D-253E-4795-9F7D-DFA49D161EA8'.localized));
 
 //#region Attendance
 
@@ -162,7 +163,7 @@ class LibrusDataReader implements models.IProvider {
 
 //#endregion
 
-    progress?.report((progress: 0.2, message: 'Spiriting your school principal away...'));
+    progress?.report((progress: 0.2, message: '4C6CC778-B7FE-4B76-BE87-BCFC9E1E2F7B'.localized));
 
 //#region Student
 
@@ -248,7 +249,7 @@ class LibrusDataReader implements models.IProvider {
 
 //#endregion
 
-    progress?.report((progress: 0.3, message: 'Counting all the long lessons remaining...'));
+    progress?.report((progress: 0.3, message: '65F39C72-B55D-4970-986B-69DDA8135FF7'.localized));
 
 //#region Timetable
 
@@ -336,7 +337,7 @@ class LibrusDataReader implements models.IProvider {
 
 //#endregion
 
-    progress?.report((progress: 0.4, message: 'Looking for any interesting events right there...'));
+    progress?.report((progress: 0.4, message: '8966023D-0F77-4B9D-B31B-385A201EB05A'.localized));
 
 //#region Notices and Agenda
 
@@ -422,7 +423,7 @@ class LibrusDataReader implements models.IProvider {
 
 //#endregion
 
-    progress?.report((progress: 0.5, message: "Filling up the hidden 'homework' folder..."));
+    progress?.report((progress: 0.5, message: '166B3D1B-90DF-446D-87F6-B27BF62D2C23'.localized));
 
 //#region Homeworks
 
@@ -461,7 +462,7 @@ class LibrusDataReader implements models.IProvider {
 
 //#endregion
 
-    progress?.report((progress: 0.6, message: 'Looking for any nice, free, and school-less days...'));
+    progress?.report((progress: 0.6, message: 'A081AE97-83F2-4B70-98E6-1654A12455C5'.localized));
 
 //#region Free Days
 
@@ -513,7 +514,7 @@ class LibrusDataReader implements models.IProvider {
 
 //#endregion
 
-    progress?.report((progress: 0.7, message: 'Counting all your pathetic grades...'));
+    progress?.report((progress: 0.7, message: '10B640EC-6CBF-42CF-A20B-7CA5E97E8AFE'.localized));
 
 //#region Free Days
 
@@ -556,7 +557,7 @@ class LibrusDataReader implements models.IProvider {
 
 //#endregion
 
-    progress?.report((progress: 0.8, message: 'Sautéeing the data sauce, adding MSG...'));
+    progress?.report((progress: 0.8, message: '3543FC9A-32FB-446F-8CB8-FEF95248CD2C'.localized));
     dataChunk.student = student; // Push the data to the outer scope, add or update
     dataChunk.timetables = timetable; // Push the data to the outer scope, add only
 
@@ -589,7 +590,7 @@ class LibrusDataReader implements models.IProvider {
   @override
   Future<({Exception? message, bool success})> refreshMessages(
       {IProgress<({String? message, double? progress})>? progress}) async {
-    progress?.report((progress: 0.1, message: 'Caching all the cache we possibly have...'));
+    progress?.report((progress: 0.1, message: '135991AA-5B53-42EA-8A2B-5406B249CC40'.localized));
 
 //#region Basics
 
@@ -612,7 +613,7 @@ class LibrusDataReader implements models.IProvider {
 
 //#endregion
 
-    progress?.report((progress: 0.9, message: "Seeing who'd like to never receive a reply message..."));
+    progress?.report((progress: 0.9, message: '75A471A9-DA5B-4C1D-B078-6B57988F9244'.localized));
 
 //#region Messages
 

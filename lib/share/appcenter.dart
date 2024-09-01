@@ -4,10 +4,12 @@ import 'dart:io';
 import 'package:appcenter_sdk_flutter/appcenter_sdk_flutter.dart' as apps;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:format/format.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AppCenter {
@@ -25,7 +27,7 @@ class AppCenter {
       await apps.AppCenterAnalytics.enable();
       await apps.AppCenterCrashes.enable();
 
-      await apps.AppCenterAnalytics.trackEvent(name: 'Telemetry session started');
+      await apps.AppCenterAnalytics.trackEvent(name: '1850951C-DEEC-4D29-A71A-16CBD1BB786B'.localized);
     } catch (ex) {
       // ignored
     }
@@ -56,15 +58,15 @@ class AppCenter {
           (await (Connectivity().checkConnectivity())) == ConnectivityResult.wifi) {
         // Else try to download the update and show a notification
         NotificationController.sendNotification(
-            title: 'Downloading Oshi ${result.version}',
-            content: 'Please wait a while...',
+            title: '05ABEB49-7597-47DB-B200-C9F64799ED5A'.localized.format(result.version),
+            content: '7F2D0551-2391-4676-ADED-FAECF0CB89D7'.localized,
             category: NotificationCategories.other,
             id: 9999991);
 
         var progress = Progress<({double? progress, String? message})>();
         progress.progressChanged.subscribe((args) => NotificationController.sendNotification(
-            title: 'Downloading Oshi ${result.version}',
-            content: 'Please wait a while...',
+            title: '05ABEB49-7597-47DB-B200-C9F64799ED5A'.localized.format(result.version),
+            content: '7F2D0551-2391-4676-ADED-FAECF0CB89D7'.localized,
             category: NotificationCategories.other,
             progress: args?.value.progress ?? 0.0,
             id: 9999991));
@@ -74,15 +76,15 @@ class AppCenter {
         if (await _download(result.download, path, progress)) {
           await Future.delayed(const Duration(seconds: 3));
           await NotificationController.sendNotification(
-              title: 'The latest Oshi is ready!',
-              content: 'Oshi ${result.version} is waiting for you...',
+              title: '2C4D5FB8-EA44-472A-BF73-1701C8C066D0'.localized,
+              content: 'B9F622DB-5DFD-4056-871E-2E7AFD0B982C'.localized.format(result.version),
               data: 'update_android\n$path',
               category: NotificationCategories.other,
               id: 9999991);
         } else {
           await NotificationController.sendNotification(
-              title: 'Update failed!',
-              content: 'An error occurred and Oshi couldn\'t downlaod the latest update...',
+              title: '25C82C3D-4C3E-44A1-B2CC-F29FC76B79FC'.localized,
+              content: '17EE54B1-00DA-4A47-82AD-FF03D11312F9'.localized,
               category: NotificationCategories.other,
               id: 9999991);
         }
@@ -90,8 +92,8 @@ class AppCenter {
         return (result: false, download: Uri());
       } else if ((isIOS || isAndroid) && checkResult.result) {
         NotificationController.sendNotification(
-            title: 'The latest Oshi is waiting for you!',
-            content: 'Click to download Oshi ${result.version}',
+            title: '099A022C-1072-426E-B729-02E99DF75B84'.localized,
+            content: '2602BCBF-D632-41A9-81BF-C27B03756DED'.localized.format(result.version),
             category: NotificationCategories.other,
             data: 'url\n${result.download}',
             id: 9999993);
@@ -113,7 +115,7 @@ class AppCenter {
         onReceiveProgress: (r, t) => progress?.report((progress: r / t, message: null)),
         options: Options(
             responseType: ResponseType.bytes,
-            followRedirects: false,
+            followRedirects: true,
             validateStatus: (status) {
               return status != null ? status < 500 : false;
             }),
