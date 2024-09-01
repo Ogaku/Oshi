@@ -115,7 +115,7 @@ extension GradeBodyExtension on Grade {
                         child: Table(children: [
                           TableRow(children: [
                             Container(
-                                margin: EdgeInsets.only(top: 20, left: 15, right: 15),
+                                margin: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
                                 child: Hero(
                                     tag: tag,
                                     child: gradeBody(context,

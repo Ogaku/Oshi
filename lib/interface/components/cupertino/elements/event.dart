@@ -267,7 +267,7 @@ extension EventWidgetExtension on Event {
                             children: [
                           TableRow(children: [
                             Container(
-                                margin: EdgeInsets.only(top: 20, left: 15, right: 15),
+                                margin: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
                                 child: Hero(
                                     tag: tag,
                                     child: eventBody(isNotEmpty, day, context,
@@ -744,7 +744,7 @@ extension LessonWidgetExtension on TimetableLesson {
                             children: <TableRow>[
                           TableRow(children: [
                             Container(
-                                margin: EdgeInsets.only(top: 20, left: 15, right: 15),
+                                margin: EdgeInsets.only(top: 20, left: 15, right: 15, bottom: 15),
                                 child: Hero(
                                     tag: tag,
                                     child: lessonBody(context, selectedDate, selectedDay,

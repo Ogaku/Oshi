@@ -103,7 +103,8 @@ class _EventComposePageState extends State<EventComposePage> {
       childOverride: false,
       leading: Align(
           alignment: Alignment.centerLeft,
-          child: AdaptiveButton(title: 'D91ED34B-BB94-4EFF-8DF8-D5F4FF8906BF'.localized, click: () async => Navigator.pop(context))),
+          child: AdaptiveButton(
+              title: 'D91ED34B-BB94-4EFF-8DF8-D5F4FF8906BF'.localized, click: () async => Navigator.pop(context))),
       trailing: CupertinoButton(
           padding: EdgeInsets.all(5),
           alignment: Alignment.centerRight,
@@ -177,7 +178,8 @@ class _EventComposePageState extends State<EventComposePage> {
                             children: [
                               Container(
                                   margin: EdgeInsets.only(left: 5),
-                                  child: Text('63C342E6-6583-45CE-B273-8CB402AE5BAD'.localized, style: TextStyle(fontWeight: FontWeight.w600))),
+                                  child: Text('63C342E6-6583-45CE-B273-8CB402AE5BAD'.localized,
+                                      style: TextStyle(fontWeight: FontWeight.w600))),
                               Container(
                                 margin: EdgeInsets.only(left: 5),
                                 child: GestureDetector(
@@ -242,7 +244,9 @@ class _EventComposePageState extends State<EventComposePage> {
                             ConstrainedBox(
                                 constraints: BoxConstraints(maxWidth: 250),
                                 child: AdaptiveTextField(
-                                    setState: setState, controller: categoryController, placeholder: '6FFC787F-7E74-4467-94A7-DE04A8349C1A'.localized)),
+                                    setState: setState,
+                                    controller: categoryController,
+                                    placeholder: '6FFC787F-7E74-4467-94A7-DE04A8349C1A'.localized)),
                           ]),
                       // Receivers
                       Container(
@@ -271,18 +275,21 @@ class _EventComposePageState extends State<EventComposePage> {
                                   ? [
                                       AdaptiveCard(
                                         secondary: true,
+                                        hideChevron: true,
                                         click: () => setState(() {
                                           category = EventCategory.other;
                                           customCategoryName = categoryController.text;
                                           categoryController.text = '';
                                         }),
-                                        child: '89DCFE4D-3EBA-4E62-8892-BC5644D639E8'.localized.format(categoryController.text),
+                                        child:
+                                            '89DCFE4D-3EBA-4E62-8892-BC5644D639E8'.localized.format(categoryController.text),
                                       )
                                     ]
                                   // Bindable messages layout
                                   : categoriesToDisplay
                                       .select((x, index) => AdaptiveCard(
                                           secondary: true,
+                                          hideChevron: true,
                                           click: category == x
                                               ? null
                                               : () => setState(() {
@@ -395,7 +402,8 @@ class _EventComposePageState extends State<EventComposePage> {
                                                                     margin: EdgeInsets.only(top: 5, bottom: 5),
                                                                     child: Text(
                                                                         startTime == null
-                                                                            ? 'BC4C4828-36B3-4009-A06B-14641E292A61'.localized
+                                                                            ? 'BC4C4828-36B3-4009-A06B-14641E292A61'
+                                                                                .localized
                                                                             : DateFormat.Hm(
                                                                                     Share.settings.appSettings.localeCode)
                                                                                 .format(startTime!),
@@ -443,7 +451,8 @@ class _EventComposePageState extends State<EventComposePage> {
                                                                     margin: EdgeInsets.only(top: 5, bottom: 5),
                                                                     child: Text(
                                                                         endTime == null
-                                                                            ? 'BC4C4828-36B3-4009-A06B-14641E292A61'.localized
+                                                                            ? 'BC4C4828-36B3-4009-A06B-14641E292A61'
+                                                                                .localized
                                                                             : DateFormat.Hm(
                                                                                     Share.settings.appSettings.localeCode)
                                                                                 .format(endTime!),

@@ -164,6 +164,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
               .select((x, index) => AdaptiveCard(
                   regular: true,
                   margin: EdgeInsets.only(left: 8, right: 8),
+                  padding: EdgeInsets.only(),
                   child: x.asLessonWidget(context, selectedDate, selectedDay, setState)))
               .toList(),
     );

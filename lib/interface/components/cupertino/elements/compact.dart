@@ -48,7 +48,9 @@ extension EventBodyExtension on List<data.Event> {
                     context: context,
                     builder: (context) => MessageComposePage(
                         receivers: x.sender != null ? [x.sender!] : [],
-                        subject: 'C834975A-FECF-4FA1-A099-242BC18FB55C'.localized.format(DateFormat("y.M.d").format(x.date ?? x.timeFrom)),
+                        subject: 'C834975A-FECF-4FA1-A099-242BC18FB55C'
+                            .localized
+                            .format(DateFormat("y.M.d").format(x.date ?? x.timeFrom)),
                         signature:
                             '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
               },
@@ -83,6 +85,7 @@ extension EventBodyExtension on List<data.Event> {
                             Row(
                               children: [
                                 TextChip(
+                                    insets: EdgeInsets.only(left: 7, top: 2, right: 7, bottom: 3),
                                     text: DateFormat.Md(Share.settings.appSettings.localeCode).format(x.date ?? x.timeFrom),
                                     margin: EdgeInsets.only(top: 6, bottom: 6, right: 10)),
                                 Flexible(
@@ -143,8 +146,9 @@ extension EventBodyExtension on List<data.Event> {
                     context: context,
                     builder: (context) => MessageComposePage(
                         receivers: x.sender != null ? [x.sender!] : [],
-                        subject:
-                            '58F3C0BE-AC60-4176-A06D-CB9B58FE99B6'.localized.format(DateFormat("y.M.d").format(x.timeTo ?? x.date ?? x.timeFrom)),
+                        subject: '58F3C0BE-AC60-4176-A06D-CB9B58FE99B6'
+                            .localized
+                            .format(DateFormat("y.M.d").format(x.timeTo ?? x.date ?? x.timeFrom)),
                         signature:
                             '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
               },
@@ -184,6 +188,7 @@ extension EventBodyExtension on List<data.Event> {
                                     Row(
                                       children: [
                                         TextChip(
+                                            insets: EdgeInsets.only(left: 7, top: 2, right: 7, bottom: 3),
                                             text: DateFormat.Md(Share.settings.appSettings.localeCode)
                                                 .format(x.timeTo ?? x.date ?? x.timeFrom),
                                             margin: EdgeInsets.only(top: 6, bottom: 6, right: 10)),
@@ -258,8 +263,9 @@ extension GradeBodyExtension on List<({List<Grade> grades, Lesson lesson})> {
           actions: [
             CupertinoContextMenuAction(
               onPressed: () {
-                sharing.Share.share(
-                    '1D35A7A3-301A-48F7-9ACA-C1986E63D1CF'.localized.format(x.grades.select((y, s) => y.value).join(", "), x.lesson.name));
+                sharing.Share.share('1D35A7A3-301A-48F7-9ACA-C1986E63D1CF'
+                    .localized
+                    .format(x.grades.select((y, s) => y.value).join(", "), x.lesson.name));
                 Navigator.of(context, rootNavigator: true).pop();
               },
               trailingIcon: CupertinoIcons.share,
@@ -275,8 +281,12 @@ extension GradeBodyExtension on List<({List<Grade> grades, Lesson lesson})> {
                     context: context,
                     builder: (context) => MessageComposePage(
                         receivers: [x.lesson.teacher],
-                        subject:
-                            '7AE5B440-ADC8-49F7-AB1F-3E3CEDD78DC8'.localized.format(x.grades.length > 1 ? 'DA7A5A8C-9A1D-4378-8BC1-AB6A9E2E8B67'.localized : '6D0701F1-1754-4897-9902-B701EB2038CD'.localized, x.grades.select((y, index) => y.value).join(', '), x.lesson.name),
+                        subject: '7AE5B440-ADC8-49F7-AB1F-3E3CEDD78DC8'.localized.format(
+                            x.grades.length > 1
+                                ? 'DA7A5A8C-9A1D-4378-8BC1-AB6A9E2E8B67'.localized
+                                : '6D0701F1-1754-4897-9902-B701EB2038CD'.localized,
+                            x.grades.select((y, index) => y.value).join(', '),
+                            x.lesson.name),
                         signature:
                             '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
               },

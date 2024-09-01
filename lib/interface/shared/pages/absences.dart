@@ -119,15 +119,22 @@ class _AbsencesPageState extends State<AbsencesPage> {
                     icon: CupertinoIcons.doc_on_clipboard,
                     onTap: () {
                       if (Share.session.data.student.attendances?.isEmpty ?? true) return;
-                      showCupertinoModalBottomSheet(
+                      (Share.settings.appSettings.useCupertino
+                              ? showCupertinoModalBottomSheet
+                              : showMaterialModalBottomSheet)(
                           context: context,
                           builder: (context) => MessageComposePage(
                               receivers: [Share.session.data.student.mainClass.classTutor],
                               subject: 'CC111EE5-B18F-46EB-A6FF-09E3ABFA1FA1'.localized,
-                              message:
-                                  '3E0C235F-9615-4152-A5BB-5B5A93596E9D'.localized.format(Share.session.data.student.attendances!.where((x) => x.type == AttendanceType.absent).groupBy((x) => x.date).select((x, index) => ' - ${DateFormat("y.M.dd").format(x.key)} (${x.count > 1 ? '${x.orderBy((x) => x.lessonNo).first.lessonNo} - ${x.orderBy((x) => x.lessonNo).last.lessonNo} godzina lekcyjna' : '${x.first.lessonNo} godzina lekcyjna'}) \n').join()),
-                              signature:
-                                  '0E517324-ACF9-4F1A-9B74-4D002235C964'.localized.format(Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
+                              message: '3E0C235F-9615-4152-A5BB-5B5A93596E9D'.localized.format(Share
+                                  .session.data.student.attendances!
+                                  .where((x) => x.type == AttendanceType.absent)
+                                  .groupBy((x) => x.date)
+                                  .select((x, index) =>
+                                      ' - ${DateFormat("y.M.dd").format(x.key)} (${x.count > 1 ? '${x.orderBy((x) => x.lessonNo).first.lessonNo} - ${x.orderBy((x) => x.lessonNo).last.lessonNo} godzina lekcyjna' : '${x.first.lessonNo} godzina lekcyjna'}) \n')
+                                  .join()),
+                              signature: '0E517324-ACF9-4F1A-9B74-4D002235C964'.localized.format(
+                                  Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
                     },
                   ),
                 ],
@@ -161,7 +168,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
                     // Bindable messages layout
                     : x
                         .select((x, index) => Share.settings.appSettings.useCupertino
-                            ? AdaptiveCard(child: x.asAttendanceWidget(context))
+                            ? AdaptiveCard(padding: EdgeInsets.only(), child: x.asAttendanceWidget(context))
                             : x.asAttendanceWidget(context))
                         .toList(),
               ),

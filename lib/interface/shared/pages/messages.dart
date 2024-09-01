@@ -190,7 +190,10 @@ class _MessagesPageState extends State<MessagesPage> {
                     child: AdaptiveCard(
                         click: () =>
                             openMessage(context: context, message: x.message, announcement: x.announcement, folder: folder),
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        padding: Share.settings.appSettings.useCupertino
+                            ? EdgeInsets.symmetric(horizontal: 15, vertical: 10)
+                            : EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        hideChevron: true,
                         child: Container(
                           decoration: Share.settings.appSettings.useCupertino
                               ? BoxDecoration(

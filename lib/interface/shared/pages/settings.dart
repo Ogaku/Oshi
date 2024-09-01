@@ -203,7 +203,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                   Icon(Icons.person_outline),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 5),
-                                    child: Text('DC18CA52-2CF3-47E8-8FBA-5CEF06A841BF'.localized, textAlign: TextAlign.center),
+                                    child:
+                                        Text('DC18CA52-2CF3-47E8-8FBA-5CEF06A841BF'.localized, textAlign: TextAlign.center),
                                   ),
                                 ])),
                           ),
@@ -897,7 +898,9 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                       ? CupertinoIcons.add
                                                                       : Icons.add,
                                                                   size: 25,
-                                                                  color: Theme.of(context).colorScheme.onSurface,
+                                                                  color: Share.settings.appSettings.useCupertino
+                                                                      ? null
+                                                                      : Theme.of(context).colorScheme.onSurface,
                                                                 ),
                                                               ),
                                                             )),

@@ -91,9 +91,10 @@ class _GradeComposePageState extends State<GradeComposePage> {
       childOverride: false,
       leading: Align(
           alignment: Alignment.centerLeft,
-          child: AdaptiveButton(title: 'D91ED34B-BB94-4EFF-8DF8-D5F4FF8906BF'.localized, click: () async => Navigator.pop(context))),
+          child: AdaptiveButton(
+              title: 'D91ED34B-BB94-4EFF-8DF8-D5F4FF8906BF'.localized, click: () async => Navigator.pop(context))),
       trailing: CupertinoButton(
-          padding: EdgeInsets.all(5),
+          padding: Share.settings.appSettings.useCupertino ? EdgeInsets.only() : EdgeInsets.all(5),
           alignment: Alignment.centerRight,
           onPressed: (nameController.text.isNotEmpty && valueController.text.isNotEmpty && category != null)
               ? () {
@@ -150,8 +151,11 @@ class _GradeComposePageState extends State<GradeComposePage> {
                 }
               : null,
           child: Icon(widget.previous != null ? CupertinoIcons.pencil : CupertinoIcons.add,
+              size: Share.settings.appSettings.useCupertino ? 25 : null,
               color: (nameController.text.isNotEmpty && valueController.text.isNotEmpty && category != null)
-                  ? CupertinoTheme.of(context).primaryColor
+                  ? (Share.settings.appSettings.useCupertino
+                      ? CupertinoTheme.of(context).primaryColor
+                      : Theme.of(context).colorScheme.primary)
                   : CupertinoColors.inactiveGray)),
       children: [
         SingleChildScrollView(
@@ -169,7 +173,8 @@ class _GradeComposePageState extends State<GradeComposePage> {
                           children: [
                             Container(
                                 margin: EdgeInsets.only(left: 5),
-                                child: Text('63C342E6-6583-45CE-B273-8CB402AE5BAD'.localized, style: TextStyle(fontWeight: FontWeight.w600))),
+                                child: Text('63C342E6-6583-45CE-B273-8CB402AE5BAD'.localized,
+                                    style: TextStyle(fontWeight: FontWeight.w600))),
                             Container(
                               margin: EdgeInsets.only(left: 5),
                               child: GestureDetector(
@@ -201,7 +206,9 @@ class _GradeComposePageState extends State<GradeComposePage> {
                             ConstrainedBox(
                                 constraints: BoxConstraints(maxWidth: 250),
                                 child: AdaptiveTextField(
-                                    setState: setState, controller: categoryController, placeholder: '6FFC787F-7E74-4467-94A7-DE04A8349C1A'.localized)),
+                                    setState: setState,
+                                    controller: categoryController,
+                                    placeholder: '6FFC787F-7E74-4467-94A7-DE04A8349C1A'.localized)),
                           ]),
                       // Receivers
                       Visibility(
@@ -232,13 +239,15 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                       AdaptiveCard(
                                         secondary: true,
                                         centered: true,
-                                        child: '3C50E8E5-1764-48BF-9E6D-47C5DB958A23'.localized.format(categoryController.text),
+                                        child:
+                                            '3C50E8E5-1764-48BF-9E6D-47C5DB958A23'.localized.format(categoryController.text),
                                       )
                                     ]
                                   // Bindable messages layout
                                   : categoriesToDisplay
                                       .select((x, index) => AdaptiveCard(
                                           secondary: true,
+                                          hideChevron: true,
                                           click: category == x
                                               ? null
                                               : () => setState(() {
@@ -254,10 +263,16 @@ class _GradeComposePageState extends State<GradeComposePage> {
                               children: <Widget>[
                                 // Name input
                                 AdaptiveTextField(
-                                    maxLines: null, setState: setState, controller: nameController, placeholder: '8C49630C-B41B-4D50-87C8-6A3EA3FD6A3D'.localized),
+                                    maxLines: null,
+                                    setState: setState,
+                                    controller: nameController,
+                                    placeholder: '8C49630C-B41B-4D50-87C8-6A3EA3FD6A3D'.localized),
                                 // Value input
                                 AdaptiveTextField(
-                                    maxLines: null, setState: setState, controller: valueController, placeholder: '828F8EBE-4681-4FC9-9FFE-239540470A97'.localized),
+                                    maxLines: null,
+                                    setState: setState,
+                                    controller: valueController,
+                                    placeholder: '828F8EBE-4681-4FC9-9FFE-239540470A97'.localized),
                                 // Message input
                                 if (!Share.settings.appSettings.useCupertino)
                                   AdaptiveTextField(
@@ -275,7 +290,8 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                             opacity: 1,
                                             child: Container(
                                                 margin: EdgeInsets.only(left: 7),
-                                                child: Text('36E7AD9C-4766-400D-82E0-D882D8C1DBBE'.localized, style: TextStyle(fontWeight: FontWeight.w600)))),
+                                                child: Text('36E7AD9C-4766-400D-82E0-D882D8C1DBBE'.localized,
+                                                    style: TextStyle(fontWeight: FontWeight.w600)))),
                                         Container(
                                           margin: EdgeInsets.only(left: 5),
                                           child: GestureDetector(
@@ -337,7 +353,8 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                             opacity: 1,
                                             child: Container(
                                                 margin: EdgeInsets.only(left: 7),
-                                                child: Text('952C16E3-7C31-4E6D-968B-80FC4C27C292'.localized, style: TextStyle(fontWeight: FontWeight.w600)))),
+                                                child: Text('952C16E3-7C31-4E6D-968B-80FC4C27C292'.localized,
+                                                    style: TextStyle(fontWeight: FontWeight.w600)))),
                                         Container(
                                           margin: EdgeInsets.only(left: 5),
                                           child: GestureDetector(
@@ -360,7 +377,11 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                                       children: List<Widget>.generate(2, (int index) {
                                                         return Center(
                                                             child: Text(
-                                                          switch (index + 1) { 1 => '0C168486-8BDF-4923-898E-6E8D6E066394'.localized, 2 => 'BD3A0594-129B-4DEE-8F33-E848C4B00E3B'.localized, _ => '3D0F6617-080E-410B-8650-33E6CB83AE4D'.localized },
+                                                          switch (index + 1) {
+                                                            1 => '0C168486-8BDF-4923-898E-6E8D6E066394'.localized,
+                                                            2 => 'BD3A0594-129B-4DEE-8F33-E848C4B00E3B'.localized,
+                                                            _ => '3D0F6617-080E-410B-8650-33E6CB83AE4D'.localized
+                                                          },
                                                         ));
                                                       }),
                                                     ),
@@ -370,7 +391,11 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                                   child: Container(
                                                       margin: EdgeInsets.only(top: 5, bottom: 5),
                                                       child: Text(
-                                                          switch (semester) { 1 => '0C168486-8BDF-4923-898E-6E8D6E066394'.localized, 2 => 'BD3A0594-129B-4DEE-8F33-E848C4B00E3B'.localized, _ => '3D0F6617-080E-410B-8650-33E6CB83AE4D'.localized },
+                                                          switch (semester) {
+                                                            1 => '0C168486-8BDF-4923-898E-6E8D6E066394'.localized,
+                                                            2 => 'BD3A0594-129B-4DEE-8F33-E848C4B00E3B'.localized,
+                                                            _ => '3D0F6617-080E-410B-8650-33E6CB83AE4D'.localized
+                                                          },
                                                           style: TextStyle(fontWeight: FontWeight.w600))))),
                                         )
                                       ]),
@@ -393,7 +418,11 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                         }),
                                     child: '4456F7D3-1173-4A61-A093-712A2AB21764'.localized,
                                     after: '11340D77-0525-4EEF-A0A0-EB8933553149'.localized,
-                                    trailingElement: switch (semester) { 1 => '0C168486-8BDF-4923-898E-6E8D6E066394'.localized, 2 => 'BD3A0594-129B-4DEE-8F33-E848C4B00E3B'.localized, _ => '3D0F6617-080E-410B-8650-33E6CB83AE4D'.localized }
+                                    trailingElement: switch (semester) {
+                                      1 => '0C168486-8BDF-4923-898E-6E8D6E066394'.localized,
+                                      2 => 'BD3A0594-129B-4DEE-8F33-E848C4B00E3B'.localized,
+                                      _ => '3D0F6617-080E-410B-8650-33E6CB83AE4D'.localized
+                                    }
                                         .toString()
                                         .capitalize(),
                                   ),
@@ -452,7 +481,8 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                                                   opacity: 1,
                                                                   child: Container(
                                                                       margin: EdgeInsets.only(left: 7),
-                                                                      child: Text('AC106467-0FBE-4916-82B5-594F11D21C8B'.localized,
+                                                                      child: Text(
+                                                                          'AC106467-0FBE-4916-82B5-594F11D21C8B'.localized,
                                                                           style: TextStyle(fontWeight: FontWeight.w600)))),
                                                               Container(
                                                                 margin: EdgeInsets.only(left: 5),
@@ -477,12 +507,18 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                                                               return Center(
                                                                                   child: Text(
                                                                                 switch (index) {
-                                                                                  0 => '41943B1D-B32A-4547-81B0-1882F5495942'.localized,
-                                                                                  1 => '0D37C787-F585-4091-AC3E-CC2AF05A534F'.localized,
-                                                                                  2 => '83AAE02D-9BDA-4AD1-BD70-7987CF46FECC'.localized,
-                                                                                  3 => 'BB246CED-F0D0-4425-B33B-C5F68E563A04'.localized,
-                                                                                  4 => '23AC622C-A52D-43DD-A764-E74750C3E523'.localized,
-                                                                                  _ => '3D0F6617-080E-410B-8650-33E6CB83AE4D'.localized
+                                                                                  0 => '41943B1D-B32A-4547-81B0-1882F5495942'
+                                                                                      .localized,
+                                                                                  1 => '0D37C787-F585-4091-AC3E-CC2AF05A534F'
+                                                                                      .localized,
+                                                                                  2 => '83AAE02D-9BDA-4AD1-BD70-7987CF46FECC'
+                                                                                      .localized,
+                                                                                  3 => 'BB246CED-F0D0-4425-B33B-C5F68E563A04'
+                                                                                      .localized,
+                                                                                  4 => '23AC622C-A52D-43DD-A764-E74750C3E523'
+                                                                                      .localized,
+                                                                                  _ => '3D0F6617-080E-410B-8650-33E6CB83AE4D'
+                                                                                      .localized
                                                                                 },
                                                                               ));
                                                                             }),
@@ -494,12 +530,18 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                                                             margin: EdgeInsets.only(top: 5, bottom: 5),
                                                                             child: Text(
                                                                                 switch (type) {
-                                                                                  0 => '41943B1D-B32A-4547-81B0-1882F5495942'.localized,
-                                                                                  1 => '0D37C787-F585-4091-AC3E-CC2AF05A534F'.localized,
-                                                                                  2 => '83AAE02D-9BDA-4AD1-BD70-7987CF46FECC'.localized,
-                                                                                  3 => 'BB246CED-F0D0-4425-B33B-C5F68E563A04'.localized,
-                                                                                  4 => '23AC622C-A52D-43DD-A764-E74750C3E523'.localized,
-                                                                                  _ => '3D0F6617-080E-410B-8650-33E6CB83AE4D'.localized
+                                                                                  0 => '41943B1D-B32A-4547-81B0-1882F5495942'
+                                                                                      .localized,
+                                                                                  1 => '0D37C787-F585-4091-AC3E-CC2AF05A534F'
+                                                                                      .localized,
+                                                                                  2 => '83AAE02D-9BDA-4AD1-BD70-7987CF46FECC'
+                                                                                      .localized,
+                                                                                  3 => 'BB246CED-F0D0-4425-B33B-C5F68E563A04'
+                                                                                      .localized,
+                                                                                  4 => '23AC622C-A52D-43DD-A764-E74750C3E523'
+                                                                                      .localized,
+                                                                                  _ => '3D0F6617-080E-410B-8650-33E6CB83AE4D'
+                                                                                      .localized
                                                                                 },
                                                                                 style: TextStyle(
                                                                                     fontWeight: FontWeight.w600))))),
@@ -515,11 +557,31 @@ class _GradeComposePageState extends State<GradeComposePage> {
                                                           icon: Icons.grade,
                                                           selection: type,
                                                           options: [
-                                                            OptionEntry(name: '41943B1D-B32A-4547-81B0-1882F5495942'.localized.capitalize(), value: 0),
-                                                            OptionEntry(name: '0D37C787-F585-4091-AC3E-CC2AF05A534F'.localized.capitalize(), value: 1),
-                                                            OptionEntry(name: '83AAE02D-9BDA-4AD1-BD70-7987CF46FECC'.localized.capitalize(), value: 2),
-                                                            OptionEntry(name: 'BB246CED-F0D0-4425-B33B-C5F68E563A04'.localized.capitalize(), value: 3),
-                                                            OptionEntry(name: '23AC622C-A52D-43DD-A764-E74750C3E523'.localized.capitalize(), value: 4),
+                                                            OptionEntry(
+                                                                name: '41943B1D-B32A-4547-81B0-1882F5495942'
+                                                                    .localized
+                                                                    .capitalize(),
+                                                                value: 0),
+                                                            OptionEntry(
+                                                                name: '0D37C787-F585-4091-AC3E-CC2AF05A534F'
+                                                                    .localized
+                                                                    .capitalize(),
+                                                                value: 1),
+                                                            OptionEntry(
+                                                                name: '83AAE02D-9BDA-4AD1-BD70-7987CF46FECC'
+                                                                    .localized
+                                                                    .capitalize(),
+                                                                value: 2),
+                                                            OptionEntry(
+                                                                name: 'BB246CED-F0D0-4425-B33B-C5F68E563A04'
+                                                                    .localized
+                                                                    .capitalize(),
+                                                                value: 3),
+                                                            OptionEntry(
+                                                                name: '23AC622C-A52D-43DD-A764-E74750C3E523'
+                                                                    .localized
+                                                                    .capitalize(),
+                                                                value: 4),
                                                           ],
                                                           onChanged: (v) {
                                                             setState(() => type = v);
