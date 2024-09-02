@@ -1,5 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-import 'package:autoscale_tabbarview/autoscale_tabbarview.dart';
+import 'package:contentsize_tabbarview/contentsize_tabbarview.dart';
 import 'package:darq/darq.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:enum_flag/enum_flag.dart';
@@ -247,9 +247,8 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
                     )
                   : Column(
                       children: [
-                        AutoScaleTabBarView(
+                        ContentSizeTabBarView(
                           controller: tabController,
-                          // viewportFraction: MediaQuery.of(context).size.width >= 640 ? (1 / 3) : 1.0,
                           children: List.generate(widget.segments!.length,
                               (index) => widget.pageBuilder!(context, widget.segments!.keys.elementAt(index))),
                         ),

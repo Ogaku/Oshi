@@ -707,6 +707,13 @@ extension LessonWidgetExtension on TimetableLesson {
                                                 after: lessonNo.toString(),
                                               ),
                                               lessonNo >= 0)
+                                          .appendIf(
+                                              AdaptiveCard(
+                                                child: 'B96EA577-6DBF-491C-9781-9C85CCBD4119'.localized,
+                                                regular: true,
+                                                after: lessonClass?.className ?? '',
+                                              ),
+                                              lessonClass?.className.isNotEmpty ?? false)
                                           // Substitution details - original lesson
                                           .appendIf(
                                               AdaptiveCard(

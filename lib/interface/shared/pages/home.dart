@@ -622,7 +622,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
             .appendIf(homeworksWidget, homeworksLast)
             .toList()
         :
-        // ---------- Material home screen ---------- 
+        // ---------- Material home screen ----------
         <Widget>[
             CardContainer(
                 radius: 25,
@@ -769,36 +769,37 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                               child: Container(
                                                   margin: EdgeInsets.only(),
                                                   child: Row(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: [
-                                                    Text(
-                                                      // If the "next" lesson is the first one
-                                                      (nextLesson != null &&
-                                                              (currentDay?.lessonsStrippedCancelled
-                                                                      .firstWhereOrDefault(
-                                                                          (l) => l?.any((x) => !x.isCanceled) ?? false)
-                                                                      ?.any((x) => x == nextLesson) ??
-                                                                  false))
-                                                          ? 'D8F15F8A-2EA6-474D-80B8-E71625B3D121'.localized
-                                                          : // If the "next" lesson is the last one
+                                                        Text(
+                                                          // If the "next" lesson is the first one
                                                           (nextLesson != null &&
                                                                   (currentDay?.lessonsStrippedCancelled
-                                                                          .lastWhereOrDefault(
+                                                                          .firstWhereOrDefault(
                                                                               (l) => l?.any((x) => !x.isCanceled) ?? false)
                                                                           ?.any((x) => x == nextLesson) ??
                                                                       false))
-                                                              ? '6B3280B8-EDDB-44E2-A2D5-824FE98E8247'.localized
-                                                              : '2754A69F-9E60-4FDA-903B-95CFAB85E982'.localized,
-                                                      style: TextStyle(fontWeight: FontWeight.w500),
-                                                    ),
-                                                    Flexible(
-                                                        child: Container(
-                                                            margin: EdgeInsets.only(right: 3, left: 3),
-                                                            child: Text(
-                                                              nextLesson?.subject?.name ??
-                                                                  '/Notifications/Placeholder/Lesson'.localized,
-                                                              style: TextStyle(fontWeight: FontWeight.w500),
-                                                            ))),
-                                                  ].appendIf(
+                                                              ? 'D8F15F8A-2EA6-474D-80B8-E71625B3D121'.localized
+                                                              : // If the "next" lesson is the last one
+                                                              (nextLesson != null &&
+                                                                      (currentDay?.lessonsStrippedCancelled
+                                                                              .lastWhereOrDefault((l) =>
+                                                                                  l?.any((x) => !x.isCanceled) ?? false)
+                                                                              ?.any((x) => x == nextLesson) ??
+                                                                          false))
+                                                                  ? '6B3280B8-EDDB-44E2-A2D5-824FE98E8247'.localized
+                                                                  : '2754A69F-9E60-4FDA-903B-95CFAB85E982'.localized,
+                                                          style: TextStyle(fontWeight: FontWeight.w500),
+                                                        ),
+                                                        Flexible(
+                                                            child: Container(
+                                                                margin: EdgeInsets.only(right: 6, left: 6),
+                                                                child: Text(
+                                                                  nextLesson?.subject?.name ??
+                                                                      '/Notifications/Placeholder/Lesson'.localized,
+                                                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                                                ))),
+                                                      ].appendIf(
                                                           Text(
                                                             'C33F8288-5BAD-4574-9C53-B54FED6757AC'
                                                                 .localized
@@ -831,25 +832,26 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                            Text(
-                                              'First:',
-                                              style: TextStyle(fontWeight: FontWeight.w500),
-                                            ),
-                                            Flexible(
-                                                child: Container(
-                                                    margin: EdgeInsets.only(right: 3, left: 3),
-                                                    child: Text(
-                                                      nextDay?.lessonsStrippedCancelled
-                                                              .firstWhereOrDefault(
-                                                                  (x) => x?.any((y) => !y.isCanceled) ?? false)
-                                                              ?.firstWhereOrDefault((x) => !x.isCanceled)
-                                                              ?.subject
-                                                              ?.name ??
-                                                          '/Notifications/Placeholder/Lesson'.localized,
-                                                      style: TextStyle(fontWeight: FontWeight.w500),
-                                                    ))),
-                                          ].appendIf(
+                                                Text(
+                                                  'D8F15F8A-2EA6-474D-80B8-E71625B3D121'.localized,
+                                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                                ),
+                                                Flexible(
+                                                    child: Container(
+                                                        margin: EdgeInsets.only(right: 6, left: 6),
+                                                        child: Text(
+                                                          nextDay?.lessonsStrippedCancelled
+                                                                  .firstWhereOrDefault(
+                                                                      (x) => x?.any((y) => !y.isCanceled) ?? false)
+                                                                  ?.firstWhereOrDefault((x) => !x.isCanceled)
+                                                                  ?.subject
+                                                                  ?.name ??
+                                                              '/Notifications/Placeholder/Lesson'.localized,
+                                                          style: TextStyle(fontWeight: FontWeight.w500),
+                                                        ))),
+                                              ].appendIf(
                                                   Text(
                                                     'C33F8288-5BAD-4574-9C53-B54FED6757AC'.localized.format(nextDay
                                                             ?.lessonsStrippedCancelled

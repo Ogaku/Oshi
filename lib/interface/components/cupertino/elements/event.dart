@@ -640,7 +640,8 @@ extension LessonWidgetExtension on TimetableLesson {
             onPressed: () {
               try {
                 calendar.Add2Calendar.addEvent2Cal(calendar.Event(
-                    title: subject?.name ?? '6BB62617-7000-4A27-A499-534F1E04764E'.localized.format(DateFormat("EEEE, MMM d, y").format(date)),
+                    title: subject?.name ??
+                        '6BB62617-7000-4A27-A499-534F1E04764E'.localized.format(DateFormat("EEEE, MMM d, y").format(date)),
                     location: classroom?.name,
                     startDate: timeFrom ?? date,
                     endDate: timeTo ?? date));
@@ -682,10 +683,12 @@ extension LessonWidgetExtension on TimetableLesson {
                   context: context,
                   builder: (context) => MessageComposePage(
                       receivers: teacher != null ? [teacher!] : [],
-                      subject:
-                          '4DF5CFE9-2B5F-4AE1-AEFC-B4B8888A09ED'.localized.format(lessonCallMessageString, DateFormat("y.M.d").format(date), lessonNo),
-                      message:
-                          '7955E73E-D260-43BA-8E2F-88CD43348BBD'.localized.format(lessonCallMessageString, subject?.name, DateFormat("y.M.d").format(date), lessonNo),
+                      subject: '4DF5CFE9-2B5F-4AE1-AEFC-B4B8888A09ED'
+                          .localized
+                          .format(lessonCallMessageString, DateFormat("y.M.d").format(date), lessonNo),
+                      message: '7955E73E-D260-43BA-8E2F-88CD43348BBD'
+                          .localized
+                          .format(lessonCallMessageString, subject?.name, DateFormat("y.M.d").format(date), lessonNo),
                       signature:
                           '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
             },
@@ -700,7 +703,9 @@ extension LessonWidgetExtension on TimetableLesson {
                   context: context,
                   builder: (context) => MessageComposePage(
                       receivers: teacher != null ? [teacher!] : [],
-                      subject: '50CFA04B-E8EB-4BC9-80F1-C5EF39FE8F3A'.localized.format(DateFormat("y.M.d").format(date), lessonNo),
+                      subject: '50CFA04B-E8EB-4BC9-80F1-C5EF39FE8F3A'
+                          .localized
+                          .format(DateFormat("y.M.d").format(date), lessonNo),
                       signature:
                           '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
             },
@@ -826,6 +831,24 @@ extension LessonWidgetExtension on TimetableLesson {
                                                 ],
                                               )),
                                               lessonNo >= 0)
+                                          .appendIf(
+                                              AdaptiveCard(
+                                                  child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text('B96EA577-6DBF-491C-9781-9C85CCBD4119'.localized),
+                                                  Flexible(
+                                                      child: Container(
+                                                          margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
+                                                          child: Opacity(
+                                                              opacity: 0.5,
+                                                              child: Text(lessonClass?.className ?? '',
+                                                                  maxLines: 3,
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                  textAlign: TextAlign.end))))
+                                                ],
+                                              )),
+                                              lessonClass?.className.isNotEmpty ?? false)
                                           // Substitution details - original lesson
                                           .appendIf(
                                               AdaptiveCard(
@@ -870,7 +893,9 @@ extension LessonWidgetExtension on TimetableLesson {
                                                   child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
-                                                  Text(isCanceled ? '43026DF3-97E9-4449-BD20-D1E256C42F89'.localized : '8A2F8A9D-1428-4EAA-BA31-CE64A64789C6'.localized),
+                                                  Text(isCanceled
+                                                      ? '43026DF3-97E9-4449-BD20-D1E256C42F89'.localized
+                                                      : '8A2F8A9D-1428-4EAA-BA31-CE64A64789C6'.localized),
                                                   Flexible(
                                                       child: Container(
                                                           margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),

@@ -73,6 +73,14 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
 
     segmentController.removeListener(() => setState(() => dayDifference = segmentController.segment));
     segmentController.addListener(() => setState(() => dayDifference = segmentController.segment));
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      animateToPage(
+          null,
+          isBeforeSchoolYear
+              ? 0
+              : DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays);
+    });
   }
 
   @override
@@ -137,7 +145,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
             .toList() ??
         [];
 
-    var lessonsWidget = CardContainer(
+    Widget lessonsWidget = CardContainer(
       largeHeader: true,
       header: Share.settings.appSettings.useCupertino
           ? DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(selectedDate)
@@ -160,14 +168,130 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
               )
             ]
           // Bindable messages layout
-          : lessonsToDisplay
-              .select((x, index) => AdaptiveCard(
+          : lessonsToDisplay.selectAndInsertBetween(
+              // Selector - return the lesson object as a widget
+              selector: (x, _) => AdaptiveCard(
                   regular: true,
                   margin: EdgeInsets.only(left: 8, right: 8),
                   padding: EdgeInsets.only(),
-                  child: x.asLessonWidget(context, selectedDate, selectedDay, setState)))
-              .toList(),
+                  child: x.asLessonWidget(context, selectedDate, selectedDay, setState)),
+              // Inserter - return a widget to insert for longer breaks
+              inserter: (l1, l2) => ((l1.lessonNo - l2.lessonNo).abs() > 1 ||
+                      ((l2.hourFrom
+                                  ?.asHour(DateTime.now())
+                                  .difference(l1.hourTo?.asHour(DateTime.now()) ?? DateTime.now())
+                                  .inMinutes ??
+                              0) >
+                          35))
+                  ? Container(
+                      margin: EdgeInsets.symmetric(vertical: 10),
+                      child: MediaQuery(
+                        data: MediaQuery.of(context)
+                            .copyWith(textScaler: TextScaler.linear(Share.settings.appSettings.useCupertino ? 1.0 : 0.75)),
+                        child: AdaptiveCard(
+                          secondary: true,
+                          centered: true,
+                          regular: true,
+                          child: (l1.hourTo != null && l2.hourFrom != null)
+                              ? '2B271B34-8698-48C9-911F-12DC5FAEB100'.localized.format(
+                                  DateFormat.Hm().format(l1.hourTo?.asHour(DateTime.now()) ?? DateTime.now()),
+                                  DateFormat.Hm().format(l2.hourFrom?.asHour(DateTime.now()) ?? DateTime.now()))
+                              : 'DDD07FF6-9A27-4F9E-B7FD-B5F0A2094C9E'.localized.format(l1.lessonNo, l2.lessonNo),
+                        ),
+                      ))
+                  : null),
     );
+
+    // Overwrite the lessons widget if using cupertino
+    if (Share.settings.appSettings.useCupertino) {
+      var widgetList = <Widget>[];
+      var lessonRawWidgets = lessonsToDisplay.selectAndInsertBetween(
+          // Selector - return the lesson object as a widget
+          selector: (x, _) => AdaptiveCard(
+              regular: true,
+              margin: EdgeInsets.only(left: 8, right: 8),
+              padding: EdgeInsets.only(),
+              child: x.asLessonWidget(context, selectedDate, selectedDay, setState)),
+          // Inserter - return a widget to insert for longer breaks
+          inserter: (l1, l2) => ((l1.lessonNo - l2.lessonNo).abs() > 1 ||
+                  ((l2.hourFrom
+                              ?.asHour(DateTime.now())
+                              .difference(l1.hourTo?.asHour(DateTime.now()) ?? DateTime.now())
+                              .inMinutes ??
+                          0) >
+                      35))
+              ? Container(
+                  margin: EdgeInsets.only(top: 0, bottom: 11),
+                  child: MediaQuery(
+                    data: MediaQuery.of(context)
+                        .copyWith(textScaler: TextScaler.linear(Share.settings.appSettings.useCupertino ? 0.9 : 0.75)),
+                    child: AdaptiveCard(
+                      secondary: true,
+                      centered: true,
+                      regular: true,
+                      child: (l1.hourTo != null && l2.hourFrom != null)
+                          ? '2B271B34-8698-48C9-911F-12DC5FAEB100'.localized.format(
+                              DateFormat.Hm().format(l1.hourTo?.asHour(DateTime.now()) ?? DateTime.now()),
+                              DateFormat.Hm().format(l2.hourFrom?.asHour(DateTime.now()) ?? DateTime.now()))
+                          : 'DDD07FF6-9A27-4F9E-B7FD-B5F0A2094C9E'.localized.format(l1.lessonNo, l2.lessonNo),
+                    ),
+                  ))
+              : null);
+
+      var tempWidgetList = <Widget>[];
+      for (var x in lessonRawWidgets) {
+        if (x is AdaptiveCard) {
+          tempWidgetList.add(x);
+        } else {
+          widgetList.add(CardContainer(
+              largeHeader: widgetList.isEmpty,
+              header: widgetList.isEmpty && Share.settings.appSettings.useCupertino
+                  ? DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(selectedDate)
+                  : null,
+              additionalDividerMargin: 5,
+              filled: false,
+              regularOverride: true,
+              children: tempWidgetList.toList()));
+          widgetList.add(x);
+          tempWidgetList.clear();
+        }
+      }
+
+      if (tempWidgetList.isNotEmpty && tempWidgetList.all((x) => x is AdaptiveCard)) {
+        widgetList.add(CardContainer(
+            largeHeader: widgetList.isEmpty,
+            header: widgetList.isEmpty && Share.settings.appSettings.useCupertino
+                ? DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(selectedDate)
+                : null,
+            additionalDividerMargin: 5,
+            filled: false,
+            regularOverride: true,
+            children: tempWidgetList.toList()));
+        tempWidgetList.clear();
+      }
+
+      lessonsWidget = Column(
+          children: widgetList.appendIfEmpty(CardContainer(
+              largeHeader: true,
+              header: Share.settings.appSettings.useCupertino
+                  ? DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(selectedDate)
+                  : null,
+              additionalDividerMargin: 5,
+              filled: false,
+              regularOverride: true,
+              children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 5.0),
+              child: AdaptiveCard(
+                centered: true,
+                secondary: true,
+                child: selectedDay == null
+                    ? 'AD1F219E-A73A-45AA-9F75-574ACBA84522'.localized
+                    : 'FEF84AFC-C749-4FF3-A0C2-8B5846ACD189'.localized,
+              ),
+            )
+          ])));
+    }
 
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(
@@ -327,8 +451,8 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
                 }),
           child: Container(
               margin: EdgeInsets.only(
-                  top: Share.settings.appSettings.useCupertino ? 0 : 5,
-                  bottom: 5,
+                  top: Share.settings.appSettings.useCupertino ? 2 : 5,
+                  bottom: Share.settings.appSettings.useCupertino ? 2 : 5,
                   right: Share.settings.appSettings.useCupertino ? 0 : 25),
               child:
                   TextChip(width: 110, text: DateFormat.yMd(Share.settings.appSettings.localeCode).format(selectedDate)))),

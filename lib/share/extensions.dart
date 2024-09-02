@@ -1,5 +1,4 @@
 // ignore_for_file: prefer_const_constructors
-
 import 'package:darq/darq.dart';
 import 'package:duration/duration.dart';
 import 'package:duration/locale.dart';
@@ -68,6 +67,19 @@ extension ListAppendExtension<T> on Iterable<T> {
 
   List<T> prependAllIfEmpty(Iterable<T> element) {
     return prependAllIf(element, isEmpty).toList();
+  }
+
+  List<U> selectAndInsertBetween<U>({required U Function(T, int) selector, required U? Function(T, T) inserter}) {
+    if (length < 2) return select(selector).toList();
+    List<U> result = [];
+    for (var i = 0; i < length; i++) {
+      result.add(selector(elementAt(i), i));
+      if (i >= length - 1) continue;
+
+      var insert = inserter(elementAt(i), elementAt(i + 1));
+      if (insert != null) result.add(insert);
+    }
+    return result;
   }
 }
 
