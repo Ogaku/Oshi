@@ -2293,6 +2293,14 @@
     {
       "id": "64D1FFB7-0CF9-43D1-8B74-998F2AB6CAA6",
       "translation": "Sesja użytkownika wygasła!"
+    },
+    {
+      "id": "DDD07FF6-9A27-4F9E-B7FD-B5F0A2094C9E",
+      "translation": "Okienko: lekcje {} - {}"
+    },
+    {
+      "id": "2B271B34-8698-48C9-911F-12DC5FAEB100",
+      "translation": "Okienko: {} - {}"
     }
   ],
   "splashes": [
