@@ -110,9 +110,9 @@ class StudentAdapter extends TypeAdapter<Student> {
 // **************************************************************************
 
 Account _$AccountFromJson(Map<String, dynamic> json) => Account(
-      id: json['id'] as int? ?? -1,
-      userId: json['userId'] as int? ?? -1,
-      number: json['number'] as int? ?? -1,
+      id: (json['id'] as num?)?.toInt() ?? -1,
+      userId: (json['userId'] as num?)?.toInt() ?? -1,
+      number: (json['number'] as num?)?.toInt() ?? -1,
       firstName: json['firstName'] as String? ?? '',
       lastName: json['lastName'] as String? ?? '',
     );

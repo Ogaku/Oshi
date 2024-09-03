@@ -30,8 +30,8 @@ DataAttendance _$DataAttendanceFromJson(Map<String, dynamic> json) =>
       addDate: json['AddDate'] == null
           ? null
           : DateTime.parse(json['AddDate'] as String),
-      lessonNo: json['LessonNo'] as int? ?? -1,
-      semester: json['Semester'] as int? ?? -1,
+      lessonNo: (json['LessonNo'] as num?)?.toInt() ?? -1,
+      semester: (json['Semester'] as num?)?.toInt() ?? -1,
       type: json['Type'] == null
           ? null
           : Link.fromJson(json['Type'] as Map<String, dynamic>),
@@ -53,7 +53,7 @@ Map<String, dynamic> _$DataAttendanceToJson(DataAttendance instance) =>
     };
 
 Link _$LinkFromJson(Map<String, dynamic> json) => Link(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       url: json['Url'] as String? ?? '',
     );
 

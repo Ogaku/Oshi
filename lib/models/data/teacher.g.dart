@@ -63,8 +63,8 @@ class TeacherAdapter extends TypeAdapter<Teacher> {
 // **************************************************************************
 
 Teacher _$TeacherFromJson(Map<String, dynamic> json) => Teacher(
-      id: json['id'] as int? ?? -1,
-      userId: json['userId'] as int?,
+      id: (json['id'] as num?)?.toInt() ?? -1,
+      userId: (json['userId'] as num?)?.toInt(),
       url: json['url'] as String? ?? '',
       firstName: json['firstName'] as String? ?? '',
       lastName: json['lastName'] as String? ?? '',
@@ -87,7 +87,7 @@ Map<String, dynamic> _$TeacherToJson(Teacher instance) => <String, dynamic>{
       'isHomeTeacher': instance.isHomeTeacher,
       'absent': instance.absent == null
           ? null
-          : {
+          : <String, dynamic>{
               'from': instance.absent!.from.toIso8601String(),
               'to': instance.absent!.to.toIso8601String(),
             },

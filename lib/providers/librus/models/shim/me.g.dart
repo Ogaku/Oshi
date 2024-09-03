@@ -20,7 +20,7 @@ MeClass _$MeClassFromJson(Map<String, dynamic> json) => MeClass(
       account: json['Account'] == null
           ? null
           : Account.fromJson(json['Account'] as Map<String, dynamic>),
-      refresh: json['Refresh'] as int? ?? -1,
+      refresh: (json['Refresh'] as num?)?.toInt() ?? -1,
       user: json['User'] == null
           ? null
           : User.fromJson(json['User'] as Map<String, dynamic>),
@@ -37,12 +37,12 @@ Map<String, dynamic> _$MeClassToJson(MeClass instance) => <String, dynamic>{
     };
 
 Account _$AccountFromJson(Map<String, dynamic> json) => Account(
-      id: json['Id'] as int? ?? -1,
-      userId: json['UserId'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
+      userId: (json['UserId'] as num?)?.toInt() ?? -1,
       firstName: json['FirstName'] as String? ?? '',
       lastName: json['LastName'] as String? ?? '',
       email: json['Email'] as String? ?? '',
-      groupId: json['GroupId'] as int? ?? -1,
+      groupId: (json['GroupId'] as num?)?.toInt() ?? -1,
       isActive: json['IsActive'] as bool? ?? false,
       login: json['Login'] as String? ?? '',
     );
@@ -59,7 +59,7 @@ Map<String, dynamic> _$AccountToJson(Account instance) => <String, dynamic>{
     };
 
 Class _$ClassFromJson(Map<String, dynamic> json) => Class(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       url: json['Url'] as String? ?? '',
     );
 

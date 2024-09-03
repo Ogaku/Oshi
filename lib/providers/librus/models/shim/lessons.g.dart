@@ -17,7 +17,7 @@ Map<String, dynamic> _$LessonsToJson(Lessons instance) => <String, dynamic>{
     };
 
 Lesson _$LessonFromJson(Map<String, dynamic> json) => Lesson(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       teacher: json['Teacher'] == null
           ? null
           : Link.fromJson(json['Teacher'] as Map<String, dynamic>),
@@ -47,7 +47,7 @@ Map<String, dynamic> _$LessonToJson(Lesson instance) {
 }
 
 Link _$LinkFromJson(Map<String, dynamic> json) => Link(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       url: json['Url'] as String? ?? '',
     );
 

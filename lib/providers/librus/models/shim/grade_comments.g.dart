@@ -19,7 +19,7 @@ Map<String, dynamic> _$GradeCommentsToJson(GradeComments instance) =>
     };
 
 Comment _$CommentFromJson(Map<String, dynamic> json) => Comment(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       addedBy: json['AddedBy'] == null
           ? null
           : AddedBy.fromJson(json['AddedBy'] as Map<String, dynamic>),
@@ -37,7 +37,7 @@ Map<String, dynamic> _$CommentToJson(Comment instance) => <String, dynamic>{
     };
 
 AddedBy _$AddedByFromJson(Map<String, dynamic> json) => AddedBy(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       url: json['Url'] as String? ?? '',
     );
 

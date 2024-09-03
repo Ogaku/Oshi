@@ -25,7 +25,7 @@ Map<String, dynamic> _$ParentTeacherConferencesToJson(
 ParentTeacherConference _$ParentTeacherConferenceFromJson(
         Map<String, dynamic> json) =>
     ParentTeacherConference(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       date:
           json['Date'] == null ? null : DateTime.parse(json['Date'] as String),
       name: json['Name'] as String? ?? '',
@@ -54,7 +54,7 @@ Map<String, dynamic> _$ParentTeacherConferenceToJson(
     };
 
 Class _$ClassFromJson(Map<String, dynamic> json) => Class(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       url: json['Url'] as String? ?? '',
     );
 

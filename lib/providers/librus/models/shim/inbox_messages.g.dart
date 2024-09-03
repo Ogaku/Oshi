@@ -11,7 +11,7 @@ InboxMessages _$InboxMessagesFromJson(Map<String, dynamic> json) =>
       data: (json['data'] as List<dynamic>?)
           ?.map((e) => Datum.fromJson(e as Map<String, dynamic>))
           .toList(),
-      total: json['total'] as int,
+      total: (json['total'] as num).toInt(),
     );
 
 Map<String, dynamic> _$InboxMessagesToJson(InboxMessages instance) =>
@@ -92,8 +92,8 @@ Data _$DataFromJson(Map<String, dynamic> json) => Data(
       userClass: json['userClass'] as String,
       originalMessage: json['originalMessage'] as String,
       originalTopic: json['originalTopic'] as String,
-      noReply: json['noReply'] as int,
-      archive: json['archive'] as int,
+      noReply: (json['noReply'] as num).toInt(),
+      archive: (json['archive'] as num).toInt(),
       senderGroupId: json['senderGroupId'] as String,
       senderName: json['senderName'] as String,
       attachementInfo: json['attachementInfo'] as String,

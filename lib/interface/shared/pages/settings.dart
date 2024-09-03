@@ -19,6 +19,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:loop_page_view/loop_page_view.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/interface/components/shim/elements/event.dart';
@@ -42,6 +43,7 @@ import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/share/translator.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:duration/duration.dart';
 
@@ -994,6 +996,165 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                               ]))),
                   child: 'F4DA9649-D96E-41CC-8528-040A2917A486'.localized,
                   after: Share.settings.appSettings.useCupertino ? '' : '838E767C-3D71-4E76-BB86-ADE91B154BF3'.localized,
+                ),
+                AdaptiveCard(
+                  regular: true,
+                  click: () => Navigator.push(
+                      context,
+                      AdaptivePageRoute(
+                          builder: (context) => StatefulBuilder(builder: (context, setState) {
+                                return ModalPageBase.adaptive(title: 'Custom Classrooms', children: [
+                                  // Import/export
+                                  CardContainer(
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                      filled: false,
+                                      additionalDividerMargin: 5,
+                                      largeHeader: false,
+                                      header: 'SHARING',
+                                      children: [
+                                        AdaptiveCard(
+                                          child: 'Import',
+                                          regular: true,
+                                          after:
+                                              Share.settings.appSettings.useCupertino ? '' : 'Import classroom definitions',
+                                          click: () async {
+                                            var controller = MobileScannerController(
+                                              formats: const [BarcodeFormat.qrCode],
+                                            );
+
+                                            final scanWindow = Rect.fromCenter(
+                                              center: MediaQuery.sizeOf(context).center(Offset.zero),
+                                              width: 200,
+                                              height: 200,
+                                            );
+
+                                            await (Share.settings.appSettings.useCupertino
+                                                    ? showCupertinoModalBottomSheet
+                                                    : showMaterialModalBottomSheet)(
+                                                shape: Share.settings.appSettings.useCupertino
+                                                    ? null
+                                                    : RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                                clipBehavior: Clip.antiAlias,
+                                                // ignore: use_build_context_synchronously
+                                                context: context,
+                                                expand: false,
+                                                builder: (context) {
+                                                  controller.barcodes.listen((data) {
+                                                    var result = data.barcodes.firstOrNull?.rawValue;
+                                                    if (result?.isEmpty ?? true) return;
+
+                                                    try {
+                                                      (jsonDecode(utf8.fuse(base64).decode(result!)) as Map<String, dynamic>)
+                                                          .entries
+                                                          // ignore: avoid_function_literals_in_foreach_calls
+                                                          .forEach((x) =>
+                                                              Share.session.settings.customClassrooms[x.key] = x.value);
+                                                      Share.settings.save();
+                                                      setState(() {});
+                                                      // ignore: use_build_context_synchronously
+                                                      Navigator.of(context).pop();
+                                                    } catch (e) {
+                                                      // Ignored
+                                                    }
+                                                  });
+
+                                                  return Stack(
+                                                    fit: StackFit.expand,
+                                                    children: [
+                                                      Center(
+                                                        child: MobileScanner(
+                                                          fit: BoxFit.contain,
+                                                          controller: controller,
+                                                          scanWindow: scanWindow,
+                                                          errorBuilder: (context, error, child) {
+                                                            return ScannerErrorWidget(error: error);
+                                                          },
+                                                          overlayBuilder: (context, constraints) {
+                                                            return Padding(
+                                                              padding: const EdgeInsets.all(16.0),
+                                                              child: Align(
+                                                                alignment: Alignment.bottomCenter,
+                                                                child: ScannedBarcodeLabel(barcodes: controller.barcodes),
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                      ),
+                                                      ValueListenableBuilder(
+                                                        valueListenable: controller,
+                                                        builder: (context, value, child) {
+                                                          if (!value.isInitialized ||
+                                                              !value.isRunning ||
+                                                              value.error != null) {
+                                                            return const SizedBox();
+                                                          }
+
+                                                          return CustomPaint(
+                                                            painter: ScannerOverlay(scanWindow: scanWindow),
+                                                          );
+                                                        },
+                                                      ),
+                                                    ],
+                                                  );
+                                                });
+                                            await controller.stop();
+                                            controller.dispose();
+                                          },
+                                        ),
+                                        AdaptiveCard(
+                                            child: 'Export',
+                                            regular: true,
+                                            after: Share.settings.appSettings.useCupertino
+                                                ? ''
+                                                : 'Share classrooms with others',
+                                            click: () => (Share.settings.appSettings.useCupertino
+                                                    ? showCupertinoModalBottomSheet
+                                                    : showMaterialModalBottomSheet)(
+                                                shape: Share.settings.appSettings.useCupertino
+                                                    ? null
+                                                    : RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                                clipBehavior: Clip.antiAlias,
+                                                context: context,
+                                                expand: false,
+                                                builder: (context) => Container(
+                                                    color: Colors.white,
+                                                    child: Container(
+                                                      margin: const EdgeInsets.all(15),
+                                                      child: QrImageView(
+                                                        data: utf8
+                                                            .fuse(base64)
+                                                            .encode(jsonEncode(Share.session.settings.customClassrooms)),
+                                                        version: QrVersions.auto,
+                                                        // embeddedImage: AssetImage('assets/resources/images/logo.png'),
+                                                        embeddedImageStyle: QrEmbeddedImageStyle(size: Size(100, 100)),
+                                                        dataModuleStyle: QrDataModuleStyle(
+                                                          dataModuleShape: QrDataModuleShape.circle,
+                                                          color: Color.fromARGB(255, 182, 108, 221),
+                                                        ),
+                                                        eyeStyle: QrEyeStyle(
+                                                          eyeShape: QrEyeShape.circle,
+                                                          color: Color.fromARGB(255, 193, 116, 226),
+                                                        ),
+                                                      ),
+                                                    )))),
+                                      ]),
+                                  // Custom classrooms
+                                  EntriesForm<String>(
+                                      header: 'CUSTOM CLASSROOMS',
+                                      description:
+                                          'These values will overwrite all default (or non-present) classrooms for each subject you add here.',
+                                      placeholder: 'Classroom',
+                                      noOption: 'Select a subject',
+                                      options: Share.session.data.student.subjects.select((x, _) => x.name).toList(),
+                                      update: <T>([v]) => (Share.session.settings.customClassrooms =
+                                              v?.cast() ?? Share.session.settings.customClassrooms)
+                                          .cast(),
+                                      validate: (v) => v)
+                                ]);
+                              }))),
+                  child: 'Custom Classrooms',
+                  after: Share.settings.appSettings.useCupertino ? '' : 'Assign classrooms to lessons',
                 )
               ],
             ),
@@ -1724,4 +1885,144 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       AdaptiveCard(regular: true, child: '', after: 'A9A27655-5B34-41D8-AEA5-BEAC6E8F6212'.localized),
                     ))
               ])));
+}
+
+class ScannerErrorWidget extends StatelessWidget {
+  const ScannerErrorWidget({super.key, required this.error});
+
+  final MobileScannerException error;
+
+  @override
+  Widget build(BuildContext context) {
+    String errorMessage;
+
+    switch (error.errorCode) {
+      case MobileScannerErrorCode.controllerUninitialized:
+        errorMessage = 'Controller not ready.';
+      case MobileScannerErrorCode.permissionDenied:
+        errorMessage = 'Permission denied';
+      case MobileScannerErrorCode.unsupported:
+        errorMessage = 'Scanning is unsupported on this device';
+      default:
+        errorMessage = 'Generic Error';
+        break;
+    }
+
+    return ColoredBox(
+      color: Colors.black,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(bottom: 16),
+              child: Icon(Icons.error, color: Colors.white),
+            ),
+            Text(
+              errorMessage,
+              style: const TextStyle(color: Colors.white),
+            ),
+            Text(
+              error.errorDetails?.message ?? '',
+              style: const TextStyle(color: Colors.white),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ScannedBarcodeLabel extends StatelessWidget {
+  const ScannedBarcodeLabel({super.key, required this.barcodes, this.caption = ''});
+
+  final Stream<BarcodeCapture> barcodes;
+  final String caption;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: barcodes,
+      builder: (context, snapshot) {
+        final scannedBarcodes = snapshot.data?.barcodes ?? [];
+
+        if (scannedBarcodes.isEmpty) {
+          return Text(
+            caption,
+            overflow: TextOverflow.fade,
+            style: TextStyle(color: Colors.white),
+          );
+        }
+
+        return Text(
+          scannedBarcodes.first.displayValue ?? 'No display value.',
+          overflow: TextOverflow.fade,
+          style: const TextStyle(color: Colors.white),
+        );
+      },
+    );
+  }
+}
+
+class ScannerOverlay extends CustomPainter {
+  const ScannerOverlay({
+    required this.scanWindow,
+    this.borderRadius = 12.0,
+  });
+
+  final Rect scanWindow;
+  final double borderRadius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // TODO: use `Offset.zero & size` instead of Rect.largest
+    // we need to pass the size to the custom paint widget
+    final backgroundPath = Path()..addRect(Rect.largest);
+
+    final cutoutPath = Path()
+      ..addRRect(
+        RRect.fromRectAndCorners(
+          scanWindow,
+          topLeft: Radius.circular(borderRadius),
+          topRight: Radius.circular(borderRadius),
+          bottomLeft: Radius.circular(borderRadius),
+          bottomRight: Radius.circular(borderRadius),
+        ),
+      );
+
+    final backgroundPaint = Paint()
+      ..color = Colors.black.withOpacity(0.5)
+      ..style = PaintingStyle.fill
+      ..blendMode = BlendMode.dstOut;
+
+    final backgroundWithCutout = Path.combine(
+      PathOperation.difference,
+      backgroundPath,
+      cutoutPath,
+    );
+
+    final borderPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4.0;
+
+    final borderRect = RRect.fromRectAndCorners(
+      scanWindow,
+      topLeft: Radius.circular(borderRadius),
+      topRight: Radius.circular(borderRadius),
+      bottomLeft: Radius.circular(borderRadius),
+      bottomRight: Radius.circular(borderRadius),
+    );
+
+    // First, draw the background,
+    // with a cutout area that is a bit larger than the scan window.
+    // Finally, draw the scan window itself.
+    canvas.drawPath(backgroundWithCutout, backgroundPaint);
+    canvas.drawRRect(borderRect, borderPaint);
+  }
+
+  @override
+  bool shouldRepaint(ScannerOverlay oldDelegate) {
+    return scanWindow != oldDelegate.scanWindow || borderRadius != oldDelegate.borderRadius;
+  }
 }

@@ -18,7 +18,7 @@ Map<String, dynamic> _$StudentUnitToJson(StudentUnit instance) =>
     };
 
 Unit _$UnitFromJson(Map<String, dynamic> json) => Unit(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       name: json['Name'] as String? ?? '',
       shortName: json['ShortName'] as String? ?? '',
       type: json['Type'] as String? ?? '',
@@ -69,8 +69,8 @@ Map<String, dynamic> _$BehaviourGradesSettingsToJson(
     };
 
 StartPoints _$StartPointsFromJson(Map<String, dynamic> json) => StartPoints(
-      semester1: json['Semester1'] as int? ?? -1,
-      semester2: json['Semester2'] as int? ?? -2,
+      semester1: (json['Semester1'] as num?)?.toInt() ?? -1,
+      semester2: (json['Semester2'] as num?)?.toInt() ?? -2,
     );
 
 Map<String, dynamic> _$StartPointsToJson(StartPoints instance) =>
@@ -110,7 +110,7 @@ Map<String, dynamic> _$GradesSettingsToJson(GradesSettings instance) =>
 LessonSettings _$LessonSettingsFromJson(Map<String, dynamic> json) =>
     LessonSettings(
       allowZeroLessonNumber: json['AllowZeroLessonNumber'] as bool? ?? false,
-      maxLessonNumber: json['MaxLessonNumber'] as int? ?? -1,
+      maxLessonNumber: (json['MaxLessonNumber'] as num?)?.toInt() ?? -1,
       isExtramuralCourse: json['IsExtramuralCourse'] as bool? ?? false,
       isAdultsDaily: json['IsAdultsDaily'] as bool? ?? false,
       allowAddOtherLessons: json['AllowAddOtherLessons'] as bool? ?? false,
@@ -130,8 +130,8 @@ Map<String, dynamic> _$LessonSettingsToJson(LessonSettings instance) =>
 LessonsRange _$LessonsRangeFromJson(Map<String, dynamic> json) => LessonsRange(
       from: json['From'] as String? ?? '08:00',
       to: json['To'] as String? ?? '08:45',
-      rawFrom: json['RawFrom'] as int? ?? 946713600,
-      rawTo: json['RawTo'] as int? ?? 946716300,
+      rawFrom: (json['RawFrom'] as num?)?.toInt() ?? 946713600,
+      rawTo: (json['RawTo'] as num?)?.toInt() ?? 946716300,
     );
 
 Map<String, dynamic> _$LessonsRangeToJson(LessonsRange instance) =>

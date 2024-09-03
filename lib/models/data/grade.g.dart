@@ -93,11 +93,11 @@ class GradeAdapter extends TypeAdapter<Grade> {
 // **************************************************************************
 
 Grade _$GradeFromJson(Map<String, dynamic> json) => Grade(
-      id: json['id'] as int? ?? -1,
+      id: (json['id'] as num?)?.toInt() ?? -1,
       url: json['url'] as String? ?? 'https://g.co',
       name: json['name'] as String? ?? '',
       value: json['value'] as String? ?? '',
-      weight: json['weight'] as int? ?? 0,
+      weight: (json['weight'] as num?)?.toInt() ?? 0,
       comments: (json['comments'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
@@ -110,7 +110,7 @@ Grade _$GradeFromJson(Map<String, dynamic> json) => Grade(
       addedBy: json['addedBy'] == null
           ? null
           : Teacher.fromJson(json['addedBy'] as Map<String, dynamic>),
-      semester: json['semester'] as int? ?? 1,
+      semester: (json['semester'] as num?)?.toInt() ?? 1,
       isConstituent: json['isConstituent'] as bool? ?? false,
       isSemester: json['isSemester'] as bool? ?? false,
       isSemesterProposition: json['isSemesterProposition'] as bool? ?? false,

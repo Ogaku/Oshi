@@ -20,7 +20,7 @@ Map<String, dynamic> _$TeacherFreeDaysToJson(TeacherFreeDays instance) =>
 
 TeacherFreeDay _$TeacherFreeDayFromJson(Map<String, dynamic> json) =>
     TeacherFreeDay(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       teacher: json['Teacher'] == null
           ? null
           : Teacher.fromJson(json['Teacher'] as Map<String, dynamic>),
@@ -54,7 +54,7 @@ Map<String, dynamic> _$TeacherFreeDayToJson(TeacherFreeDay instance) {
 }
 
 Teacher _$TeacherFromJson(Map<String, dynamic> json) => Teacher(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       url: json['Url'] as String? ?? '',
     );
 

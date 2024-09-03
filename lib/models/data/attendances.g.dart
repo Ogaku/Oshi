@@ -122,8 +122,8 @@ class AttendanceTypeAdapter extends TypeAdapter<AttendanceType> {
 // **************************************************************************
 
 Attendance _$AttendanceFromJson(Map<String, dynamic> json) => Attendance(
-      id: json['id'] as int? ?? -1,
-      lessonNo: json['lessonNo'] as int? ?? -1,
+      id: (json['id'] as num?)?.toInt() ?? -1,
+      lessonNo: (json['lessonNo'] as num?)?.toInt() ?? -1,
       lesson: json['lesson'] == null
           ? null
           : TimetableLesson.fromJson(json['lesson'] as Map<String, dynamic>),

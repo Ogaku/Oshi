@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:format/format.dart';
 import 'package:oshi/interface/components/cupertino/widgets/options_form.dart';
 import 'package:oshi/interface/shared/containers.dart';
+import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -228,6 +229,7 @@ void showOptionDialog<T>(
         {required BuildContext context,
         required String title,
         IconData? icon,
+        bool scrollable = false,
         required T selection,
         required List<OptionEntry<T>> options,
         required void Function(T) onChanged}) =>
@@ -248,27 +250,60 @@ void showOptionDialog<T>(
                 padding: EdgeInsets.only(top: (icon != null) ? 20 : 30, bottom: 20.0),
                 child: Text(title, style: TextStyle(fontSize: 27)),
               ),
+              if (scrollable)
+                SizedBox(
+                  height: 265,
+                  child: SingleChildScrollView(
+                    child: Column(
+                        children: options
+                            .select((x, _) => Padding(
+                                padding: const EdgeInsets.only(left: 25, right: 25),
+                                child: ListTile(
+                                    onTap: () => setState(() => group = x.value),
+                                    contentPadding: EdgeInsets.only(left: 16.0, right: 5.0),
+                                    shape:
+                                        const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                                    title: Table(
+                                        columnWidths: x.decoration != null
+                                            ? const {0: FlexColumnWidth(2), 1: IntrinsicColumnWidth()}
+                                            : null,
+                                        children: [
+                                          TableRow(children: [
+                                            Text(x.name, style: TextStyle(fontSize: 17), overflow: TextOverflow.ellipsis),
+                                            if (x.decoration != null) x.decoration!
+                                          ])
+                                        ]),
+                                    trailing: Radio(
+                                      value: x.value,
+                                      groupValue: group,
+                                      onChanged: (value) => setState(() => group = value),
+                                    ))))
+                            .toList()),
+                  ),
+                )
             ]
-                .appendAll(options.select((x, _) => Padding(
-                    padding: const EdgeInsets.only(left: 25, right: 25),
-                    child: ListTile(
-                        onTap: () => setState(() => group = x.value),
-                        contentPadding: EdgeInsets.only(left: 16.0, right: 5.0),
-                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),
-                        title: Table(
-                            columnWidths:
-                                x.decoration != null ? const {0: FlexColumnWidth(2), 1: IntrinsicColumnWidth()} : null,
-                            children: [
-                              TableRow(children: [
-                                Text(x.name, style: TextStyle(fontSize: 17), overflow: TextOverflow.ellipsis),
-                                if (x.decoration != null) x.decoration!
-                              ])
-                            ]),
-                        trailing: Radio(
-                          value: x.value,
-                          groupValue: group,
-                          onChanged: (value) => setState(() => group = value),
-                        )))))
+                .appendAllIf(
+                    options.select((x, _) => Padding(
+                        padding: const EdgeInsets.only(left: 25, right: 25),
+                        child: ListTile(
+                            onTap: () => setState(() => group = x.value),
+                            contentPadding: EdgeInsets.only(left: 16.0, right: 5.0),
+                            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                            title: Table(
+                                columnWidths:
+                                    x.decoration != null ? const {0: FlexColumnWidth(2), 1: IntrinsicColumnWidth()} : null,
+                                children: [
+                                  TableRow(children: [
+                                    Text(x.name, style: TextStyle(fontSize: 17), overflow: TextOverflow.ellipsis),
+                                    if (x.decoration != null) x.decoration!
+                                  ])
+                                ]),
+                            trailing: Radio(
+                              value: x.value,
+                              groupValue: group,
+                              onChanged: (value) => setState(() => group = value),
+                            )))),
+                    !scrollable)
                 .append(Align(
                   alignment: Alignment.bottomRight,
                   child: Padding(

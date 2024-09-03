@@ -127,9 +127,9 @@ class LessonRangesAdapter extends TypeAdapter<LessonRanges> {
 // **************************************************************************
 
 Unit _$UnitFromJson(Map<String, dynamic> json) => Unit(
-      id: json['id'] as int? ?? -1,
+      id: (json['id'] as num?)?.toInt() ?? -1,
       url: json['url'] as String? ?? 'https://g.co',
-      luckyNumber: json['luckyNumber'] as int?,
+      luckyNumber: (json['luckyNumber'] as num?)?.toInt(),
       name: json['name'] as String? ?? '',
       fullName: json['fullName'] as String? ?? '',
       principalName: json['principalName'] as String? ?? '',

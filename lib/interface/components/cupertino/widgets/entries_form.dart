@@ -4,29 +4,38 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
+import 'package:oshi/interface/components/cupertino/widgets/options_form.dart';
+import 'package:oshi/interface/components/shim/modal_page.dart';
+import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/interface/shared/containers.dart';
+import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/share/share.dart';
 
 class EntriesForm<T> extends StatefulWidget {
-  const EntriesForm(
-      {super.key,
-      this.header = '',
-      this.description = '',
-      this.placeholder = 'Key',
-      required this.update,
-      required this.validate,
-      this.maxKeyLength = 3,
-      this.maxValueLength = 5});
+  const EntriesForm({
+    super.key,
+    this.header = '',
+    this.description = '',
+    this.placeholder = 'Key',
+    required this.update,
+    required this.validate,
+    this.maxKeyLength = 3,
+    this.maxValueLength = 5,
+    this.options,
+    this.noOption = 'Select',
+  });
 
   final String header;
   final String description;
   final String placeholder;
+  final String noOption;
 
   final int maxKeyLength;
   final int maxValueLength;
 
   final Map<String, T> Function<T>([Map<String, T>?]) update;
   final T? Function(String) validate;
+  final List<String>? options;
 
   @override
   State<EntriesForm> createState() => _EntriesFormState();
@@ -78,6 +87,7 @@ class _EntriesFormState<T> extends State<EntriesForm<T>> {
             // The 'add' menu
             .append(AdaptiveCard(
                 regular: true,
+                hideChevron: true,
                 click: () {
                   var result = widget.validate(_valueController.text);
                   if (!(_keyController.text.isNotEmpty &&
@@ -115,31 +125,81 @@ class _EntriesFormState<T> extends State<EntriesForm<T>> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: 50),
-                        child: Share.settings.appSettings.useCupertino
-                            ? CupertinoTextField(
-                                onChanged: (value) => setState(() {}),
-                                controller: _keyController,
-                                expands: false,
-                                textAlign: TextAlign.start,
-                                maxLength: widget.maxKeyLength,
-                                maxLengthEnforcement: MaxLengthEnforcement.enforced)
-                            : TextFormField(
-                                onChanged: (value) => setState(() {}),
-                                controller: _keyController,
-                                expands: false,
-                                textAlign: TextAlign.start,
-                                maxLength: widget.maxKeyLength,
-                                maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                                decoration: InputDecoration(
-                                  counterText: "",
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
-                                  hintTextDirection: TextDirection.ltr,
-                                  fillColor: Colors.transparent,
+                    if (widget.options?.isEmpty ?? true)
+                      ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: 50),
+                          child: Share.settings.appSettings.useCupertino
+                              ? CupertinoTextField(
+                                  onChanged: (value) => setState(() {}),
+                                  controller: _keyController,
+                                  expands: false,
+                                  textAlign: TextAlign.start,
+                                  maxLength: widget.maxKeyLength,
+                                  maxLengthEnforcement: MaxLengthEnforcement.enforced)
+                              : TextFormField(
+                                  onChanged: (value) => setState(() {}),
+                                  controller: _keyController,
+                                  expands: false,
+                                  textAlign: TextAlign.start,
+                                  maxLength: widget.maxKeyLength,
+                                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                                  decoration: InputDecoration(
+                                    counterText: "",
+                                    errorBorder: InputBorder.none,
+                                    disabledBorder: InputBorder.none,
+                                    hintTextDirection: TextDirection.ltr,
+                                    fillColor: Colors.transparent,
+                                  ),
+                                )),
+                    if (widget.options?.isNotEmpty ?? false)
+                      Share.settings.appSettings.useCupertino
+                          ? CupertinoButton(
+                              padding: EdgeInsets.only(top: 5, bottom: 5, right: 10),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(maxWidth: 150),
+                                child: Text(
+                                  _keyController.text.isNotEmpty ? _keyController.text : widget.noOption,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              )),
+                              ),
+                              onPressed: () => Navigator.push(
+                                  context,
+                                  AdaptivePageRoute(
+                                      builder: (context) => ModalPageBase.adaptive(title: widget.noOption, children: [
+                                            OptionsForm(
+                                                selection: _keyController.text,
+                                                options: widget.options!
+                                                    .select((x, _) => OptionEntry(name: x, value: x))
+                                                    .toList(),
+                                                update: <T>(v) {
+                                                  _keyController.text = v;
+                                                  setState(() {});
+                                                })
+                                          ]))))
+                          : ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 13)),
+                              onPressed: () => showOptionDialog(
+                                  context: context,
+                                  scrollable: true,
+                                  title: widget.noOption,
+                                  icon: Icons.list,
+                                  selection: _keyController.text,
+                                  options: widget.options!.select((x, _) => OptionEntry(name: x, value: x)).toList(),
+                                  onChanged: (v) {
+                                    _keyController.text = v;
+                                    setState(() {});
+                                  }),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(maxWidth: 125),
+                                child: Text(_keyController.text.isNotEmpty ? _keyController.text : widget.noOption,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSecondary)),
+                              ),
+                            ),
                     ConstrainedBox(
                         constraints: BoxConstraints(maxWidth: _valueController.text.isNotEmpty ? 70 : 100),
                         child: Share.settings.appSettings.useCupertino

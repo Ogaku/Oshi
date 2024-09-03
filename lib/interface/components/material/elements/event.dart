@@ -697,9 +697,13 @@ extension LessonWidgetExtension on TimetableLesson {
                                               AdaptiveCard(
                                                 child: 'AA2B9B71-49B6-45BD-A0FE-707D42A09EC5'.localized,
                                                 regular: true,
-                                                after: classroom?.name ?? '',
+                                                after: Share.session.settings.customClassrooms[subject?.name ?? ''] ??
+                                                    classroom?.name ??
+                                                    '',
                                               ),
-                                              classroom?.name.isNotEmpty ?? false)
+                                              Share.session.settings.customClassrooms[subject?.name ?? '']?.isNotEmpty ??
+                                                  classroom?.name.isNotEmpty ??
+                                                  false)
                                           .appendIf(
                                               AdaptiveCard(
                                                 child: '4CCE58F6-2805-4D44-B97A-556679808477'.localized,
@@ -835,7 +839,9 @@ extension LessonWidgetExtension on TimetableLesson {
                                                   Icon(CupertinoIcons.question, color: CupertinoColors.inactiveGray)
                                               })
                                             : Text(
-                                                classroom?.name ?? '',
+                                                Share.session.settings.customClassrooms[subject?.name ?? ''] ??
+                                                    classroom?.name ??
+                                                    '',
                                                 style: TextStyle(
                                                     fontSize: 17,
                                                     fontStyle: (isCanceled || modifiedSchedule || markModified)

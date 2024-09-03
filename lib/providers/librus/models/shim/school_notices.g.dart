@@ -50,7 +50,7 @@ Map<String, dynamic> _$SchoolNoticeToJson(SchoolNotice instance) =>
     };
 
 AddedBy _$AddedByFromJson(Map<String, dynamic> json) => AddedBy(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       url: json['Url'] as String? ?? '',
     );
 

@@ -197,8 +197,8 @@ class EventCategoryAdapter extends TypeAdapter<EventCategory> {
 // **************************************************************************
 
 Event _$EventFromJson(Map<String, dynamic> json) => Event(
-      id: json['id'] as int? ?? -1,
-      lessonNo: json['lessonNo'] as int?,
+      id: (json['id'] as num?)?.toInt() ?? -1,
+      lessonNo: (json['lessonNo'] as num?)?.toInt(),
       date:
           json['date'] == null ? null : DateTime.parse(json['date'] as String),
       addDate: json['addDate'] == null

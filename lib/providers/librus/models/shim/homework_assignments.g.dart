@@ -21,7 +21,7 @@ Map<String, dynamic> _$HomeWorkAssignmentsToJson(
 
 HomeWorkAssignment _$HomeWorkAssignmentFromJson(Map<String, dynamic> json) =>
     HomeWorkAssignment(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       teacher: json['Teacher'] == null
           ? null
           : Category.fromJson(json['Teacher'] as Map<String, dynamic>),
@@ -70,7 +70,7 @@ Map<String, dynamic> _$HomeWorkAssignmentToJson(HomeWorkAssignment instance) =>
     };
 
 Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       url: json['Url'] as String? ?? '',
     );
 

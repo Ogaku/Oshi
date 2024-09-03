@@ -19,13 +19,13 @@ Map<String, dynamic> _$GradeCategoriesToJson(GradeCategories instance) =>
     };
 
 Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       color: json['Color'] == null
           ? null
           : Color.fromJson(json['Color'] as Map<String, dynamic>),
       name: json['Name'] as String? ?? '',
       countToTheAverage: json['CountToTheAverage'] as bool? ?? false,
-      weight: json['Weight'] as int?,
+      weight: (json['Weight'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$CategoryToJson(Category instance) {
@@ -47,7 +47,7 @@ Map<String, dynamic> _$CategoryToJson(Category instance) {
 }
 
 Color _$ColorFromJson(Map<String, dynamic> json) => Color(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       url: json['Url'] as String? ?? '',
     );
 

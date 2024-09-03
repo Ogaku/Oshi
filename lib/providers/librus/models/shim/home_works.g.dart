@@ -17,7 +17,7 @@ Map<String, dynamic> _$HomeWorksToJson(HomeWorks instance) => <String, dynamic>{
     };
 
 HomeWork _$HomeWorkFromJson(Map<String, dynamic> json) => HomeWork(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       content: json['Content'] as String? ?? '',
       date:
           json['Date'] == null ? null : DateTime.parse(json['Date'] as String),
@@ -64,7 +64,7 @@ Map<String, dynamic> _$HomeWorkToJson(HomeWork instance) => <String, dynamic>{
     };
 
 Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       url: json['Url'] as String? ?? '',
     );
 
@@ -74,10 +74,10 @@ Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
     };
 
 Classroom _$ClassroomFromJson(Map<String, dynamic> json) => Classroom(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       symbol: json['Symbol'] as String? ?? '',
       name: json['Name'] as String? ?? '',
-      size: json['Size'] as int? ?? -1,
+      size: (json['Size'] as num?)?.toInt() ?? -1,
     );
 
 Map<String, dynamic> _$ClassroomToJson(Classroom instance) => <String, dynamic>{

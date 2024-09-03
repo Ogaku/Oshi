@@ -66,7 +66,7 @@ class AnnouncementAdapter extends TypeAdapter<Announcement> {
 // **************************************************************************
 
 Announcement _$AnnouncementFromJson(Map<String, dynamic> json) => Announcement(
-      id: json['id'] as int? ?? -1,
+      id: (json['id'] as num?)?.toInt() ?? -1,
       url: json['url'] as String? ?? '',
       read: json['read'] as bool? ?? false,
       subject: json['subject'] as String? ?? '',

@@ -18,8 +18,8 @@ Map<String, dynamic> _$StudentClassToJson(StudentClass instance) =>
     };
 
 Class _$ClassFromJson(Map<String, dynamic> json) => Class(
-      id: json['Id'] as int? ?? -1,
-      number: json['Number'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
+      number: (json['Number'] as num?)?.toInt() ?? -1,
       symbol: json['Symbol'] as String? ?? '',
       beginSchoolYear: json['BeginSchoolYear'] == null
           ? null
@@ -54,7 +54,7 @@ Map<String, dynamic> _$ClassToJson(Class instance) => <String, dynamic>{
     };
 
 ClassTutor _$ClassTutorFromJson(Map<String, dynamic> json) => ClassTutor(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       url: json['Url'] as String? ?? '',
     );
 

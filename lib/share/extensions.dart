@@ -18,6 +18,11 @@ extension ListExtension<T> on List<T> {
     if (!condition) return toList();
     return intersperse(element).toList();
   }
+
+  List<T> appendAllIf(Iterable<T> element, bool condition) {
+    if (!condition) return toList();
+    return appendAll(element).toList();
+  }
 }
 
 extension ListAppendExtension<T> on Iterable<T> {

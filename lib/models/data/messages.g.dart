@@ -152,7 +152,7 @@ class AttachmentAdapter extends TypeAdapter<Attachment> {
 // **************************************************************************
 
 Message _$MessageFromJson(Map<String, dynamic> json) => Message(
-      id: json['id'] as int? ?? -1,
+      id: (json['id'] as num?)?.toInt() ?? -1,
       url: json['url'] as String? ?? 'https://g.co',
       topic: json['topic'] as String? ?? '',
       content: json['content'] as String?,

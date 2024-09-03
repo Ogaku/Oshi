@@ -11,7 +11,7 @@ OutboxMessages _$OutboxMessagesFromJson(Map<String, dynamic> json) =>
       data: (json['data'] as List<dynamic>?)
           ?.map((e) => Datum.fromJson(e as Map<String, dynamic>))
           .toList(),
-      total: json['total'] as int,
+      total: (json['total'] as num).toInt(),
     );
 
 Map<String, dynamic> _$OutboxMessagesToJson(OutboxMessages instance) =>
@@ -71,8 +71,8 @@ Data _$DataFromJson(Map<String, dynamic> json) => Data(
           : DateTime.parse(json['readDate'] as String),
       userFirstName: json['userFirstName'] as String,
       userLastName: json['userLastName'] as String,
-      noReply: json['noReply'] as int,
-      archive: json['archive'] as int,
+      noReply: (json['noReply'] as num).toInt(),
+      archive: (json['archive'] as num).toInt(),
       senderName: json['senderName'] as String,
       receivers: (json['receivers'] as List<dynamic>?)
           ?.map((e) => Receiver.fromJson(e as Map<String, dynamic>))
@@ -105,7 +105,7 @@ Receiver _$ReceiverFromJson(Map<String, dynamic> json) => Receiver(
       pupilLastName: json['pupilLastName'],
       group: json['group'] as String,
       readed: json['readed'],
-      active: json['active'] as int,
+      active: (json['active'] as num).toInt(),
       otherNodeUuid: json['otherNodeUuid'],
       otherNodeAccountId: json['otherNodeAccountId'],
       name: json['name'] as String,

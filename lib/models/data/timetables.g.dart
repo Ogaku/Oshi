@@ -234,7 +234,7 @@ Map<String, dynamic> _$TimetableDayToJson(TimetableDay instance) =>
 TimetableLesson _$TimetableLessonFromJson(Map<String, dynamic> json) =>
     TimetableLesson(
       url: json['url'] as String? ?? '',
-      lessonNo: json['lessonNo'] as int? ?? -1,
+      lessonNo: (json['lessonNo'] as num?)?.toInt() ?? -1,
       isCanceled: json['isCanceled'] as bool? ?? false,
       lessonClass: json['lessonClass'] == null
           ? null
@@ -284,7 +284,7 @@ Map<String, dynamic> _$TimetableLessonToJson(TimetableLesson instance) =>
 SubstitutionDetails _$SubstitutionDetailsFromJson(Map<String, dynamic> json) =>
     SubstitutionDetails(
       originalUrl: json['originalUrl'] as String? ?? 'htps://g.co',
-      originalLessonNo: json['originalLessonNo'] as int? ?? -1,
+      originalLessonNo: (json['originalLessonNo'] as num?)?.toInt() ?? -1,
       originalSubject: json['originalSubject'] == null
           ? null
           : Lesson.fromJson(json['originalSubject'] as Map<String, dynamic>),

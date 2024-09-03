@@ -142,7 +142,7 @@ Map<String, dynamic> _$LinkToJson(Link instance) => <String, dynamic>{
     };
 
 Class _$ClassFromJson(Map<String, dynamic> json) => Class(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       url: json['Url'] as String? ?? '',
     );
 

@@ -741,20 +741,21 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                           child: Container(
                                               margin: EdgeInsets.only(bottom: 5),
                                               child: Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                Text(
-                                                  '/Now'.localized,
-                                                  style: TextStyle(fontWeight: FontWeight.w500),
-                                                ),
-                                                Flexible(
-                                                    child: Container(
-                                                        margin: EdgeInsets.only(right: 3, left: 3),
-                                                        child: Text(
-                                                          currentLesson?.subject?.name ??
-                                                              '/Notifications/Placeholder/Lesson'.localized,
-                                                          style: TextStyle(fontWeight: FontWeight.w500),
-                                                        ))),
-                                              ].appendIf(
+                                                    Text(
+                                                      '/Now'.localized,
+                                                      style: TextStyle(fontWeight: FontWeight.w500),
+                                                    ),
+                                                    Flexible(
+                                                        child: Container(
+                                                            margin: EdgeInsets.only(right: 3, left: 3),
+                                                            child: Text(
+                                                              currentLesson?.subject?.name ??
+                                                                  '/Notifications/Placeholder/Lesson'.localized,
+                                                              style: TextStyle(fontWeight: FontWeight.w500),
+                                                            ))),
+                                                  ].appendIf(
                                                       Text(
                                                         'C33F8288-5BAD-4574-9C53-B54FED6757AC'
                                                             .localized
@@ -790,6 +791,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
                                                                   ? '6B3280B8-EDDB-44E2-A2D5-824FE98E8247'.localized
                                                                   : '2754A69F-9E60-4FDA-903B-95CFAB85E982'.localized,
                                                           style: TextStyle(fontWeight: FontWeight.w500),
+                                                          maxLines: 1, overflow: TextOverflow.ellipsis,
                                                         ),
                                                         Flexible(
                                                             child: Container(

@@ -17,7 +17,7 @@ Map<String, dynamic> _$GradesToJson(Grades instance) => <String, dynamic>{
     };
 
 Grade _$GradeFromJson(Map<String, dynamic> json) => Grade(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       lesson: json['Lesson'] == null
           ? null
           : Link.fromJson(json['Lesson'] as Map<String, dynamic>),
@@ -39,7 +39,7 @@ Grade _$GradeFromJson(Map<String, dynamic> json) => Grade(
       addDate: json['AddDate'] == null
           ? null
           : DateTime.parse(json['AddDate'] as String),
-      semester: json['Semester'] as int? ?? -1,
+      semester: (json['Semester'] as num?)?.toInt() ?? -1,
       isConstituent: json['IsConstituent'] as bool? ?? false,
       isSemester: json['IsSemester'] as bool? ?? false,
       isSemesterProposition: json['IsSemesterProposition'] as bool? ?? false,
@@ -84,7 +84,7 @@ Map<String, dynamic> _$GradeToJson(Grade instance) {
 }
 
 Link _$LinkFromJson(Map<String, dynamic> json) => Link(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       url: json['Url'] as String? ?? '',
     );
 

@@ -808,11 +808,18 @@ extension LessonWidgetExtension on TimetableLesson {
                                                           margin: EdgeInsets.only(left: 3, top: 5, bottom: 5),
                                                           child: Opacity(
                                                               opacity: 0.5,
-                                                              child: Text(classroom?.name ?? '',
-                                                                  maxLines: 1, textAlign: TextAlign.end))))
+                                                              child: Text(
+                                                                  Share.session.settings
+                                                                          .customClassrooms[subject?.name ?? ''] ??
+                                                                      classroom?.name ??
+                                                                      '',
+                                                                  maxLines: 1,
+                                                                  textAlign: TextAlign.end))))
                                                 ],
                                               )),
-                                              classroom?.name.isNotEmpty ?? false)
+                                              Share.session.settings.customClassrooms[subject?.name ?? '']?.isNotEmpty ??
+                                                  classroom?.name.isNotEmpty ??
+                                                  false)
                                           .appendIf(
                                               AdaptiveCard(
                                                   child: Row(
@@ -1021,7 +1028,9 @@ extension LessonWidgetExtension on TimetableLesson {
                                                       Icon(CupertinoIcons.question, color: CupertinoColors.inactiveGray)
                                                   })
                                                 : Text(
-                                                    classroom?.name ?? '',
+                                                    Share.session.settings.customClassrooms[subject?.name ?? ''] ??
+                                                        classroom?.name ??
+                                                        '',
                                                     style: TextStyle(
                                                         fontSize: 17,
                                                         fontStyle: (isCanceled || modifiedSchedule || markModified)

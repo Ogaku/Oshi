@@ -19,7 +19,7 @@ Map<String, dynamic> _$EventCategoriesToJson(EventCategories instance) =>
     };
 
 Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       name: json['Name'] as String? ?? '',
       color: json['Color'] == null
           ? null
@@ -33,7 +33,7 @@ Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
     };
 
 Color _$ColorFromJson(Map<String, dynamic> json) => Color(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       url: json['Url'] as String? ?? '',
     );
 

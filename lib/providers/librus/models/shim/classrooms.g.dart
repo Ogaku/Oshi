@@ -18,10 +18,10 @@ Map<String, dynamic> _$ClassroomsToJson(Classrooms instance) =>
     };
 
 Classroom _$ClassroomFromJson(Map<String, dynamic> json) => Classroom(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       name: json['Name'] as String? ?? '',
       symbol: json['Symbol'] as String? ?? '',
-      size: json['Size'] as int? ?? -1,
+      size: (json['Size'] as num?)?.toInt() ?? -1,
       schoolCommonRoom: json['SchoolCommonRoom'] as bool? ?? false,
       description: json['Description'] as String?,
     );

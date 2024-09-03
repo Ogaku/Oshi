@@ -17,7 +17,7 @@ Map<String, dynamic> _$SchoolsToJson(Schools instance) => <String, dynamic>{
     };
 
 School _$SchoolFromJson(Map<String, dynamic> json) => School(
-      id: json['Id'] as int? ?? -1,
+      id: (json['Id'] as num?)?.toInt() ?? -1,
       name: json['Name'] as String? ?? '',
       town: json['Town'] as String? ?? '',
       street: json['Street'] as String? ?? '',
@@ -27,11 +27,11 @@ School _$SchoolFromJson(Map<String, dynamic> json) => School(
       lessonsRange: (json['LessonsRange'] as List<dynamic>?)
           ?.map((e) => LessonsRange.fromJson(e as Map<String, dynamic>))
           .toList(),
-      schoolYear: json['SchoolYear'] as int? ?? -1,
-      vocationalSchool: json['VocationalSchool'] as int? ?? -1,
+      schoolYear: (json['SchoolYear'] as num?)?.toInt() ?? -1,
+      vocationalSchool: (json['VocationalSchool'] as num?)?.toInt() ?? -1,
       nameHeadTeacher: json['NameHeadTeacher'] as String? ?? '',
       surnameHeadTeacher: json['SurnameHeadTeacher'] as String? ?? '',
-      project: json['Project'] as int? ?? -1,
+      project: (json['Project'] as num?)?.toInt() ?? -1,
       postCode: json['PostCode'] as String? ?? '',
       email: json['Email'] as String? ?? '',
       phoneNumber: json['PhoneNumber'] as String? ?? '',
@@ -59,8 +59,8 @@ Map<String, dynamic> _$SchoolToJson(School instance) => <String, dynamic>{
 LessonsRange _$LessonsRangeFromJson(Map<String, dynamic> json) => LessonsRange(
       from: json['From'] as String? ?? '08:00',
       to: json['To'] as String? ?? '08:45',
-      rawFrom: json['RawFrom'] as int? ?? 946713600,
-      rawTo: json['RawTo'] as int? ?? 946716300,
+      rawFrom: (json['RawFrom'] as num?)?.toInt() ?? 946713600,
+      rawTo: (json['RawTo'] as num?)?.toInt() ?? 946716300,
     );
 
 Map<String, dynamic> _$LessonsRangeToJson(LessonsRange instance) =>

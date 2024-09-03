@@ -68,6 +68,7 @@ class SessionConfig with ChangeNotifier {
     Map<String, double>? customGradeValues,
     Map<String, double>? customGradeMarginValues,
     Map<String, double>? customGradeModifierValues,
+    Map<String, String>? customClassrooms,
     int? cupertinoAccentColor,
     bool? weightedAverage,
     bool? autoArithmeticAverage,
@@ -92,6 +93,7 @@ class SessionConfig with ChangeNotifier {
   })  : _customGradeValues = customGradeValues ?? {},
         _customGradeMarginValues = customGradeMarginValues ?? {},
         _customGradeModifierValues = customGradeModifierValues ?? {'+': 0.5, '-': -0.25},
+        _customClassrooms = customClassrooms ?? {},
         _cupertinoAccentColor = cupertinoAccentColor ?? Resources.cupertinoAccentColors.keys.first,
         _weightedAverage = weightedAverage ?? true,
         _autoArithmeticAverage = autoArithmeticAverage ?? false,
@@ -188,8 +190,14 @@ class SessionConfig with ChangeNotifier {
   @HiveField(24, defaultValue: true)
   bool _shareEventsByDefault;
 
+  @HiveField(25, defaultValue: {})
+  Map<String, String> _customClassrooms;
+
   @JsonKey(includeToJson: false, includeFromJson: false)
   Map<String, double> get customGradeValues => _customGradeValues;
+
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  Map<String, String> get customClassrooms => _customClassrooms;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   Map<String, double> get customGradeMarginValues => _customGradeMarginValues;
@@ -287,6 +295,12 @@ class SessionConfig with ChangeNotifier {
 
   set customGradeValues(Map<String, double> customGradeValues) {
     _customGradeValues = customGradeValues;
+    notifyListeners();
+    Share.settings.save();
+  }
+
+  set customClassrooms(Map<String, String> customClassrooms) {
+    _customClassrooms = customClassrooms;
     notifyListeners();
     Share.settings.save();
   }

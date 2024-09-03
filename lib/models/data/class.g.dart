@@ -75,8 +75,8 @@ class ClassAdapter extends TypeAdapter<Class> {
 // **************************************************************************
 
 Class _$ClassFromJson(Map<String, dynamic> json) => Class(
-      id: json['id'] as int? ?? -1,
-      number: json['number'] as int? ?? -1,
+      id: (json['id'] as num?)?.toInt() ?? -1,
+      number: (json['number'] as num?)?.toInt() ?? -1,
       symbol: json['symbol'] as String? ?? '',
       name: json['name'] as String? ?? '',
       beginSchoolYear: json['beginSchoolYear'] == null
