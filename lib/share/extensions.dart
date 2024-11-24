@@ -6,6 +6,17 @@ import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/share/translator.dart';
 
+extension DateTimeAddDate on DateTime {
+  DateTime addDate({int years = 0, int months = 0, int days = 0}) {
+    if (years == 0 && months == 0 && days == 0) return this;
+    return isUtc
+        ? DateTime.utc(year + years, month + months, day + days, hour, minute,
+            second, millisecond, microsecond)
+        : DateTime(year + years, month + months, day + days, hour, minute,
+            second, millisecond, microsecond);
+  }
+}
+
 extension ListExtension<T> on List<T> {
   Iterable<T> intersperse(T element) sync* {
     for (int i = 0; i < length; i++) {

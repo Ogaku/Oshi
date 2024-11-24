@@ -453,7 +453,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
               margin: EdgeInsets.only(
                   top: Share.settings.appSettings.useCupertino ? 2 : 5,
                   bottom: Share.settings.appSettings.useCupertino ? 2 : 5,
-                  right: Share.settings.appSettings.useCupertino ? 0 : 25),
+                  right: Share.settings.appSettings.useCupertino ? 0 : 20),
               child:
                   TextChip(width: 110, text: DateFormat.yMd(Share.settings.appSettings.localeCode).format(selectedDate)))),
       trailing: isWorking
@@ -537,7 +537,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
           x,
           DateFormat('EEEEE, d.MM', Share.settings.appSettings.localeCode)
               .format((isBeforeSchoolYear ? DateTime.now().asDate() : Share.session.data.student.mainClass.beginSchoolYear)
-                  .add(Duration(days: x)))
+                  .addDate(days: x))
               .capitalize())),
       segmentController: segmentController,
       pageBuilder: Share.settings.appSettings.useCupertino ? null : timetableBuilder,
