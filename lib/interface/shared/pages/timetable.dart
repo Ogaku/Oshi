@@ -537,7 +537,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
           x,
           DateFormat('EEEEE, d.MM', Share.settings.appSettings.localeCode)
               .format((isBeforeSchoolYear ? DateTime.now().asDate() : Share.session.data.student.mainClass.beginSchoolYear)
-                  .add(Duration(days: x)))
+                  .addDate(days: x))
               .capitalize())),
       segmentController: segmentController,
       pageBuilder: Share.settings.appSettings.useCupertino ? null : timetableBuilder,
