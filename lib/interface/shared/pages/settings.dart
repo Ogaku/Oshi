@@ -1538,6 +1538,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                           after: Share.buildNumber.split('.').last)
                                     ],
                                   ),
+                                  // Dev
                                   CardContainer(
                                     margin: EdgeInsets.symmetric(
                                         horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
@@ -1582,6 +1583,62 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                         child: 'AAhockey',
                                         after: '213B6431-B649-4837-A089-3E2A037A4625'.localized,
                                       )
+                                    ],
+                                  ),
+                                  // PR
+                                  CardContainer(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                    filled: false,
+                                    additionalDividerMargin: 5,
+                                    largeHeader: false,
+                                    header: '84D8D5E0-43AA-4463-BAE8-FF5453F79FB3'.localized,
+                                    children: [
+                                      AdaptiveCard(
+                                        regular: true,
+                                        click: () {
+                                          try {
+                                            launchUrlString('https://github.com/uZyren');
+                                          } catch (ex) {
+                                            // ignored
+                                          }
+                                        },
+                                        child: 'Zyren',
+                                        after: 'uZyren',
+                                      ),
+                                    ],
+                                  ),
+                                  // Kofi
+                                  CardContainer(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: Share.settings.appSettings.useCupertino ? 15 : 18, vertical: 15),
+                                    filled: false,
+                                    additionalDividerMargin: 5,
+                                    largeHeader: false,
+                                    header: '84D8D5E0-43AA-4463-BAE8-FF5453F79FB4'.localized,
+                                    children: [
+                                      AdaptiveCard(
+                                        regular: true,
+                                        click: () {
+                                          try {
+                                            launchUrlString('https://ko-fi.com/K3K712VWQ6');
+                                          } catch (ex) {
+                                            // ignored
+                                          }
+                                        },
+                                        child: 'szaszlyki21',
+                                      ),
+                                      AdaptiveCard(
+                                        regular: true,
+                                        click: () {
+                                          try {
+                                            launchUrlString('https://ko-fi.com/K3K715XDN9');
+                                          } catch (ex) {
+                                            // ignored
+                                          }
+                                        },
+                                        child: 'Zyren',
+                                      ),
                                     ],
                                   )
                                 ]))),
