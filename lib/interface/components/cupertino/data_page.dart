@@ -72,7 +72,7 @@ class DataPageState extends State<DataPage> {
               child: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis)),
       trailing: widget.trailing,
       child: widget.pageFlags.hasFlag(DataPageType.searchable) && searchController.text.isNotEmpty
-          ? searchChildren.firstOrNull
+          ? null // searchChildren.firstOrNull
           : widget.pageFlags.hasFlag(DataPageType.singleChild)
               ? widget.children?.firstOrNull
               : null,

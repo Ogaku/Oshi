@@ -551,7 +551,7 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
     return DataPageBase.adaptive(
         pageFlags: [
           DataPageType.searchable,
-          // DataPageType.refreshable,
+          if (Share.settings.appSettings.useCupertino) DataPageType.refreshable,
         ].flag,
         setState: setState,
         title: widget.lesson.name,
