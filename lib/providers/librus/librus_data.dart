@@ -404,22 +404,22 @@ class LibrusDataReader implements models.IProvider {
             []);
 
     // Read all agenda events (home works) - tests, other events
-    addOrReplace(
-        student.mainClass.events,
-        TeacherFreeDays.fromJson(await data!.librusApi!.request('TeacherFreeDays'))
-                .teacherFreeDays
-                ?.where((x) =>
-                    !(teachersShim.users?.firstWhereOrDefault((y) => y.id == x.teacher?.id)?.lastName.contains('Wakat') ??
-                        true))
-                .select((x, index) => models.Event(
-                    id: x.id,
-                    timeFrom: x.dateFrom?.withTime(x.timeFrom?.asTime()) ?? DateTime.now(),
-                    timeTo: x.dateTo?.withTime(x.timeTo?.asTime()) ?? DateTime.now(),
-                    category: models.EventCategory.teacher,
-                    content: '',
-                    sender: teachersShim.users!.firstWhereOrDefault((y) => y.id == x.teacher?.id)?.asTeacher()))
-                .toList() ??
-            []);
+    // addOrReplace(
+    //     student.mainClass.events,
+    //     TeacherFreeDays.fromJson(await data!.librusApi!.request('TeacherFreeDays'))
+    //             .teacherFreeDays
+    //             ?.where((x) =>
+    //                 !(teachersShim.users?.firstWhereOrDefault((y) => y.id == x.teacher?.id)?.lastName.contains('Wakat') ??
+    //                     true))
+    //             .select((x, index) => models.Event(
+    //                 id: x.id,
+    //                 timeFrom: x.dateFrom?.withTime(x.timeFrom?.asTime()) ?? DateTime.now(),
+    //                 timeTo: x.dateTo?.withTime(x.timeTo?.asTime()) ?? DateTime.now(),
+    //                 category: models.EventCategory.teacher,
+    //                 content: '',
+    //                 sender: teachersShim.users!.firstWhereOrDefault((y) => y.id == x.teacher?.id)?.asTeacher()))
+    //             .toList() ??
+    //         []);
 
 //#endregion
 
