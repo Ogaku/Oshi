@@ -543,7 +543,10 @@ class Session extends HiveObject {
   Future<({bool success, Exception? message})> refreshMessages(
       {IProgress<({double? progress, String? message})>? progress}) async {
     var result = await provider.refreshMessages(progress: progress);
-    if (result.success) await updateData(messages: true);
+    if (result.success) {
+      await updateData(messages: true);
+      Share.refreshAll.broadcast();
+    }
     return result;
   }
 

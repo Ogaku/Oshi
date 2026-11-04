@@ -53,6 +53,17 @@ class _MainAppState extends State<MainApp> {
         });
       });
     }
+
+    if (Share.settings.sessions.lastSession != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        debugPrint('[main] PostFrameCallback: auto-refreshing session on startup...');
+        try {
+          await Share.session.refreshAll(showErrors: false);
+        } catch (e, st) {
+          debugPrint('[main] auto-refresh failed: $e\n$st');
+        }
+      });
+    }
   }
 
   Future<void> initPlatformState() async {

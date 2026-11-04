@@ -1518,15 +1518,27 @@ class VulcanDataReader implements models.IProvider {
       List<models.Message> sent = mapMessages(sentEnv, sent: true);
 
       // Web fallback when mobile Hebe API returns code 111 (EDUVULCAN_PREMIUM) or empty
-      debugPrint('[vulcan] web messages fallback: received=${received.length}, user=$_savedUsername, hasPass=${_savedPassword?.isNotEmpty}, part=$_topLevelPartition');
-      if (received.isEmpty && kIsWeb && _proxyUrl.isNotEmpty && _topLevelPartition.isNotEmpty) {
+      final fallbackUser = (_savedUsername?.isNotEmpty == true)
+          ? _savedUsername!
+          : (Share.session.sessionCredentials['login'] ?? Share.session.sessionCredentials['username'] ?? '');
+      final fallbackPass = (_savedPassword?.isNotEmpty == true)
+          ? _savedPassword!
+          : (Share.session.sessionCredentials['pass'] ?? Share.session.sessionCredentials['password'] ?? '');
+      final fallbackProxy = _proxyUrl.isNotEmpty
+          ? _proxyUrl
+          : (Share.session.sessionCredentials['proxy']?.isNotEmpty == true
+              ? Share.session.sessionCredentials['proxy']!
+              : 'http://127.0.0.1:5000');
+
+      debugPrint('[vulcan] web messages fallback: received=${received.length}, user=$fallbackUser, hasPass=${fallbackPass.isNotEmpty}, part=$_topLevelPartition, proxy=$fallbackProxy');
+      if (received.isEmpty && kIsWeb && fallbackProxy.isNotEmpty && _topLevelPartition.isNotEmpty) {
         try {
           final webInboxRes = await _dio.post(
-            _proxyUrl,
+            fallbackProxy,
             data: jsonEncode({
               'action': 'eduvulcan_fetch_messages',
-              'login': _savedUsername ?? '',
-              'password': _savedPassword ?? '',
+              'login': fallbackUser,
+              'password': fallbackPass,
               'partition': _topLevelPartition,
               'mailboxKey': boxKey,
               'folder': 'Odebrane',
@@ -1571,11 +1583,11 @@ class VulcanDataReader implements models.IProvider {
 
         try {
           final webSentRes = await _dio.post(
-            _proxyUrl,
+            fallbackProxy,
             data: jsonEncode({
               'action': 'eduvulcan_fetch_messages',
-              'login': _savedUsername ?? '',
-              'password': _savedPassword ?? '',
+              'login': fallbackUser,
+              'password': fallbackPass,
               'partition': _topLevelPartition,
               'mailboxKey': boxKey,
               'folder': 'Wyslane',
@@ -1725,14 +1737,26 @@ class VulcanDataReader implements models.IProvider {
       String effectiveContent = parent.content ?? parent.preview ?? '';
       List<models.Attachment>? effectiveAttachments = parent.attachments;
 
-      if (effectiveContent.isEmpty && kIsWeb && _proxyUrl.isNotEmpty && _topLevelPartition.isNotEmpty) {
+      final fallbackUser = (_savedUsername?.isNotEmpty == true)
+          ? _savedUsername!
+          : (Share.session.sessionCredentials['login'] ?? Share.session.sessionCredentials['username'] ?? '');
+      final fallbackPass = (_savedPassword?.isNotEmpty == true)
+          ? _savedPassword!
+          : (Share.session.sessionCredentials['pass'] ?? Share.session.sessionCredentials['password'] ?? '');
+      final fallbackProxy = _proxyUrl.isNotEmpty
+          ? _proxyUrl
+          : (Share.session.sessionCredentials['proxy']?.isNotEmpty == true
+              ? Share.session.sessionCredentials['proxy']!
+              : 'http://127.0.0.1:5000');
+
+      if (effectiveContent.isEmpty && kIsWeb && fallbackProxy.isNotEmpty && _topLevelPartition.isNotEmpty) {
         try {
           final detRes = await _dio.post(
-            _proxyUrl,
+            fallbackProxy,
             data: jsonEncode({
               'action': 'eduvulcan_fetch_message_content',
-              'login': _savedUsername ?? '',
-              'password': _savedPassword ?? '',
+              'login': fallbackUser,
+              'password': fallbackPass,
               'partition': _topLevelPartition,
               'id': parent.id,
               'apiGlobalKey': parent.url,
@@ -1749,7 +1773,7 @@ class VulcanDataReader implements models.IProvider {
               effectiveAttachments = attachmentsRaw
                   .whereType<Map>()
                   .map((a) => models.Attachment(
-                        name: a['nazwa']?.toString() ?? a['Name']?.toString() ?? 'Załącznik',
+                        name: a['nazwaPliku']?.toString() ?? a['nazwa']?.toString() ?? a['Name']?.toString() ?? 'Załącznik',
                         location: a['url']?.toString() ?? a['Link']?.toString() ?? '',
                       ))
                   .toList();
