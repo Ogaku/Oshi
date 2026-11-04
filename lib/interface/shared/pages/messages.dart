@@ -45,6 +45,25 @@ class _MessagesPageState extends State<MessagesPage> {
   );
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      debugPrint('[messages] MessagesPage opened: received=${Share.session.data.messages.received.length}, sent=${Share.session.data.messages.sent.length}');
+      if (Share.session.data.messages.received.isEmpty) {
+        if (mounted) setState(() => isWorking = true);
+        try {
+          debugPrint('[messages] auto-triggering refreshMessages()...');
+          await Share.session.refreshMessages();
+        } catch (e, st) {
+          debugPrint('[messages] error during auto-refresh: $e\n$st');
+        } finally {
+          if (mounted) setState(() => isWorking = false);
+        }
+      }
+    });
+  }
+
+  @override
   void dispose() {
     Share.refreshAll.unsubscribe(refresh);
     super.dispose();
@@ -106,14 +125,31 @@ class _MessagesPageState extends State<MessagesPage> {
                     secondary: true,
                     centered: true,
                     regular: true,
-                    padding: EdgeInsets.only(),
-                    child: folder == MessageFolders.announcements
-                        ? (query.isEmpty
-                            ? 'E6375F05-CF51-46F1-A77F-872A5731178C'.localized
-                            : 'A18E9952-C55B-4E12-ADB2-80F88ED52F15'.localized)
-                        : (query.isEmpty
-                            ? 'E40E9F85-A1C6-4B83-BC7C-C517B1F7BA30'.localized
-                            : 'D9FC52D6-1D73-44DB-A789-2ACECD10ED94'.localized))
+                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          folder == MessageFolders.announcements
+                              ? (query.isEmpty
+                                  ? 'E6375F05-CF51-46F1-A77F-872A5731178C'.localized
+                                  : 'A18E9952-C55B-4E12-ADB2-80F88ED52F15'.localized)
+                              : (query.isEmpty
+                                  ? 'E40E9F85-A1C6-4B83-BC7C-C517B1F7BA30'.localized
+                                  : 'D9FC52D6-1D73-44DB-A789-2ACECD10ED94'.localized),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 12),
+                        AdaptiveButton(
+                          child: Text('Odśwież wiadomości'),
+                          onPressed: () async {
+                            if (mounted) setState(() => isWorking = true);
+                            await Share.session.refreshMessages();
+                            if (mounted) setState(() => isWorking = false);
+                          },
+                        ),
+                      ],
+                    ))
               ]
             // Bindable messages layout
             : messagesToDisplay
@@ -390,26 +426,54 @@ class _MessagesPageState extends State<MessagesPage> {
                                   : ''),
                           icon: _folder == MessageFolders.announcements ? CupertinoIcons.bell_fill : CupertinoIcons.bell,
                           onTap: () => setState(() => _folder = MessageFolders.announcements),
+                        ),
+                        AdaptiveMenuItem(
+                          title: 'Odśwież wiadomości',
+                          icon: CupertinoIcons.refresh,
+                          onTap: () async {
+                            if (mounted) setState(() => isWorking = true);
+                            await Share.session.refreshMessages();
+                            if (mounted) setState(() => isWorking = false);
+                          },
                         )
                       ],
                     )
                   : SafeArea(
-                      child: IconButton(
-                      onPressed: () {
-                        (Share.settings.appSettings.useCupertino
-                                ? showCupertinoModalBottomSheet
-                                : showMaterialModalBottomSheet)(
-                            context: context,
-                            builder: (context) => MessageComposePage(
-                                signature:
-                                    '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-                      },
-                      icon: Icon(
-                        Icons.add,
-                        size: 25,
-                        color: Theme.of(context).colorScheme.onSurface,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            tooltip: 'Odśwież wiadomości',
+                            onPressed: () async {
+                              if (mounted) setState(() => isWorking = true);
+                              await Share.session.refreshMessages();
+                              if (mounted) setState(() => isWorking = false);
+                            },
+                            icon: Icon(
+                              Icons.refresh,
+                              size: 25,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              (Share.settings.appSettings.useCupertino
+                                      ? showCupertinoModalBottomSheet
+                                      : showMaterialModalBottomSheet)(
+                                  context: context,
+                                  builder: (context) => MessageComposePage(
+                                      signature:
+                                          '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
+                            },
+                            icon: Icon(
+                              Icons.add,
+                              size: 25,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                        ],
                       ),
-                    ))),
+                    )),
               AnimatedOpacity(
                   duration: const Duration(milliseconds: 500),
                   opacity: (Share.session.data.messages.received.any((x) => !x.read) ||

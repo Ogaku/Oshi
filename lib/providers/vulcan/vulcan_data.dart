@@ -1393,11 +1393,13 @@ class VulcanDataReader implements models.IProvider {
   Future<({bool success, Exception? message})> refreshMessages({
     IProgress<({double? progress, String? message})>? progress,
   }) async {
+    debugPrint('[vulcan] refreshMessages CALLED! _restUrl=$_restUrl, hasActiveStudent=${_activeStudentRaw != null}, user=$_savedUsername, hasPass=${_savedPassword?.isNotEmpty}, part=$_topLevelPartition');
     if (_fakeReader != null) {
       dataChunk = _fakeReader!.registerData!;
       return _fakeReader!.refreshMessages(progress: progress);
     }
     if (_restUrl == null || _activeStudentRaw == null) {
+      debugPrint('[vulcan] refreshMessages EARLY EXIT: _restUrl or _activeStudentRaw is null!');
       return (success: false, message: Exception('C5FDD0D8-771D-4DCE-8FCE-62D1BA4A6C93'.localized));
     }
 
@@ -1405,6 +1407,7 @@ class VulcanDataReader implements models.IProvider {
       progress?.report((progress: 0.2, message: '135991AA-5B53-42EA-8A2B-5406B249CC40'.localized));
       final pupilId = (_activeStudentRaw!['Pupil']?['Id'] as num?)?.toInt() ?? -1;
       final boxKey = _activeStudentRaw!['MessageBox']?['GlobalKey']?.toString() ?? '';
+      debugPrint('[vulcan] refreshMessages pupilId=$pupilId, boxKey=$boxKey');
       if (boxKey.isEmpty) {
         dataChunk.messages = models.Messages(receivers: [], received: [], sent: []);
         return (success: true, message: null);
@@ -1631,8 +1634,10 @@ class VulcanDataReader implements models.IProvider {
         sent: sent,
       );
 
+      debugPrint('[vulcan] refreshMessages SUCCESS: received=${dataChunk.messages.received.length}, sent=${dataChunk.messages.sent.length}, receivers=${dataChunk.messages.receivers.length}');
       return (success: true, message: null);
-    } catch (_) {
+    } catch (ex, st) {
+      debugPrint('[vulcan] refreshMessages FAILED: $ex\n$st');
       dataChunk.messages = models.Messages(receivers: [], received: [], sent: []);
       return (success: true, message: null);
     }
