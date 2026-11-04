@@ -1531,7 +1531,9 @@ class VulcanDataReader implements models.IProvider {
             }),
           );
           final rawData = webInboxRes.data is Map ? (webInboxRes.data['data'] ?? webInboxRes.data) : webInboxRes.data;
+          debugPrint('[vulcan] webInboxRes status=${webInboxRes.statusCode}, rawData type=${rawData.runtimeType}, preview=${rawData.toString().length > 250 ? rawData.toString().substring(0, 250) : rawData}');
           final rawList = rawData is List ? rawData : (rawData is Map && rawData['data'] is List ? rawData['data'] as List : null);
+          debugPrint('[vulcan] webInboxRes rawList count=${rawList?.length}');
           if (rawList != null) {
             final webReceived = <models.Message>[];
             for (final m in rawList) {
