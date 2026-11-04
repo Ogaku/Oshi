@@ -11,9 +11,9 @@ jobs:
     name: Build Web
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.KEY }}
+          token: ${{ secrets.KEY || github.token }}
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -34,9 +34,9 @@ jobs:
           flutter build web --release --base-href /Oshi/
 
       - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+        uses: JamesIves/github-pages-deploy-action@4
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: build/web
-          CLEAN: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: build/web
+          clean: true
