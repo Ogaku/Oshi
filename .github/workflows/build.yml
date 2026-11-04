@@ -80,6 +80,10 @@ jobs:
           STATUS=$?
           if [ $STATUS -ne 0 ]; then
             echo "::error::Android APK build failed with code $STATUS"
+            echo "### Android Build Failed (Exit code $STATUS)" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            tail -n 150 build_apk.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
             echo "========== LAST 200 LINES OF BUILD LOG =========="
             tail -n 200 build_apk.log
             echo "================================================="
