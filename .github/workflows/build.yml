@@ -75,7 +75,16 @@ jobs:
 
       - name: Build Android APK
         run: |
-          flutter build apk --release --android-skip-build-dependency-validation
+          set +e
+          flutter build apk --release --android-skip-build-dependency-validation -v > build_apk.log 2>&1
+          STATUS=$?
+          if [ $STATUS -ne 0 ]; then
+            echo "::error::Android APK build failed with code $STATUS"
+            echo "========== LAST 200 LINES OF BUILD LOG =========="
+            tail -n 200 build_apk.log
+            echo "================================================="
+            exit $STATUS
+          fi
           cp build/app/outputs/flutter-apk/app-release.apk Oshi.apk
 
       - name: Upload APK artifact
@@ -83,6 +92,13 @@ jobs:
         with:
           name: Oshi-Android
           path: Oshi.apk
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-build-log
+          path: build_apk.log
 
   build-ios:
     name: Build iOS
