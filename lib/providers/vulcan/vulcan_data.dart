@@ -125,8 +125,8 @@ class VulcanDataReader implements models.IProvider {
     try {
       progress?.report((progress: 0.1, message: 'D870CFEB-F16B-4091-9084-9620E5BACE22'.localized));
 
-      final username = credentials?['login']?.trim() ?? '';
-      final password = credentials?['pass'] ?? '';
+      final username = (credentials?['login'] ?? credentials?['username'] ?? '').trim();
+      final password = credentials?['pass'] ?? credentials?['password'] ?? '';
       final proxy = credentials?['proxy']?.trim() ?? '';
 
       if ((username.toLowerCase() == 'test' && password == 'test') ||
@@ -1487,6 +1487,7 @@ class VulcanDataReader implements models.IProvider {
       List<models.Message> sent = mapMessages(sentEnv, sent: true);
 
       // Web fallback when mobile Hebe API returns code 111 (EDUVULCAN_PREMIUM) or empty
+      debugPrint('[vulcan] web messages fallback: received=${received.length}, user=$_savedUsername, hasPass=${_savedPassword?.isNotEmpty}, part=$_topLevelPartition');
       if (received.isEmpty && kIsWeb && _proxyUrl.isNotEmpty && _topLevelPartition.isNotEmpty) {
         try {
           final webInboxRes = await _dio.post(
