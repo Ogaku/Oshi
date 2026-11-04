@@ -1193,7 +1193,11 @@ class VulcanDataReader implements models.IProvider {
               attType = models.AttendanceType.absent;
             }
 
-            final date = _parseVulcanDate(a['Day']);
+            final date = _tryParseVulcanDate(a['Date']) ??
+                _tryParseVulcanDate(a['DateAt']) ??
+                _tryParseVulcanDate(a['Day']) ??
+                _tryParseVulcanDate(a['LessonDate']) ??
+                DateTime.now();
             final lessonNo = (a['LessonNumber'] as num?)?.toInt() ?? 1;
             final teacher = _parseTeacher(a['TeacherPrimary']);
             final subject = ensureSubject(a['Subject'], teacher);
@@ -1202,7 +1206,9 @@ class VulcanDataReader implements models.IProvider {
               id: (a['Id'] as num?)?.toInt() ?? -1,
               lessonNo: lessonNo,
               date: DateTime(date.year, date.month, date.day),
-              addDate: _parseVulcanDate(a['DateModify'] ?? a['Day']),
+              addDate: _tryParseVulcanDate(a['DateModify']) ??
+                  _tryParseVulcanDate(a['Date']) ??
+                  date,
               type: attType,
               teacher: teacher,
               lesson: models.TimetableLesson(
