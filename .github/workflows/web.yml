@@ -16,15 +16,38 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
-          flutter-version: 3.22.3
+          channel: "stable"
+          cache: true
 
-      - name: Setup app secrets
+      - name: Update versioning and tokens
+        env:
+          APPCENTER_TELEMETRY_TOKEN: ${{ secrets.APPCENTER_TELEMETRY_TOKEN }}
+          SZKOLNY_APP_TOKEN: ${{ secrets.SZKOLNY_APP_TOKEN }}
         run: |
-          sed -i "s/9.9.9+9/1.0.$(date '+%Y%m%d')/g" ./pubspec.yaml
-          sed -i "s/9.9.9.9/1.0.$(date '+%Y%m%d').1/g" ./lib/share/share.dart
-          sed -i "s/AZ_APPCENTER_TELEMETRY_TOKEN/${{ secrets.APPCENTER_TELEMETRY_TOKEN }}/g" ./lib/share/appcenter.dart
-          sed -i "s/AZ_SZKOLNY_APP_TOKEN/${{ secrets.SZKOLNY_APP_TOKEN }}/g" ./lib/share/appcenter.dart
+          python3 -c "
+          import datetime, re, os
+          today = datetime.date.today().strftime('%Y%m%d')
+          run_num = '${{ github.run_number }}'
+          build_ver = f'1.0.{today}.{run_num}'
+
+          with open('pubspec.yaml', 'r') as f: c = f.read()
+          c = re.sub(r'version: .*', f'version: 1.0.{today}+{run_num}', c)
+          with open('pubspec.yaml', 'w') as f: f.write(c)
+
+          with open('lib/share/share.dart', 'r') as f: c = f.read()
+          c = c.replace('9.9.9.9', build_ver)
+          with open('lib/share/share.dart', 'w') as f: f.write(c)
+
+          appcenter_token = os.environ.get('APPCENTER_TELEMETRY_TOKEN', '')
+          szkolny_token = os.environ.get('SZKOLNY_APP_TOKEN', '')
+
+          with open('lib/share/appcenter.dart', 'r') as f: c = f.read()
+          if appcenter_token:
+              c = c.replace('AZ_APPCENTER_TELEMETRY_TOKEN', appcenter_token)
+          if szkolny_token:
+              c = c.replace('AZ_SZKOLNY_APP_TOKEN', szkolny_token)
+          with open('lib/share/appcenter.dart', 'w') as f: f.write(c)
+          "
 
       - name: Build the web app
         run: |
