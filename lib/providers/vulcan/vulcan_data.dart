@@ -741,7 +741,7 @@ class VulcanDataReader implements models.IProvider {
           return _tryParseVulcanDate(ts);
         }
       }
-      for (final dateKey in ['Date', 'date', 'DateAt', 'dateAt', 'Value', 'value', 'Day', 'day', 'DateFormatted', 'dateFormatted', 'Deadline', 'deadline']) {
+      for (final dateKey in ['Date', 'date', 'DateAt', 'dateAt', 'DayAt', 'dayAt', 'DeadlineAt', 'deadlineAt', 'Value', 'value', 'Day', 'day', 'DateFormatted', 'dateFormatted', 'Deadline', 'deadline']) {
         final inner = value[dateKey];
         if (inner != null) {
           final res = _tryParseVulcanDate(inner);
@@ -1207,7 +1207,8 @@ class VulcanDataReader implements models.IProvider {
               attType = models.AttendanceType.absent;
             }
 
-            final date = _tryParseVulcanDate(a['Date']) ??
+            final date = _tryParseVulcanDate(a['DayAt']) ??
+                _tryParseVulcanDate(a['Date']) ??
                 _tryParseVulcanDate(a['DateAt']) ??
                 _tryParseVulcanDate(a['Day']) ??
                 _tryParseVulcanDate(a['LessonDate']) ??
@@ -1220,7 +1221,8 @@ class VulcanDataReader implements models.IProvider {
               id: (a['Id'] as num?)?.toInt() ?? -1,
               lessonNo: lessonNo,
               date: DateTime(date.year, date.month, date.day),
-              addDate: _tryParseVulcanDate(a['DateModify']) ??
+              addDate: _tryParseVulcanDate(a['ModifiedAt']) ??
+                  _tryParseVulcanDate(a['DateModify']) ??
                   _tryParseVulcanDate(a['Date']) ??
                   date,
               type: attType,
@@ -1259,16 +1261,18 @@ class VulcanDataReader implements models.IProvider {
           for (final ex in examsEnv) {
             if (ex is! Map) continue;
             final typeStr = ex['Type']?.toString() ?? 'Sprawdzian';
-            final deadline = _tryParseVulcanDate(ex['Deadline']) ??
+            final deadline = _tryParseVulcanDate(ex['DeadlineAt']) ??
+                _tryParseVulcanDate(ex['Deadline']) ??
                 _tryParseVulcanDate(ex['Date']) ??
                 _tryParseVulcanDate(ex['DateAt']) ??
-                _tryParseVulcanDate(ex['DeadlineAt']) ??
+                _tryParseVulcanDate(ex['DayAt']) ??
                 _tryParseVulcanDate(ex['Day']) ??
+                _tryParseVulcanDate(ex['CreatedAt']) ??
                 _tryParseVulcanDate(ex['DateCreated']) ??
-                _tryParseVulcanDate(ex['CreatedAt']) ??
                 beginSchoolYear;
-            final created = _tryParseVulcanDate(ex['DateCreated']) ??
-                _tryParseVulcanDate(ex['CreatedAt']) ??
+            final created = _tryParseVulcanDate(ex['CreatedAt']) ??
+                _tryParseVulcanDate(ex['DateCreated']) ??
+                _tryParseVulcanDate(ex['ModifiedAt']) ??
                 _tryParseVulcanDate(ex['DateModify']) ??
                 deadline;
             final subject = ensureSubject(ex['Subject']);
@@ -1309,17 +1313,21 @@ class VulcanDataReader implements models.IProvider {
         if (hwEnv is List) {
           for (final hw in hwEnv) {
             if (hw is! Map) continue;
-            final deadline = _tryParseVulcanDate(hw['Deadline']) ??
-                _tryParseVulcanDate(hw['Date']) ??
+            final deadline = _tryParseVulcanDate(hw['DeadlineAt']) ??
+                _tryParseVulcanDate(hw['Deadline']) ??
                 _tryParseVulcanDate(hw['DateAt']) ??
-                _tryParseVulcanDate(hw['DeadlineAt']) ??
-                _tryParseVulcanDate(hw['Day']) ??
+                _tryParseVulcanDate(hw['Date']) ??
+                _tryParseVulcanDate(hw['AnswerAt']) ??
                 _tryParseVulcanDate(hw['AnswerDeadline']) ??
+                _tryParseVulcanDate(hw['DayAt']) ??
+                _tryParseVulcanDate(hw['Day']) ??
+                _tryParseVulcanDate(hw['CreatedAt']) ??
                 _tryParseVulcanDate(hw['DateCreated']) ??
-                _tryParseVulcanDate(hw['CreatedAt']) ??
                 beginSchoolYear;
-            final created = _tryParseVulcanDate(hw['DateCreated']) ??
+            final created = _tryParseVulcanDate(hw['DateAt']) ??
                 _tryParseVulcanDate(hw['CreatedAt']) ??
+                _tryParseVulcanDate(hw['DateCreated']) ??
+                _tryParseVulcanDate(hw['ModifiedAt']) ??
                 _tryParseVulcanDate(hw['DateModify']) ??
                 deadline;
             final subject = ensureSubject(hw['Subject']);
