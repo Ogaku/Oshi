@@ -6,7 +6,7 @@ import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:event/event.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'package:intl/intl.dart';
 import 'package:oshi/models/data/announcement.dart' as models;
 import 'package:oshi/models/data/attendances.dart' as models;
@@ -165,9 +165,11 @@ class VulcanDataReader implements models.IProvider {
       await _registerWithJwtTokens(tokens, progress: progress);
 
       return (success: true, message: null);
-    } on Exception catch (ex) {
+    } on Exception catch (ex, st) {
+      debugPrint('[vulcan] FAILED: $ex\n$st');
       return (success: false, message: ex);
-    } catch (ex) {
+    } catch (ex, st) {
+      debugPrint('[vulcan] FAILED(error): $ex\n$st');
       return (success: false, message: Exception(ex.toString()));
     }
   }
@@ -203,7 +205,7 @@ class VulcanDataReader implements models.IProvider {
           }),
         );
         if (fastRes.statusCode == 401 && fastRes.data is Map) {
-          final errMsg = fastRes.data['error'] ?? fastRes.data['data']?['error'] ?? 'Nieprawidłowy login lub hasło eduVULCAN.';
+          final errMsg = fastRes.data['error'] ?? fastRes.data['data']?['error'] ?? 'NieprawidÅ‚owy login lub hasÅ‚o eduVULCAN.';
           throw Exception(errMsg.toString());
         }
         if (fastRes.statusCode == 200 && fastRes.data is Map) {
@@ -217,7 +219,7 @@ class VulcanDataReader implements models.IProvider {
         if (e.response?.statusCode == 401 && e.response?.data is Map) {
           final errMsg = e.response?.data['error'] ??
               e.response?.data['data']?['error'] ??
-              'Nieprawidłowy login lub hasło eduVULCAN.';
+              'NieprawidÅ‚owy login lub hasÅ‚o eduVULCAN.';
           throw Exception(errMsg.toString());
         }
       }
@@ -307,7 +309,7 @@ class VulcanDataReader implements models.IProvider {
           throw Exception(cleaned);
         }
       }
-      throw Exception('Nieprawidłowy login lub hasło eduVULCAN.');
+      throw Exception('NieprawidÅ‚owy login lub hasÅ‚o eduVULCAN.');
     }
 
     // 4. Fetch /api/ap
@@ -374,7 +376,7 @@ class VulcanDataReader implements models.IProvider {
         );
         final reAp = await _webRequest(webDio, 'https://eduvulcan.pl/api/ap', method: 'GET', cookies: webCookies);
         return await _extractTokensFromAp(reAp);
-      } catch (_) {}
+      } catch (vex, vst) { debugPrint('[vulcan] swallowed error: $vex\n$vst'); }
     }
 
     if (tokens.isEmpty) {
@@ -658,39 +660,78 @@ class VulcanDataReader implements models.IProvider {
         rawResponse is String ? jsonDecode(rawResponse) as Map<String, dynamic> : Map<String, dynamic>.from(rawResponse as Map);
     final status = decoded['Status'] as Map?;
     final code = (status?['Code'] as num?)?.toInt() ?? 0;
+    final envelope = decoded['Envelope'];
+    debugPrint('[vulcan] $method $endpoint -> code=$code '
+        '${envelope is List ? 'items=${envelope.length}' : envelope.runtimeType}'
+        '${code != 0 ? ' msg=${status?['Message']}' : ''}');
     if (code != 0) {
       throw Exception('VULCAN API error ($code): ${status?['Message'] ?? 'Unknown'}');
     }
-    return decoded['Envelope'];
+    return envelope;
   }
 
-  DateTime _parseVulcanDate(dynamic value, [DateTime? fallback]) {
-    if (value == null) return fallback ?? DateTime.now();
+  DateTime? _tryParseVulcanDate(dynamic value) {
+    if (value == null) return null;
+    if (value is DateTime) return value;
     if (value is num) {
       final intVal = value.toInt();
+      if (intVal <= 0) return null;
       if (intVal < 10000000000) {
         return DateTime.fromMillisecondsSinceEpoch(intVal * 1000);
       }
       return DateTime.fromMillisecondsSinceEpoch(intVal);
     }
     if (value is String) {
-      return DateTime.tryParse(value) ?? fallback ?? DateTime.now();
+      final str = value.trim();
+      if (str.isEmpty) return null;
+      final numVal = num.tryParse(str);
+      if (numVal != null && numVal > 100000000) {
+        return _tryParseVulcanDate(numVal);
+      }
+      final isoParsed = DateTime.tryParse(str);
+      if (isoParsed != null) return isoParsed;
+      final dmMatch = RegExp(r'^(\d{1,2})[.-](\d{1,2})[.-](\d{4})(?:\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?').firstMatch(str);
+      if (dmMatch != null) {
+        final d = int.parse(dmMatch.group(1)!);
+        final m = int.parse(dmMatch.group(2)!);
+        final y = int.parse(dmMatch.group(3)!);
+        final h = dmMatch.group(4) != null ? int.parse(dmMatch.group(4)!) : 0;
+        final min = dmMatch.group(5) != null ? int.parse(dmMatch.group(5)!) : 0;
+        final s = dmMatch.group(6) != null ? int.parse(dmMatch.group(6)!) : 0;
+        return DateTime(y, m, d, h, min, s);
+      }
+      return null;
     }
     if (value is Map) {
-      if (value['Timestamp'] is num) {
-        final ts = (value['Timestamp'] as num).toInt();
-        if (ts < 10000000000) {
-          return DateTime.fromMillisecondsSinceEpoch(ts * 1000);
+      for (final tsKey in ['Timestamp', 'timestamp', 'Time', 'time']) {
+        final ts = value[tsKey];
+        if (ts is num && ts > 100000000) {
+          return _tryParseVulcanDate(ts);
         }
-        return DateTime.fromMillisecondsSinceEpoch(ts);
       }
-      if (value['Date'] is String) {
-        final datePart = value['Date'] as String;
-        final timePart = value['Time'] as String?;
-        return DateTime.tryParse(timePart != null ? '$datePart $timePart' : datePart) ?? fallback ?? DateTime.now();
+      for (final dateKey in ['Date', 'date', 'DateAt', 'dateAt', 'Value', 'value', 'Day', 'day', 'DateFormatted', 'dateFormatted', 'Deadline', 'deadline']) {
+        final inner = value[dateKey];
+        if (inner != null) {
+          final res = _tryParseVulcanDate(inner);
+          if (res != null) {
+            final timePart = value['Time'] ?? value['time'];
+            if (timePart is String && timePart.contains(':')) {
+              final tp = timePart.split(':');
+              final h = int.tryParse(tp[0]) ?? 0;
+              final m = int.tryParse(tp.length > 1 ? tp[1] : '0') ?? 0;
+              final s = int.tryParse(tp.length > 2 ? tp[2] : '0') ?? 0;
+              return DateTime(res.year, res.month, res.day, h, m, s);
+            }
+            return res;
+          }
+        }
       }
     }
-    return fallback ?? DateTime.now();
+    return null;
+  }
+
+  DateTime _parseVulcanDate(dynamic value, [DateTime? fallback]) {
+    return _tryParseVulcanDate(value) ?? fallback ?? DateTime.now();
   }
 
   models.Teacher _parseTeacher(dynamic raw) {
@@ -765,7 +806,7 @@ class VulcanDataReader implements models.IProvider {
           final numVal = (luckyEnv['Number'] as num?)?.toInt();
           if (numVal != null && numVal > 0) luckyNumber = numVal;
         }
-      } catch (_) {}
+      } catch (vex, vst) { debugPrint('[vulcan] swallowed error: $vex\n$vst'); }
 
       // Fetch timeslots
       final lessonRanges = <models.LessonRanges>[];
@@ -789,7 +830,7 @@ class VulcanDataReader implements models.IProvider {
             }
           }
         }
-      } catch (_) {}
+      } catch (vex, vst) { debugPrint('[vulcan] swallowed error: $vex\n$vst'); }
 
       // Fetch announcements
       final announcements = <models.Announcement>[];
@@ -822,13 +863,13 @@ class VulcanDataReader implements models.IProvider {
             }
           }
         }
-      } catch (_) {}
+      } catch (vex, vst) { debugPrint('[vulcan] swallowed error: $vex\n$vst'); }
 
       final unit = models.Unit(
         id: unitId,
         luckyNumber: luckyNumber,
         name: unitRaw['Short']?.toString() ?? unitRaw['DisplayName']?.toString() ?? 'VULCAN',
-        fullName: unitRaw['Name']?.toString() ?? constituentRaw['Name']?.toString() ?? 'Szkoła VULCAN',
+        fullName: unitRaw['Name']?.toString() ?? constituentRaw['Name']?.toString() ?? 'SzkoÅ‚a VULCAN',
         address: unitRaw['Address']?.toString() ?? constituentRaw['Address']?.toString() ?? '',
         lessonsRange: lessonRanges,
         announcements: announcements,
@@ -897,7 +938,6 @@ class VulcanDataReader implements models.IProvider {
               'unitId': unitId.toString(),
               'pupilId': pupilId.toString(),
               'periodId': pId.toString(),
-              'lastSyncDate': '1970-01-01 01:00:00',
               'lastId': '-2147483648',
               'pageSize': '500',
             },
@@ -937,7 +977,7 @@ class VulcanDataReader implements models.IProvider {
               }
             }
           }
-        } catch (_) {}
+        } catch (vex, vst) { debugPrint('[vulcan] swallowed error: $vex\n$vst'); }
 
         // Fetch grade summaries (semester/final & propositions)
         try {
@@ -965,7 +1005,7 @@ class VulcanDataReader implements models.IProvider {
                 if (entry1.isNotEmpty && !subject.grades.any((existing) => existing.id == baseSummaryId + 1)) {
                   subject.grades.add(models.Grade(
                     id: baseSummaryId + 1,
-                    name: isLastPeriod ? 'Propozycja oceny rocznej' : 'Propozycja oceny śródrocznej',
+                    name: isLastPeriod ? 'Propozycja oceny rocznej' : 'Propozycja oceny Å›rÃ³drocznej',
                     value: entry1,
                     semester: pNum,
                     isSemesterProposition: !isLastPeriod,
@@ -977,7 +1017,7 @@ class VulcanDataReader implements models.IProvider {
                 if (entry2.isNotEmpty && !subject.grades.any((existing) => existing.id == baseSummaryId + 2)) {
                   subject.grades.add(models.Grade(
                     id: baseSummaryId + 2,
-                    name: isLastPeriod ? 'Ocena roczna' : 'Ocena śródroczna',
+                    name: isLastPeriod ? 'Ocena roczna' : 'Ocena Å›rÃ³droczna',
                     value: entry2,
                     semester: pNum,
                     isSemester: !isLastPeriod,
@@ -989,7 +1029,7 @@ class VulcanDataReader implements models.IProvider {
               }
             }
           }
-        } catch (_) {}
+        } catch (vex, vst) { debugPrint('[vulcan] swallowed error: $vex\n$vst'); }
       }
 
       progress?.report((progress: 0.6, message: '7344559E-3869-4BDA-AD38-266302B3D929'.localized));
@@ -1013,7 +1053,6 @@ class VulcanDataReader implements models.IProvider {
             'dateTo': schedDateTo,
             'lastId': '-2147483648',
             'pageSize': '500',
-            'lastSyncDate': '1970-01-01 01:00:00',
           },
         );
         if (schedEnv is List) {
@@ -1097,7 +1136,7 @@ class VulcanDataReader implements models.IProvider {
             timetableMap[dayKey] = models.TimetableDay(lessons: list, calendarDay: dayKey);
           });
         }
-      } catch (_) {}
+      } catch (vex, vst) { debugPrint('[vulcan] swallowed error: $vex\n$vst'); }
 
       progress?.report((progress: 0.8, message: '10B640EC-6CBF-42CF-A20B-7CA5E97E8AFE'.localized));
 
@@ -1113,7 +1152,6 @@ class VulcanDataReader implements models.IProvider {
             'pupilId': pupilId.toString(),
             'dateFrom': DateFormat('yyyy-MM-dd').format(beginSchoolYear),
             'dateTo': DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 2))),
-            'lastSyncDate': '1970-01-01 01:00:00',
             'lastId': '-2147483648',
             'pageSize': '500',
           },
@@ -1158,7 +1196,7 @@ class VulcanDataReader implements models.IProvider {
             ));
           }
         }
-      } catch (_) {}
+      } catch (vex, vst) { debugPrint('[vulcan] swallowed error: $vex\n$vst'); }
 
       // Fetch exams & homeworks (entire school year range)
       final eventsDateFrom = DateFormat('yyyy-MM-dd').format(beginSchoolYear);
@@ -1175,7 +1213,6 @@ class VulcanDataReader implements models.IProvider {
             'pupilId': pupilId.toString(),
             'dateFrom': eventsDateFrom,
             'dateTo': eventsDateTo,
-            'lastSyncDate': '1970-01-01 01:00:00',
             'lastId': '-2147483648',
             'pageSize': '500',
           },
@@ -1184,7 +1221,18 @@ class VulcanDataReader implements models.IProvider {
           for (final ex in examsEnv) {
             if (ex is! Map) continue;
             final typeStr = ex['Type']?.toString() ?? 'Sprawdzian';
-            final deadline = _parseVulcanDate(ex['Deadline']);
+            final deadline = _tryParseVulcanDate(ex['Deadline']) ??
+                _tryParseVulcanDate(ex['Date']) ??
+                _tryParseVulcanDate(ex['DateAt']) ??
+                _tryParseVulcanDate(ex['DeadlineAt']) ??
+                _tryParseVulcanDate(ex['Day']) ??
+                _tryParseVulcanDate(ex['DateCreated']) ??
+                _tryParseVulcanDate(ex['CreatedAt']) ??
+                beginSchoolYear;
+            final created = _tryParseVulcanDate(ex['DateCreated']) ??
+                _tryParseVulcanDate(ex['CreatedAt']) ??
+                _tryParseVulcanDate(ex['DateModify']) ??
+                deadline;
             final subject = ensureSubject(ex['Subject']);
             final cat = typeStr.toLowerCase().contains('kartk')
                 ? models.EventCategory.shortTest
@@ -1194,9 +1242,9 @@ class VulcanDataReader implements models.IProvider {
             events.add(models.Event(
               id: (ex['Id'] as num?)?.toInt() ?? -1,
               date: DateTime(deadline.year, deadline.month, deadline.day),
-              addDate: _parseVulcanDate(ex['DateCreated']),
+              addDate: created,
               timeFrom: deadline,
-              title: '${subject.name} • $typeStr',
+              title: '${subject.name} \u2022 $typeStr',
               content: ex['Content']?.toString() ?? typeStr,
               categoryName: typeStr,
               category: cat,
@@ -1204,7 +1252,7 @@ class VulcanDataReader implements models.IProvider {
             ));
           }
         }
-      } catch (_) {}
+      } catch (vex, vst) { debugPrint('[vulcan] swallowed error: $vex\n$vst'); }
 
       try {
         final hwEnv = await _hebeRequest(
@@ -1216,7 +1264,6 @@ class VulcanDataReader implements models.IProvider {
             'pupilId': pupilId.toString(),
             'dateFrom': eventsDateFrom,
             'dateTo': eventsDateTo,
-            'lastSyncDate': '1970-01-01 01:00:00',
             'lastId': '-2147483648',
             'pageSize': '500',
           },
@@ -1224,12 +1271,24 @@ class VulcanDataReader implements models.IProvider {
         if (hwEnv is List) {
           for (final hw in hwEnv) {
             if (hw is! Map) continue;
-            final deadline = _parseVulcanDate(hw['Deadline']);
+            final deadline = _tryParseVulcanDate(hw['Deadline']) ??
+                _tryParseVulcanDate(hw['Date']) ??
+                _tryParseVulcanDate(hw['DateAt']) ??
+                _tryParseVulcanDate(hw['DeadlineAt']) ??
+                _tryParseVulcanDate(hw['Day']) ??
+                _tryParseVulcanDate(hw['AnswerDeadline']) ??
+                _tryParseVulcanDate(hw['DateCreated']) ??
+                _tryParseVulcanDate(hw['CreatedAt']) ??
+                beginSchoolYear;
+            final created = _tryParseVulcanDate(hw['DateCreated']) ??
+                _tryParseVulcanDate(hw['CreatedAt']) ??
+                _tryParseVulcanDate(hw['DateModify']) ??
+                deadline;
             final subject = ensureSubject(hw['Subject']);
             events.add(models.Event(
               id: (hw['Id'] as num?)?.toInt() ?? -1,
               date: DateTime(deadline.year, deadline.month, deadline.day),
-              addDate: _parseVulcanDate(hw['DateCreated']),
+              addDate: created,
               timeFrom: deadline,
               timeTo: deadline,
               title: subject.name,
@@ -1241,7 +1300,7 @@ class VulcanDataReader implements models.IProvider {
             ));
           }
         }
-      } catch (_) {}
+      } catch (vex, vst) { debugPrint('[vulcan] swallowed error: $vex\n$vst'); }
 
       mainClass.events = events;
 
@@ -1252,7 +1311,7 @@ class VulcanDataReader implements models.IProvider {
         if (parts.isNotEmpty) firstName = parts.first;
         if (parts.length > 1) lastName = parts.sublist(1).join(' ');
       }
-      if (firstName.isEmpty) firstName = pupilRaw['Name']?.toString() ?? 'Uczeń';
+      if (firstName.isEmpty) firstName = pupilRaw['Name']?.toString() ?? 'UczeÅ„';
 
       final pupilNumber = (journalRaw['PupilNumber'] as num?)?.toInt() ??
           (studentRaw['PupilNumber'] as num?)?.toInt() ??
@@ -1275,9 +1334,11 @@ class VulcanDataReader implements models.IProvider {
       dataChunk.timetables = models.Timetables(timetable: timetableMap);
 
       return (success: true, message: null);
-    } on Exception catch (ex) {
+    } on Exception catch (ex, st) {
+      debugPrint('[vulcan] FAILED: $ex\n$st');
       return (success: false, message: ex);
-    } catch (ex) {
+    } catch (ex, st) {
+      debugPrint('[vulcan] FAILED(error): $ex\n$st');
       return (success: false, message: Exception(ex.toString()));
     }
   }
@@ -1325,7 +1386,7 @@ class VulcanDataReader implements models.IProvider {
             }
           }
         }
-      } catch (_) {}
+      } catch (vex, vst) { debugPrint('[vulcan] swallowed error: $vex\n$vst'); }
 
       List<models.Message> mapMessages(dynamic env, {required bool sent}) {
         if (env is! List) return [];
@@ -1348,7 +1409,7 @@ class VulcanDataReader implements models.IProvider {
             attachments: attachmentsRaw
                 .whereType<Map>()
                 .map((a) => models.Attachment(
-                      name: a['Name']?.toString() ?? 'Załącznik',
+                      name: a['Name']?.toString() ?? 'ZaÅ‚Ä…cznik',
                       location: a['Link']?.toString() ?? '',
                     ))
                 .toList(),
@@ -1384,10 +1445,9 @@ class VulcanDataReader implements models.IProvider {
             'pupilId': pupilId.toString(),
             'lastId': '-2147483648',
             'pageSize': '500',
-            'lastSyncDate': '1970-01-01 01:00:00',
           },
         );
-      } catch (_) {}
+      } catch (vex, vst) { debugPrint('[vulcan] swallowed error: $vex\n$vst'); }
 
       dynamic sentEnv;
       try {
@@ -1401,10 +1461,9 @@ class VulcanDataReader implements models.IProvider {
             'pupilId': pupilId.toString(),
             'lastId': '-2147483648',
             'pageSize': '500',
-            'lastSyncDate': '1970-01-01 01:00:00',
           },
         );
-      } catch (_) {}
+      } catch (vex, vst) { debugPrint('[vulcan] swallowed error: $vex\n$vst'); }
 
       dataChunk.messages = models.Messages(
         receivers: receivers,
@@ -1465,9 +1524,11 @@ class VulcanDataReader implements models.IProvider {
         },
       );
       return (success: true, message: null);
-    } on Exception catch (ex) {
+    } on Exception catch (ex, st) {
+      debugPrint('[vulcan] FAILED: $ex\n$st');
       return (success: false, message: ex);
-    } catch (ex) {
+    } catch (ex, st) {
+      debugPrint('[vulcan] FAILED(error): $ex\n$st');
       return (success: false, message: Exception(ex.toString()));
     }
   }
@@ -1532,9 +1593,11 @@ class VulcanDataReader implements models.IProvider {
         },
       );
       return (success: true, message: null);
-    } on Exception catch (ex) {
+    } on Exception catch (ex, st) {
+      debugPrint('[vulcan] FAILED: $ex\n$st');
       return (success: false, message: ex);
-    } catch (ex) {
+    } catch (ex, st) {
+      debugPrint('[vulcan] FAILED(error): $ex\n$st');
       return (success: false, message: Exception(ex.toString()));
     }
   }
