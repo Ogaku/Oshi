@@ -141,8 +141,8 @@ class _MessagesPageState extends State<MessagesPage> {
                         ),
                         SizedBox(height: 12),
                         AdaptiveButton(
-                          child: Text('Odśwież wiadomości'),
-                          onPressed: () async {
+                          title: 'Odśwież wiadomości',
+                          click: () async {
                             if (mounted) setState(() => isWorking = true);
                             await Share.session.refreshMessages();
                             if (mounted) setState(() => isWorking = false);

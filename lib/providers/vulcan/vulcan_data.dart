@@ -25,6 +25,7 @@ import 'package:oshi/models/provider.dart' as models;
 import 'package:oshi/providers/sample/sample_data.dart';
 import 'package:oshi/providers/vulcan/hebe_signer.dart';
 import 'package:oshi/share/translator.dart';
+import 'package:oshi/share/share.dart' show Share;
 import 'package:uuid/uuid.dart';
 
 class VulcanDataReader implements models.IProvider {
