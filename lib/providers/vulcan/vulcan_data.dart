@@ -1409,7 +1409,7 @@ class VulcanDataReader implements models.IProvider {
       final pupilId = (_activeStudentRaw!['Pupil']?['Id'] as num?)?.toInt() ?? -1;
       final boxKey = _activeStudentRaw!['MessageBox']?['GlobalKey']?.toString() ?? '';
       debugPrint('[vulcan] refreshMessages pupilId=$pupilId, boxKey=$boxKey');
-      if (boxKey.isEmpty) {
+      if (boxKey.isEmpty && _topLevelPartition.isEmpty) {
         dataChunk.messages = models.Messages(receivers: [], received: [], sent: []);
         return (success: true, message: null);
       }
@@ -1532,7 +1532,7 @@ class VulcanDataReader implements models.IProvider {
               : 'http://127.0.0.1:5000');
 
       debugPrint('[vulcan] web messages fallback: received=${received.length}, user=$fallbackUser, hasPass=${fallbackPass.isNotEmpty}, part=$_topLevelPartition, proxy=$fallbackProxy');
-      if (received.isEmpty && kIsWeb && fallbackProxy.isNotEmpty && _topLevelPartition.isNotEmpty) {
+      if (received.isEmpty && fallbackProxy.isNotEmpty && _topLevelPartition.isNotEmpty) {
         try {
           final webInboxRes = await _dio.post(
             fallbackProxy,
@@ -1750,7 +1750,7 @@ class VulcanDataReader implements models.IProvider {
               ? Share.session.sessionCredentials['proxy']!
               : 'http://127.0.0.1:5000');
 
-      if (effectiveContent.isEmpty && kIsWeb && fallbackProxy.isNotEmpty && _topLevelPartition.isNotEmpty) {
+      if (effectiveContent.isEmpty && fallbackProxy.isNotEmpty && _topLevelPartition.isNotEmpty) {
         try {
           final detRes = await _dio.post(
             fallbackProxy,

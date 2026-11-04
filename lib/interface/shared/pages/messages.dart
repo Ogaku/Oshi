@@ -47,6 +47,7 @@ class _MessagesPageState extends State<MessagesPage> {
   @override
   void initState() {
     super.initState();
+    Share.refreshAll.subscribe(refresh);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       debugPrint('[messages] MessagesPage opened: received=${Share.session.data.messages.received.length}, sent=${Share.session.data.messages.sent.length}');
       if (Share.session.data.messages.received.isEmpty) {
@@ -54,6 +55,7 @@ class _MessagesPageState extends State<MessagesPage> {
         try {
           debugPrint('[messages] auto-triggering refreshMessages()...');
           await Share.session.refreshMessages();
+          if (mounted) setState(() {});
         } catch (e, st) {
           debugPrint('[messages] error during auto-refresh: $e\n$st');
         } finally {
