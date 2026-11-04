@@ -1486,14 +1486,6 @@ class VulcanDataReader implements models.IProvider {
       List<models.Message> received = mapMessages(inboxEnv, sent: false);
       List<models.Message> sent = mapMessages(sentEnv, sent: true);
 
-      // Restore credentials from Share.session.sessionCredentials if not set
-      if ((_savedUsername == null || _savedUsername!.isEmpty) && Share.session.sessionCredentials.isNotEmpty) {
-        _savedUsername = Share.session.sessionCredentials['login'] ?? Share.session.sessionCredentials['username'];
-      }
-      if ((_savedPassword == null || _savedPassword!.isEmpty) && Share.session.sessionCredentials.isNotEmpty) {
-        _savedPassword = Share.session.sessionCredentials['password'];
-      }
-
       // Web fallback when mobile Hebe API returns code 111 (EDUVULCAN_PREMIUM) or empty
       if (received.isEmpty && kIsWeb && _proxyUrl.isNotEmpty && _topLevelPartition.isNotEmpty) {
         try {
@@ -1697,13 +1689,6 @@ class VulcanDataReader implements models.IProvider {
 
       if (effectiveContent.isEmpty && kIsWeb && _proxyUrl.isNotEmpty && _topLevelPartition.isNotEmpty) {
         try {
-          if ((_savedUsername == null || _savedUsername!.isEmpty) && Share.session.sessionCredentials.isNotEmpty) {
-            _savedUsername = Share.session.sessionCredentials['login'] ?? Share.session.sessionCredentials['username'];
-          }
-          if ((_savedPassword == null || _savedPassword!.isEmpty) && Share.session.sessionCredentials.isNotEmpty) {
-            _savedPassword = Share.session.sessionCredentials['password'];
-          }
-
           final detRes = await _dio.post(
             _proxyUrl,
             data: jsonEncode({
