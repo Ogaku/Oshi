@@ -76,18 +76,16 @@ jobs:
       - name: Build Android APK
         run: |
           set +e
-          flutter build apk --release --android-skip-build-dependency-validation -v > build_apk.log 2>&1
+          flutter build apk --release --android-skip-build-dependency-validation > build_apk.log 2>&1
           STATUS=$?
           if [ $STATUS -ne 0 ]; then
-            ERR_MSG=$(tail -n 25 build_apk.log | tr '\r' ' ' | sed ':a;N;$!ba;s/\n/%0A/g')
-            echo "::error::Android build failure:%0A$ERR_MSG"
+            ERR_MSG=$(tail -n 35 build_apk.log | tr '\r' ' ' | sed ':a;N;$!ba;s/\n/%0A/g')
+            echo "::error::Android Build Failed:%0A$ERR_MSG"
             echo "### Android Build Failed (Exit code $STATUS)" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
-            tail -n 150 build_apk.log >> $GITHUB_STEP_SUMMARY
+            cat build_apk.log >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
-            echo "========== LAST 200 LINES OF BUILD LOG =========="
-            tail -n 200 build_apk.log
-            echo "================================================="
+            cat build_apk.log
             exit $STATUS
           fi
           cp build/app/outputs/flutter-apk/app-release.apk Oshi.apk
