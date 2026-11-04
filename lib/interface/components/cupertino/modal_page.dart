@@ -68,7 +68,7 @@ class _ModalPageState<T> extends State<ModalPage<T>> {
             backgroundColor: (_isCollapsed
                 ? isDark
                     ? const Color.fromRGBO(45, 45, 45, 0.5)
-                    : Colors.white.withOpacity(0.5)
+                    : Colors.white.withValues(alpha: 0.5)
                 : CupertinoDynamicColor.withBrightness(
                     color: const Color.fromARGB(255, 242, 242, 247).withAlpha(254),
                     darkColor: const Color.fromARGB(255, 0, 0, 0).withAlpha(254)))),

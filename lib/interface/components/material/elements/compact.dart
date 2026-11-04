@@ -184,7 +184,7 @@ extension EventBodyExtension on List<data.Event> {
                           ],
                         ),
                         Visibility(
-                            visible: false, // TODO
+                            visible: false,
                             child: Flexible(
                                 child: Container(
                                     margin: EdgeInsets.only(left: 5, right: 5),
@@ -198,7 +198,7 @@ extension EventBodyExtension on List<data.Event> {
                                       ),
                                     )))),
                         Visibility(
-                            visible: false, // TODO
+                            visible: false,
                             child: Flexible(
                                 child: Container(
                                     margin: EdgeInsets.only(left: 5, right: 5, bottom: 7),

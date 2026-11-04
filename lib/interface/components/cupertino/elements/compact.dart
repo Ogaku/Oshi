@@ -269,12 +269,12 @@ extension GradeBodyExtension on List<({List<Grade> grades, Lesson lesson})> {
                 Navigator.of(context, rootNavigator: true).pop();
               },
               trailingIcon: CupertinoIcons.share,
-              child: const Text('Share'),
+              child: Text('/Share'.localized),
             ),
             CupertinoContextMenuAction(
               isDestructiveAction: true,
               trailingIcon: CupertinoIcons.chat_bubble_2,
-              child: const Text('Inquiry'),
+              child: Text('/Inquiry'.localized),
               onPressed: () {
                 Navigator.of(context, rootNavigator: true).pop();
                 showCupertinoModalBottomSheet(

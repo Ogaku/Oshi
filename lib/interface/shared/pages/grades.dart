@@ -66,7 +66,7 @@ class _GradesPageState extends State<GradesPage> {
                                 children: grades
                                     .where((y) => !y.major)
                                     .orderByDescending((y) => y.addDate)
-                                    .distinct((x) => mapPropsToHashCode([x.resitPart ? 0 : UniqueKey(), x.name]))
+                                    .distinct((x) => mapPropsToHashCode([x.resitPart ? 0 : x.hashCode, x.name]))
                                     .select((y, index) => Container(
                                           padding: EdgeInsets.symmetric(horizontal: 4),
                                           decoration: BoxDecoration(
@@ -208,17 +208,21 @@ class _GradesPageState extends State<GradesPage> {
         pageFlags: [DataPageType.searchable, DataPageType.refreshable].flag,
         setState: setState,
         title: '/Grades'.localized,
-        searchBuilder: (context, controller) => [
-              if (!Share.settings.appSettings.useCupertino) SizedBox(height: 15),
-              subjectsWidget(
-                  Share.session.data.student.subjects
-                      .where((x) =>
-                          x.name.contains(RegExp(controller.text, caseSensitive: false)) ||
-                          x.teacher.name.contains(RegExp(controller.text, caseSensitive: false)))
-                      .orderBy((x) => x.name)
-                      .toList(),
-                  false)
-            ],
+        searchBuilder: (context, controller) {
+          final queryLower = controller.text.toLowerCase();
+          return [
+            if (!Share.settings.appSettings.useCupertino) SizedBox(height: 15),
+            subjectsWidget(
+                Share.session.data.student.subjects
+                    .where((x) =>
+                        queryLower.isEmpty ||
+                        x.name.toLowerCase().contains(queryLower) ||
+                        x.teacher.name.toLowerCase().contains(queryLower))
+                    .orderBy((x) => x.name)
+                    .toList(),
+                false)
+          ];
+        },
         children: [
           subjectsWidget(Share.session.data.student.subjects.orderBy((x) => x.name).toList()),
           CardContainer(
@@ -231,7 +235,9 @@ class _GradesPageState extends State<GradesPage> {
                   after: () {
                     var majors =
                         Share.session.data.student.subjects.where((x) => x.hasMajor).select((x, _) => x.topMajor!.asValue);
-                    return majors.isNotEmpty ? majors.average().toStringAsFixed(2) : 'E91C42DF-7471-47E1-BAB8-7E3C63713154'.localized;
+                    return majors.isNotEmpty
+                        ? majors.average().toStringAsFixed(2)
+                        : 'E91C42DF-7471-47E1-BAB8-7E3C63713154'.localized;
                   }())
             ],
           ),
@@ -280,7 +286,7 @@ class _LineChart extends StatelessWidget {
   LineTouchData get lineTouchData1 => LineTouchData(
         handleBuiltInTouches: true,
         touchTooltipData: LineTouchTooltipData(
-          tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
+          tooltipBgColor: Colors.blueGrey.withValues(alpha: 0.8),
         ),
       );
 
@@ -314,7 +320,9 @@ class _LineChart extends StatelessWidget {
           sideTitles: SideTitles(showTitles: false),
         ),
         leftTitles: AxisTitles(
-            sideTitles: leftTitles(), axisNameWidget: Opacity(opacity: 0.7, child: Text('FA1FD209-AE46-4E58-82C9-463A42D4B035'.localized)), axisNameSize: 30),
+            sideTitles: leftTitles(),
+            axisNameWidget: Opacity(opacity: 0.7, child: Text('FA1FD209-AE46-4E58-82C9-463A42D4B035'.localized)),
+            axisNameSize: 30),
       );
 
   List<LineChartBarData> get lineBarsData2 => [lineChartBarData2_1, lineChartBarData2_2];
@@ -390,7 +398,7 @@ class _LineChart extends StatelessWidget {
         dotData: const FlDotData(show: false),
         belowBarData: BarAreaData(
           show: true,
-          color: CupertinoColors.systemPink.withOpacity(0.1),
+          color: CupertinoColors.systemPink.withValues(alpha: 0.1),
         ),
         spots: Share.session.data.student.mainClass.averages.entries
             .select((x, _) => FlSpot(

@@ -13,15 +13,27 @@ import '../constants.dart';
 import 'package:dio/dio.dart';
 import 'package:oshi/providers/librus/reader/librus_reader.dart' as reader;
 
+String resolveWebProxyUrl(String? raw) {
+  final trimmed = (raw ?? '').trim();
+  if (trimmed.isEmpty) return 'http://127.0.0.1:5000';
+  final lower = trimmed.toLowerCase();
+  if (lower.contains('librus.pl') || lower.contains('eduvulcan.pl') || lower.contains('vulcan.net.pl')) {
+    return 'http://127.0.0.1:5000';
+  }
+  return trimmed;
+}
+
 class SynergiaData extends reader.SynergiaData {
-  @override
-  SynergiaData([this.proxyUrl = 'http://127.0.0.1:80']) : session = DioForBrowser() {
+  SynergiaData([String proxyUrl = 'http://127.0.0.1:5000'])
+      : proxyUrl = resolveWebProxyUrl(proxyUrl),
+        session = DioForBrowser() {
     librusApi = LibrusReader(this);
-    session.httpClientAdapter = BrowserHttpClientAdapter(withCredentials: true);
+    session.httpClientAdapter = BrowserHttpClientAdapter(withCredentials: false);
   }
 
   @override
   Map<String, String> cookies = {};
+  Map<String, String> messagesCookies = {};
 
   @override
   DioForBrowser session;
@@ -32,7 +44,6 @@ class LibrusReader extends reader.LibrusReader {
   @override
   final SynergiaData synergiaData;
 
-  @override
   LibrusReader(this.synergiaData);
 
   @override
@@ -98,7 +109,7 @@ class LibrusReader extends reader.LibrusReader {
   @override
   Future<String> synergiaRequest(String endpoint) async {
     try {
-      return (await synergiaData.session.post(synergiaData.proxyUrl,
+      final resData = (await synergiaData.session.post(synergiaData.proxyUrl,
               data: jsonEncode({
                 'uri':
                     '$synergiaCookieUrl/${endpoint.replaceAll('https://api.librus.pl', 'https://synergia.librus.pl/gateway/api')}',
@@ -106,11 +117,13 @@ class LibrusReader extends reader.LibrusReader {
                 'cookies': synergiaData.cookies
               })))
           .data;
+      return (resData is Map ? (resData['data'] is Map ? resData['data']['text'] : resData['data']) : resData)?.toString() ??
+          '';
     } on DioException catch (e) {
       if (e.response?.statusCode != 401) rethrow;
 
       await synergiaData.synergiaLogin!.setupToken(); // Re-authorize
-      return (await synergiaData.session.post(synergiaData.proxyUrl,
+      final resData = (await synergiaData.session.post(synergiaData.proxyUrl,
               data: jsonEncode({
                 'uri':
                     '$synergiaCookieUrl/${endpoint.replaceAll('https://api.librus.pl', 'https://synergia.librus.pl/gateway/api')}',
@@ -118,30 +131,34 @@ class LibrusReader extends reader.LibrusReader {
                 'cookies': synergiaData.cookies
               })))
           .data;
+      return (resData is Map ? (resData['data'] is Map ? resData['data']['text'] : resData['data']) : resData)?.toString() ??
+          '';
     }
   }
 
   @override
   Future<Map<String, dynamic>> messagesRequest(String endpoint) async {
+    final msgCookies = synergiaData.messagesCookies.isNotEmpty ? synergiaData.messagesCookies : synergiaData.cookies;
     try {
       return (await synergiaData.session.post(synergiaData.proxyUrl,
               data: jsonEncode({
                 'uri':
                     '$messagesApiBaseUri/${endpoint.replaceAll('https://api.librus.pl', 'https://synergia.librus.pl/gateway/api')}',
                 'method': "GET",
-                'cookies': synergiaData.cookies
+                'cookies': msgCookies
               })))
           .data['data'] as Map<String, dynamic>;
     } on DioException catch (e) {
       if (e.response?.statusCode != 401) rethrow;
 
       await synergiaData.synergiaLogin!.setupToken(); // Re-authorize
+      final retryCookies = synergiaData.messagesCookies.isNotEmpty ? synergiaData.messagesCookies : synergiaData.cookies;
       return (await synergiaData.session.post(synergiaData.proxyUrl,
               data: jsonEncode({
                 'uri':
                     '$messagesApiBaseUri/${endpoint.replaceAll('https://api.librus.pl', 'https://synergia.librus.pl/gateway/api')}',
                 'method': "GET",
-                'cookies': synergiaData.cookies
+                'cookies': retryCookies
               })))
           .data['data'] as Map<String, dynamic>;
     }
@@ -149,30 +166,33 @@ class LibrusReader extends reader.LibrusReader {
 
   @override
   Future messagesDelete(String endpoint) async {
+    final msgCookies = synergiaData.messagesCookies.isNotEmpty ? synergiaData.messagesCookies : synergiaData.cookies;
     try {
       await synergiaData.session.post(synergiaData.proxyUrl,
           data: jsonEncode({
             'uri':
                 '$messagesApiBaseUri/${endpoint.replaceAll('https://api.librus.pl', 'https://synergia.librus.pl/gateway/api')}',
             'method': "DELETE",
-            'cookies': synergiaData.cookies
+            'cookies': msgCookies
           }));
     } on DioException catch (e) {
       if (e.response?.statusCode != 401) rethrow;
 
       await synergiaData.synergiaLogin!.setupToken(); // Re-authorize
+      final retryCookies = synergiaData.messagesCookies.isNotEmpty ? synergiaData.messagesCookies : synergiaData.cookies;
       await synergiaData.session.post(synergiaData.proxyUrl,
           data: jsonEncode({
             'uri':
                 '$messagesApiBaseUri/${endpoint.replaceAll('https://api.librus.pl', 'https://synergia.librus.pl/gateway/api')}',
             'method': "DELETE",
-            'cookies': synergiaData.cookies
+            'cookies': retryCookies
           }));
     }
   }
 
   @override
   Future<Map<String, dynamic>> messagesPost(String endpoint, Object data) async {
+    final msgCookies = synergiaData.messagesCookies.isNotEmpty ? synergiaData.messagesCookies : synergiaData.cookies;
     try {
       return (await synergiaData.session.post(synergiaData.proxyUrl,
               data: jsonEncode({
@@ -182,7 +202,7 @@ class LibrusReader extends reader.LibrusReader {
                 'headers': {
                   HttpHeaders.contentTypeHeader: "application/json",
                 },
-                'cookies': synergiaData.cookies,
+                'cookies': msgCookies,
                 'data': data
               })))
           .data['data'] as Map<String, dynamic>;
@@ -190,6 +210,7 @@ class LibrusReader extends reader.LibrusReader {
       if (e.response?.statusCode != 401) rethrow;
 
       await synergiaData.synergiaLogin!.setupToken(); // Re-authorize
+      final retryCookies = synergiaData.messagesCookies.isNotEmpty ? synergiaData.messagesCookies : synergiaData.cookies;
       return (await synergiaData.session.post(synergiaData.proxyUrl,
               data: jsonEncode({
                 'uri':
@@ -198,7 +219,7 @@ class LibrusReader extends reader.LibrusReader {
                 'headers': {
                   HttpHeaders.contentTypeHeader: "application/json",
                 },
-                'cookies': synergiaData.cookies,
+                'cookies': retryCookies,
                 'data': data
               })))
           .data['data'] as Map<String, dynamic>;
@@ -219,21 +240,21 @@ class LibrusLogin extends reader.LibrusLogin {
   @override
   final SynergiaData synergiaData;
 
-  @override
   LibrusLogin({SynergiaData? synergiaData, String? login, String? pass, String? proxyUrl})
-      : synergiaData = synergiaData ?? SynergiaData(proxyUrl ?? 'http://127.0.0.1:80'),
+      : synergiaData = synergiaData ?? SynergiaData(resolveWebProxyUrl(proxyUrl)),
         synergiaLogin = login ?? '',
         synergiaPass = pass ?? '',
-        proxyUrl = proxyUrl ?? 'http://127.0.0.1:80';
+        proxyUrl = resolveWebProxyUrl(proxyUrl);
 
   @override
   Future setupToken({IProgress<({double? progress, String? message})>? progress}) async {
     // Reset the session, regenerate cookies
     synergiaData.session = DioForBrowser();
     synergiaData.cookies = {};
+    synergiaData.messagesCookies = {};
 
     if (kIsWeb) {
-      synergiaData.session.httpClientAdapter = BrowserHttpClientAdapter(withCredentials: true);
+      synergiaData.session.httpClientAdapter = BrowserHttpClientAdapter(withCredentials: false);
     }
 
     //synergiaData.session.interceptors.add(WebCookieManager(synergiaData.cookieJar));
@@ -259,17 +280,24 @@ class LibrusLogin extends reader.LibrusLogin {
 
     try {
       // Post the login data for OAuth authorization
-      await synergiaData.session.post(proxyUrl,
-          data: jsonEncode({
-            'uri': librusOAuthUri,
-            'method': "POST",
-            'query': {'client_id': 46},
-            'data': {'action': 'login', 'login': synergiaLogin, 'pass': synergiaPass},
-            'cookies': synergiaData.cookies
-          }));
+      await synergiaData.session
+          .post(proxyUrl,
+              data: jsonEncode({
+                'uri': librusOAuthUri,
+                'method': "POST",
+                'query': {'client_id': 46},
+                'data': {'action': 'login', 'login': synergiaLogin, 'pass': synergiaPass},
+                'cookies': synergiaData.cookies
+              }))
+          .setCookies(synergiaData.cookies);
     } on DioException catch (e) {
       if (e.response?.data is Map<String, dynamic>) {
-        throw Exception(e.response?.data?['errors']?[0]?['message']?.toString() ?? e.message);
+        final errData = e.response?.data;
+        final msg = errData?['data']?['errors']?[0]?['message']?.toString() ??
+            errData?['errors']?[0]?['message']?.toString() ??
+            errData?['error']?.toString() ??
+            e.message;
+        throw Exception(msg);
       } else {
         throw Exception(e.message);
       }
@@ -291,31 +319,43 @@ class LibrusLogin extends reader.LibrusLogin {
 //#region Gateway
     // Activate the API access - get the user ID
     progress?.report((progress: 0.6, message: '41D4096F-11CA-4385-8191-436DB9BF8A07'.localized));
-    try {
-      var tokenResponse = await synergiaData.session
-          .post(proxyUrl, data: jsonEncode({'uri': gatewayTokenInfoUri, 'method': "GET", 'cookies': synergiaData.cookies}));
+    var tokenResponse = await synergiaData.session
+        .post(proxyUrl, data: jsonEncode({'uri': gatewayTokenInfoUri, 'method': "GET", 'cookies': synergiaData.cookies}))
+        .setCookies(synergiaData.cookies);
 
-      // Activate the API access - authenticate using the ID
-      progress?.report((progress: 0.7, message: '5DA166B8-F9B9-40A1-8E90-22ED84E498A3'.localized));
-      var authResponse = await synergiaData.session.post(proxyUrl,
-          data: jsonEncode({
-            'uri': format(gatewayTokenGrantUri, tokenResponse.data['data']['UserIdentifier']),
-            'method': "GET",
-            'cookies': synergiaData.cookies
-          }));
-
-      // Validate the user still has access to the API
-      if (authResponse.data['data']['UserState'] != 'ACTIVE')
-        throw Exception('64D1FFB7-0CF9-43D1-8B74-998F2AB6CAA6'.localized);
-//#endregion
-    } on DioException catch (e) {
-      if (kDebugMode) print(e);
+    final userIdentifier = tokenResponse.data is Map ? (tokenResponse.data['data']?['UserIdentifier']) : null;
+    if (userIdentifier == null) {
+      throw Exception('64D1FFB7-0CF9-43D1-8B74-998F2AB6CAA6'.localized);
     }
+
+    // Activate the API access - authenticate using the ID
+    progress?.report((progress: 0.7, message: '5DA166B8-F9B9-40A1-8E90-22ED84E498A3'.localized));
+    var authResponse = await synergiaData.session
+        .post(proxyUrl,
+            data: jsonEncode({
+              'uri': format(gatewayTokenGrantUri, userIdentifier),
+              'method': "GET",
+              'cookies': synergiaData.cookies
+            }))
+        .setCookies(synergiaData.cookies);
+
+    // Validate the user still has access to the API
+    if (authResponse.data is! Map || authResponse.data['data']?['UserState'] != 'ACTIVE')
+      throw Exception('64D1FFB7-0CF9-43D1-8B74-998F2AB6CAA6'.localized);
+//#endregion
+
 //#region Messages
     // Make the first request - used to gain general authorization
     progress?.report((progress: 0.8, message: 'FB716D2D-FFFA-41C5-91B5-02678F6D0FA5'.localized));
-    await synergiaData.session
-        .post(proxyUrl, data: jsonEncode({'uri': messagesActivationUri, 'method': "GET", 'cookies': synergiaData.cookies}));
+    synergiaData.messagesCookies = Map<String, String>.from(synergiaData.cookies);
+    try {
+      await synergiaData.session
+          .post(proxyUrl,
+              data: jsonEncode({'uri': messagesActivationUri, 'method': "GET", 'cookies': synergiaData.cookies}))
+          .setCookies(synergiaData.messagesCookies);
+    } catch (e) {
+      if (kDebugMode) print(e);
+    }
 
     // Copy all cookies from the authorization session
     progress?.report((progress: 0.9, message: '4D52E8BC-6C25-4C8F-B031-777844C73315'.localized));
@@ -332,7 +372,9 @@ class LibrusLogin extends reader.LibrusLogin {
 
 extension on Future<Response<dynamic>> {
   Future<Response<dynamic>> setCookies(Map<String, String> cookies) => then((value) {
-        cookies.addAll((value.data['cookies'] as Map<String, dynamic>).cast());
+        if (value.data is Map && value.data['cookies'] is Map) {
+          cookies.addAll((value.data['cookies'] as Map).map((k, v) => MapEntry(k.toString(), v.toString())));
+        }
         return value;
       });
 }

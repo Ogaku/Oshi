@@ -145,6 +145,10 @@ class _SessionsPageState extends State<SessionsPage> {
                                                   child: FadeInImage.memoryNetwork(
                                                       height: 37,
                                                       placeholder: kTransparentImage,
+                                                      imageErrorBuilder: (context, error, stackTrace) => Image.asset(
+                                                          'assets/resources/images/logo_fit.png',
+                                                          height: 37,
+                                                          fit: BoxFit.contain),
                                                       image: Share.settings.sessions.sessions[x]?.provider.providerBannerUri
                                                               ?.toString() ??
                                                           'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg')))),
@@ -212,7 +216,7 @@ class _SessionsPageState extends State<SessionsPage> {
           });
 
           AppCenter.checkForUpdates().then((value) {
-            if (value.result) _showAlertDialog(context, value.download);
+            if (value.result && context.mounted) _showAlertDialog(context, value.download);
           }).catchError((ex) {});
 
           return CupertinoPageScaffold(
@@ -377,7 +381,7 @@ class NewSessionPage extends StatefulWidget {
 
 class _NewSessionPageState extends State<NewSessionPage> {
   final scrollController = ScrollController();
-  bool subscribed = false, enableFake = false;
+  bool subscribed = false, enableFake = true;
 
   @override
   void initState() {
@@ -390,13 +394,14 @@ class _NewSessionPageState extends State<NewSessionPage> {
 
       if (Share.settingsLoadError != null) {
         Share.showErrorModal.broadcast(Value((
-          title: 'Error loading data!',
-          message:
-              'An exception "${Share.settingsLoadError?.exception.toString()}" occurred and settings couldn\'t be read.\n\nStack trace:\n${Share.settingsLoadError?.trace.toString() ?? "Unavailable"}',
+          title: 'FA15D556-4A83-487B-B9C2-8ABCD1DC5C90'.localized,
+          message: 'EFB7E8DF-1BBC-442F-9D83-DAF1C70A028E'.localized.format(
+              Share.settingsLoadError?.exception.toString() ?? '',
+              Share.settingsLoadError?.trace.toString() ?? 'E91C42DF-7471-47E1-BAB8-7E3C63713154'.localized),
           actions: {
-            'Copy Exception': () async =>
+            '/Session/Login/Error/Exception'.localized: () async =>
                 await Clipboard.setData(ClipboardData(text: Share.settingsLoadError?.exception.toString() ?? '')),
-            'Copy Stack Trace': () async =>
+            '/Session/Login/Error/Stack'.localized: () async =>
                 await Clipboard.setData(ClipboardData(text: Share.settingsLoadError?.trace.toString() ?? '')),
           }
         )));
@@ -424,6 +429,10 @@ class _NewSessionPageState extends State<NewSessionPage> {
                                   child: FadeInImage.memoryNetwork(
                                       height: 37,
                                       placeholder: kTransparentImage,
+                                      imageErrorBuilder: (context, error, stackTrace) => Image.asset(
+                                          'assets/resources/images/logo_fit.png',
+                                          height: 37,
+                                          fit: BoxFit.contain),
                                       image: Share.providers[x]!.instance.providerBannerUri?.toString() ??
                                           'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg'))),
                           Container(
@@ -563,7 +572,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
               });
 
               AppCenter.checkForUpdates().then((value) {
-                if (value.result) _showAlertDialog(context, value.download);
+                if (value.result && context.mounted) _showAlertDialog(context, value.download);
               }).catchError((ex) {});
 
               return result;
@@ -651,7 +660,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             child: CupertinoTextFormFieldRow(
               enabled: !isWorking,
-              placeholder: '/Required'.localized,
+              placeholder: x.key == 'proxy' ? '/Optional'.localized : '/Required'.localized,
               obscureText: x.value.obscure,
               autofillHints: [x.value.obscure ? AutofillHints.password : AutofillHints.username],
               controller: credentialControllers![x.key],
@@ -687,12 +696,24 @@ class _LoginPageState extends State<LoginPage> {
                   ? CupertinoActivityIndicator()
                   : Text('/Next'.localized,
                       style: TextStyle(
-                          color: (credentialControllers!.values.every((x) => x.text.isNotEmpty))
+                          color: (credentialControllers!.entries
+                                      .where((x) => x.key != 'proxy')
+                                      .every((x) => x.value.text.isNotEmpty) ||
+                                  (credentialControllers!['login']?.text.trim().toLowerCase() == 'test' &&
+                                      credentialControllers!['pass']?.text == 'test') ||
+                                  (credentialControllers!['login']?.text.trim().toLowerCase() == 'demo' &&
+                                      credentialControllers!['pass']?.text == 'demo'))
                               ? CupertinoTheme.of(context).primaryColor
                               : CupertinoColors.inactiveGray)),
               onPressed: () async {
                 if (isWorking) return; // Already handling something, give up
-                if (credentialControllers!.values.every((x) => x.text.isNotEmpty)) {
+                if (credentialControllers!.entries
+                        .where((x) => x.key != 'proxy')
+                        .every((x) => x.value.text.isNotEmpty) ||
+                    (credentialControllers!['login']?.text.trim().toLowerCase() == 'test' &&
+                        credentialControllers!['pass']?.text == 'test') ||
+                    (credentialControllers!['login']?.text.trim().toLowerCase() == 'demo' &&
+                        credentialControllers!['pass']?.text == 'demo')) {
                   TextInput.finishAutofillContext(); // Hide autofill if present
                   setState(() {
                     // Mark as working, the 1st refresh is gonna take a while
@@ -731,6 +752,10 @@ class _LoginPageState extends State<LoginPage> {
                     margin: EdgeInsets.only(top: 30, left: 100, right: 100),
                     child: FadeInImage.memoryNetwork(
                         placeholder: kTransparentImage,
+                        imageErrorBuilder: (context, error, stackTrace) => Image.asset(
+                            'assets/resources/images/logo_fit.png',
+                            height: 48,
+                            fit: BoxFit.contain),
                         image: widget.instance.providerBannerUri?.toString() ??
                             'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg'))),
             Container(

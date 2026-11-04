@@ -1,5 +1,6 @@
 import 'package:darq/darq.dart';
 import 'package:equatable/equatable.dart';
+import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/models/data/lesson.dart';
@@ -7,6 +8,7 @@ import 'package:oshi/models/data/teacher.dart';
 
 import 'package:hive/hive.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 part 'messages.g.dart';
 
 @HiveType(typeId: 28)
@@ -91,16 +93,20 @@ class Message extends Equatable {
 
   String get senderName =>
       sender?.name ??
-      ((receivers?.isNotEmpty ?? false) ? "To: ${receivers?.select((x, index) => x.name).join(', ')}" : 'Unknown');
+      ((receivers?.isNotEmpty ?? false)
+          ? '/Messages/To'.localized.format(receivers?.select((x, index) => x.name).join(', ') ?? '')
+          : '94149CBB-5B72-4186-A155-20A9C7FB1B2C'.localized);
 
-  String get previewString => (preview?.isEmpty ?? true) ? (content?.trim() ?? 'No preview available') : preview!.trim();
+  String get previewString =>
+      (preview?.isEmpty ?? true) ? (content?.trim() ?? '/Messages/NoPreview'.localized) : preview!.trim();
 
   String get sendDateString => sendDate.difference(DateTime.now().getDateOnly()).inDays > 0
       ? DateFormat.Hm().format(sendDate)
       : DateFormat.MMMd(Share.settings.appSettings.localeCode).format(sendDate);
 
-  String get readDateString =>
-      "Read ${DateFormat.yMMMd(Share.settings.appSettings.localeCode).format(readDate ?? DateTime(2000))} ${DateFormat.Hm(Share.settings.appSettings.localeCode).format(readDate ?? DateTime(2000))}";
+  String get readDateString => '/Messages/ReadDate'.localized.format(
+      DateFormat.yMMMd(Share.settings.appSettings.localeCode).format(readDate ?? DateTime(2000)),
+      DateFormat.Hm(Share.settings.appSettings.localeCode).format(readDate ?? DateTime(2000)));
 
   String get senderInitials => (sender?.name.isEmpty ?? true)
       ? ':)' // Placeholder, but it's up to you what to display there

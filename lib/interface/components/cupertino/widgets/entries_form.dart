@@ -33,7 +33,7 @@ class EntriesForm<T> extends StatefulWidget {
   final int maxKeyLength;
   final int maxValueLength;
 
-  final Map<String, T> Function<T>([Map<String, T>?]) update;
+  final Map<String, T> Function<U>([Map<String, U>?]) update;
   final T? Function(String) validate;
   final List<String>? options;
 
@@ -172,7 +172,7 @@ class _EntriesFormState<T> extends State<EntriesForm<T>> {
                                                 options: widget.options!
                                                     .select((x, _) => OptionEntry(name: x, value: x))
                                                     .toList(),
-                                                update: <T>(v) {
+                                                update: (v) {
                                                   _keyController.text = v;
                                                   setState(() {});
                                                 })

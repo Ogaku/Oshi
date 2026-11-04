@@ -13,7 +13,6 @@ import 'package:native_dio_adapter/native_dio_adapter.dart';
 import 'package:oshi/providers/librus/reader/librus_reader.dart' as reader;
 
 class SynergiaData extends reader.SynergiaData {
-  @override
   SynergiaData([String pvReserved = '']) : session = Dio() {
     librusApi = LibrusReader(this);
     session.httpClientAdapter = NativeAdapter();
@@ -31,7 +30,6 @@ class LibrusReader extends reader.LibrusReader {
   @override
   final SynergiaData synergiaData;
 
-  @override
   LibrusReader(this.synergiaData);
 
   @override
@@ -158,7 +156,6 @@ class LibrusLogin extends reader.LibrusLogin {
   @override
   final SynergiaData synergiaData;
 
-  @override
   LibrusLogin({SynergiaData? synergiaData, String? login, String? pass, String? proxyUrl})
       : synergiaData = synergiaData ?? SynergiaData(),
         synergiaLogin = login ?? '',
@@ -234,11 +231,4 @@ class LibrusLogin extends reader.LibrusLogin {
     // var syngeriaResponse = await synergiaData.session.get('https://synergia.librus.pl/gateway/api/2.0/Me');
     // var messagesResponse = await synergiaData.session.get('https://wiadomosci.librus.pl/api/me');
   }
-}
-
-extension on Future<Response<dynamic>> {
-  Future<Response<dynamic>> setCookies(Map<String, String> cookies) => then((value) {
-        cookies.addAll((value.data['cookies'] as Map<String, dynamic>).cast());
-        return value;
-      });
 }

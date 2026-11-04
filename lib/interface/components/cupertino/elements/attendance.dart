@@ -85,7 +85,7 @@ extension LessonWidgetExtension on Attendance {
                   CupertinoContextMenuAction(
                       isDestructiveAction: true,
                       trailingIcon: CupertinoIcons.doc_on_clipboard,
-                      child: Text('Excuse'),
+                      child: Text('/Excuse'.localized),
                       onPressed: () {
                         Navigator.of(context, rootNavigator: true).pop();
                         showCupertinoModalBottomSheet(

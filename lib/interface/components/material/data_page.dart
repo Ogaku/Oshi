@@ -44,11 +44,27 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
         length: widget.segments?.length ?? 1,
         vsync: this,
         initialIndex: widget.segments?.keys.toList().indexOf(widget.segmentController?.segment) ?? 0);
+    tabController.addListener(_onTabChanged);
     widget.segmentController?.reserved = tabController;
+  }
+
+  void _onTabChanged() {
+    if (mounted && widget.segments != null && tabController.index < widget.segments!.length) {
+      final newSegment = widget.segments!.keys.elementAt(tabController.index);
+      if (widget.segmentController?.segment != newSegment) {
+        setState(() {
+          widget.segmentController?.segment = newSegment;
+        });
+      }
+    }
   }
 
   @override
   void dispose() {
+    tabController.removeListener(_onTabChanged);
+    tabController.dispose();
+    widget.segmentController?.removeListener(pushUpdateSegment);
+    Share.session.refreshStatus.removeListener(setStateListener);
     Share.refreshAll.unsubscribe(refresh);
     super.dispose();
   }
@@ -78,13 +94,6 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
     // Re-subscribe to all events
     Share.refreshAll.unsubscribe(refresh);
     Share.refreshAll.subscribe(refresh);
-
-    tabController.removeListener(() => setState(() {
-          widget.segmentController?.segment = widget.segments?.keys.elementAt(tabController.index);
-        }));
-    tabController.addListener(() => setState(() {
-          widget.segmentController?.segment = widget.segments?.keys.elementAt(tabController.index);
-        }));
 
     if (widget.setState != null) {
       Share.session.refreshStatus.removeListener(setStateListener);
@@ -241,16 +250,22 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
                       child: TabBarView(
                         controller: tabController,
                         viewportFraction: isHorizontalPhoneMode(context) ? (1 / 7) : 1.0,
-                        children: List.generate(widget.segments!.length,
-                            (index) => widget.pageBuilder!(context, widget.segments!.keys.elementAt(index))),
+                        children: List.generate(
+                            widget.segments!.length,
+                            (index) => (widget.segments!.length > 10 && (index - tabController.index).abs() > 7)
+                                ? const SizedBox.shrink()
+                                : widget.pageBuilder!(context, widget.segments!.keys.elementAt(index))),
                       ),
                     )
                   : Column(
                       children: [
                         ContentSizeTabBarView(
                           controller: tabController,
-                          children: List.generate(widget.segments!.length,
-                              (index) => widget.pageBuilder!(context, widget.segments!.keys.elementAt(index))),
+                          children: List.generate(
+                              widget.segments!.length,
+                              (index) => (widget.segments!.length > 10 && (index - tabController.index).abs() > 2)
+                                  ? const SizedBox.shrink()
+                                  : widget.pageBuilder!(context, widget.segments!.keys.elementAt(index))),
                         ),
                       ],
                     ),

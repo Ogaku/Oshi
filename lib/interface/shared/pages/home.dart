@@ -52,6 +52,16 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     super.dispose();
   }
 
+  @override
+  void onVisibilityChanged(WidgetVisibility visibility) {
+    if (visibility == WidgetVisibility.INVISIBLE || visibility == WidgetVisibility.GONE) {
+      _everySecond?.cancel();
+    } else if (!(_everySecond?.isActive ?? false)) {
+      _everySecond = Timer.periodic(Duration(seconds: 15), (Timer t) => _setState(() {}));
+    }
+    super.onVisibilityChanged(visibility);
+  }
+
   void refresh(args) {
     if (mounted) setState(() {});
   }
@@ -67,9 +77,9 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
       setState(() => segmentController.segment = HomepageSegments.timeline);
     });
 
-    if (!(_everySecond?.isActive ?? false)) {
-      // Auto-refresh this view each second - it's static so it shouuuuld be safe...
-      _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) => _setState(() {}));
+    if (!(_everySecond?.isActive ?? false) && isVisible()) {
+      // Auto-refresh this view periodically when visible
+      _everySecond = Timer.periodic(Duration(seconds: 15), (Timer t) => _setState(() {}));
     }
 
     var currentDay = Share.session.data.timetables[DateTime.now().asDate(utc: true).asDate()];
@@ -304,7 +314,9 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
               ]);
 
     // Widgets for the home page
-    var homePageChildren = Share.settings.appSettings.useCupertino
+    var homePageChildren = segmentController.segment != HomepageSegments.home
+        ? <Widget>[]
+        : Share.settings.appSettings.useCupertino
         // ---------- Cupertino home screen ----------
         ? <Widget>[
             CardContainer(
@@ -959,17 +971,9 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     // Widgets for the timeline page
     var timelineChanges = Share.session.changes.orderByDescending((x) => x.refreshDate);
 
-    timelineChanges = timelineChanges
-        .appendAll(timelineChanges)
-        .appendAll(timelineChanges)
-        .appendAll(timelineChanges)
-        .appendAll(timelineChanges)
-        .appendAll(timelineChanges)
-        .appendAll(timelineChanges)
-        .appendAll(timelineChanges)
-        .appendAll(timelineChanges);
-
-    var timelineChildren = timelineChanges
+    var timelineChildren = segmentController.segment != HomepageSegments.timeline
+        ? <Widget>[]
+        : timelineChanges
         .take(timelineMaxChildren) // Only last five refreshes by default, more can be loaded
         .select((x, _) => CardContainer(
             largeHeader: false,

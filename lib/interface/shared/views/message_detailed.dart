@@ -86,7 +86,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                             widget.message.content))),
           ),
           AdaptiveMenuItem(
-            title: 'Delete',
+            title: '/Delete'.localized,
             icon: CupertinoIcons.trash,
             isDestructive: true,
             onTap: () {

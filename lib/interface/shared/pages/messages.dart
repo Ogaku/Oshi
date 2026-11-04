@@ -55,17 +55,19 @@ class _MessagesPageState extends State<MessagesPage> {
   }
 
   List<Widget> messagesWidget([String query = '', MessageFolders folder = MessageFolders.inbox, bool filled = true]) {
+    final queryLower = query.toLowerCase();
     var messagesToDisplay = (switch (folder) {
       MessageFolders.inbox => Share.session.data.messages.received,
       MessageFolders.outbox => Share.session.data.messages.sent,
       _ => <Message>[]
     })
         .where((x) =>
-            x.topic.contains(RegExp(query, caseSensitive: false)) ||
-            x.sendDateString.contains(RegExp(query, caseSensitive: false)) ||
-            x.previewString.contains(RegExp(query, caseSensitive: false)) ||
-            (x.content?.contains(RegExp(query, caseSensitive: false)) ?? false) ||
-            x.senderName.contains(RegExp(query, caseSensitive: false)))
+            queryLower.isEmpty ||
+            x.topic.toLowerCase().contains(queryLower) ||
+            x.sendDateString.toLowerCase().contains(queryLower) ||
+            x.previewString.toLowerCase().contains(queryLower) ||
+            (x.content?.toLowerCase().contains(queryLower) ?? false) ||
+            x.senderName.toLowerCase().contains(queryLower))
         .orderByDescending((element) => element.sendDate)
         .toList()
         .select((element, index) => (message: element, announcement: null as Announcement?));
@@ -73,9 +75,10 @@ class _MessagesPageState extends State<MessagesPage> {
     if (folder == MessageFolders.announcements) {
       messagesToDisplay = Share.session.data.student.mainClass.unit.announcements
               ?.where((x) =>
-                  x.subject.contains(RegExp(query, caseSensitive: false)) ||
-                  x.content.contains(RegExp(query, caseSensitive: false)) ||
-                  (x.contact?.name.contains(RegExp(query, caseSensitive: false)) ?? false))
+                  queryLower.isEmpty ||
+                  x.subject.toLowerCase().contains(queryLower) ||
+                  x.content.toLowerCase().contains(queryLower) ||
+                  (x.contact?.name.toLowerCase().contains(queryLower) ?? false))
               .orderByDescending((x) => x.startDate)
               .select((x, index) => (
                     message: Message(
@@ -115,7 +118,7 @@ class _MessagesPageState extends State<MessagesPage> {
             // Bindable messages layout
             : messagesToDisplay
                 .select((x, index) => SwipeActionCell(
-                    key: UniqueKey(),
+                    key: ValueKey(x.announcement?.hashCode ?? x.message.hashCode),
                     backgroundColor: Colors.transparent,
                     trailingActions: <SwipeAction>[]
                         .appendIf(

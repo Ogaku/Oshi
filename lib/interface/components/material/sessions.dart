@@ -148,6 +148,10 @@ class _SessionsPageState extends State<SessionsPage> {
                                                     child: FadeInImage.memoryNetwork(
                                                         height: 37,
                                                         placeholder: kTransparentImage,
+                          imageErrorBuilder: (context, error, stackTrace) => Image.asset(
+                              'assets/resources/images/logo_fit.png',
+                              height: 37,
+                              fit: BoxFit.contain),
                                                         image: Share
                                                                 .settings.sessions.sessions[x]?.provider.providerBannerUri
                                                                 ?.toString() ??
@@ -379,7 +383,7 @@ class NewSessionPage extends StatefulWidget {
 
 class _NewSessionPageState extends State<NewSessionPage> {
   final scrollController = ScrollController();
-  bool subscribed = false, enableFake = false;
+  bool subscribed = false, enableFake = true;
 
   @override
   void initState() {
@@ -425,6 +429,10 @@ class _NewSessionPageState extends State<NewSessionPage> {
                               child: FadeInImage.memoryNetwork(
                                   height: 37,
                                   placeholder: kTransparentImage,
+                          imageErrorBuilder: (context, error, stackTrace) => Image.asset(
+                              'assets/resources/images/logo_fit.png',
+                              height: 37,
+                              fit: BoxFit.contain),
                                   image: Share.providers[x]!.instance.providerBannerUri?.toString() ??
                                       'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg'))),
                       Container(
@@ -600,7 +608,7 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: x.value.name,
-                  hintText: '/Required'.localized,
+                  hintText: x.key == 'proxy' ? '/Optional'.localized : '/Required'.localized,
                 ),
                 obscureText: x.value.obscure,
                 autofillHints: [x.value.obscure ? AutofillHints.password : AutofillHints.username],
@@ -626,12 +634,24 @@ class _LoginPageState extends State<LoginPage> {
                       ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
                       : Text('/Next'.localized,
                           style: TextStyle(
-                              color: (credentialControllers!.values.every((x) => x.text.isNotEmpty))
+                              color: (credentialControllers!.entries
+                                          .where((x) => x.key != 'proxy')
+                                          .every((x) => x.value.text.isNotEmpty) ||
+                                      (credentialControllers!['login']?.text.trim().toLowerCase() == 'test' &&
+                                          credentialControllers!['pass']?.text == 'test') ||
+                                      (credentialControllers!['login']?.text.trim().toLowerCase() == 'demo' &&
+                                          credentialControllers!['pass']?.text == 'demo'))
                                   ? CupertinoTheme.of(context).primaryColor
                                   : CupertinoColors.inactiveGray)),
                   onPressed: () async {
                     if (isWorking) return; // Already handling something, give up
-                    if (credentialControllers!.values.every((x) => x.text.isNotEmpty)) {
+                    if (credentialControllers!.entries
+                            .where((x) => x.key != 'proxy')
+                            .every((x) => x.value.text.isNotEmpty) ||
+                        (credentialControllers!['login']?.text.trim().toLowerCase() == 'test' &&
+                            credentialControllers!['pass']?.text == 'test') ||
+                        (credentialControllers!['login']?.text.trim().toLowerCase() == 'demo' &&
+                            credentialControllers!['pass']?.text == 'demo')) {
                       TextInput.finishAutofillContext(); // Hide autofill if present
                       setState(() {
                         // Mark as working, the 1st refresh is gonna take a while
@@ -673,6 +693,10 @@ class _LoginPageState extends State<LoginPage> {
                       margin: EdgeInsets.only(top: 30, left: 100, right: 100),
                       child: FadeInImage.memoryNetwork(
                           placeholder: kTransparentImage,
+                          imageErrorBuilder: (context, error, stackTrace) => Image.asset(
+                              'assets/resources/images/logo_fit.png',
+                              height: 37,
+                              fit: BoxFit.contain),
                           image: widget.instance.providerBannerUri?.toString() ??
                               'https://i.pinimg.com/736x/6b/db/93/6bdb93f8d708c51e0431406f7e06f299.jpg'))),
               Container(

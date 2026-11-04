@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'package:universal_io/io.dart';
 import 'package:flutter/services.dart';
 import 'package:device_info/device_info.dart';
 import 'package:platform_device_id_platform_interface/platform_device_id_platform_interface.dart';

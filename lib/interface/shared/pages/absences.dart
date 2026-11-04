@@ -1,8 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
-import 'dart:math';
-
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:flutter/cupertino.dart';
@@ -52,38 +50,29 @@ class _AbsencesPageState extends State<AbsencesPage> {
     Share.refreshAll.unsubscribe(refresh);
     Share.refreshAll.subscribe(refresh);
 
-    // Group by date, I know IT'S A DAMN STRING, but we're saving on custom controls
-    var attendancesToDisplayByDate = Share.session.data.student.attendances
-            ?.orderByDescending((x) => x.date)
-            .groupBy((x) => DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(x.date))
-            .toList() ??
-        [];
-
-    // Group by subjects, or at least what we can access right now
-    var attendancesToDisplayByLesson = Share.session.data.student.attendances
-            ?.orderByDescending((x) => x.date)
-            .groupBy((x) => x.lesson.subject?.name ?? 'D8AE1252-CB76-4815-9587-B48D42DADE0B'.localized)
-            .select((x, index) => Grouping(
-                x.elements,
-                "${x.key}\n${(100 * x.elements.where((y) => y.type == AttendanceType.present).count() / x.elements.count()).round()}%",
-                Random().nextInt(100)))
-            .orderBy((x) => x.key)
-            .toList() ??
-        [];
-
-    // Group by type, try to show absences first
-    var attendancesToDisplayByType = Share.session.data.student.attendances
-            ?.orderByDescending((x) => x.date)
-            .groupBy((x) => x.type.asStringLong())
-            .orderBy((x) => x.key)
-            .toList() ??
-        [];
-
-    // This is gonna be a veeery long list, as there are no expanders in cupertino
+    // Compute only the active segment's grouping
     var attendances = (switch (segmentController.segment) {
-      AbsencesPageSegments.lesson => attendancesToDisplayByLesson,
-      AbsencesPageSegments.type => attendancesToDisplayByType,
-      AbsencesPageSegments.date || _ => attendancesToDisplayByDate
+      AbsencesPageSegments.lesson => Share.session.data.student.attendances
+              ?.orderByDescending((x) => x.date)
+              .groupBy((x) => x.lesson.subject?.name ?? 'D8AE1252-CB76-4815-9587-B48D42DADE0B'.localized)
+              .select((x, index) => Grouping(
+                  x.elements,
+                  "${x.key}\n${(100 * x.elements.where((y) => y.type == AttendanceType.present).count() / x.elements.count()).round()}%",
+                  x.key.hashCode))
+              .orderBy((x) => x.key)
+              .toList() ??
+          [],
+      AbsencesPageSegments.type => Share.session.data.student.attendances
+              ?.orderByDescending((x) => x.date)
+              .groupBy((x) => x.type.asStringLong())
+              .orderBy((x) => x.key)
+              .toList() ??
+          [],
+      AbsencesPageSegments.date || _ => Share.session.data.student.attendances
+              ?.orderByDescending((x) => x.date)
+              .groupBy((x) => DateFormat.yMMMMEEEEd(Share.settings.appSettings.localeCode).format(x.date))
+              .toList() ??
+          []
     });
 
     return DataPageBase.adaptive(

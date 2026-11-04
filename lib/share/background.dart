@@ -49,7 +49,9 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
 
   // Validate our internet connection
   if (Share.session.settings.backgroundSyncWiFiOnly &&
-      (await (Connectivity().checkConnectivity())) != ConnectivityResult.wifi) return;
+      (await (Connectivity().checkConnectivity())) != ConnectivityResult.wifi) {
+    return;
+  }
 
   // Validate our session data
   if (Share.settings.sessions.lastSession == null || !Share.session.settings.enableBackgroundSync) return;

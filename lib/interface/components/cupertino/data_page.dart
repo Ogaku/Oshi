@@ -31,9 +31,25 @@ class DataPageState extends State<DataPage> {
   List<Widget> searchChildren = [];
 
   @override
+  void initState() {
+    super.initState();
+    searchController.addListener(_onSearchChanged);
+  }
+
+  @override
   void dispose() {
+    searchController.removeListener(_onSearchChanged);
+    searchController.dispose();
     Share.refreshAll.unsubscribe(refresh);
     super.dispose();
+  }
+
+  Future<void> _onSearchChanged() async {
+    if (mounted) {
+      searchChildren =
+          widget.searchBuilder != null ? (await widget.searchBuilder!(context, searchController)).toList() : [];
+      if (mounted) setState(() {});
+    }
   }
 
   void refresh(args) {
@@ -46,14 +62,6 @@ class DataPageState extends State<DataPage> {
     // Re-subscribe to all events
     Share.refreshAll.unsubscribe(refresh);
     Share.refreshAll.subscribe(refresh);
-
-    searchController.addListener(() async {
-      if (mounted) {
-        searchChildren =
-            widget.searchBuilder != null ? (await widget.searchBuilder!(context, searchController)).toList() : [];
-        setState(() {});
-      }
-    });
 
     // onChanged, onSubmitted -> already handled by searchController
     var navigationBar = SearchableSliverNavigationBar(

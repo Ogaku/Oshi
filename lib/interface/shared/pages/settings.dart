@@ -3,7 +3,7 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'package:universal_io/io.dart';
 
 import 'package:darq/darq.dart';
 import 'package:duration/locale.dart';
@@ -979,7 +979,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                 EntriesForm<double>(
                                     header: '52681520-1CD1-4547-8BB7-D006AAFF1295'.localized,
                                     description: '67F7DBDE-6ED3-421F-AD14-85058AA1665D'.localized,
-                                    placeholder: 'Value',
+                                    placeholder: '828F8EBE-4681-4FC9-9FFE-239540470A97'.localized,
                                     update: <T>([v]) => (Share.session.settings.customGradeMarginValues =
                                             v?.cast() ?? Share.session.settings.customGradeMarginValues)
                                         .cast(),
@@ -1003,7 +1003,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                       context,
                       AdaptivePageRoute(
                           builder: (context) => StatefulBuilder(builder: (context, setState) {
-                                return ModalPageBase.adaptive(title: 'Custom Classrooms', children: [
+                                return ModalPageBase.adaptive(title: '/Settings/Classrooms/Title'.localized, children: [
                                   // Import/export
                                   CardContainer(
                                       margin: EdgeInsets.symmetric(
@@ -1011,13 +1011,14 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                       filled: false,
                                       additionalDividerMargin: 5,
                                       largeHeader: false,
-                                      header: 'SHARING',
+                                      header: '/Settings/Classrooms/Sharing'.localized,
                                       children: [
                                         AdaptiveCard(
-                                          child: 'Import',
+                                          child: '/Settings/Classrooms/Import'.localized,
                                           regular: true,
-                                          after:
-                                              Share.settings.appSettings.useCupertino ? '' : 'Import classroom definitions',
+                                          after: Share.settings.appSettings.useCupertino
+                                              ? ''
+                                              : '/Settings/Classrooms/ImportDesc'.localized,
                                           click: () async {
                                             var controller = MobileScannerController(
                                               formats: const [BarcodeFormat.qrCode],
@@ -1103,11 +1104,11 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                           },
                                         ),
                                         AdaptiveCard(
-                                            child: 'Export',
+                                            child: '/Settings/Classrooms/Export'.localized,
                                             regular: true,
                                             after: Share.settings.appSettings.useCupertino
                                                 ? ''
-                                                : 'Share classrooms with others',
+                                                : '/Settings/Classrooms/ExportDesc'.localized,
                                             click: () => (Share.settings.appSettings.useCupertino
                                                     ? showCupertinoModalBottomSheet
                                                     : showMaterialModalBottomSheet)(
@@ -1141,11 +1142,10 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                       ]),
                                   // Custom classrooms
                                   EntriesForm<String>(
-                                      header: 'CUSTOM CLASSROOMS',
-                                      description:
-                                          'These values will overwrite all default (or non-present) classrooms for each subject you add here.',
-                                      placeholder: 'Classroom',
-                                      noOption: 'Select a subject',
+                                      header: '/Settings/Classrooms/Header'.localized,
+                                      description: '/Settings/Classrooms/Description'.localized,
+                                      placeholder: 'AA2B9B71-49B6-45BD-A0FE-707D42A09EC5'.localized,
+                                      noOption: '/Settings/Classrooms/SelectSubject'.localized,
                                       options: Share.session.data.student.subjects.select((x, _) => x.name).toList(),
                                       update: <T>([v]) => (Share.session.settings.customClassrooms =
                                               v?.cast() ?? Share.session.settings.customClassrooms)
@@ -1153,8 +1153,8 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                       validate: (v) => v)
                                 ]);
                               }))),
-                  child: 'Custom Classrooms',
-                  after: Share.settings.appSettings.useCupertino ? '' : 'Assign classrooms to lessons',
+                  child: '/Settings/Classrooms/Title'.localized,
+                  after: Share.settings.appSettings.useCupertino ? '' : '/Settings/Classrooms/Subtitle'.localized,
                 )
               ],
             ),
@@ -1263,7 +1263,9 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                               allowMultiple: false, type: FileType.any);
 
                                                                           if (!(save?.files.first.path?.endsWith('.hive') ??
-                                                                              false)) return;
+                                                                              false)) {
+                                                                            return;
+                                                                          }
 
                                                                           (await Hive.openBox('sessions')).clear();
                                                                           (await Hive.openBox('sessions'))
@@ -2032,9 +2034,7 @@ class ScannerOverlay extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // TODO: use `Offset.zero & size` instead of Rect.largest
-    // we need to pass the size to the custom paint widget
-    final backgroundPath = Path()..addRect(Rect.largest);
+    final backgroundPath = Path()..addRect(Offset.zero & size);
 
     final cutoutPath = Path()
       ..addRRect(
@@ -2048,7 +2048,7 @@ class ScannerOverlay extends CustomPainter {
       );
 
     final backgroundPaint = Paint()
-      ..color = Colors.black.withOpacity(0.5)
+      ..color = Colors.black.withValues(alpha: 0.5)
       ..style = PaintingStyle.fill
       ..blendMode = BlendMode.dstOut;
 

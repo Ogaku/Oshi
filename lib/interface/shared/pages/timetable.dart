@@ -62,6 +62,17 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
           .add(Duration(days: dayDifference))
           .asDate();
 
+  Map<dynamic, String>? _cachedSegments;
+  DateTime? _cachedBeginSchoolYear;
+  DateTime? _cachedEndSchoolYear;
+  String? _cachedLocaleCode;
+
+  void _onSegmentChanged() {
+    if (mounted && dayDifference != segmentController.segment) {
+      setState(() => dayDifference = segmentController.segment);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -71,8 +82,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
             : DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays,
         scrollable: true);
 
-    segmentController.removeListener(() => setState(() => dayDifference = segmentController.segment));
-    segmentController.addListener(() => setState(() => dayDifference = segmentController.segment));
+    segmentController.addListener(_onSegmentChanged);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       animateToPage(
@@ -85,9 +95,20 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
 
   @override
   void dispose() {
+    segmentController.removeListener(_onSegmentChanged);
     Share.refreshAll.unsubscribe(refresh);
     _everySecond?.cancel();
     super.dispose();
+  }
+
+  @override
+  void onVisibilityChanged(WidgetVisibility visibility) {
+    if (visibility == WidgetVisibility.INVISIBLE || visibility == WidgetVisibility.GONE) {
+      _everySecond?.cancel();
+    } else if (!(_everySecond?.isActive ?? false)) {
+      _everySecond = Timer.periodic(Duration(seconds: 30), (Timer t) => setState(() {}));
+    }
+    super.onVisibilityChanged(visibility);
   }
 
   void refresh(args) {
@@ -101,15 +122,17 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
     DateTime selectedDate =
         Share.session.data.student.mainClass.beginSchoolYear.asDate(utc: true).add(Duration(days: index)).asDate();
     var selectedDay = Share.session.data.timetables.timetable[selectedDate];
+    final queryLower = searchController.text.toLowerCase();
 
     // Events for the selected day/date
     var eventsToday = Share.session.events
         .where((x) => x.category != EventCategory.homework && x.category != EventCategory.teacher)
         .where((x) => (x.date ?? x.timeFrom).asDate() == selectedDate)
         .where((x) =>
-            x.titleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-            x.subtitleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-            x.locationString.contains(RegExp(searchController.text, caseSensitive: false)))
+            queryLower.isEmpty ||
+            x.titleString.toLowerCase().contains(queryLower) ||
+            x.subtitleString.toLowerCase().contains(queryLower) ||
+            x.locationString.toLowerCase().contains(queryLower))
         .asEventWidgets(selectedDay, searchController.text, 'ACCA97A8-5C58-4D65-A827-6BBE076DDC71'.localized, setState);
 
     // Homeworks for the selected day/date
@@ -117,9 +140,10 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
         .where((x) => x.category == EventCategory.homework)
         .where((x) => x.timeTo?.asDate() == selectedDate || (x.timeTo == null && x.date?.asDate() == selectedDate))
         .where((x) =>
-            x.titleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-            x.subtitleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-            x.locationString.contains(RegExp(searchController.text, caseSensitive: false)))
+            queryLower.isEmpty ||
+            x.titleString.toLowerCase().contains(queryLower) ||
+            x.subtitleString.toLowerCase().contains(queryLower) ||
+            x.locationString.toLowerCase().contains(queryLower))
         .orderBy((x) => x.done ? 1 : 0)
         .asEventWidgets(selectedDay, searchController.text, '334BC7AB-6780-412F-8604-2C6BAA9F3152'.localized, setState);
 
@@ -132,9 +156,10 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
             x.timeFrom.isAfter(selectedDate) && (x.timeTo?.isBefore(selectedDate.add(Duration(days: 1))) ?? false))
         .distinct((x) => x.sender?.name ?? '')
         .where((x) =>
-            x.titleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-            x.subtitleString.contains(RegExp(searchController.text, caseSensitive: false)) ||
-            x.locationString.contains(RegExp(searchController.text, caseSensitive: false)))
+            queryLower.isEmpty ||
+            x.titleString.toLowerCase().contains(queryLower) ||
+            x.subtitleString.toLowerCase().contains(queryLower) ||
+            x.locationString.toLowerCase().contains(queryLower))
         .asEventWidgets(selectedDay, searchController.text, 'CB4DFBFF-DC80-4787-8DAD-8046F536D65E'.localized, setState);
 
     // Lessons for the selected day, and those to be displayed
@@ -381,9 +406,31 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (!(_everySecond?.isActive ?? false)) {
-      // Auto-refresh this view each second - it's static so it shouuuuld be safe...
-      _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) => setState(() {}));
+    if (!(_everySecond?.isActive ?? false) && isVisible()) {
+      // Auto-refresh this view periodically when visible
+      _everySecond = Timer.periodic(Duration(seconds: 30), (Timer t) => setState(() {}));
+    }
+
+    final beginYear = Share.session.data.student.mainClass.beginSchoolYear;
+    final endYear = Share.session.data.student.mainClass.endSchoolYear;
+    final locale = Share.settings.appSettings.localeCode;
+    if (_cachedSegments == null ||
+        _cachedBeginSchoolYear != beginYear ||
+        _cachedEndSchoolYear != endYear ||
+        _cachedLocaleCode != locale) {
+      _cachedBeginSchoolYear = beginYear;
+      _cachedEndSchoolYear = endYear;
+      _cachedLocaleCode = locale;
+      final dateFormat = DateFormat('EEEEE, d.MM', locale);
+      final baseDate = isBeforeSchoolYear ? DateTime.now().asDate() : beginYear;
+      _cachedSegments = List.generate(
+          beginYear.difference(endYear).inDays.abs() +
+              (isSchoolYear
+                  ? 0
+                  : (isBeforeSchoolYear
+                      ? ((DateTime.now().asDate().difference(beginYear.asDate()).inDays).abs() + 1)
+                      : ((DateTime.now().asDate().difference(endYear.asDate()).inDays).abs() + 1))),
+          (index) => index).toMap((x) => MapEntry(x, dateFormat.format(baseDate.addDate(days: x)).capitalize()));
     }
 
     // Re-subscribe to all events
@@ -520,25 +567,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
               controller: pageController,
               pageChanged: (value) => setState(() => dayDifference = value))
       ],
-      segments: List.generate(
-          Share.session.data.student.mainClass.beginSchoolYear
-                  .difference(Share.session.data.student.mainClass.endSchoolYear)
-                  .inDays
-                  .abs() +
-              (isSchoolYear
-                  ? 0
-                  : (isBeforeSchoolYear
-                      ? ((DateTime.now().asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays).abs() +
-                          1)
-                      : ((DateTime.now().asDate().difference(Share.session.data.student.mainClass.endSchoolYear.asDate()).inDays).abs() +
-                          1))),
-          (index) =>
-              index).toMap((x) => MapEntry(
-          x,
-          DateFormat('EEEEE, d.MM', Share.settings.appSettings.localeCode)
-              .format((isBeforeSchoolYear ? DateTime.now().asDate() : Share.session.data.student.mainClass.beginSchoolYear)
-                  .addDate(days: x))
-              .capitalize())),
+      segments: _cachedSegments,
       segmentController: segmentController,
       pageBuilder: Share.settings.appSettings.useCupertino ? null : timetableBuilder,
     );

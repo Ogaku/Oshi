@@ -2,6 +2,7 @@
 
 import 'package:darq/darq.dart';
 import 'package:equatable/equatable.dart';
+import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/models/data/lesson.dart';
@@ -9,6 +10,7 @@ import 'package:oshi/models/data/teacher.dart';
 
 import 'package:hive/hive.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 
 part 'grade.g.dart';
 
@@ -98,10 +100,10 @@ class Grade extends Equatable {
   final bool resitPart;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get nameWithWeight => '$name, weight $weight';
+  String get nameWithWeight => 'CF24D610-547A-409C-924B-20C958D973D3'.localized.format(name, weight);
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get addedByString => 'Added by ${addedBy.name}';
+  String get addedByString => '${'/AddedBy'.localized} ${addedBy.name}';
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get detailsDateString =>

@@ -146,18 +146,18 @@ class Event extends Equatable {
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get locationString =>
-      (lessonNo != null ? 'Lesson no. $lessonNo • ' : '') +
+      (lessonNo != null ? '${'4CCE58F6-2805-4D44-B97A-556679808477'.localized} $lessonNo • ' : '') +
       (isOwnEvent ? Share.session.data.student.account.name : (sender?.name ?? ''));
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get locationTypeString =>
-      (lessonNo != null ? 'Lesson no. $lessonNo • ' : '') +
+      (lessonNo != null ? '${'4CCE58F6-2805-4D44-B97A-556679808477'.localized} $lessonNo • ' : '') +
       _categoryName +
       (classroom != null ? ' • ${classroom!.name}' : '') +
-      (sender != null ? ' • Added by ${sender!.name}' : '');
+      (sender != null ? ' • ${'/AddedBy'.localized} ${sender!.name}' : '');
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get addedByString => (sender != null ? 'Added by ${sender!.name}' : '');
+  String get addedByString => (sender != null ? '${'/AddedBy'.localized} ${sender!.name}' : '');
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get unseen => Share.session.unreadChanges.events.contains(hashCode);
@@ -298,7 +298,7 @@ extension SzkolnyExtensions on Event {
                   "subjectId": -1,
                   "teacherId": -1,
                   "type": category.asEventCategory,
-                  "color": -((~(asColor().value.toSigned(32))) + 1)
+                  "color": -((~(asColor().toARGB32().toSigned(32))) + 1)
                 }
               })))
           .data;

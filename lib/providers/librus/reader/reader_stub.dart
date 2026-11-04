@@ -18,7 +18,6 @@ class LibrusReader extends reader.LibrusReader {
   @override
   final SynergiaData synergiaData;
 
-  @override
   LibrusReader(this.synergiaData) {
     throw Exception("Stub implementation");
   }
@@ -67,7 +66,6 @@ class LibrusLogin extends reader.LibrusLogin {
   @override
   final SynergiaData synergiaData;
 
-  @override
   LibrusLogin({SynergiaData? synergiaData, String? login, String? pass, String? proxyUrl})
       : synergiaData = synergiaData ?? SynergiaData(),
         synergiaLogin = login ?? '',

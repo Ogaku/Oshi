@@ -83,7 +83,7 @@ extension LessonWidgetExtension on Attendance {
               ].appendIf(
                   AdaptiveMenuItem(
                       icon: CupertinoIcons.doc_on_clipboard,
-                      title: 'Excuse',
+                      title: '/Excuse'.localized,
                       onTap: () {
                         showMaterialModalBottomSheet(
                             context: context,

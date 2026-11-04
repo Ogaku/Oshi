@@ -180,8 +180,9 @@ class _NavState extends State<SearchableSliverNavigationBar> {
               if (scrollInfo.metrics.pixels < -130 && !Share.session.refreshStatus.isRefreshing && widget.setState != null) {
                 Share.session.refreshStatus.refreshMutex.protect<void>(() async {
                   setState(() {
-                    refreshTurns = (-2 * (scrollInfo.metrics.pixels - _pixels) / (DateTime.now().millisecondsSinceEpoch - _timestamp))
-                        .clamp(0.3, 1);
+                    refreshTurns =
+                        (-2 * (scrollInfo.metrics.pixels - _pixels) / (DateTime.now().millisecondsSinceEpoch - _timestamp))
+                            .clamp(0.3, 1);
                   });
 
                   try {
@@ -199,28 +200,35 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                   if (widget.setState != null) widget.setState!(() {});
                 });
               }
-              setState(() {
-                if (scrollInfo.metrics.pixels > previousScrollPosition) {
-                  if (isVisibleSearchBar > 0 && scrollInfo.metrics.pixels > 0) {
-                    isVisibleSearchBar = widget.alwaysShowAddons
-                        ? 60
-                        : (55 - scrollInfo.metrics.pixels) >= 0
-                            ? (55 - scrollInfo.metrics.pixels)
-                            : 0;
-                  }
-                } else if (scrollInfo.metrics.pixels < previousScrollPosition) {
-                  if (isVisibleSearchBar < 53 && scrollInfo.metrics.pixels <= 53) {
-                    isVisibleSearchBar = widget.alwaysShowAddons
-                        ? 60
-                        : (55 - scrollInfo.metrics.pixels) <= 55
-                            ? (55 - scrollInfo.metrics.pixels)
-                            : 55;
-                  }
+              double newVisibleSearchBar = isVisibleSearchBar;
+              if (scrollInfo.metrics.pixels > previousScrollPosition) {
+                if (isVisibleSearchBar > 0 && scrollInfo.metrics.pixels > 0) {
+                  newVisibleSearchBar = widget.alwaysShowAddons
+                      ? 60
+                      : (55 - scrollInfo.metrics.pixels) >= 0
+                          ? (55 - scrollInfo.metrics.pixels)
+                          : 0;
                 }
-                previousScrollPosition = scrollInfo.metrics.pixels;
-                _pixels = scrollInfo.metrics.pixels;
-                _timestamp = DateTime.now().millisecondsSinceEpoch;
-              });
+              } else if (scrollInfo.metrics.pixels < previousScrollPosition) {
+                if (isVisibleSearchBar < 53 && scrollInfo.metrics.pixels <= 53) {
+                  newVisibleSearchBar = widget.alwaysShowAddons
+                      ? 60
+                      : (55 - scrollInfo.metrics.pixels) <= 55
+                          ? (55 - scrollInfo.metrics.pixels)
+                          : 55;
+                }
+              }
+              final shouldRebuild = newVisibleSearchBar != isVisibleSearchBar ||
+                  scrollInfo.metrics.pixels < 0 ||
+                  previousScrollPosition < 0;
+              previousScrollPosition = scrollInfo.metrics.pixels;
+              _pixels = scrollInfo.metrics.pixels;
+              _timestamp = DateTime.now().millisecondsSinceEpoch;
+              if (shouldRebuild) {
+                setState(() {
+                  isVisibleSearchBar = newVisibleSearchBar;
+                });
+              }
             } else if (scrollInfo is ScrollEndNotification) {
               if (widget.disableAddons || widget.child != null) return true;
               Future.delayed(Duration.zero, () {
@@ -258,7 +266,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                                                           ? CupertinoTheme.of(context).barBackgroundColor.withAlpha(255)
                                                           : collapsedController.isDark
                                                               ? const Color.fromRGBO(45, 45, 45, 0.5)
-                                                              : Colors.white.withOpacity(0.5)
+                                                              : Colors.white.withValues(alpha: 0.5)
                                                       : CupertinoDynamicColor.resolve(
                                                           const CupertinoDynamicColor.withBrightness(
                                                               color: Color.fromARGB(255, 242, 242, 247),
@@ -291,10 +299,10 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                                                     child: widget.segments != null
                                                         ? Opacity(
                                                             opacity: ((isVisibleSearchBar - 45) / 5).clamp(0.0, 1.0),
-                                                            child: CupertinoSlidingSegmentedControl(
-                                                              groupValue: segmentController.segment,
-                                                              children: widget.segments!.map((key, value) => MapEntry(
-                                                                  key,
+                                                            child: CupertinoSlidingSegmentedControl<Object>(
+                                                              groupValue: segmentController.segment as Object?,
+                                                              children: widget.segments!.map((key, value) => MapEntry<Object, Widget>(
+                                                                  key as Object,
                                                                   Container(
                                                                       width: double.maxFinite,
                                                                       alignment: Alignment.center,
@@ -494,7 +502,11 @@ class _ExpandablePageViewState extends State<ExpandablePageView> with TickerProv
                 maxHeight: double.infinity,
                 alignment: Alignment.topCenter,
                 child: SizeReportingWidget(
-                  onSizeChange: (size) => setState(() => _heights[index] = size.height),
+                  onSizeChange: (size) {
+                    if (_heights[index] != size.height) {
+                      setState(() => _heights[index] = size.height);
+                    }
+                  },
                   child: Align(child: widget.builder(context, index)),
                 ),
               ))),

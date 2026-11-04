@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -5,12 +6,14 @@ import 'package:flutter/services.dart';
 import 'package:platform_device_id/platform_device_id.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -39,7 +42,7 @@ class _MyAppState extends State<MyApp> {
 
     setState(() {
       _deviceId = deviceId;
-      print("deviceId->$_deviceId");
+      if (kDebugMode) print("deviceId->$_deviceId");
     });
   }
 

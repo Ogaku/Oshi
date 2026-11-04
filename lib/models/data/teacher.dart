@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'package:hive/hive.dart';
+import 'package:oshi/share/translator.dart';
 part 'teacher.g.dart';
 
 @HiveType(typeId: 32)
@@ -32,13 +33,13 @@ class Teacher extends Equatable {
   final ({DateTime from, DateTime to})? absent;
 
   String get name {
-    if (firstName.isEmpty && lastName.isEmpty) return 'Unknown';
+    if (firstName.isEmpty && lastName.isEmpty) return '94149CBB-5B72-4186-A155-20A9C7FB1B2C'.localized;
     if (firstName.isEmpty) return lastName;
     return lastName.isEmpty ? firstName : '$firstName $lastName';
   }
 
   String get nameInv {
-    if (firstName.isEmpty && lastName.isEmpty) return 'Unknown';
+    if (firstName.isEmpty && lastName.isEmpty) return '94149CBB-5B72-4186-A155-20A9C7FB1B2C'.localized;
     if (firstName.isEmpty) return lastName;
     return lastName.isEmpty ? firstName : '$lastName $firstName';
   }

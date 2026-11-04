@@ -1,6 +1,6 @@
 import 'dart:async' show Future;
 import 'dart:convert';
-import 'dart:io';
+import 'package:universal_io/io.dart';
 import 'dart:math';
 import 'package:darq/darq.dart';
 import 'package:flutter/foundation.dart';

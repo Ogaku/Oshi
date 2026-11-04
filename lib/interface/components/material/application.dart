@@ -335,7 +335,7 @@ class _BaseAppState extends State<BaseApp> {
 
   void _checkforUpdates(BuildContext context) {
     AppCenter.checkForUpdates().then((value) {
-      if (value.result) _showAlertDialog(context, value.download);
+      if (value.result && context.mounted) _showAlertDialog(context, value.download);
     }).catchError((ex) {});
   }
 }

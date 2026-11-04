@@ -1,24 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
+import 'package:oshi/share/translator.dart';
 
 part 'resources.g.dart';
 
 class Resources {
   static String notificationChannelName = 'oshi_notifications';
 
-  static Map<int, ({CupertinoDynamicColor color, String name})> cupertinoAccentColors = {
-    0: (color: CupertinoColors.systemRed, name: 'System Red'),
-    1: (color: CupertinoColors.systemPink, name: 'System Pink'),
-    2: (color: CupertinoColors.systemOrange, name: 'System Orange'),
-    3: (color: CupertinoColors.systemYellow, name: 'System Yellow'),
-    4: (color: CupertinoColors.systemGreen, name: 'System Green'),
-    5: (color: CupertinoColors.systemMint, name: 'System Mint'),
-    6: (color: CupertinoColors.systemTeal, name: 'System Teal'),
-    7: (color: CupertinoColors.systemCyan, name: 'System Cyan'),
-    8: (color: CupertinoColors.systemBlue, name: 'System Blue'),
-    9: (color: CupertinoColors.systemIndigo, name: 'System Indigo'),
-    10: (color: CupertinoColors.systemPurple, name: 'System Purple')
-  };
+  static Map<int, ({CupertinoDynamicColor color, String name})> get cupertinoAccentColors => {
+        0: (color: CupertinoColors.systemRed, name: '/Colors/SystemRed'.localized),
+        1: (color: CupertinoColors.systemPink, name: '/Colors/SystemPink'.localized),
+        2: (color: CupertinoColors.systemOrange, name: '/Colors/SystemOrange'.localized),
+        3: (color: CupertinoColors.systemYellow, name: '/Colors/SystemYellow'.localized),
+        4: (color: CupertinoColors.systemGreen, name: '/Colors/SystemGreen'.localized),
+        5: (color: CupertinoColors.systemMint, name: '/Colors/SystemMint'.localized),
+        6: (color: CupertinoColors.systemTeal, name: '/Colors/SystemTeal'.localized),
+        7: (color: CupertinoColors.systemCyan, name: '/Colors/SystemCyan'.localized),
+        8: (color: CupertinoColors.systemBlue, name: '/Colors/SystemBlue'.localized),
+        9: (color: CupertinoColors.systemIndigo, name: '/Colors/SystemIndigo'.localized),
+        10: (color: CupertinoColors.systemPurple, name: '/Colors/SystemPurple'.localized)
+      };
 }
 
 @HiveType(typeId: 5)
@@ -59,20 +60,20 @@ enum RegisterChangeTypes {
 
 extension YearlyAverageMethodsString on YearlyAverageMethods {
   String get name => switch (this) {
-        YearlyAverageMethods.allGradesAverage => 'Average of all grades',
-        YearlyAverageMethods.averagesAverage => 'Average of semester averages',
-        YearlyAverageMethods.finalPlusAverage => '1. sem final + 2. sem average',
-        YearlyAverageMethods.averagePlusFinal => '1. sem average + 2. sem final',
-        YearlyAverageMethods.finalsAverage => 'Average of the final grades'
+        YearlyAverageMethods.allGradesAverage => '/Enums/YearlyAverageMethods/allGradesAverage'.localized,
+        YearlyAverageMethods.averagesAverage => '/Enums/YearlyAverageMethods/averagesAverage'.localized,
+        YearlyAverageMethods.finalPlusAverage => '/Enums/YearlyAverageMethods/finalPlusAverage'.localized,
+        YearlyAverageMethods.averagePlusFinal => '/Enums/YearlyAverageMethods/averagePlusFinal'.localized,
+        YearlyAverageMethods.finalsAverage => '/Enums/YearlyAverageMethods/finalsAverage'.localized
       };
 }
 
 extension LessonCallTypesString on LessonCallTypes {
   String get name => switch (this) {
-        LessonCallTypes.countFromEnd => 'Count from the end',
-        LessonCallTypes.countFromStart => 'Count from beginning',
-        LessonCallTypes.halfLesson => 'Half of the lesson',
-        LessonCallTypes.wholeLesson => 'Whole lesson'
+        LessonCallTypes.countFromEnd => '/Enums/LessonCallTypes/countFromEnd'.localized,
+        LessonCallTypes.countFromStart => '/Enums/LessonCallTypes/countFromStart'.localized,
+        LessonCallTypes.halfLesson => '/Enums/LessonCallTypes/halfLesson'.localized,
+        LessonCallTypes.wholeLesson => '/Enums/LessonCallTypes/wholeLesson'.localized
       };
 }
 

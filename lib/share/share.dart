@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'package:oshi/interface/components/shim/elements/attendance.dart';
 import 'package:oshi/share/extensions.dart';
+import 'package:oshi/share/platform.dart';
 import 'package:universal_io/io.dart';
 
 import 'package:appcenter_sdk_flutter/appcenter_sdk_flutter.dart';
@@ -35,6 +36,7 @@ import 'package:oshi/models/progress.dart';
 import 'package:oshi/interface/shared/pages/home.dart' show DateTimeExtension;
 
 import 'package:oshi/providers/librus/librus_data.dart';
+import 'package:oshi/providers/vulcan/vulcan_data.dart';
 import 'package:oshi/providers/sample/sample_data.dart';
 import 'package:oshi/share/config.dart';
 import 'package:oshi/share/notifications.dart';
@@ -97,6 +99,8 @@ class Share {
     'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER': (instance: FakeDataReader(), factory: () => FakeDataReader()),
     // Librus synergia: log in with a synergia account
     'PROVGUID-RGLR-PROV-LIBR-LIBRSYNERGIA': (instance: LibrusDataReader(), factory: () => LibrusDataReader()),
+    // eduVULCAN / UONET+: log in with an eduVULCAN or UONET+ account
+    'PROVGUID-RGLR-PROV-VULC-EDUVULCANAPI': (instance: VulcanDataReader(), factory: () => VulcanDataReader()),
   };
 }
 
@@ -114,7 +118,9 @@ class Settings {
         // Load saved settings
         sessions = (await Hive.openBox('sessions')).get('sessions', defaultValue: SessionsData());
         appSettings = (await Hive.openBox('config')).get('config',
-            defaultValue: Config(languageCode: Platform.localeName.substring(0, 2), useCupertino: !isAndroid));
+            defaultValue: Config(
+                languageCode: Platform.localeName.length >= 2 ? Platform.localeName.substring(0, 2) : 'en',
+                useCupertino: !isAndroid));
       });
     } on Exception catch (ex, stack) {
       try {
@@ -317,12 +323,11 @@ class Session extends HiveObject {
     } catch (ex, stack) {
       if (showErrors) {
         Share.showErrorModal.broadcast(event.Value((
-          title: 'Error logging in!',
-          message:
-              'An exception "$ex" occurred and the provider couldn\'t log you in to the e-register.\n\nPlease check your credentials and try again later.',
+          title: '/Session/Login/Error/Title'.localized,
+          message: '/Session/Login/Error/Message'.localized.format(ex),
           actions: {
-            'Copy Exception': () async => await Clipboard.setData(ClipboardData(text: ex.toString())),
-            'Copy Stack Trace': () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
+            '/Session/Login/Error/Exception'.localized: () async => await Clipboard.setData(ClipboardData(text: ex.toString())),
+            '/Session/Login/Error/Stack'.localized: () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
           }
         )));
       }
@@ -355,8 +360,8 @@ class Session extends HiveObject {
 
       NotificationController.sendNotification(
           playSoundforce: false,
-          title: 'Syncing everything...',
-          content: 'Please wait a while...',
+          title: '/Sync/Title'.localized,
+          content: '7F2D0551-2391-4676-ADED-FAECF0CB89D7'.localized,
           category: NotificationCategories.other,
           id: 9999992);
 
@@ -364,8 +369,10 @@ class Session extends HiveObject {
         refreshStatus.progressStatus = args?.value.message;
         NotificationController.sendNotification(
             playSoundforce: false,
-            title: 'Syncing everything...',
-            content: (args?.value.message?.isEmpty ?? true) ? 'Please wait a while...' : args!.value.message!,
+            title: '/Sync/Title'.localized,
+            content: (args?.value.message?.isEmpty ?? true)
+                ? '7F2D0551-2391-4676-ADED-FAECF0CB89D7'.localized
+                : args!.value.message!,
             category: NotificationCategories.other,
             progress: args?.value.progress ?? 0.0,
             id: 9999992);
@@ -377,8 +384,8 @@ class Session extends HiveObject {
 
       NotificationController.sendNotification(
           playSoundforce: false,
-          title: 'Syncing everything...',
-          content: 'Saving the downloaded data...',
+          title: '/Sync/Title'.localized,
+          content: '/Sync/Saving'.localized,
           category: NotificationCategories.other,
           id: 9999992);
 
@@ -487,8 +494,8 @@ class Session extends HiveObject {
 
       NotificationController.sendNotification(
           playSoundforce: false,
-          title: 'Syncing everything...',
-          content: 'Saving the downloaded data...',
+          title: '/Sync/Title'.localized,
+          content: '/Sync/Saving'.localized,
           category: NotificationCategories.other,
           id: 9999992);
 
@@ -497,23 +504,24 @@ class Session extends HiveObject {
 
       Share.currentIdleSplash = Share.translator.getRandomSplash();
       Share.currentEndingSplash = Share.translator.getRandomEndingSplash();
-      Future.delayed(const Duration(seconds: 2)).then((value) => Share.notificationsPlugin.cancel(9999992));
+      if (!(isWindows || isFuchsia)) {
+        Future.delayed(const Duration(seconds: 2)).then((value) => Share.notificationsPlugin.cancel(9999992));
+      }
 
       refreshStatus.markAsDone(); // Refresh started
-      return (success: result1.success && result2.success, message: result1.message ?? result2.message);
+      return (success: result1.success, message: result1.message ?? result2.message);
     } catch (ex, stack) {
       if (showErrors) {
         Share.showErrorModal.broadcast(event.Value((
-          title: 'Error refreshing data!',
-          message:
-              'A fatal exception "$ex" occurred and the provider couldn\'t update the e-register data.\n\nPlease try again later.\nConsider reporting this error.',
+          title: '/Sync/Error/Title'.localized,
+          message: '/Sync/Error/Message'.localized.format(ex),
           actions: {
-            'Copy Exception': () async => await Clipboard.setData(ClipboardData(text: ex.toString())),
-            'Copy Stack Trace': () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
+            '/Session/Login/Error/Exception'.localized: () async => await Clipboard.setData(ClipboardData(text: ex.toString())),
+            '/Session/Login/Error/Stack'.localized: () async => await Clipboard.setData(ClipboardData(text: stack.toString())),
           }
         )));
       }
-      Share.notificationsPlugin.cancel(9999992);
+      if (!(isWindows || isFuchsia)) Share.notificationsPlugin.cancel(9999992);
       refreshStatus.markAsDone(); // Refresh started
       return (success: false, message: Exception(ex));
     }
@@ -963,7 +971,7 @@ class UnreadChanges {
 
   void _setBadge([int? cnt]) {
     try {
-      FlutterAppBadger.updateBadgeCount(cnt ?? count());
+      if (isAndroid || isIOS || isMacOS) FlutterAppBadger.updateBadgeCount(cnt ?? count());
     } catch (ex) {
       // ignored
     }
@@ -971,7 +979,7 @@ class UnreadChanges {
 
   void _resetBadge() {
     try {
-      FlutterAppBadger.removeBadge();
+      if (isAndroid || isIOS || isMacOS) FlutterAppBadger.removeBadge();
     } catch (ex) {
       // ignored
     }

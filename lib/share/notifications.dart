@@ -2,7 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'package:universal_io/io.dart';
 import 'dart:math';
 
 import 'package:event/event.dart';
@@ -88,7 +88,7 @@ class NotificationController {
 
   @pragma('vm:entry-point')
   static void notificationTapBackground(NotificationResponse notificationResponse) {
-    // TODO handle action
+    notificationResponseReceived(notificationResponse);
   }
 
   static Future<void> handleJsonNotificationPayload(NotificationResponse? notificationResponse) async {

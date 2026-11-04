@@ -2,8 +2,8 @@
 
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:event/src/event.dart';
-import 'package:event/src/eventargs.dart';
+import 'package:event/event.dart';
+
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:logging/logging.dart';
 import 'package:intl/intl.dart';
@@ -16,6 +16,7 @@ import 'package:darq/darq.dart';
 
 import 'package:oshi/providers/librus/reader/reader_stub.dart'
     if (dart.library.io) 'package:oshi/providers/librus/reader/reader_io.dart'
+    if (dart.library.js_interop) 'package:oshi/providers/librus/reader/reader_web.dart'
     if (dart.library.js) 'package:oshi/providers/librus/reader/reader_web.dart';
 
 import 'package:oshi/models/data/attendances.dart' as models;
@@ -31,6 +32,7 @@ import 'package:oshi/models/data/event.dart' as models;
 import 'package:oshi/models/data/grade.dart' as models;
 import 'package:oshi/models/data/messages.dart' as models;
 import 'package:oshi/models/provider.dart' as models;
+import 'package:oshi/providers/sample/sample_data.dart';
 import 'package:oshi/share/translator.dart';
 
 import 'models/shim/classrooms.dart' show Classrooms, Classroom;
@@ -53,7 +55,6 @@ import 'models/shim/timetables.dart' show Timetables;
 import 'models/shim/school_notices.dart' show SchoolNotices;
 import 'models/shim/home_works.dart' show HomeWorks, Category;
 import 'models/shim/parent_teacher_conferences.dart' show ParentTeacherConferences;
-import 'models/shim/teacher_free_days.dart' show TeacherFreeDays;
 import 'models/shim/homework_assignments.dart' show HomeWorkAssignments;
 import 'models/shim/free_days.dart' show SchoolFreeDays;
 import 'models/shim/class_free_days.dart' show ClassFreeDays;
@@ -64,6 +65,7 @@ import 'models/shim/outbox_messages.dart' show OutboxMessages, OutboxMessage, Me
 class LibrusDataReader implements models.IProvider {
   models.ProviderData dataChunk = models.ProviderData();
   SynergiaData? data;
+  FakeDataReader? _fakeReader;
 
   @override
   Future<({Exception? message, bool success})> login(
@@ -77,15 +79,32 @@ class LibrusDataReader implements models.IProvider {
     var password = credentials?['pass'];
     var proxy = credentials?['proxy'];
 
-    // Check the provided proxy URL if running on web
-    if (kIsWeb && Uri.tryParse(proxy ?? '') == null)
+    if (username != null &&
+        password != null &&
+        ((username.trim().toLowerCase() == 'test' && password == 'test') ||
+            (username.trim().toLowerCase() == 'demo' && password == 'demo'))) {
+      _fakeReader = FakeDataReader();
+      dataChunk = _fakeReader!.registerData!;
+      return (success: true, message: null);
+    }
+    _fakeReader = null;
+
+    // Check the provided proxy URL if running on web (optional, defaults to local Dairi proxy)
+    var resolvedProxy = (proxy ?? '').trim();
+    if (resolvedProxy.isEmpty ||
+        resolvedProxy.toLowerCase().contains('librus.pl') ||
+        resolvedProxy.toLowerCase().contains('eduvulcan.pl') ||
+        resolvedProxy.toLowerCase().contains('vulcan.net.pl')) {
+      resolvedProxy = 'http://127.0.0.1:5000';
+    }
+    if (kIsWeb && Uri.tryParse(resolvedProxy) == null)
       return (success: false, message: Exception('1DBA54DA-C4D2-4D21-B072-89AAFCC4758D'.localized));
     else
-      data = SynergiaData(credentials?['proxy'] ?? ''); // Reset again
+      data = SynergiaData(resolvedProxy); // Reset again
 
     // Instantiate a portal login
     progress?.report((progress: 0.2, message: '440FA18A-AD7D-47B4-B4FF-C2FE934479DA'.localized));
-    data?.synergiaLogin = LibrusLogin(synergiaData: data, login: username, pass: password, proxyUrl: proxy);
+    data?.synergiaLogin = LibrusLogin(synergiaData: data, login: username, pass: password, proxyUrl: resolvedProxy);
 
     // Check whether there is data to log in with
     if ((username?.isEmpty ?? true) || (password?.isEmpty ?? true))
@@ -105,6 +124,10 @@ class LibrusDataReader implements models.IProvider {
   @override
   Future<({Exception? message, bool success})> refresh(
       {DateTime? weekStart, IProgress<({String? message, double? progress})>? progress}) async {
+    if (_fakeReader != null) {
+      dataChunk = _fakeReader!.registerData!;
+      return _fakeReader!.refresh(weekStart: weekStart, progress: progress);
+    }
     if (data?.librusApi == null) throw Exception('C5FDD0D8-771D-4DCE-8FCE-62D1BA4A6C93'.localized);
 
 //#region Basics
@@ -590,6 +613,10 @@ class LibrusDataReader implements models.IProvider {
   @override
   Future<({Exception? message, bool success})> refreshMessages(
       {IProgress<({String? message, double? progress})>? progress}) async {
+    if (_fakeReader != null) {
+      dataChunk = _fakeReader!.registerData!;
+      return _fakeReader!.refreshMessages(progress: progress);
+    }
     progress?.report((progress: 0.1, message: '135991AA-5B53-42EA-8A2B-5406B249CC40'.localized));
 
 //#region Basics
@@ -661,6 +688,7 @@ class LibrusDataReader implements models.IProvider {
   @override
   Future<({Exception? message, bool success})> sendMessage(
       {required List<models.Teacher> receivers, required String topic, required String content}) async {
+    if (_fakeReader != null) return _fakeReader!.sendMessage(receivers: receivers, topic: topic, content: content);
     try {
       return (
         success: (await data?.librusApi?.messagesPost(
@@ -686,14 +714,14 @@ class LibrusDataReader implements models.IProvider {
   Event<Value<String>> propertyChanged = Event<Value<String>>();
 
   @override
-  models.ProviderData? get registerData => dataChunk;
+  @override
+  models.ProviderData? get registerData => _fakeReader?.registerData ?? dataChunk;
 
   @override
   String get providerName => 'Librus\u00AE Synergia';
 
   @override
-  String get providerDescription =>
-      "Log in using the account your school has provided you with. A student's login will typically end with an 'u' letter.";
+  String get providerDescription => '/Providers/Librus/Description'.localized;
 
   @override
   Uri? get providerBannerUri => Uri.parse('https://api.librus.pl/OAuth/images/synergia-logo.png');
@@ -701,19 +729,26 @@ class LibrusDataReader implements models.IProvider {
   @override
   Map<String, ({String name, bool obscure, ({String text, Uri link})? helper})> get credentialsConfig => kIsWeb
       ? {
-          'login': (name: 'Username', obscure: false, helper: null),
-          'pass': (name: 'Password', obscure: true, helper: null),
+          'login': (name: '/Session/Login/Username'.localized, obscure: false, helper: null),
+          'pass': (name: '/Session/Login/Password'.localized, obscure: true, helper: null),
           'proxy': (
-            name: 'Proxy URL',
+            name: '/Session/Login/ProxyUrl'.localized,
             obscure: false,
-            helper: (text: 'Create your own proxy using our template', link: Uri.parse('https://github.com/Ogaku/Oshi/wiki/Web-app'))
+            helper: (
+              text: '/Session/Login/ProxyHelper'.localized,
+              link: Uri.parse('https://github.com/Ogaku/Oshi/wiki/Web-app')
+            )
           )
         }
-      : {'login': (name: 'Username', obscure: false, helper: null), 'pass': (name: 'Password', obscure: true, helper: null)};
+      : {
+          'login': (name: '/Session/Login/Username'.localized, obscure: false, helper: null),
+          'pass': (name: '/Session/Login/Password'.localized, obscure: true, helper: null)
+        };
 
   @override
   Future<({Exception? message, Message? result, bool success})> fetchMessageContent(
       {required Message parent, required bool byMe}) async {
+    if (_fakeReader != null) return _fakeReader!.fetchMessageContent(parent: parent, byMe: byMe);
     try {
       // Cache other data to access it faster (the API is shit and splits everything)
       var teachersShim = Users.fromJson(await data!.librusApi!.request("Users"));
@@ -837,6 +872,7 @@ class LibrusDataReader implements models.IProvider {
 
   @override
   Future<({Exception? message, bool success})> moveMessageToTrash({required Message parent, required bool byMe}) async {
+    if (_fakeReader != null) return _fakeReader!.moveMessageToTrash(parent: parent, byMe: byMe);
     try {
       await data!.librusApi!.messagesDelete('messages/${parent.id}');
       return (success: true, message: null);
@@ -849,6 +885,7 @@ class LibrusDataReader implements models.IProvider {
 
   @override
   Future<({Exception? message, bool success})> markEventAsViewed({required models.Event parent}) async {
+    if (_fakeReader != null) return _fakeReader!.markEventAsViewed(parent: parent);
     try {
       await data!.librusApi!.request('HomeWorkAssignments/${parent.id}');
       return (success: true, message: null);
@@ -861,6 +898,7 @@ class LibrusDataReader implements models.IProvider {
 
   @override
   Future<({Exception? message, bool success})> markEventAsDone({required models.Event parent}) async {
+    if (_fakeReader != null) return _fakeReader!.markEventAsDone(parent: parent);
     try {
       await data!.librusApi!.post('HomeWorkAssignments/MarkAsDone', {'homework': parent.id});
       return (success: true, message: null);
@@ -873,6 +911,7 @@ class LibrusDataReader implements models.IProvider {
 
   @override
   Future<({Exception? message, bool success})> markAnnouncementAsViewed({required models.Announcement parent}) async {
+    if (_fakeReader != null) return _fakeReader!.markAnnouncementAsViewed(parent: parent);
     try {
       await data!.librusApi!.post('SchoolNotices/MarkAsRead/${parent.url}', {});
       return (success: true, message: null);

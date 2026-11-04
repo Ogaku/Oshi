@@ -116,7 +116,7 @@ class SessionConfig with ChangeNotifier {
         _allowSzkolnyIntegration = allowSzkolnyIntegration ?? true,
         _shareEventsByDefault = shareEventsByDefault ?? true;
 
-  // TODO All HiveFields should be private and trigger a settings save
+  // All HiveFields should be private and trigger a settings save
 
   @HiveField(1, defaultValue: {})
   Map<String, double> _customGradeValues;

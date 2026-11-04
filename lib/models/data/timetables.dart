@@ -1,5 +1,6 @@
 import 'package:darq/darq.dart';
 import 'package:equatable/equatable.dart';
+import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/models/data/class.dart';
@@ -10,6 +11,7 @@ import 'package:oshi/models/data/teacher.dart';
 import 'package:hive/hive.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
+import 'package:oshi/share/translator.dart';
 part 'timetables.g.dart';
 
 @HiveType(typeId: 33)
@@ -191,16 +193,19 @@ class TimetableLesson extends Equatable {
   String get endTime => DateFormat.jm().format(timeTo ?? DateTime.now());
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get detailsStringSubstitution =>
-      'Instead of ${substitutionDetails?.originalSubject?.name} with ${substitutionDetails?.originalTeacher?.name}';
+  String get detailsStringSubstitution => '/Timetable/Substitution'
+      .localized
+      .format(substitutionDetails?.originalSubject?.name ?? '', substitutionDetails?.originalTeacher?.name ?? '');
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get detailsStringMovedLessonFrom =>
-      'Moved from ${DateFormat.MMMMd().format(substitutionDetails?.originalDate ?? DateTime.now())}, lesson no. ${substitutionDetails?.originalLessonNo}';
+  String get detailsStringMovedLessonFrom => '/Timetable/MovedFrom'.localized.format(
+      DateFormat.MMMMd(Share.settings.appSettings.localeCode).format(substitutionDetails?.originalDate ?? DateTime.now()),
+      substitutionDetails?.originalLessonNo ?? '');
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get detailsStringMovedLessonTo =>
-      'Moved to ${DateFormat.MMMMd().format(substitutionDetails?.originalDate ?? DateTime.now())}, lesson no. ${substitutionDetails?.originalLessonNo}';
+  String get detailsStringMovedLessonTo => '/Timetable/MovedTo'.localized.format(
+      DateFormat.MMMMd(Share.settings.appSettings.localeCode).format(substitutionDetails?.originalDate ?? DateTime.now()),
+      substitutionDetails?.originalLessonNo ?? '');
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   String get detailsTimeTeacherString =>
@@ -212,14 +217,14 @@ class TimetableLesson extends Equatable {
       : isMovedLesson
           ? (isCanceled ? detailsStringMovedLessonTo : detailsStringMovedLessonFrom)
           : isCanceled
-              ? 'This lesson was cancelled'
+              ? '947A950F-6638-4194-91B2-99BCB42ADA86'.localized
               : '';
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get classroomString => 'In ${classroom?.name}, ${lessonClass?.name}';
+  String get classroomString => '/Timetable/Classroom'.localized.format(classroom?.name ?? '', lessonClass?.name ?? '');
 
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String get teacherString => 'With ${teacher?.name}';
+  String get teacherString => '/Timetable/WithTeacher'.localized.format(teacher?.name ?? '');
 
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool get unseen => Share.session.unreadChanges.timetables.contains(hashCode);

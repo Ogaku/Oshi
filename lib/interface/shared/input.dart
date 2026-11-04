@@ -238,90 +238,90 @@ void showOptionDialog<T>(
       builder: (BuildContext context) {
         dynamic group = selection;
         return Dialog(child: StatefulBuilder(builder: (context, setState) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              if (icon != null)
+          return RadioGroup<dynamic>(
+            groupValue: group,
+            onChanged: (value) => setState(() => group = value),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                if (icon != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 30),
+                    child: Icon(icon, size: 25),
+                  ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 30),
-                  child: Icon(icon, size: 25),
+                  padding: EdgeInsets.only(top: (icon != null) ? 20 : 30, bottom: 20.0),
+                  child: Text(title, style: TextStyle(fontSize: 27)),
                 ),
-              Padding(
-                padding: EdgeInsets.only(top: (icon != null) ? 20 : 30, bottom: 20.0),
-                child: Text(title, style: TextStyle(fontSize: 27)),
-              ),
-              if (scrollable)
-                SizedBox(
-                  height: 265,
-                  child: SingleChildScrollView(
-                    child: Column(
-                        children: options
-                            .select((x, _) => Padding(
-                                padding: const EdgeInsets.only(left: 25, right: 25),
-                                child: ListTile(
-                                    onTap: () => setState(() => group = x.value),
-                                    contentPadding: EdgeInsets.only(left: 16.0, right: 5.0),
-                                    shape:
-                                        const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),
-                                    title: Table(
-                                        columnWidths: x.decoration != null
-                                            ? const {0: FlexColumnWidth(2), 1: IntrinsicColumnWidth()}
-                                            : null,
-                                        children: [
-                                          TableRow(children: [
-                                            Text(x.name, style: TextStyle(fontSize: 17), overflow: TextOverflow.ellipsis),
-                                            if (x.decoration != null) x.decoration!
-                                          ])
-                                        ]),
-                                    trailing: Radio(
-                                      value: x.value,
-                                      groupValue: group,
-                                      onChanged: (value) => setState(() => group = value),
-                                    ))))
-                            .toList()),
-                  ),
-                )
-            ]
-                .appendAllIf(
-                    options.select((x, _) => Padding(
-                        padding: const EdgeInsets.only(left: 25, right: 25),
-                        child: ListTile(
-                            onTap: () => setState(() => group = x.value),
-                            contentPadding: EdgeInsets.only(left: 16.0, right: 5.0),
-                            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),
-                            title: Table(
-                                columnWidths:
-                                    x.decoration != null ? const {0: FlexColumnWidth(2), 1: IntrinsicColumnWidth()} : null,
-                                children: [
-                                  TableRow(children: [
-                                    Text(x.name, style: TextStyle(fontSize: 17), overflow: TextOverflow.ellipsis),
-                                    if (x.decoration != null) x.decoration!
-                                  ])
-                                ]),
-                            trailing: Radio(
-                              value: x.value,
-                              groupValue: group,
-                              onChanged: (value) => setState(() => group = value),
-                            )))),
-                    !scrollable)
-                .append(Align(
-                  alignment: Alignment.bottomRight,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 28.0, horizontal: 26.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.primary,
-                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10)),
-                      onPressed: () {
-                        onChanged(group); // Handle change
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('6BA18B4F-656E-4CC7-9093-9A4CE86A6998'.localized,
-                          style: TextStyle(fontSize: 17, color: Theme.of(context).colorScheme.onPrimary)),
+                if (scrollable)
+                  SizedBox(
+                    height: 265,
+                    child: SingleChildScrollView(
+                      child: Column(
+                          children: options
+                              .select((x, _) => Padding(
+                                  padding: const EdgeInsets.only(left: 25, right: 25),
+                                  child: ListTile(
+                                      onTap: () => setState(() => group = x.value),
+                                      contentPadding: EdgeInsets.only(left: 16.0, right: 5.0),
+                                      shape:
+                                          const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                                      title: Table(
+                                          columnWidths: x.decoration != null
+                                              ? const {0: FlexColumnWidth(2), 1: IntrinsicColumnWidth()}
+                                              : null,
+                                          children: [
+                                            TableRow(children: [
+                                              Text(x.name, style: TextStyle(fontSize: 17), overflow: TextOverflow.ellipsis),
+                                              if (x.decoration != null) x.decoration!
+                                            ])
+                                          ]),
+                                      trailing: Radio<dynamic>(
+                                        value: x.value,
+                                      ))))
+                              .toList()),
                     ),
-                  ),
-                ))
-                .toList(),
+                  )
+              ]
+                  .appendAllIf(
+                      options.select((x, _) => Padding(
+                          padding: const EdgeInsets.only(left: 25, right: 25),
+                          child: ListTile(
+                              onTap: () => setState(() => group = x.value),
+                              contentPadding: EdgeInsets.only(left: 16.0, right: 5.0),
+                              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                              title: Table(
+                                  columnWidths:
+                                      x.decoration != null ? const {0: FlexColumnWidth(2), 1: IntrinsicColumnWidth()} : null,
+                                  children: [
+                                    TableRow(children: [
+                                      Text(x.name, style: TextStyle(fontSize: 17), overflow: TextOverflow.ellipsis),
+                                      if (x.decoration != null) x.decoration!
+                                    ])
+                                  ]),
+                              trailing: Radio<dynamic>(
+                                value: x.value,
+                              )))),
+                      !scrollable)
+                  .append(Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 28.0, horizontal: 26.0),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10)),
+                        onPressed: () {
+                          onChanged(group); // Handle change
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('6BA18B4F-656E-4CC7-9093-9A4CE86A6998'.localized,
+                            style: TextStyle(fontSize: 17, color: Theme.of(context).colorScheme.onPrimary)),
+                      ),
+                    ),
+                  ))
+                  .toList(),
+            ),
           );
         }));
       },

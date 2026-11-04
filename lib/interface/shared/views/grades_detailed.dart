@@ -237,12 +237,12 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                     }
                   },
                   icon: CupertinoIcons.share,
-                  title: 'Share',
+                  title: '/Share'.localized,
                 ),
                 AdaptiveContextMenuAction(
                   isDestructiveAction: true,
                   icon: CupertinoIcons.chat_bubble_2,
-                  title: 'Inquiry',
+                  title: '/Inquiry'.localized,
                   onPressed: () {
                     if (Share.settings.appSettings.useCupertino) {
                       Navigator.of(context, rootNavigator: true).pop();
