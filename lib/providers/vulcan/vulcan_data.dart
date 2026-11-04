@@ -1631,6 +1631,13 @@ class VulcanDataReader implements models.IProvider {
         }
       }
 
+      if (received.isEmpty && dataChunk.messages.received.isNotEmpty) {
+        received = dataChunk.messages.received;
+      }
+      if (sent.isEmpty && dataChunk.messages.sent.isNotEmpty) {
+        sent = dataChunk.messages.sent;
+      }
+
       if (receivers.isEmpty) {
         final uniqueTeachers = <String, models.Teacher>{};
         for (final m in received) {
@@ -1651,7 +1658,9 @@ class VulcanDataReader implements models.IProvider {
       return (success: true, message: null);
     } catch (ex, st) {
       debugPrint('[vulcan] refreshMessages FAILED: $ex\n$st');
-      dataChunk.messages = models.Messages(receivers: [], received: [], sent: []);
+      if (dataChunk.messages.received.isEmpty) {
+        dataChunk.messages = models.Messages(receivers: [], received: [], sent: []);
+      }
       return (success: true, message: null);
     }
   }
@@ -1711,6 +1720,21 @@ class VulcanDataReader implements models.IProvider {
     }
   }
 
+  static String _cleanHtml(String html) {
+    return html
+        .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
+        .replaceAll(RegExp(r'</p>', caseSensitive: false), '\n\n')
+        .replaceAll(RegExp(r'</div>', caseSensitive: false), '\n')
+        .replaceAll(RegExp(r'<[^>]*>'), '')
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&amp;', '&')
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#39;', "'")
+        .trim();
+  }
+
   @override
   Future<({bool success, Exception? message, models.Message? result})> fetchMessageContent({
     required models.Message parent,
@@ -1721,21 +1745,25 @@ class VulcanDataReader implements models.IProvider {
     }
     try {
       if (!byMe && !parent.read && parent.url.isNotEmpty && _restUrl != null) {
-        final pupilId = (_activeStudentRaw?['Pupil']?['Id'] as num?)?.toInt();
-        final boxKey = _activeStudentRaw?['MessageBox']?['GlobalKey']?.toString() ?? '';
-        await _hebeRequest(
-          method: 'POST',
-          restUrl: _restUrl!,
-          endpoint: 'mobile/messages/status',
-          pupilId: pupilId,
-          payload: {
-            'BoxKey': boxKey,
-            'MessageKey': parent.url,
-            'Status': 1,
-          },
-        );
+        try {
+          final pupilId = (_activeStudentRaw?['Pupil']?['Id'] as num?)?.toInt();
+          final boxKey = _activeStudentRaw?['MessageBox']?['GlobalKey']?.toString() ?? '';
+          await _hebeRequest(
+            method: 'POST',
+            restUrl: _restUrl!,
+            endpoint: 'mobile/messages/status',
+            pupilId: pupilId,
+            payload: {
+              'BoxKey': boxKey,
+              'MessageKey': parent.url,
+              'Status': 1,
+            },
+          );
+        } catch (statusEx) {
+          debugPrint('[vulcan] mark-as-read swallowed error: $statusEx');
+        }
       }
-      String effectiveContent = parent.content ?? parent.preview ?? '';
+      String effectiveContent = parent.content ?? '';
       List<models.Attachment>? effectiveAttachments = parent.attachments;
 
       final fallbackUser = (_savedUsername?.isNotEmpty == true)
@@ -1765,9 +1793,9 @@ class VulcanDataReader implements models.IProvider {
           );
           final d = detRes.data is Map ? (detRes.data['data'] ?? detRes.data) : detRes.data;
           if (d is Map) {
-            final body = d['tresc']?.toString() ?? d['content']?.toString() ?? d['trescHtml']?.toString() ?? '';
-            if (body.isNotEmpty) {
-              effectiveContent = body;
+            final rawBody = d['tresc']?.toString() ?? d['content']?.toString() ?? d['trescHtml']?.toString() ?? '';
+            if (rawBody.isNotEmpty) {
+              effectiveContent = _cleanHtml(rawBody);
             }
             final attachmentsRaw = (d['zalaczniki'] ?? d['Attachments']) as List?;
             if (attachmentsRaw != null && attachmentsRaw.isNotEmpty) {
@@ -1783,6 +1811,10 @@ class VulcanDataReader implements models.IProvider {
         } catch (vex) {
           debugPrint('[vulcan] web message detail fallback error: $vex');
         }
+      }
+
+      if (effectiveContent.isEmpty) {
+        effectiveContent = (parent.preview?.isNotEmpty == true) ? parent.preview! : parent.topic;
       }
 
       final updated = models.Message.from(

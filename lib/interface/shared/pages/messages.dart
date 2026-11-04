@@ -528,21 +528,21 @@ class _MessagesPageState extends State<MessagesPage> {
         Share.session.provider.fetchMessageContent(parent: message, byMe: folder == MessageFolders.outbox).then((result) {
           setState(() => isWorking = false);
 
-          if (result.message == null && result.result != null && folder == MessageFolders.inbox) {
-            var index = Share.session.data.messages.received.indexOf(message!);
-            Share.session.data.messages.received[index] = Message.from(other: result.result!);
-            message = Share.session.data.messages.received[index]; // Update x too
-          }
-          if (result.message == null && result.result != null && folder == MessageFolders.outbox) {
-            var index = Share.session.data.messages.sent.indexOf(message!);
-            Share.session.data.messages.sent[index] = Message.from(other: result.result!);
-            message = Share.session.data.messages.sent[index]; // Update x too
-          }
-
-          if (result.result?.content?.isEmpty ?? true) return;
+          final resolvedMessage = result.result ?? message!;
           if (folder == MessageFolders.inbox) {
-            Share.session.data.messages.received[Share.session.data.messages.received.indexOf(message!)] =
-                Message.from(other: result.result, readDate: DateTime.now());
+            var index = Share.session.data.messages.received.indexOf(message!);
+            if (index != -1) {
+              Share.session.data.messages.received[index] = Message.from(
+                other: resolvedMessage,
+                readDate: resolvedMessage.readDate ?? DateTime.now(),
+              );
+            }
+          }
+          if (folder == MessageFolders.outbox) {
+            var index = Share.session.data.messages.sent.indexOf(message!);
+            if (index != -1) {
+              Share.session.data.messages.sent[index] = Message.from(other: resolvedMessage);
+            }
           }
 
           if (mounted) {
@@ -551,7 +551,7 @@ class _MessagesPageState extends State<MessagesPage> {
                 context,
                 AdaptivePageRoute(
                     builder: (context) => MessageDetailsPage(
-                          message: result.result ?? (message!),
+                          message: resolvedMessage,
                           isByMe: folder == MessageFolders.outbox,
                         )));
           }
