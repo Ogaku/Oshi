@@ -39494,14 +39494,14 @@ k.Y()
 k=A.rg(A.uE("https://api.szkolny.eu",null,null,null,null,null))
 j=t.N
 A.y(j,j).h(0,u.d)
-i=B.b.gav("1.0.20261104.67".split("."))
+i=B.b.gav("1.0.20261104.68".split("."))
 s=7
 return A.p(A.wa(),$async$Ba)
 case 7:h=a2
 h=h==null?null:J.Kh(h)
 if(h==null)h="UNKNOWN"
 g=t.z
-h=A.Af(null,null,A.X(["X-ApiKey",u.F,"X-AppBuild",i,"X-AppFlavor","Release","X-AppVersion","1.0.20261104.67","X-DeviceId",h,"Content-Type","application/json"],j,g),null,null)
+h=A.Af(null,null,A.X(["X-ApiKey",u.F,"X-AppBuild",i,"X-AppFlavor","Release","X-AppVersion","1.0.20261104.68","X-DeviceId",h,"Content-Type","application/json"],j,g),null,null)
 s=8
 return A.p(A.wa(),$async$Ba)
 case 8:i=a2
@@ -39569,14 +39569,14 @@ k.Y()
 k=A.rg(A.uE("https://api.szkolny.eu",null,null,null,null,null))
 j=t.N
 A.y(j,j).h(0,u.d)
-i=B.b.gav("1.0.20261104.67".split("."))
+i=B.b.gav("1.0.20261104.68".split("."))
 s=7
 return A.p(A.wa(),$async$H7)
 case 7:h=b3
 h=h==null?null:J.Kh(h)
 if(h==null)h="UNKNOWN"
 g=t.z
-h=A.Af(null,null,A.X(["X-ApiKey",u.F,"X-AppBuild",i,"X-AppFlavor","Release","X-AppVersion","1.0.20261104.67","X-DeviceId",h,"Content-Type","application/json"],j,g),null,null)
+h=A.Af(null,null,A.X(["X-ApiKey",u.F,"X-AppBuild",i,"X-AppFlavor","Release","X-AppVersion","1.0.20261104.68","X-DeviceId",h,"Content-Type","application/json"],j,g),null,null)
 s=8
 return A.p(A.wa(),$async$H7)
 case 8:i=b3
@@ -133806,7 +133806,7 @@ n=this.b
 m=n.length===0
 r=m?A.w($.c().k(0,"/Sessions"),k,k,k,k,k,k,k,k):k
 l=t.p
-return A.LM(s,A.LX(0,q,k,A.b([p,A.aUq(A.H(k,A.be(A.b([new A.c6(B.aD,k,k,o,k),A.cd(A.a1S(k,B.jU,n,B.t,k,14,k,!1,r,new A.k(15,0,15,10),k),!1,!1,!1,!m),A.a1S(k,B.jU,A.b([A.LH(k,new A.k(0,0,0,0),new A.cI(new A.bou(),k),k)],l),B.t,k,14,k,!1,k,new A.k(15,5,15,10),k),A.cm(new A.c6(B.cC,k,k,A.b4(A.H(k,A.w($.c().k(0,"/TrademarkInfo"),k,k,k,k,A.ab(k,k,k,k,k,k,k,k,k,k,k,12,k,k,k,k,k,!0,k,k,k,k,k,k,k,k),B.b5,k,k),B.f,k,k,k,k,k,k,new A.k(30,0,30,10),k,k,k,k),0.5),k),1),A.b4(A.w("1.0.20261104.67",k,k,k,k,A.ab(k,k,k,k,k,k,k,k,k,k,k,12,k,k,k,k,k,!0,k,k,k,k,k,k,k,k),k,k,k),0.25)],l),B.l,B.m,B.i,0,B.q),B.f,k,k,k,k,k,k,k,new A.k(0,0,0,20),k,k,k),!1)],l)),k)},
+return A.LM(s,A.LX(0,q,k,A.b([p,A.aUq(A.H(k,A.be(A.b([new A.c6(B.aD,k,k,o,k),A.cd(A.a1S(k,B.jU,n,B.t,k,14,k,!1,r,new A.k(15,0,15,10),k),!1,!1,!1,!m),A.a1S(k,B.jU,A.b([A.LH(k,new A.k(0,0,0,0),new A.cI(new A.bou(),k),k)],l),B.t,k,14,k,!1,k,new A.k(15,5,15,10),k),A.cm(new A.c6(B.cC,k,k,A.b4(A.H(k,A.w($.c().k(0,"/TrademarkInfo"),k,k,k,k,A.ab(k,k,k,k,k,k,k,k,k,k,k,12,k,k,k,k,k,!0,k,k,k,k,k,k,k,k),B.b5,k,k),B.f,k,k,k,k,k,k,new A.k(30,0,30,10),k,k,k,k),0.5),k),1),A.b4(A.w("1.0.20261104.68",k,k,k,k,A.ab(k,k,k,k,k,k,k,k,k,k,k,12,k,k,k,k,k,!0,k,k,k,k,k,k,k,k),k,k,k),0.25)],l),B.l,B.m,B.i,0,B.q),B.f,k,k,k,k,k,k,k,new A.k(0,0,0,20),k,k,k),!1)],l)),k)},
 $S:361}
 A.bop.prototype={
 $1(a){return A.bEv(this.a,a)},
@@ -133887,7 +133887,7 @@ n=A.aI(new A.ae(new A.c_(o,n),new A.bjy(q),n.i("ae<m.E>")),new A.bjz(),t.N,t.N0)
 s=A.K(n,n.$ti.i("m.E"))
 o=q.d
 n=t.p
-r=A.LM(A.dl(B.bC,B.o),A.LX(0,o,p,A.b([A.bCP(!1,!1,p,p,A.azS(B.u,A.H(p,A.w($.c().k(0,"/Session/New/Register/Question"),p,p,p,p,p,p,p,p),B.f,p,p,p,p,p,p,new A.k(0,0,20,0),p,p,p,p),B.x7),p,p,!1,p,o,52,A.cV(p,A.bn(B.Ac,p,p,p),B.B,!1,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,new A.bjA(),p,p,p,p,p),!0),A.aUq(A.H(p,A.be(A.b([new A.c6(B.aD,p,p,A.H(p,A.w($.c().k(0,"/Session/New/Register/Info"),p,p,p,p,A.ab(p,p,p,p,p,p,p,p,p,p,p,14,p,p,p,p,p,!0,p,p,p,p,p,p,p,p),p,p,p),B.f,p,p,p,p,p,p,new A.k(20,0,20,20),p,p,p,p),p),A.a1S(p,B.jU,s,B.t,p,14,p,!1,p,new A.k(15,0,15,10),p),A.cm(new A.c6(B.cC,p,p,A.b4(A.H(p,A.w($.c().k(0,"/TrademarkInfo"),p,p,p,p,A.ab(p,p,p,p,p,p,p,p,p,p,p,12,p,p,p,p,p,!0,p,p,p,p,p,p,p,p),B.b5,p,p),B.f,p,p,p,p,p,p,new A.k(30,0,30,10),p,p,p,p),0.5),p),1),A.b4(A.cV(p,A.w("1.0.20261104.67",p,p,p,p,A.ab(p,p,p,p,p,p,p,p,p,p,p,12,p,p,p,p,p,!0,p,p,p,p,p,p,p,p),p,p,p),B.B,!1,p,new A.bjB(q),p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p),0.25)],n),B.l,B.m,B.i,0,B.q),B.f,p,p,p,p,p,p,p,new A.k(0,0,0,20),p,p,p),!1)],n)),p)
+r=A.LM(A.dl(B.bC,B.o),A.LX(0,o,p,A.b([A.bCP(!1,!1,p,p,A.azS(B.u,A.H(p,A.w($.c().k(0,"/Session/New/Register/Question"),p,p,p,p,p,p,p,p),B.f,p,p,p,p,p,p,new A.k(0,0,20,0),p,p,p,p),B.x7),p,p,!1,p,o,52,A.cV(p,A.bn(B.Ac,p,p,p),B.B,!1,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,new A.bjA(),p,p,p,p,p),!0),A.aUq(A.H(p,A.be(A.b([new A.c6(B.aD,p,p,A.H(p,A.w($.c().k(0,"/Session/New/Register/Info"),p,p,p,p,A.ab(p,p,p,p,p,p,p,p,p,p,p,14,p,p,p,p,p,!0,p,p,p,p,p,p,p,p),p,p,p),B.f,p,p,p,p,p,p,new A.k(20,0,20,20),p,p,p,p),p),A.a1S(p,B.jU,s,B.t,p,14,p,!1,p,new A.k(15,0,15,10),p),A.cm(new A.c6(B.cC,p,p,A.b4(A.H(p,A.w($.c().k(0,"/TrademarkInfo"),p,p,p,p,A.ab(p,p,p,p,p,p,p,p,p,p,p,12,p,p,p,p,p,!0,p,p,p,p,p,p,p,p),B.b5,p,p),B.f,p,p,p,p,p,p,new A.k(30,0,30,10),p,p,p,p),0.5),p),1),A.b4(A.cV(p,A.w("1.0.20261104.68",p,p,p,p,A.ab(p,p,p,p,p,p,p,p,p,p,p,12,p,p,p,p,p,!0,p,p,p,p,p,p,p,p),p,p,p),B.B,!1,p,new A.bjB(q),p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p),0.25)],n),B.l,B.m,B.i,0,B.q),B.f,p,p,p,p,p,p,p,new A.k(0,0,0,20),p,p,p),!1)],n)),p)
 return!q.a.c?r:A.bAA(!1,new A.cI(new A.bjC(r),p),q.gOC())},
 gOC(){if(A.a4(new A.G(Date.now(),0,!1))===10&&A.af(new A.G(Date.now(),0,!1))===31)return A.nZ(B.er)
 if(A.a4(new A.G(Date.now(),0,!1))===7&&A.af(new A.G(Date.now(),0,!1))===12)return A.nZ(B.c8)
@@ -136158,7 +136158,7 @@ r=A.bCN(A.b([A.H(n,A.k0(!1,s?A.c3(A.asv(n,n,n,n,n,n,n,n,n,n),20,20):A.bn(B.Aa,n,
 q=A.H(n,A.w($.c().k(0,"/Session/Page/RegisterLog"),n,n,n,n,n,n,n,n),B.f,n,n,n,n,n,n,new A.k(20,0,20,10),n,n,n,n)
 o=A.uz(this.b,new A.cI(new A.bob(),n),t.q6)
 s=A.K(o,o.$ti.i("m.E"))
-return A.a8r(n,n,A.LX(0,n,n,A.b([r,new A.GR(q,n),A.bCO(s)],p)),A.H(n,A.iY(A.b([new A.cN(A.b([new A.c6(B.cC,n,n,A.b4(A.H(n,A.w($.c().k(0,"/TrademarkInfo"),n,n,n,n,A.ab(n,n,n,n,n,n,n,n,n,n,n,12,n,n,n,n,n,!0,n,n,n,n,n,n,n,n),B.b5,n,n),B.f,n,n,n,n,n,n,new A.k(30,0,30,10),n,n,n,n),0.5),n)],p)),new A.cN(A.b([A.eC(A.b4(A.w("1.0.20261104.67",n,n,n,n,A.ab(n,n,n,n,n,n,n,n,n,n,n,12,n,n,n,n,n,!0,n,n,n,n,n,n,n,n),n,n,n),0.25),n,n)],p))],t.xR),n),B.f,n,n,n,n,n,n,n,new A.k(0,0,0,20),n,n,n))},
+return A.a8r(n,n,A.LX(0,n,n,A.b([r,new A.GR(q,n),A.bCO(s)],p)),A.H(n,A.iY(A.b([new A.cN(A.b([new A.c6(B.cC,n,n,A.b4(A.H(n,A.w($.c().k(0,"/TrademarkInfo"),n,n,n,n,A.ab(n,n,n,n,n,n,n,n,n,n,n,12,n,n,n,n,n,!0,n,n,n,n,n,n,n,n),B.b5,n,n),B.f,n,n,n,n,n,n,new A.k(30,0,30,10),n,n,n,n),0.5),n)],p)),new A.cN(A.b([A.eC(A.b4(A.w("1.0.20261104.68",n,n,n,n,A.ab(n,n,n,n,n,n,n,n,n,n,n,12,n,n,n,n,n,!0,n,n,n,n,n,n,n,n),n,n,n),0.25),n,n)],p))],t.xR),n),B.f,n,n,n,n,n,n,n,new A.k(0,0,0,20),n,n,n))},
 $S:348}
 A.bo5.prototype={
 $1(a){return A.bPq(this.a,a)},
@@ -136236,7 +136236,7 @@ $.c4.ry$.push(new A.bjH())},
 E(a){var s=null,r=$.ur(),q=A.o(r).i("c_<1>"),p=t.q6,o=t.o,n=A.c13(A.os(A.aI(new A.ae(new A.c_(r,q),new A.bjs(this),q.i("ae<m.E>")),new A.bjt(),t.N,p),new A.bju(),p,o),1,o).eP(0)
 o=A.bBi(s,!1,A.w($.c().k(0,"/Session/New/Register/Question"),s,s,s,s,s,s,s,s),new A.k(20,0,20,15))
 p=t.p
-return new A.v6(new A.bjv(this,A.a8r(s,s,A.LX(0,s,s,A.b([A.bCN(A.b([A.H(s,A.k0(!1,A.bn(B.Aa,s,s,s),s,s,!0,s,new A.bjw(),s,s),B.f,s,s,s,s,s,s,s,new A.k(0,0,10,0),s,s,s)],p),!0,s,130,o,!1,!0,!0,!1,s,s,56),new A.GR(A.H(s,A.w($.c().k(0,"/Session/New/Register/Info"),s,s,s,s,s,s,s,s),B.f,s,s,s,s,s,s,new A.k(20,0,20,10),s,s,s,s),s),A.bCO(n)],p)),A.H(s,A.iY(A.b([new A.cN(A.b([new A.c6(B.cC,s,s,A.b4(A.H(s,A.w($.c().k(0,"/TrademarkInfo"),s,s,s,s,A.ab(s,s,s,s,s,s,s,s,s,s,s,12,s,s,s,s,s,!0,s,s,s,s,s,s,s,s),B.b5,s,s),B.f,s,s,s,s,s,s,new A.k(30,0,30,10),s,s,s,s),0.5),s)],p)),new A.cN(A.b([A.eC(A.b4(A.cV(s,A.w("1.0.20261104.67",s,s,s,s,A.ab(s,s,s,s,s,s,s,s,s,s,s,12,s,s,s,s,s,!0,s,s,s,s,s,s,s,s),s,s,s),B.B,!1,s,new A.bjx(this),s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s),0.25),s,s)],p))],t.xR),s),B.f,s,s,s,s,s,s,s,new A.k(0,0,0,20),s,s,s))),s)}}
+return new A.v6(new A.bjv(this,A.a8r(s,s,A.LX(0,s,s,A.b([A.bCN(A.b([A.H(s,A.k0(!1,A.bn(B.Aa,s,s,s),s,s,!0,s,new A.bjw(),s,s),B.f,s,s,s,s,s,s,s,new A.k(0,0,10,0),s,s,s)],p),!0,s,130,o,!1,!0,!0,!1,s,s,56),new A.GR(A.H(s,A.w($.c().k(0,"/Session/New/Register/Info"),s,s,s,s,s,s,s,s),B.f,s,s,s,s,s,s,new A.k(20,0,20,10),s,s,s,s),s),A.bCO(n)],p)),A.H(s,A.iY(A.b([new A.cN(A.b([new A.c6(B.cC,s,s,A.b4(A.H(s,A.w($.c().k(0,"/TrademarkInfo"),s,s,s,s,A.ab(s,s,s,s,s,s,s,s,s,s,s,12,s,s,s,s,s,!0,s,s,s,s,s,s,s,s),B.b5,s,s),B.f,s,s,s,s,s,s,new A.k(30,0,30,10),s,s,s,s),0.5),s)],p)),new A.cN(A.b([A.eC(A.b4(A.cV(s,A.w("1.0.20261104.68",s,s,s,s,A.ab(s,s,s,s,s,s,s,s,s,s,s,12,s,s,s,s,s,!0,s,s,s,s,s,s,s,s),s,s,s),B.B,!1,s,new A.bjx(this),s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s),0.25),s,s)],p))],t.xR),s),B.f,s,s,s,s,s,s,s,new A.k(0,0,0,20),s,s,s))),s)}}
 A.bjH.prototype={
 $1(a){var s,r,q,p,o,n=null
 $.p3().fe()
@@ -139202,7 +139202,7 @@ q=A.bC(5,c,!0,A.b([i,h,g,f,A.ak(p,!1,e,new A.bqV(a4),!1,!1,c,c,!0,!0,!1,c,c)],a2
 a3=$.z().b.a
 p=a3?15:18
 a3=a3?"":$.c().k(0,"B2C872FA-F50E-4EB5-A646-B5F743603522")
-o=A.ak("1.0.20261104.67",!1,$.c().k(0,"4C9277BD-392C-4ECB-8307-8AF4E09F539A"),new A.bqW(d,a4),!1,!1,c,c,!0,!0,!1,c,c)
+o=A.ak("1.0.20261104.68",!1,$.c().k(0,"4C9277BD-392C-4ECB-8307-8AF4E09F539A"),new A.bqW(d,a4),!1,!1,c,c,!0,!0,!1,c,c)
 i=$.c().k(0,"/Share")
 return A.mL(c,A.b([a1,s,r,q,A.bC(5,c,!0,A.b([o,A.ak($.c().k(0,"4FAD3DFA-A095-448D-BA21-56726E117111"),!1,i,new A.bqX(a4),!1,!1,c,c,!0,!0,!1,c,c),A.ak("GitHub",!1,$.c().k(0,"B3D579E5-2A27-4B61-A42A-C2DFD6150022"),new A.bqY(),!1,!1,c,c,!0,!0,!1,c,c),A.ak("Ko-fi",!1,$.c().k(0,"5352613A-B420-4441-A89D-612693727FF6"),new A.bqZ(),!1,!1,c,c,!0,!0,!1,c,c),A.ak("Discord",!1,$.c().k(0,"3D02B970-3502-495C-B6B8-3D5D33A92EA6"),new A.br_(),!1,!1,c,c,!0,!0,!1,c,c)],a2),14,!1,c,a3,!0,new A.k(p,15,p,15),!1,c,c)],a2),c,c,b,a0,c,c,c,c,d.gi_(),a,c)},
 aW6(){var s,r=this.c
@@ -140047,7 +140047,7 @@ $0(){var s=A.fZ(new A.bqz(this.a))
 return A.aQ(this.b,!1).dh(s)},
 $S:48}
 A.bqz.prototype={
-$1(a){var s,r,q=null,p="1.0.20261104.67",o=$.c().k(0,"4C9277BD-392C-4ECB-8307-8AF4E09F539A"),n=$.z().b.a?15:18,m=$.c().k(0,"4F794C4E-204D-4F7F-A7ED-6DC83C95AF3B"),l=A.ak(p,!1,$.c().k(0,"02B0EE84-7869-413F-B3DA-8EF6D1ED8E7A"),new A.bq3(this.a,a),!1,!0,q,q,!0,!0,!1,q,q),k=$.c().k(0,"785EA92C-03D6-47D6-BFA9-A7100998A92B"),j=t.p
+$1(a){var s,r,q=null,p="1.0.20261104.68",o=$.c().k(0,"4C9277BD-392C-4ECB-8307-8AF4E09F539A"),n=$.z().b.a?15:18,m=$.c().k(0,"4F794C4E-204D-4F7F-A7ED-6DC83C95AF3B"),l=A.ak(p,!1,$.c().k(0,"02B0EE84-7869-413F-B3DA-8EF6D1ED8E7A"),new A.bq3(this.a,a),!1,!0,q,q,!0,!0,!1,q,q),k=$.c().k(0,"785EA92C-03D6-47D6-BFA9-A7100998A92B"),j=t.p
 n=A.bC(5,q,!0,A.b([l,A.ak(B.b.gav(p.split(".")),!1,k,q,!1,!1,q,q,!0,!0,!1,q,q)],j),14,!1,q,m,!1,new A.k(n,15,n,15),!1,q,q)
 l=$.z().b.a?15:18
 m=$.c().k(0,"84D8D5E0-43AA-4463-BAE8-FF5453F79FB2")
@@ -150750,14 +150750,14 @@ case 14:p=17
 e=A.rg(A.uE("https://api.szkolny.eu",null,null,null,null,null))
 c=t.N
 A.y(c,c).h(0,u.d)
-b=B.b.gav("1.0.20261104.67".split("."))
+b=B.b.gav("1.0.20261104.68".split("."))
 s=20
 return A.p(A.wa(),$async$kX)
 case 20:a=c0
 a=a==null?null:J.Kh(a)
 if(a==null)a="UNKNOWN"
 a0=t.z
-a=A.Af(null,null,A.X(["X-ApiKey",u.F,"X-AppBuild",b,"X-AppFlavor","Release","X-AppVersion","1.0.20261104.67","X-DeviceId",a,"Content-Type","application/json"],c,a0),null,null)
+a=A.Af(null,null,A.X(["X-ApiKey",u.F,"X-AppBuild",b,"X-AppFlavor","Release","X-AppVersion","1.0.20261104.68","X-DeviceId",a,"Content-Type","application/json"],c,a0),null,null)
 s=21
 return A.p(A.wa(),$async$kX)
 case 21:b=c0
