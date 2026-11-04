@@ -429,20 +429,27 @@ class VulcanDataReader implements models.IProvider {
           : _defaultHebeBaseUrl;
       final tenantApiUrl = '$host/$tenant/api';
 
-      await _hebeRequest(
-        method: 'POST',
-        restUrl: tenantApiUrl,
-        endpoint: 'mobile/register/jwt',
-        payload: {
-          'OS': _deviceOs,
-          'Certificate': _keyPair!.certificate,
-          'CertificateType': 'RSA_PEM',
-          'DeviceModel': _deviceModel,
-          'SelfIdentifier': _deviceId,
-          'CertificateThumbprint': _keyPair!.fingerprint,
-          'Tokens': tokens,
-        },
-      );
+      try {
+        await _hebeRequest(
+          method: 'POST',
+          restUrl: tenantApiUrl,
+          endpoint: 'mobile/register/jwt',
+          payload: {
+            'OS': _deviceOs,
+            'Certificate': _keyPair!.certificate,
+            'CertificateType': 'RSA_PEM',
+            'DeviceModel': _deviceModel,
+            'SelfIdentifier': _deviceId,
+            'CertificateThumbprint': _keyPair!.fingerprint,
+            'Tokens': tokens,
+          },
+        );
+      } catch (ex) {
+        if (!ex.toString().contains('205')) {
+          rethrow;
+        }
+        debugPrint('[vulcan] Certificate already registered (code 205), continuing to register/hebe');
+      }
 
       final pupils = await _hebeRequest(
         method: 'GET',
@@ -497,21 +504,28 @@ class VulcanDataReader implements models.IProvider {
     final host = _tokenPrefixes[prefix] ?? _defaultHebeBaseUrl;
     final tenantApiUrl = '$host/$symbol/api';
 
-    await _hebeRequest(
-      method: 'POST',
-      restUrl: tenantApiUrl,
-      endpoint: 'mobile/register/token',
-      payload: {
-        'OS': _deviceOs,
-        'Certificate': _keyPair!.certificate,
-        'CertificateType': 'RSA_PEM',
-        'DeviceModel': _deviceModel,
-        'SelfIdentifier': _deviceId,
-        'CertificateThumbprint': _keyPair!.fingerprint,
-        'SecurityToken': token,
-        'PIN': pin,
-      },
-    );
+    try {
+      await _hebeRequest(
+        method: 'POST',
+        restUrl: tenantApiUrl,
+        endpoint: 'mobile/register/token',
+        payload: {
+          'OS': _deviceOs,
+          'Certificate': _keyPair!.certificate,
+          'CertificateType': 'RSA_PEM',
+          'DeviceModel': _deviceModel,
+          'SelfIdentifier': _deviceId,
+          'CertificateThumbprint': _keyPair!.fingerprint,
+          'SecurityToken': token,
+          'PIN': pin,
+        },
+      );
+    } catch (ex) {
+      if (!ex.toString().contains('205')) {
+        rethrow;
+      }
+      debugPrint('[vulcan] Certificate already registered (code 205), continuing to register/hebe');
+    }
 
     final pupils = await _hebeRequest(
       method: 'GET',
