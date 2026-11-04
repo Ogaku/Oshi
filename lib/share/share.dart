@@ -26,7 +26,7 @@ import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/models/data/timetables.dart';
 import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/provider.dart';
-import 'package:platform_device_id/platform_device_id.dart';
+import 'package:platform_device_id/platform_device_id.dart' show PlatformDeviceId;
 
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
