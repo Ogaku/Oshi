@@ -84,6 +84,12 @@ class HebeSigner {
     final privateKeyJson = jsonEncode({
       'n': n.toRadixString(16),
       'd': d.toRadixString(16),
+      // CRT parameters: make signing several times faster (important on web/JS)
+      'p': p.toRadixString(16),
+      'q': q.toRadixString(16),
+      'dp': (d % (p - BigInt.one)).toRadixString(16),
+      'dq': (d % (q - BigInt.one)).toRadixString(16),
+      'qi': q.modInverse(p).toRadixString(16),
     });
 
     return HebeKeyPair(
@@ -152,7 +158,21 @@ class HebeSigner {
     }
 
     final m = _bytesToBigInt(em);
-    final s = m.modPow(d, n);
+    BigInt s;
+    if (map['p'] != null && map['q'] != null && map['dp'] != null && map['dq'] != null && map['qi'] != null) {
+      final p = BigInt.parse(map['p'] as String, radix: 16);
+      final q = BigInt.parse(map['q'] as String, radix: 16);
+      final dp = BigInt.parse(map['dp'] as String, radix: 16);
+      final dq = BigInt.parse(map['dq'] as String, radix: 16);
+      final qi = BigInt.parse(map['qi'] as String, radix: 16);
+      final m1 = (m % p).modPow(dp, p);
+      final m2 = (m % q).modPow(dq, q);
+      var h = (qi * (m1 - m2)) % p;
+      if (h.isNegative) h += p;
+      s = m2 + h * q;
+    } else {
+      s = m.modPow(d, n);
+    }
     final sigBytes = _bigIntToFixedBytes(s, k);
     return base64Encode(sigBytes);
   }

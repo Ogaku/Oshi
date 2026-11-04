@@ -62,6 +62,22 @@ class VulcanDataReader implements models.IProvider {
   Map<String, dynamic>? _activeStudentRaw;
   bool _isHebeCe = true;
   String _proxyUrl = '';
+  String? _savedUsername;
+  String? _savedPassword;
+
+  String get _topLevelPartition {
+    if (_activeStudentRaw != null) {
+      final top = _activeStudentRaw!['TopLevelPartition']?.toString();
+      if (top != null && top.isNotEmpty) return top;
+      final group = _activeStudentRaw!['Links']?['Group']?.toString();
+      if (group != null && group.isNotEmpty) return group;
+      final part = _activeStudentRaw!['Partition']?.toString();
+      if (part != null && part.isNotEmpty) {
+        return part.split('-').first;
+      }
+    }
+    return '';
+  }
   final Dio _dio = Dio(BaseOptions(
     connectTimeout: const Duration(seconds: 20),
     receiveTimeout: const Duration(seconds: 20),
@@ -132,6 +148,8 @@ class VulcanDataReader implements models.IProvider {
         return (success: false, message: Exception('1DBA54DA-C4D2-4D21-B072-89AAFCC4758D'.localized));
       }
       _proxyUrl = resolvedProxy;
+      _savedUsername = username;
+      _savedPassword = password;
 
       if (username.isEmpty || (password.isEmpty && !username.contains('Tokens'))) {
         return (success: false, message: Exception('E15B042C-B7C1-43AB-9557-EA1B1F08CE9C'.localized));
@@ -1465,10 +1483,127 @@ class VulcanDataReader implements models.IProvider {
         );
       } catch (vex, vst) { debugPrint('[vulcan] swallowed error: $vex\n$vst'); }
 
+      List<models.Message> received = mapMessages(inboxEnv, sent: false);
+      List<models.Message> sent = mapMessages(sentEnv, sent: true);
+
+      // Restore credentials from Share.session.sessionCredentials if not set
+      if ((_savedUsername == null || _savedUsername!.isEmpty) && Share.session.sessionCredentials.isNotEmpty) {
+        _savedUsername = Share.session.sessionCredentials['login'] ?? Share.session.sessionCredentials['username'];
+      }
+      if ((_savedPassword == null || _savedPassword!.isEmpty) && Share.session.sessionCredentials.isNotEmpty) {
+        _savedPassword = Share.session.sessionCredentials['password'];
+      }
+
+      // Web fallback when mobile Hebe API returns code 111 (EDUVULCAN_PREMIUM) or empty
+      if (received.isEmpty && kIsWeb && _proxyUrl.isNotEmpty && _topLevelPartition.isNotEmpty) {
+        try {
+          final webInboxRes = await _dio.post(
+            _proxyUrl,
+            data: jsonEncode({
+              'action': 'eduvulcan_fetch_messages',
+              'login': _savedUsername ?? '',
+              'password': _savedPassword ?? '',
+              'partition': _topLevelPartition,
+              'folder': 'Odebrane',
+              'idLastWiadomosc': 0,
+              'pageSize': 50,
+            }),
+          );
+          final rawData = webInboxRes.data is Map ? (webInboxRes.data['data'] ?? webInboxRes.data) : webInboxRes.data;
+          final rawList = rawData is List ? rawData : (rawData is Map && rawData['data'] is List ? rawData['data'] as List : null);
+          if (rawList != null) {
+            final webReceived = <models.Message>[];
+            for (final m in rawList) {
+              if (m is! Map) continue;
+              final msgId = (m['id'] as num?)?.toInt() ?? (m['apiGlobalKey']?.toString().hashCode ?? -1);
+              final dateParsed = _tryParseVulcanDate(m['data']) ?? DateTime.now();
+              final isRead = m['przeczytana'] == true;
+              webReceived.add(models.Message(
+                id: msgId,
+                url: m['apiGlobalKey']?.toString() ?? msgId.toString(),
+                topic: m['temat']?.toString() ?? '(Bez tematu)',
+                content: m['tresc']?.toString() ?? '',
+                preview: m['tresc']?.toString() ?? m['temat']?.toString() ?? '',
+                sendDate: dateParsed,
+                readDate: isRead ? dateParsed : null,
+                hasAttachments: m['hasZalaczniki'] == true,
+                attachments: [],
+                sender: models.Teacher(
+                  firstName: m['korespondenci']?.toString() ?? 'Nadawca',
+                  url: m['apiGlobalKey']?.toString() ?? '',
+                ),
+              ));
+            }
+            if (webReceived.isNotEmpty) {
+              received = webReceived;
+            }
+          }
+        } catch (vex, vst) {
+          debugPrint('[vulcan] web messages fallback failed: $vex\n$vst');
+        }
+
+        try {
+          final webSentRes = await _dio.post(
+            _proxyUrl,
+            data: jsonEncode({
+              'action': 'eduvulcan_fetch_messages',
+              'login': _savedUsername ?? '',
+              'password': _savedPassword ?? '',
+              'partition': _topLevelPartition,
+              'folder': 'Wyslane',
+              'idLastWiadomosc': 0,
+              'pageSize': 50,
+            }),
+          );
+          final rawData = webSentRes.data is Map ? (webSentRes.data['data'] ?? webSentRes.data) : webSentRes.data;
+          final rawList = rawData is List ? rawData : (rawData is Map && rawData['data'] is List ? rawData['data'] as List : null);
+          if (rawList != null) {
+            final webSent = <models.Message>[];
+            for (final m in rawList) {
+              if (m is! Map) continue;
+              final msgId = (m['id'] as num?)?.toInt() ?? (m['apiGlobalKey']?.toString().hashCode ?? -1);
+              final dateParsed = _tryParseVulcanDate(m['data']) ?? DateTime.now();
+              webSent.add(models.Message(
+                id: msgId,
+                url: m['apiGlobalKey']?.toString() ?? msgId.toString(),
+                topic: m['temat']?.toString() ?? '(Bez tematu)',
+                content: m['tresc']?.toString() ?? '',
+                preview: m['tresc']?.toString() ?? m['temat']?.toString() ?? '',
+                sendDate: dateParsed,
+                readDate: dateParsed,
+                hasAttachments: m['hasZalaczniki'] == true,
+                attachments: [],
+                receivers: [
+                  models.Teacher(
+                    firstName: m['korespondenci']?.toString() ?? 'Odbiorca',
+                    url: m['apiGlobalKey']?.toString() ?? '',
+                  )
+                ],
+              ));
+            }
+            if (webSent.isNotEmpty) {
+              sent = webSent;
+            }
+          }
+        } catch (vex, vst) {
+          debugPrint('[vulcan] web sent messages fallback failed: $vex\n$vst');
+        }
+      }
+
+      if (receivers.isEmpty) {
+        final uniqueTeachers = <String, models.Teacher>{};
+        for (final m in received) {
+          if (m.sender != null && m.sender!.name.isNotEmpty) {
+            uniqueTeachers.putIfAbsent(m.sender!.name, () => m.sender!);
+          }
+        }
+        receivers.addAll(uniqueTeachers.values);
+      }
+
       dataChunk.messages = models.Messages(
         receivers: receivers,
-        received: mapMessages(inboxEnv, sent: false),
-        sent: mapMessages(sentEnv, sent: true),
+        received: received,
+        sent: sent,
       );
 
       return (success: true, message: null);
@@ -1557,10 +1692,56 @@ class VulcanDataReader implements models.IProvider {
           },
         );
       }
+      String effectiveContent = parent.content ?? parent.preview ?? '';
+      List<models.Attachment>? effectiveAttachments = parent.attachments;
+
+      if (effectiveContent.isEmpty && kIsWeb && _proxyUrl.isNotEmpty && _topLevelPartition.isNotEmpty) {
+        try {
+          if ((_savedUsername == null || _savedUsername!.isEmpty) && Share.session.sessionCredentials.isNotEmpty) {
+            _savedUsername = Share.session.sessionCredentials['login'] ?? Share.session.sessionCredentials['username'];
+          }
+          if ((_savedPassword == null || _savedPassword!.isEmpty) && Share.session.sessionCredentials.isNotEmpty) {
+            _savedPassword = Share.session.sessionCredentials['password'];
+          }
+
+          final detRes = await _dio.post(
+            _proxyUrl,
+            data: jsonEncode({
+              'action': 'eduvulcan_fetch_message_content',
+              'login': _savedUsername ?? '',
+              'password': _savedPassword ?? '',
+              'partition': _topLevelPartition,
+              'id': parent.id,
+              'apiGlobalKey': parent.url,
+            }),
+          );
+          final d = detRes.data is Map ? (detRes.data['data'] ?? detRes.data) : detRes.data;
+          if (d is Map) {
+            final body = d['tresc']?.toString() ?? d['content']?.toString() ?? d['trescHtml']?.toString() ?? '';
+            if (body.isNotEmpty) {
+              effectiveContent = body;
+            }
+            final attachmentsRaw = (d['zalaczniki'] ?? d['Attachments']) as List?;
+            if (attachmentsRaw != null && attachmentsRaw.isNotEmpty) {
+              effectiveAttachments = attachmentsRaw
+                  .whereType<Map>()
+                  .map((a) => models.Attachment(
+                        name: a['nazwa']?.toString() ?? a['Name']?.toString() ?? 'Załącznik',
+                        location: a['url']?.toString() ?? a['Link']?.toString() ?? '',
+                      ))
+                  .toList();
+            }
+          }
+        } catch (vex) {
+          debugPrint('[vulcan] web message detail fallback error: $vex');
+        }
+      }
+
       final updated = models.Message.from(
         other: parent,
-        content: parent.content ?? parent.preview ?? '',
+        content: effectiveContent,
         readDate: parent.readDate ?? DateTime.now(),
+        attachments: effectiveAttachments,
       );
       return (success: true, message: null, result: updated);
     } on Exception catch (ex) {
