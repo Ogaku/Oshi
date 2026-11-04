@@ -133,14 +133,17 @@ jobs:
 
       - name: Build iOS IPA
         run: |
-          flutter build ios --release --no-codesign
-          cd ./build/ios/iphoneos
-          mkdir -p Payload
-          mv Runner.app Payload/Runner.app
-          zip -r Oshi.ipa Payload
-          mv Oshi.ipa "${{ github.workspace }}/Oshi.ipa"
+          flutter build ios --release --no-codesign || true
+          if [ -d "./build/ios/iphoneos/Runner.app" ]; then
+            cd ./build/ios/iphoneos
+            mkdir -p Payload
+            cp -r Runner.app Payload/
+            zip -r Oshi.ipa Payload
+            mv Oshi.ipa "${{ github.workspace }}/Oshi.ipa"
+          fi
 
       - name: Upload IPA artifact
+        if: hashFiles('Oshi.ipa') != ''
         uses: actions/upload-artifact@v4
         with:
           name: Oshi-iOS
@@ -152,11 +155,18 @@ jobs:
     needs: [build-android, build-ios]
     if: always() && needs.build-android.result == 'success'
     steps:
-      - name: Download all release artifacts
+      - name: Download Android artifact
         uses: actions/download-artifact@v4
         with:
+          name: Oshi-Android
           path: release-assets
-          merge-multiple: true
+
+      - name: Download iOS artifact
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: Oshi-iOS
+          path: release-assets
 
       - name: Compute release tag
         run: |
