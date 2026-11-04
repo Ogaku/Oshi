@@ -52,6 +52,9 @@ class _SessionsPageState extends State<SessionsPage> {
   @override
   Widget build(BuildContext context) {
     var sessionsList = Share.settings.sessions.sessions.keys
+        .where((x) =>
+            x != 'SESSIONS-SHIM-SMPL-FAKE-DATAPROVIDER' &&
+            Share.settings.sessions.sessions[x]?.providerGuid != 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER')
         .select(
           (x, index) => CupertinoListTile(
               padding: EdgeInsets.all(0),
@@ -216,7 +219,9 @@ class _SessionsPageState extends State<SessionsPage> {
           });
 
           AppCenter.checkForUpdates().then((value) {
-            if (value.result && context.mounted) _showAlertDialog(context, value.download);
+            if (value.result && value.version != null && context.mounted) {
+              AppCenter.showUpdatePrompt(context, value.version!);
+            }
           }).catchError((ex) {});
 
           return CupertinoPageScaffold(
@@ -328,29 +333,7 @@ class _SessionsPageState extends State<SessionsPage> {
         }));
   }
 
-  void _showAlertDialog(BuildContext context, Uri url) {
-    if (kIsWeb) return;
-    showCupertinoModalPopup<void>(
-      context: context,
-      builder: (BuildContext context) => CupertinoAlertDialog(
-        title: Text('/BaseApp/Update/AlertHeader'.localized),
-        content: Text('/BaseApp/Update/Alert'.localized.format(isAndroid ? 'Android' : 'iOS')),
-        actions: <CupertinoDialogAction>[
-          CupertinoDialogAction(
-            onPressed: () async {
-              Navigator.pop(context);
-              try {
-                await launchUrl(url);
-              } catch (ex) {
-                // ignored
-              }
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   CupertinoThemeData get _eventfulColorTheme {
     // Halloween colors
@@ -381,7 +364,7 @@ class NewSessionPage extends StatefulWidget {
 
 class _NewSessionPageState extends State<NewSessionPage> {
   final scrollController = ScrollController();
-  bool subscribed = false, enableFake = true;
+  bool subscribed = false, enableFake = false;
 
   @override
   void initState() {
@@ -572,36 +555,16 @@ class _NewSessionPageState extends State<NewSessionPage> {
               });
 
               AppCenter.checkForUpdates().then((value) {
-                if (value.result && context.mounted) _showAlertDialog(context, value.download);
+                if (value.result && value.version != null && context.mounted) {
+                  AppCenter.showUpdatePrompt(context, value.version!);
+                }
               }).catchError((ex) {});
 
               return result;
             }));
   }
 
-  void _showAlertDialog(BuildContext context, Uri url) {
-    if (kIsWeb) return;
-    showCupertinoModalPopup<void>(
-      context: context,
-      builder: (BuildContext context) => CupertinoAlertDialog(
-        title: Text('/BaseApp/Update/AlertHeader'.localized),
-        content: Text('/BaseApp/Update/Alert'.localized.format(isAndroid ? 'Android' : 'iOS')),
-        actions: <CupertinoDialogAction>[
-          CupertinoDialogAction(
-            onPressed: () async {
-              Navigator.pop(context);
-              try {
-                await launchUrl(url);
-              } catch (ex) {
-                // ignored
-              }
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   CupertinoThemeData get _eventfulColorTheme {
     // Halloween colors

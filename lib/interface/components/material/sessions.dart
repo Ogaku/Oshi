@@ -61,6 +61,9 @@ class _SessionsPageState extends State<SessionsPage> {
 
       return Builder(builder: (context) {
         var sessionsList = Share.settings.sessions.sessions.keys
+            .where((x) =>
+                x != 'SESSIONS-SHIM-SMPL-FAKE-DATAPROVIDER' &&
+                Share.settings.sessions.sessions[x]?.providerGuid != 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER')
             .select(
               (x, index) => Builder(
                   builder: (context) => Visibility(
@@ -240,8 +243,9 @@ class _SessionsPageState extends State<SessionsPage> {
             });
 
             AppCenter.checkForUpdates().then((value) {
-              // ignore: use_build_context_synchronously
-              if (value.result) _showAlertDialog(context, value.download);
+              if (value.result && value.version != null && context.mounted) {
+                AppCenter.showUpdatePrompt(context, value.version!);
+              }
             }).catchError((ex) {});
 
             return Scaffold(
@@ -347,30 +351,6 @@ class _SessionsPageState extends State<SessionsPage> {
     });
   }
 
-  void _showAlertDialog(BuildContext context, Uri url) {
-    if (kIsWeb) return;
-
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text('/BaseApp/Update/AlertHeader'.localized),
-        content: Text('/BaseApp/Update/Alert'.localized.format(isAndroid ? 'Android' : 'iOS')),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              try {
-                await launchUrl(url);
-              } catch (ex) {
-                // ignored
-              }
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class NewSessionPage extends StatefulWidget {
@@ -383,7 +363,7 @@ class NewSessionPage extends StatefulWidget {
 
 class _NewSessionPageState extends State<NewSessionPage> {
   final scrollController = ScrollController();
-  bool subscribed = false, enableFake = true;
+  bool subscribed = false, enableFake = false;
 
   @override
   void initState() {

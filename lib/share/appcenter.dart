@@ -1,19 +1,25 @@
+// ignore_for_file: use_build_context_synchronously
 import 'dart:convert';
 import 'package:universal_io/io.dart';
 
 import 'package:appcenter_sdk_flutter/appcenter_sdk_flutter.dart' as apps;
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
-import 'package:format/format.dart';
-import 'package:oshi/models/progress.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_app_installer/flutter_app_installer.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AppCenter {
   static bool _initializedOnce = false;
+  static bool _updateDialogShown = false;
+
   static String get szkolnyAppKey =>
       Platform.environment['OSHI-APP-TOKEN-D73A3091-2328-4DA3-8632-2D1090A4881A'] ?? 'AZ_SZKOLNY_APP_TOKEN';
 
@@ -35,97 +41,283 @@ class AppCenter {
 
   static Future<AppVersion?> fetchVersions() async {
     try {
-      var result =
-          (await Dio(BaseOptions(baseUrl: 'https://raw.githubusercontent.com')).get('/Ogaku/Toudai/main/version_data.json'))
-              .data;
+      // 1. Try GitHub Releases API first
+      var response = await Dio(BaseOptions(
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+        headers: {
+          'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': 'Oshi-App',
+        },
+      )).get('https://api.github.com/repos/Ogaku/Oshi/releases/latest');
 
-      if (result is String) result = jsonDecode(result);
+      var data = response.data;
+      if (data is String) data = jsonDecode(data);
 
-      return AppVersion(
-          version: Version.parse(result['version']?.toString()),
-          download: Uri.parse(result[isAndroid ? 'download_apk' : 'download_ios']));
-    } catch (ex) {
-      return null;
-    }
-  }
+      String tagName = (data['tag_name'] ?? '').toString().trim();
+      if (tagName.isEmpty) tagName = (data['name'] ?? '').toString().trim();
 
-  static Future<({bool result, Uri download})> checkForUpdates() async {
-    try {
-      var result = (await fetchVersions())!;
-      var checkResult = (result: result.version > Version.parse(Share.buildNumber), download: result.download);
-      if (isAndroid &&
-          checkResult.result &&
-          (await (Connectivity().checkConnectivity())) == ConnectivityResult.wifi) {
-        // Else try to download the update and show a notification
-        NotificationController.sendNotification(
-            title: '05ABEB49-7597-47DB-B200-C9F64799ED5A'.localized.format(result.version),
-            content: '7F2D0551-2391-4676-ADED-FAECF0CB89D7'.localized,
-            category: NotificationCategories.other,
-            id: 9999991);
-
-        var progress = Progress<({double? progress, String? message})>();
-        progress.progressChanged.subscribe((args) => NotificationController.sendNotification(
-            title: '05ABEB49-7597-47DB-B200-C9F64799ED5A'.localized.format(result.version),
-            content: '7F2D0551-2391-4676-ADED-FAECF0CB89D7'.localized,
-            category: NotificationCategories.other,
-            progress: args?.value.progress ?? 0.0,
-            id: 9999991));
-
-        // Download
-        var path = '${(await getTemporaryDirectory()).path}/Oshi.apk';
-        if (await _download(result.download, path, progress)) {
-          await Future.delayed(const Duration(seconds: 3));
-          await NotificationController.sendNotification(
-              title: '2C4D5FB8-EA44-472A-BF73-1701C8C066D0'.localized,
-              content: 'B9F622DB-5DFD-4056-871E-2E7AFD0B982C'.localized.format(result.version),
-              data: 'update_android\n$path',
-              category: NotificationCategories.other,
-              id: 9999991);
-        } else {
-          await NotificationController.sendNotification(
-              title: '25C82C3D-4C3E-44A1-B2CC-F29FC76B79FC'.localized,
-              content: '17EE54B1-00DA-4A47-82AD-FF03D11312F9'.localized,
-              category: NotificationCategories.other,
-              id: 9999991);
+      Uri? downloadUri;
+      if (data['assets'] is List) {
+        var assets = data['assets'] as List;
+        for (var a in assets) {
+          if (a is Map) {
+            var name = a['name']?.toString().toLowerCase() ?? '';
+            if (isAndroid && name.endsWith('.apk') && a['browser_download_url'] != null) {
+              downloadUri = Uri.parse(a['browser_download_url'].toString());
+              break;
+            } else if (isIOS && name.endsWith('.ipa') && a['browser_download_url'] != null) {
+              downloadUri = Uri.parse(a['browser_download_url'].toString());
+              break;
+            }
+          }
         }
-
-        return (result: false, download: Uri());
-      } else if ((isIOS || isAndroid) && checkResult.result) {
-        NotificationController.sendNotification(
-            title: '099A022C-1072-426E-B729-02E99DF75B84'.localized,
-            content: '2602BCBF-D632-41A9-81BF-C27B03756DED'.localized.format(result.version),
-            category: NotificationCategories.other,
-            data: 'url\n${result.download}',
-            id: 9999993);
-
-        return (result: false, download: Uri());
       }
 
-      return checkResult;
+      downloadUri ??= Uri.parse(
+        isAndroid
+            ? 'https://github.com/Ogaku/Oshi/releases/latest/download/Oshi.apk'
+            : 'https://github.com/Ogaku/Oshi/releases/latest/download/Oshi.ipa',
+      );
+
+      return AppVersion(
+        version: Version.parse(tagName),
+        notes: (data['body'] ?? '').toString(),
+        download: downloadUri,
+      );
     } catch (ex) {
-      return (result: false, download: Uri());
+      // Fallback to Toudai version_data.json if GitHub API fails
+      try {
+        var result = (await Dio(BaseOptions(
+          baseUrl: 'https://raw.githubusercontent.com',
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+        )).get('/Ogaku/Toudai/main/version_data.json')).data;
+
+        if (result is String) result = jsonDecode(result);
+
+        return AppVersion(
+          version: Version.parse(result['version']?.toString()),
+          download: Uri.parse(result[isAndroid ? 'download_apk' : 'download_ios']),
+        );
+      } catch (e) {
+        return null;
+      }
     }
   }
 
-  static Future<bool> _download(Uri url, String savePath,
-      [IProgress<({double? progress, String? message})>? progress]) async {
+  static Future<({bool result, Uri download, AppVersion? version})> checkForUpdates() async {
     try {
-      Response response = await Dio().getUri(
-        url,
-        onReceiveProgress: (r, t) => progress?.report((progress: r / t, message: null)),
-        options: Options(
-            responseType: ResponseType.bytes,
-            followRedirects: true,
-            validateStatus: (status) {
-              return status != null ? status < 500 : false;
-            }),
-      );
-      var raf = File(savePath).openSync(mode: FileMode.writeOnly);
-      raf.writeFromSync(response.data);
-      await raf.close();
-      return true;
+      if (kIsWeb) return (result: false, download: Uri(), version: null);
+
+      var remoteAppVersion = await fetchVersions();
+      if (remoteAppVersion == null) return (result: false, download: Uri(), version: null);
+
+      var currentVersion = Version.parse(Share.buildNumber);
+      bool hasUpdate = remoteAppVersion.version > currentVersion;
+
+      return (result: hasUpdate, download: remoteAppVersion.download, version: remoteAppVersion);
     } catch (ex) {
-      return false;
+      return (result: false, download: Uri(), version: null);
+    }
+  }
+
+  static void showUpdatePrompt(BuildContext context, AppVersion appVersion) {
+    if (kIsWeb || _updateDialogShown || !context.mounted) return;
+    _updateDialogShown = true;
+
+    final String title = '/BaseApp/Update/AlertHeader'.localized.isNotEmpty &&
+            !'/BaseApp/Update/AlertHeader'.localized.startsWith('/')
+        ? '/BaseApp/Update/AlertHeader'.localized
+        : 'Aktualizacja dostępna';
+
+    final String message =
+        'Dostępna jest nowa wersja aplikacji (${appVersion.version}).\nCzy chcesz ją zaktualizować?';
+
+    if (isIOS) {
+      showCupertinoDialog<void>(
+        context: context,
+        builder: (ctx) => CupertinoAlertDialog(
+          title: Text(title),
+          content: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(message),
+          ),
+          actions: [
+            CupertinoDialogAction(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Później'),
+            ),
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                performUpdate(context, appVersion);
+              },
+              child: const Text('Aktualizuj'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Później'),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                performUpdate(context, appVersion);
+              },
+              child: const Text('Aktualizuj'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  static Future<void> performUpdate(BuildContext context, AppVersion appVersion) async {
+    if (!isAndroid) {
+      try {
+        await launchUrl(appVersion.download, mode: LaunchMode.externalApplication);
+      } catch (ex) {
+        // ignored
+      }
+      return;
+    }
+
+    ValueNotifier<double> downloadProgress = ValueNotifier<double>(0.0);
+    ValueNotifier<String> statusMessage = ValueNotifier<String>('Przygotowywanie...');
+    bool isCancelled = false;
+    final CancelToken cancelToken = CancelToken();
+
+    if (!context.mounted) return;
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return PopScope(
+          canPop: false,
+          child: AlertDialog(
+            title: const Text('Pobieranie aktualizacji'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ValueListenableBuilder<double>(
+                  valueListenable: downloadProgress,
+                  builder: (context, value, _) {
+                    return LinearProgressIndicator(value: value > 0 ? value : null);
+                  },
+                ),
+                const SizedBox(height: 16),
+                ValueListenableBuilder<String>(
+                  valueListenable: statusMessage,
+                  builder: (context, msg, _) => Text(msg),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  isCancelled = true;
+                  cancelToken.cancel('User cancelled download');
+                  Navigator.of(dialogContext).pop();
+                },
+                child: const Text('Anuluj'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final apkFile = File('${tempDir.path}/Oshi-update.apk');
+      if (await apkFile.exists()) {
+        try {
+          await apkFile.delete();
+        } catch (_) {}
+      }
+
+      final dio = Dio();
+      await dio.downloadUri(
+        appVersion.download,
+        apkFile.path,
+        cancelToken: cancelToken,
+        options: Options(
+          followRedirects: true,
+          maxRedirects: 5,
+        ),
+        onReceiveProgress: (received, total) {
+          if (total > 0) {
+            double prog = received / total;
+            downloadProgress.value = prog;
+            statusMessage.value =
+                '${(prog * 100).toStringAsFixed(0)}% (${(received / (1024 * 1024)).toStringAsFixed(1)} MB / ${(total / (1024 * 1024)).toStringAsFixed(1)} MB)';
+          } else {
+            statusMessage.value = '${(received / (1024 * 1024)).toStringAsFixed(1)} MB';
+          }
+        },
+      );
+
+      if (isCancelled) return;
+
+      if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+
+      try {
+        await Permission.storage.request();
+      } catch (_) {}
+      try {
+        await Permission.requestInstallPackages.request();
+      } catch (_) {}
+
+      final installFile = await copyFileToExternalStorage(apkFile);
+      await FlutterAppInstaller().installApk(filePath: installFile.path);
+    } catch (ex) {
+      if (isCancelled) return;
+
+      if (context.mounted) {
+        try {
+          Navigator.of(context, rootNavigator: true).pop();
+        } catch (_) {}
+      }
+
+      if (context.mounted) {
+        showDialog<void>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Błąd instalacji aktualizacji'),
+            content: const Text(
+                'Nie udało się automatycznie pobrać lub zainstalować aktualizacji. Czy chcesz otworzyć stronę pobierania w przeglądarce?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('Anuluj'),
+              ),
+              FilledButton(
+                onPressed: () async {
+                  Navigator.of(ctx).pop();
+                  try {
+                    await launchUrl(appVersion.download, mode: LaunchMode.externalApplication);
+                  } catch (_) {}
+                },
+                child: const Text('Otwórz w przeglądarce'),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 }
@@ -144,18 +336,13 @@ class Version {
   Version.parse(String? versionString) {
     try {
       if (versionString?.trim().isEmpty ?? true) return;
-      List<String> parts = versionString!.split(".");
+      String cleaned = versionString!.trim().replaceAll(RegExp(r'^[vV]'), '');
+      List<String> parts = cleaned.split(".");
 
-      major = int.parse(parts[0]);
-      if (parts.length > 1) {
-        minor = int.parse(parts[1]);
-        if (parts.length > 2) {
-          patch = int.parse(parts[2]);
-          if (parts.length > 3) {
-            build = int.parse(parts[3]);
-          }
-        }
-      }
+      if (parts.isNotEmpty) major = int.tryParse(RegExp(r'\d+').stringMatch(parts[0]) ?? '') ?? 0;
+      if (parts.length > 1) minor = int.tryParse(RegExp(r'\d+').stringMatch(parts[1]) ?? '') ?? 0;
+      if (parts.length > 2) patch = int.tryParse(RegExp(r'\d+').stringMatch(parts[2]) ?? '') ?? 0;
+      if (parts.length > 3) build = int.tryParse(RegExp(r'\d+').stringMatch(parts[3]) ?? '') ?? 0;
     } catch (ex) {
       // ignored
     }

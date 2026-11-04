@@ -308,34 +308,11 @@ class _BaseAppState extends State<BaseApp> {
     });
   }
 
-  void _showAlertDialog(BuildContext context, Uri url) {
-    if (kIsWeb) return;
-
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text('/BaseApp/Update/AlertHeader'.localized),
-        content: Text('/BaseApp/Update/Alert'.localized.format(isAndroid ? 'Android' : 'iOS')),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              try {
-                await launchUrl(url);
-              } catch (ex) {
-                // ignored
-              }
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _checkforUpdates(BuildContext context) {
     AppCenter.checkForUpdates().then((value) {
-      if (value.result && context.mounted) _showAlertDialog(context, value.download);
+      if (value.result && value.version != null && context.mounted) {
+        AppCenter.showUpdatePrompt(context, value.version!);
+      }
     }).catchError((ex) {});
   }
 }

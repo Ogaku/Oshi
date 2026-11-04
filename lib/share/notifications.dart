@@ -393,7 +393,7 @@ class ReceivedNotification {
 enum NotificationCategories { register, messages, other }
 
 Future<File> copyFileToExternalStorage(File sourceFile) async {
-  String fileName = sourceFile.path.split('/').last; // Extract the file name
+  String fileName = sourceFile.path.split(RegExp(r'[/\\]')).last; // Extract the file name
   Directory? externalDir = await getExternalStorageDirectory(); // Get external directory
 
   if (externalDir == null) {

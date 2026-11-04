@@ -258,34 +258,11 @@ class _BaseAppState extends State<BaseApp> {
         }));
   }
 
-  void _showAlertDialog(BuildContext context, Uri url) {
-    if (kIsWeb) return;
-    showCupertinoModalPopup<void>(
-      context: context,
-      builder: (BuildContext context) => CupertinoAlertDialog(
-        title: Text('/BaseApp/Update/AlertHeader'.localized),
-        content: Text('/BaseApp/Update/Alert'.localized.format(isAndroid ? 'Android' : 'iOS')),
-        actions: <CupertinoDialogAction>[
-          CupertinoDialogAction(
-            onPressed: () async {
-              Navigator.pop(context);
-              try {
-                await launchUrl(url);
-              } catch (ex) {
-                // ignored
-              }
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _checkforUpdates(BuildContext context) {
     AppCenter.checkForUpdates().then((value) {
-      // ignore: use_build_context_synchronously
-      if (value.result) _showAlertDialog(context, value.download);
+      if (value.result && value.version != null && context.mounted) {
+        AppCenter.showUpdatePrompt(context, value.version!);
+      }
     }).catchError((ex) {});
   }
 

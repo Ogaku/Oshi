@@ -212,7 +212,7 @@ class Settings {
 
 @HiveType(typeId: 2)
 class SessionsData extends HiveObject {
-  SessionsData({Map<String, Session>? sessions, this.lastSessionId = 'SESSIONS-SHIM-SMPL-FAKE-DATAPROVIDER'})
+  SessionsData({Map<String, Session>? sessions, this.lastSessionId})
       : sessions = sessions ?? {};
 
   // The last session's identifier
@@ -222,14 +222,15 @@ class SessionsData extends HiveObject {
   // Last session's getter
   @JsonKey(includeToJson: false, includeFromJson: false)
   Session? get lastSession =>
-      ((lastSessionId?.isNotEmpty ?? false) && sessions.containsKey(lastSessionId)) ? sessions[lastSessionId!] : null;
+      ((lastSessionId?.isNotEmpty ?? false) &&
+              sessions.containsKey(lastSessionId) &&
+              lastSessionId != 'SESSIONS-SHIM-SMPL-FAKE-DATAPROVIDER')
+          ? sessions[lastSessionId!]
+          : null;
 
   // All sessions maintained by the app, including the current one
-  // The 'fake' one is kept here for debugging, overwritten on startup anyway
   @HiveField(2)
-  Map<String, Session> sessions = {
-    'SESSIONS-SHIM-SMPL-FAKE-DATAPROVIDER': Session(providerGuid: 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER')
-  };
+  Map<String, Session> sessions = {};
 }
 
 @HiveType(typeId: 3)
