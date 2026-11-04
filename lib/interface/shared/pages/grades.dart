@@ -286,7 +286,7 @@ class _LineChart extends StatelessWidget {
   LineTouchData get lineTouchData1 => LineTouchData(
         handleBuiltInTouches: true,
         touchTooltipData: LineTouchTooltipData(
-          tooltipBgColor: Colors.blueGrey.withValues(alpha: 0.8),
+          tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
         ),
       );
 
@@ -398,7 +398,7 @@ class _LineChart extends StatelessWidget {
         dotData: const FlDotData(show: false),
         belowBarData: BarAreaData(
           show: true,
-          color: CupertinoColors.systemPink.withValues(alpha: 0.1),
+          color: CupertinoColors.systemPink.withOpacity(0.1),
         ),
         spots: Share.session.data.student.mainClass.averages.entries
             .select((x, _) => FlSpot(
