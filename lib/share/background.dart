@@ -120,7 +120,7 @@ Future<void> setupBaseApplication() async {
   await Share.settings.load(); // Load all settings from hive, make sure nothing is missing
   Share.settings.sessions.sessions.remove('SESSIONS-SHIM-SMPL-FAKE-DATAPROVIDER');
   if (Share.settings.sessions.lastSessionId == 'SESSIONS-SHIM-SMPL-FAKE-DATAPROVIDER') {
-    Share.settings.sessions.lastSessionId = Share.settings.sessions.sessions.keys.firstOrDefault(defaultValue: null);
+    Share.settings.sessions.lastSessionId = Share.settings.sessions.sessions.keys.isNotEmpty ? Share.settings.sessions.sessions.keys.first : null;
   }
   Share.session = Share.settings.sessions.lastSession ?? Session(providerGuid: 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER');
   if (Share.settings.sessions.lastSession != null) await Share.session.tryLogin(showErrors: false); // Auto-login

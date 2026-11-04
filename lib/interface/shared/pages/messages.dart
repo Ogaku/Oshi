@@ -519,7 +519,7 @@ class _MessagesPageState extends State<MessagesPage> {
             context,
             AdaptivePageRoute(
                 builder: (context) => MessageDetailsPage(
-                      message: message!,
+                      message: message,
                       isByMe: false,
                     )));
       } else {
@@ -528,9 +528,9 @@ class _MessagesPageState extends State<MessagesPage> {
         Share.session.provider.fetchMessageContent(parent: message, byMe: folder == MessageFolders.outbox).then((result) {
           setState(() => isWorking = false);
 
-          final resolvedMessage = result.result ?? message!;
+          final resolvedMessage = result.result ?? message;
           if (folder == MessageFolders.inbox) {
-            var index = Share.session.data.messages.received.indexOf(message!);
+            var index = Share.session.data.messages.received.indexOf(message);
             if (index != -1) {
               Share.session.data.messages.received[index] = Message.from(
                 other: resolvedMessage,
@@ -539,7 +539,7 @@ class _MessagesPageState extends State<MessagesPage> {
             }
           }
           if (folder == MessageFolders.outbox) {
-            var index = Share.session.data.messages.sent.indexOf(message!);
+            var index = Share.session.data.messages.sent.indexOf(message);
             if (index != -1) {
               Share.session.data.messages.sent[index] = Message.from(other: resolvedMessage);
             }

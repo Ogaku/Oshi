@@ -3,7 +3,6 @@ import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:event/event.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_shake_animated/flutter_shake_animated.dart';
@@ -19,7 +18,6 @@ import 'package:oshi/share/share.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:oshi/share/platform.dart';
 
 import 'package:oshi/interface/components/cupertino/widgets/navigation_bar.dart' show SliverNavigationBar;
 import 'package:url_launcher/url_launcher.dart';

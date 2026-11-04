@@ -12,7 +12,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:format/format.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/share/appcenter.dart';
 import 'package:oshi/share/extensions.dart';
@@ -29,7 +28,6 @@ import 'package:oshi/interface/shared/pages/absences.dart' show absencesPage;
 
 import 'package:oshi/share/share.dart';
 import 'package:show_fps/show_fps.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class BaseApp extends StatefulWidget {
