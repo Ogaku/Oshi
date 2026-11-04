@@ -1,0 +1,184 @@
+name: Build & Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-android:
+    name: Build Android
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: "zulu"
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: "3.22.3"
+          cache: true
+
+      - name: Update versioning and tokens
+        env:
+          APPCENTER_TELEMETRY_TOKEN: ${{ secrets.APPCENTER_TELEMETRY_TOKEN }}
+          SZKOLNY_APP_TOKEN: ${{ secrets.SZKOLNY_APP_TOKEN }}
+        run: |
+          python3 -c "
+          import datetime, re, os
+          today = datetime.date.today().strftime('%Y%m%d')
+          run_num = '${{ github.run_number }}'
+          build_ver = f'1.0.{today}.{run_num}'
+
+          with open('pubspec.yaml', 'r') as f: c = f.read()
+          c = re.sub(r'version: .*', f'version: 1.0.{today}+{run_num}', c)
+          with open('pubspec.yaml', 'w') as f: f.write(c)
+
+          with open('lib/share/share.dart', 'r') as f: c = f.read()
+          c = c.replace('9.9.9.9', build_ver)
+          with open('lib/share/share.dart', 'w') as f: f.write(c)
+
+          appcenter_token = os.environ.get('APPCENTER_TELEMETRY_TOKEN', '')
+          szkolny_token = os.environ.get('SZKOLNY_APP_TOKEN', '')
+
+          with open('lib/share/appcenter.dart', 'r') as f: c = f.read()
+          if appcenter_token:
+              c = c.replace('AZ_APPCENTER_TELEMETRY_TOKEN', appcenter_token)
+          if szkolny_token:
+              c = c.replace('AZ_SZKOLNY_APP_TOKEN', szkolny_token)
+          with open('lib/share/appcenter.dart', 'w') as f: f.write(c)
+          "
+
+      - name: Setup Keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_FILE_BASE64 }}
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+          KEYSTORE_PWD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_KEY_PWD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+        if: env.KEYSTORE_BASE64 != ''
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > "${{ github.workspace }}/android/app/upload-keystore.jks"
+          echo "storeFile=${{ github.workspace }}/android/app/upload-keystore.jks" > ${{ github.workspace }}/android/keystore.properties
+          echo "keyAlias=${KEYSTORE_ALIAS}" >> ${{ github.workspace }}/android/keystore.properties
+          echo "storePassword=${KEYSTORE_PWD}" >> ${{ github.workspace }}/android/keystore.properties
+          echo "keyPassword=${KEYSTORE_KEY_PWD}" >> ${{ github.workspace }}/android/keystore.properties
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Android APK
+        run: |
+          flutter build apk --release
+          cp build/app/outputs/flutter-apk/app-release.apk Oshi.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Oshi-Android
+          path: Oshi.apk
+
+  build-ios:
+    name: Build iOS
+    runs-on: macos-14
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: "3.22.3"
+          cache: true
+
+      - name: Update versioning and tokens
+        env:
+          APPCENTER_TELEMETRY_TOKEN: ${{ secrets.APPCENTER_TELEMETRY_TOKEN }}
+          SZKOLNY_APP_TOKEN: ${{ secrets.SZKOLNY_APP_TOKEN }}
+        run: |
+          python3 -c "
+          import datetime, re, os
+          today = datetime.date.today().strftime('%Y%m%d')
+          run_num = '${{ github.run_number }}'
+          build_ver = f'1.0.{today}.{run_num}'
+
+          with open('pubspec.yaml', 'r') as f: c = f.read()
+          c = re.sub(r'version: .*', f'version: 1.0.{today}+{run_num}', c)
+          with open('pubspec.yaml', 'w') as f: f.write(c)
+
+          with open('lib/share/share.dart', 'r') as f: c = f.read()
+          c = c.replace('9.9.9.9', build_ver)
+          with open('lib/share/share.dart', 'w') as f: f.write(c)
+
+          appcenter_token = os.environ.get('APPCENTER_TELEMETRY_TOKEN', '')
+          szkolny_token = os.environ.get('SZKOLNY_APP_TOKEN', '')
+
+          with open('lib/share/appcenter.dart', 'r') as f: c = f.read()
+          if appcenter_token:
+              c = c.replace('AZ_APPCENTER_TELEMETRY_TOKEN', appcenter_token)
+          if szkolny_token:
+              c = c.replace('AZ_SZKOLNY_APP_TOKEN', szkolny_token)
+          with open('lib/share/appcenter.dart', 'w') as f: f.write(c)
+          "
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS IPA
+        run: |
+          flutter build ios --release --no-codesign
+          cd ./build/ios/iphoneos
+          mkdir -p Payload
+          mv Runner.app Payload/Runner.app
+          zip -r Oshi.ipa Payload
+          mv Oshi.ipa "${{ github.workspace }}/Oshi.ipa"
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Oshi-iOS
+          path: Oshi.ipa
+
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [build-android, build-ios]
+    if: always() && needs.build-android.result == 'success'
+    steps:
+      - name: Download all release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Compute release tag
+        run: |
+          echo "RELEASE_TAG=1.0.$(date '+%Y%m%d').${{ github.run_number }}" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: Release ${{ env.RELEASE_TAG }}
+          files: release-assets/*
+          generate_release_notes: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Trigger Toudai dispatch
+        env:
+          DISPATCH_TOKEN: ${{ secrets.PAT || secrets.KEY }}
+        if: env.DISPATCH_TOKEN != ''
+        run: |
+          curl -L -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $DISPATCH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/Ogaku/Toudai/actions/workflows/update.yml/dispatches \
+            -d '{"ref":"main","inputs":{}}' || true
