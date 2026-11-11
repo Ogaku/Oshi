@@ -1708,17 +1708,6 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                     },
                     child: '5352613A-B420-4441-A89D-612693727FF6'.localized,
                     after: 'Ko-fi'),
-                AdaptiveCard(
-                    regular: true,
-                    click: () {
-                      try {
-                        launchUrlString('https://discord.gg/7EzU9M3W5H');
-                      } catch (ex) {
-                        // ignored
-                      }
-                    },
-                    child: '3D02B970-3502-495C-B6B8-3D5D33A92EA6'.localized,
-                    after: 'Discord'),
               ],
             ),
           ]);
