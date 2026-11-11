@@ -48,12 +48,12 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                       Share.session.data.student.account.name,
                       Share.session.data.student.mainClass.name,
                       widget.message.topic,
-                      widget.message.content)
+                      widget.message.cleanContent)
                   : 'B4118707-9AF7-45E7-8759-59C00CE240C4'.localized.format(
                       DateFormat("EEE, MMM d, y 'a't hh:mm a").format(widget.message.sendDate),
                       widget.message.sender?.name,
                       widget.message.topic,
-                      widget.message.content)));
+                      widget.message.cleanContent)));
             },
           ),
           PullDownMenuDivider.large(),
@@ -75,14 +75,14 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                             Share.session.data.student.account.name,
                             Share.session.data.student.mainClass.name,
                             widget.message.topic,
-                            widget.message.content)
+                            widget.message.cleanContent)
                         : 'AF66B98F-C6F5-480F-87F3-49FCFDD3BBA2'.localized.format(
                             Share.session.data.student.account.name,
                             Share.session.data.student.mainClass.name,
                             DateFormat("EEE, MMM d, y 'a't hh:mm a").format(widget.message.sendDate),
                             widget.message.sender?.name,
                             widget.message.topic,
-                            widget.message.content))),
+                            widget.message.cleanContent))),
           ),
           AdaptiveMenuItem(
             title: '/Delete'.localized,
@@ -204,7 +204,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                                 // ignored
                               }
                             },
-                            text: widget.message.content ?? '2B6C42AB-FD8A-4DC1-A4EE-58D2235AE1FD'.localized,
+                            text: widget.message.cleanContent ?? '2B6C42AB-FD8A-4DC1-A4EE-58D2235AE1FD'.localized,
                             style: TextStyle(fontSize: 16)))
                   ]))
         ]),

@@ -712,20 +712,53 @@ class VulcanDataReader implements models.IProvider {
       final intVal = value.toInt();
       if (intVal <= 0) return null;
       if (intVal < 10000000000) {
-        return DateTime.fromMillisecondsSinceEpoch(intVal * 1000);
+        return DateTime.fromMillisecondsSinceEpoch(intVal * 1000).toLocal();
       }
-      return DateTime.fromMillisecondsSinceEpoch(intVal);
+      return DateTime.fromMillisecondsSinceEpoch(intVal).toLocal();
     }
     if (value is String) {
       final str = value.trim();
       if (str.isEmpty) return null;
+
+      // .NET JSON date format: /Date(1728886523000)/
+      final dotNetMatch = RegExp(r'/Date\((-?\d+)').firstMatch(str);
+      if (dotNetMatch != null) {
+        final ms = int.tryParse(dotNetMatch.group(1)!);
+        if (ms != null && ms > 0) {
+          return DateTime.fromMillisecondsSinceEpoch(ms).toLocal();
+        }
+      }
+
       final numVal = num.tryParse(str);
       if (numVal != null && numVal > 100000000) {
         return _tryParseVulcanDate(numVal);
       }
+
       final isoParsed = DateTime.tryParse(str);
-      if (isoParsed != null) return isoParsed;
-      final dmMatch = RegExp(r'^(\d{1,2})[.-](\d{1,2})[.-](\d{4})(?:\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?').firstMatch(str);
+      if (isoParsed != null) return isoParsed.toLocal();
+
+      // Match yyyy-MM-dd or yyyy.MM.dd or yyyy/MM/dd with optional time (including comma or single-digit hour)
+      final ymMatch = RegExp(
+        r'(\d{4})[./-](\d{1,2})[./-](\d{1,2})(?:[,\sT]+(?:godz\.?\s*)?(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?',
+        caseSensitive: false,
+      ).firstMatch(str);
+      if (ymMatch != null) {
+        final y = int.parse(ymMatch.group(1)!);
+        final m = int.parse(ymMatch.group(2)!);
+        final d = int.parse(ymMatch.group(3)!);
+        final h = ymMatch.group(4) != null ? int.parse(ymMatch.group(4)!) : 0;
+        final min = ymMatch.group(5) != null ? int.parse(ymMatch.group(5)!) : 0;
+        final s = ymMatch.group(6) != null ? int.parse(ymMatch.group(6)!) : 0;
+        if (m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+          return DateTime(y, m, d, h, min, s);
+        }
+      }
+
+      // Match dd.MM.yyyy or dd-MM-yyyy or dd/MM/yyyy anywhere in string (e.g. with weekday prefix)
+      final dmMatch = RegExp(
+        r'(\d{1,2})[./-](\d{1,2})[./-](\d{4})(?:\s*r\.?)?(?:[,\sT]+(?:godz\.?\s*)?(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?',
+        caseSensitive: false,
+      ).firstMatch(str);
       if (dmMatch != null) {
         final d = int.parse(dmMatch.group(1)!);
         final m = int.parse(dmMatch.group(2)!);
@@ -733,28 +766,98 @@ class VulcanDataReader implements models.IProvider {
         final h = dmMatch.group(4) != null ? int.parse(dmMatch.group(4)!) : 0;
         final min = dmMatch.group(5) != null ? int.parse(dmMatch.group(5)!) : 0;
         final s = dmMatch.group(6) != null ? int.parse(dmMatch.group(6)!) : 0;
-        return DateTime(y, m, d, h, min, s);
+        if (m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+          return DateTime(y, m, d, h, min, s);
+        }
       }
+
+      // Match Polish verbal month names (e.g. "14 października 2026", "14 paź 2026, 12:30", or "14 października")
+      const plMonths = <String, int>{
+        'stycz': 1, 'sty': 1,
+        'lut': 2,
+        'mar': 3,
+        'kwiet': 4, 'kwi': 4,
+        'maj': 5,
+        'czerw': 6, 'cze': 6,
+        'lip': 7,
+        'sierp': 8, 'sie': 8,
+        'wrze': 9, 'wrz': 9,
+        'paźdz': 10, 'pazdz': 10, 'paź': 10, 'paz': 10,
+        'listop': 11, 'lis': 11,
+        'grud': 12, 'gru': 12,
+      };
+      final lower = str.toLowerCase();
+      for (final entry in plMonths.entries) {
+        final plMatch = RegExp(
+          r'(\d{1,2})\s+' + entry.key + r'[a-ząćęłńóśźż.]*(?:\s+(\d{4}))?(?:[,\s]+(?:godz\.?\s*)?(\d{1,2}):(\d{1,2}))?',
+        ).firstMatch(lower);
+        if (plMatch != null) {
+          final d = int.parse(plMatch.group(1)!);
+          final m = entry.value;
+          final now = DateTime.now();
+          int y = plMatch.group(2) != null ? int.parse(plMatch.group(2)!) : now.year;
+          if (plMatch.group(2) == null && DateTime(y, m, d).isAfter(now.add(const Duration(days: 1)))) {
+            y -= 1;
+          }
+          final h = plMatch.group(3) != null ? int.parse(plMatch.group(3)!) : 0;
+          final min = plMatch.group(4) != null ? int.parse(plMatch.group(4)!) : 0;
+          return DateTime(y, m, d, h, min);
+        }
+      }
+
+      // Match time-only strings ("HH:mm" or "HH:mm:ss" when today's message only sends time)
+      final timeOnly = RegExp(r'^(\d{1,2}):(\d{2})(?::(\d{2}))?$').firstMatch(str);
+      if (timeOnly != null) {
+        final now = DateTime.now();
+        final h = int.parse(timeOnly.group(1)!);
+        final min = int.parse(timeOnly.group(2)!);
+        final s = timeOnly.group(3) != null ? int.parse(timeOnly.group(3)!) : 0;
+        if (h >= 0 && h < 24 && min >= 0 && min < 60) {
+          return DateTime(now.year, now.month, now.day, h, min, s);
+        }
+      }
+
       return null;
     }
     if (value is Map) {
-      for (final tsKey in ['Timestamp', 'timestamp', 'Time', 'time']) {
+      for (final tsKey in ['Timestamp', 'timestamp', 'Time', 'time', 'Epoch', 'epoch']) {
         final ts = value[tsKey];
         if (ts is num && ts > 100000000) {
           return _tryParseVulcanDate(ts);
         }
+        if (ts is String) {
+          final tsNum = num.tryParse(ts.trim());
+          if (tsNum != null && tsNum > 100000000) {
+            return _tryParseVulcanDate(tsNum);
+          }
+        }
       }
-      for (final dateKey in ['Date', 'date', 'DateAt', 'dateAt', 'DayAt', 'dayAt', 'DeadlineAt', 'deadlineAt', 'Value', 'value', 'Day', 'day', 'DateFormatted', 'dateFormatted', 'Deadline', 'deadline']) {
+      for (final dateKey in [
+        'Date', 'date',
+        'DateDisplay', 'dateDisplay',
+        'DateAt', 'dateAt',
+        'DayAt', 'dayAt',
+        'DeadlineAt', 'deadlineAt',
+        'SentAt', 'sentAt',
+        'ReadAt', 'readAt',
+        'CreatedAt', 'createdAt',
+        'ModifiedAt', 'modifiedAt',
+        'DateTime', 'dateTime',
+        'Value', 'value',
+        'Day', 'day',
+        'DateFormatted', 'dateFormatted',
+        'Deadline', 'deadline',
+      ]) {
         final inner = value[dateKey];
         if (inner != null) {
           final res = _tryParseVulcanDate(inner);
           if (res != null) {
             final timePart = value['Time'] ?? value['time'];
             if (timePart is String && timePart.contains(':')) {
-              final tp = timePart.split(':');
-              final h = int.tryParse(tp[0]) ?? 0;
-              final m = int.tryParse(tp.length > 1 ? tp[1] : '0') ?? 0;
-              final s = int.tryParse(tp.length > 2 ? tp[2] : '0') ?? 0;
+              final tp = timePart.trim().split(':');
+              final h = int.tryParse(tp[0]) ?? res.hour;
+              final m = int.tryParse(tp.length > 1 ? tp[1] : '0') ?? res.minute;
+              final s = int.tryParse(tp.length > 2 ? tp[2] : '0') ?? res.second;
               return DateTime(res.year, res.month, res.day, h, m, s);
             }
             return res;
@@ -767,6 +870,224 @@ class VulcanDataReader implements models.IProvider {
 
   DateTime _parseVulcanDate(dynamic value, [DateTime? fallback]) {
     return _tryParseVulcanDate(value) ?? fallback ?? DateTime.now();
+  }
+
+  DateTime _extractMessageSendDate(Map m) {
+    for (final key in [
+      'SentAt',
+      'DateSent',
+      'SendAt',
+      'DateSend',
+      'SentDate',
+      'SendDate',
+      'CreatedAt',
+      'DateCreated',
+      'DateAt',
+      'Date',
+      'DayAt',
+      'Day',
+      'data',
+      'Data',
+      'dataWyslania',
+      'DataWyslania',
+      'dataNadania',
+      'DataNadania',
+      'dataOtrzymania',
+      'DataOtrzymania',
+      'dataUtworzenia',
+      'DataUtworzenia',
+      'date',
+      'sendDate',
+      'sentAt',
+      'dateSent',
+      'createdAt',
+      'dateCreated',
+      'ModifiedAt',
+      'DateModify',
+      'modifiedAt',
+      'dateModify',
+    ]) {
+      final parsed = _tryParseVulcanDate(m[key]);
+      if (parsed != null) return parsed;
+    }
+
+    final sender = m['Sender'] ?? m['nadawca'];
+    if (sender is Map) {
+      for (final key in ['SentAt', 'DateSent', 'CreatedAt', 'DateCreated', 'Date', 'data']) {
+        final parsed = _tryParseVulcanDate(sender[key]);
+        if (parsed != null) return parsed;
+      }
+    }
+
+    // Fallback scan for any non-read date field in the message object
+    for (final entry in m.entries) {
+      final k = entry.key.toString().toLowerCase();
+      if (k.contains('read') ||
+          k.contains('przeczyt') ||
+          k.contains('odczyt') ||
+          k.contains('wycof') ||
+          k.contains('withdraw') ||
+          k == 'id' ||
+          k.contains('key') ||
+          k.contains('subject') ||
+          k.contains('temat') ||
+          k.contains('content') ||
+          k.contains('tresc') ||
+          k.contains('status')) {
+        continue;
+      }
+      final v = entry.value;
+      if (v is Map || (v is String && (k.contains('dat') || k.contains('sent') || k.contains('send') || k.contains('time') || k.contains('at')))) {
+        final parsed = _tryParseVulcanDate(v);
+        if (parsed != null) return parsed;
+      }
+    }
+
+    return DateTime.now();
+  }
+
+  DateTime? _extractMessageReadDate(
+    Map m, {
+    required DateTime sendDate,
+    required bool sent,
+    required String boxKey,
+  }) {
+    // 1. Check explicit top-level read date fields
+    for (final key in [
+      'ReadAt',
+      'DateRead',
+      'ReadDate',
+      'readAt',
+      'dateRead',
+      'readDate',
+      'dataPrzeczytania',
+      'DataPrzeczytania',
+      'dataOdczytania',
+      'DataOdczytania',
+    ]) {
+      final parsed = _tryParseVulcanDate(m[key]);
+      if (parsed != null) return parsed;
+    }
+
+    // Check any other map key that mentions read date
+    for (final entry in m.entries) {
+      final k = entry.key.toString().toLowerCase();
+      if ((k.contains('read') || k.contains('przeczyt') || k.contains('odczyt')) &&
+          !k.contains('unread') &&
+          !k.contains('nieprzeczyt')) {
+        final parsed = _tryParseVulcanDate(entry.value);
+        if (parsed != null) return parsed;
+      }
+    }
+
+    if (sent) return sendDate;
+
+    bool? isTruthyFlag(dynamic val) {
+      if (val == null) return null;
+      if (val is bool) return val;
+      if (val is num) return val != 0;
+      if (val is String) {
+        final s = val.trim().toLowerCase();
+        if (s == 'true' || s == '1' || s == 'tak' || s == 'yes') return true;
+        if (s == 'false' || s == '0' || s == 'nie' || s == 'no') return false;
+      }
+      return null;
+    }
+
+    // 2. Check Receiver / Receivers list (HebeCE mode=2 stores per-recipient HasRead / ReadAt / DateRead here)
+    final recRaw = m['Receiver'] ?? m['Receivers'] ?? m['odbiorcy'] ?? m['Odbiorcy'];
+    if (recRaw is List && recRaw.isNotEmpty) {
+      final boxName = _activeStudentRaw?['MessageBox']?['Name']?.toString().toLowerCase() ?? '';
+      final recMaps = recRaw.whereType<Map>().toList();
+      if (recMaps.isNotEmpty) {
+        var matchingRecs = recMaps.where((r) {
+          final gk = r['GlobalKey']?.toString() ?? r['apiGlobalKey']?.toString() ?? '';
+          if (boxKey.isNotEmpty && gk.isNotEmpty && gk.toLowerCase() == boxKey.toLowerCase()) {
+            return true;
+          }
+          final rName = r['Name']?.toString().toLowerCase() ?? '';
+          if (boxName.isNotEmpty && rName.isNotEmpty && rName == boxName) {
+            return true;
+          }
+          return false;
+        }).toList();
+
+        if (matchingRecs.isEmpty) {
+          matchingRecs = recMaps;
+        }
+
+        for (final r in matchingRecs) {
+          for (final rk in ['ReadAt', 'DateRead', 'ReadDate', 'readAt', 'dateRead', 'dataPrzeczytania', 'dataOdczytania']) {
+            final parsed = _tryParseVulcanDate(r[rk]);
+            if (parsed != null) return parsed;
+          }
+          for (final rk in ['HasRead', 'IsRead', 'Read', 'hasRead', 'isRead', 'read', 'przeczytana', 'odczytana', 'czyPrzeczytana']) {
+            final flag = isTruthyFlag(r[rk]);
+            if (flag == true) return sendDate;
+          }
+          for (final uk in ['Unread', 'IsUnread', 'unread', 'nieprzeczytane', 'nieprzeczytana']) {
+            final flag = isTruthyFlag(r[uk]);
+            if (flag == false) return sendDate;
+          }
+        }
+      }
+    } else if (recRaw is Map) {
+      for (final rk in ['ReadAt', 'DateRead', 'ReadDate', 'readAt', 'dateRead', 'dataPrzeczytania', 'dataOdczytania']) {
+        final parsed = _tryParseVulcanDate(recRaw[rk]);
+        if (parsed != null) return parsed;
+      }
+      for (final rk in ['HasRead', 'IsRead', 'Read', 'hasRead', 'isRead', 'read', 'przeczytana', 'odczytana', 'czyPrzeczytana']) {
+        if (isTruthyFlag(recRaw[rk]) == true) return sendDate;
+      }
+    }
+
+    // 3. Check top-level boolean/numeric read flags
+    for (final rk in [
+      'HasRead',
+      'IsRead',
+      'Read',
+      'ByMe',
+      'hasRead',
+      'isRead',
+      'read',
+      'przeczytana',
+      'Przeczytana',
+      'przeczytane',
+      'Przeczytane',
+      'odczytana',
+      'Odczytana',
+      'odczytane',
+      'Odczytane',
+      'czyPrzeczytana',
+      'CzyPrzeczytana',
+      'czyOdczytana',
+      'CzyOdczytana',
+    ]) {
+      final flag = isTruthyFlag(m[rk]);
+      if (flag == true) return sendDate;
+    }
+
+    for (final uk in [
+      'Unread',
+      'IsUnread',
+      'unread',
+      'isUnread',
+      'nieprzeczytane',
+      'Nieprzeczytane',
+      'nieprzeczytana',
+      'Nieprzeczytana',
+    ]) {
+      final flag = isTruthyFlag(m[uk]);
+      if (flag == false) return sendDate;
+    }
+
+    // 4. EduVulcan web ratio field e.g. "0/1" (0 unread / 1 read)
+    final ratio = m['nieprzeczytanePrzeczytanePrzez']?.toString().trim() ?? '';
+    if (ratio.startsWith('0/')) {
+      return sendDate;
+    }
+
+    return null;
   }
 
   models.Teacher _parseTeacher(dynamic raw) {
@@ -889,11 +1210,11 @@ class VulcanDataReader implements models.IProvider {
               announcements.add(models.Announcement(
                 id: (a['Id'] as num?)?.toInt() ?? -1,
                 subject: a['Title']?.toString() ?? '',
-                content: a['Content']?.toString() ?? '',
-                startDate: _parseVulcanDate(a['From'] ?? a['CreatedAt']),
-                endDate: _parseVulcanDate(a['To'] ?? a['ModifiedAt']),
+                content: _cleanHtml(a['Content']?.toString() ?? ''),
+                startDate: _parseVulcanDate(a['From'] ?? a['CreatedAt'] ?? a['DateCreated']),
+                endDate: _parseVulcanDate(a['To'] ?? a['ModifiedAt'] ?? a['DateModify']),
                 contact: _parseTeacher(a['Sender']),
-                read: false,
+                read: a['Read'] == true || a['HasRead'] == 1 || a['HasRead'] == true || a['ReadAt'] != null || a['DateRead'] != null,
               ));
             }
           }
@@ -1002,8 +1323,8 @@ class VulcanDataReader implements models.IProvider {
                     weight: weight,
                     comments: comment.isNotEmpty ? [comment] : [],
                     countsToAverage: countsToAvg,
-                    date: _parseVulcanDate(g['DateCreated']),
-                    addDate: _parseVulcanDate(g['DateModify'] ?? g['DateCreated']),
+                    date: _parseVulcanDate(g['CreatedAt'] ?? g['DateCreated']),
+                    addDate: _parseVulcanDate(g['ModifiedAt'] ?? g['DateModify'] ?? g['CreatedAt'] ?? g['DateCreated']),
                     addedBy: teacher,
                     semester: pNum,
                     isConstituent: true,
@@ -1440,6 +1761,13 @@ class VulcanDataReader implements models.IProvider {
         }
       } catch (vex, vst) { debugPrint('[vulcan] swallowed error: $vex\n$vst'); }
 
+      final prevReceived = dataChunk.messages.received.isNotEmpty
+          ? dataChunk.messages.received
+          : Share.session.data.messages.received;
+      final prevSent = dataChunk.messages.sent.isNotEmpty
+          ? dataChunk.messages.sent
+          : Share.session.data.messages.sent;
+
       List<models.Message> mapMessages(dynamic env, {required bool sent}) {
         if (env is! List) return [];
         final out = <models.Message>[];
@@ -1448,20 +1776,37 @@ class VulcanDataReader implements models.IProvider {
           final senderMap = m['Sender'] as Map?;
           final recList = (m['Receiver'] as List?) ?? [];
           final attachmentsRaw = (m['Attachments'] as List?) ?? [];
-          final content = m['Content']?.toString() ?? '';
+          final rawContent = m['Content']?.toString() ?? '';
+          final content = _cleanHtml(rawContent);
+          final sendDate = _extractMessageSendDate(m);
+          final readDate = _extractMessageReadDate(
+            m,
+            sendDate: sendDate,
+            sent: sent,
+            boxKey: boxKey,
+          );
+          final msgId = (m['Id'] is num)
+              ? (m['Id'] as num).toInt()
+              : (m['Id']?.toString().hashCode ?? m['GlobalKey']?.toString().hashCode ?? -1);
+          final msgUrl = m['GlobalKey']?.toString() ?? '';
+          final existingMsg = sent
+              ? null
+              : prevReceived.firstWhereOrDefault(
+                  (ex) => (msgUrl.isNotEmpty && ex.url == msgUrl) || (msgId != -1 && ex.id == msgId),
+                );
           out.add(models.Message(
-            id: m['Id']?.toString().hashCode ?? m['GlobalKey']?.toString().hashCode ?? -1,
-            url: m['GlobalKey']?.toString() ?? '',
+            id: msgId,
+            url: msgUrl,
             topic: m['Subject']?.toString() ?? '',
             content: content,
             preview: content,
-            sendDate: _parseVulcanDate(m['DateSent']),
-            readDate: m['DateRead'] != null ? _parseVulcanDate(m['DateRead']) : null,
+            sendDate: sendDate,
+            readDate: readDate ?? existingMsg?.readDate,
             hasAttachments: attachmentsRaw.isNotEmpty,
             attachments: attachmentsRaw
                 .whereType<Map>()
                 .map((a) => models.Attachment(
-                      name: a['Name']?.toString() ?? 'ZaÅ‚Ä…cznik',
+                      name: a['Name']?.toString() ?? 'Załącznik',
                       location: a['Link']?.toString() ?? '',
                     ))
                 .toList(),
@@ -1558,20 +1903,35 @@ class VulcanDataReader implements models.IProvider {
             for (final m in rawList) {
               if (m is! Map) continue;
               final msgId = (m['id'] as num?)?.toInt() ?? (m['apiGlobalKey']?.toString().hashCode ?? -1);
-              final dateParsed = _tryParseVulcanDate(m['data']) ?? DateTime.now();
-              final isRead = m['przeczytana'] == true;
+              final msgUrl = m['apiGlobalKey']?.toString() ?? msgId.toString();
+              final dateParsed = _extractMessageSendDate(m);
+              final readDateParsed = _extractMessageReadDate(
+                m,
+                sendDate: dateParsed,
+                sent: false,
+                boxKey: boxKey,
+              );
+              final existingMsg = prevReceived.firstWhereOrDefault(
+                (ex) => (msgUrl.isNotEmpty && ex.url == msgUrl) || (msgId != -1 && ex.id == msgId),
+              );
+              final rawBody = m['tresc']?.toString() ?? m['content']?.toString() ?? m['trescHtml']?.toString() ?? '';
+              final cleanedBody = _cleanHtml(rawBody);
+              final existingBody = _cleanHtml(existingMsg?.content ?? '');
+              final topicStr = m['temat']?.toString() ?? '(Bez tematu)';
               webReceived.add(models.Message(
                 id: msgId,
-                url: m['apiGlobalKey']?.toString() ?? msgId.toString(),
-                topic: m['temat']?.toString() ?? '(Bez tematu)',
-                content: m['tresc']?.toString() ?? '',
-                preview: m['tresc']?.toString() ?? m['temat']?.toString() ?? '',
+                url: msgUrl,
+                topic: topicStr,
+                content: cleanedBody.isNotEmpty ? cleanedBody : existingBody,
+                preview: cleanedBody.isNotEmpty
+                    ? cleanedBody
+                    : (existingBody.isNotEmpty ? existingBody : topicStr),
                 sendDate: dateParsed,
-                readDate: isRead ? dateParsed : null,
-                hasAttachments: m['hasZalaczniki'] == true,
-                attachments: [],
+                readDate: readDateParsed ?? existingMsg?.readDate,
+                hasAttachments: m['hasZalaczniki'] == true || m['czyZalaczniki'] == true,
+                attachments: existingMsg?.attachments ?? [],
                 sender: models.Teacher(
-                  firstName: m['korespondenci']?.toString() ?? 'Nadawca',
+                  firstName: m['korespondenci']?.toString() ?? m['nadawca']?.toString() ?? 'Nadawca',
                   url: m['apiGlobalKey']?.toString() ?? '',
                 ),
               ));
@@ -1605,20 +1965,30 @@ class VulcanDataReader implements models.IProvider {
             for (final m in rawList) {
               if (m is! Map) continue;
               final msgId = (m['id'] as num?)?.toInt() ?? (m['apiGlobalKey']?.toString().hashCode ?? -1);
-              final dateParsed = _tryParseVulcanDate(m['data']) ?? DateTime.now();
+              final msgUrl = m['apiGlobalKey']?.toString() ?? msgId.toString();
+              final dateParsed = _extractMessageSendDate(m);
+              final existingMsg = prevSent.firstWhereOrDefault(
+                (ex) => (msgUrl.isNotEmpty && ex.url == msgUrl) || (msgId != -1 && ex.id == msgId),
+              );
+              final rawBody = m['tresc']?.toString() ?? m['content']?.toString() ?? m['trescHtml']?.toString() ?? '';
+              final cleanedBody = _cleanHtml(rawBody);
+              final existingBody = _cleanHtml(existingMsg?.content ?? '');
+              final topicStr = m['temat']?.toString() ?? '(Bez tematu)';
               webSent.add(models.Message(
                 id: msgId,
-                url: m['apiGlobalKey']?.toString() ?? msgId.toString(),
-                topic: m['temat']?.toString() ?? '(Bez tematu)',
-                content: m['tresc']?.toString() ?? '',
-                preview: m['tresc']?.toString() ?? m['temat']?.toString() ?? '',
+                url: msgUrl,
+                topic: topicStr,
+                content: cleanedBody.isNotEmpty ? cleanedBody : existingBody,
+                preview: cleanedBody.isNotEmpty
+                    ? cleanedBody
+                    : (existingBody.isNotEmpty ? existingBody : topicStr),
                 sendDate: dateParsed,
                 readDate: dateParsed,
-                hasAttachments: m['hasZalaczniki'] == true,
-                attachments: [],
+                hasAttachments: m['hasZalaczniki'] == true || m['czyZalaczniki'] == true,
+                attachments: existingMsg?.attachments ?? [],
                 receivers: [
                   models.Teacher(
-                    firstName: m['korespondenci']?.toString() ?? 'Odbiorca',
+                    firstName: m['korespondenci']?.toString() ?? m['adresaci']?.toString() ?? 'Odbiorca',
                     url: m['apiGlobalKey']?.toString() ?? '',
                   )
                 ],
@@ -1722,20 +2092,7 @@ class VulcanDataReader implements models.IProvider {
     }
   }
 
-  static String _cleanHtml(String html) {
-    return html
-        .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
-        .replaceAll(RegExp(r'</p>', caseSensitive: false), '\n\n')
-        .replaceAll(RegExp(r'</div>', caseSensitive: false), '\n')
-        .replaceAll(RegExp(r'<[^>]*>'), '')
-        .replaceAll('&nbsp;', ' ')
-        .replaceAll('&lt;', '<')
-        .replaceAll('&gt;', '>')
-        .replaceAll('&amp;', '&')
-        .replaceAll('&quot;', '"')
-        .replaceAll('&#39;', "'")
-        .trim();
-  }
+  static String _cleanHtml(String html) => models.Message.cleanHtml(html);
 
   @override
   Future<({bool success, Exception? message, models.Message? result})> fetchMessageContent({
@@ -1765,7 +2122,7 @@ class VulcanDataReader implements models.IProvider {
           debugPrint('[vulcan] mark-as-read swallowed error: $statusEx');
         }
       }
-      String effectiveContent = parent.content ?? '';
+      String effectiveContent = _cleanHtml(parent.content ?? '');
       List<models.Attachment>? effectiveAttachments = parent.attachments;
 
       final fallbackUser = (_savedUsername?.isNotEmpty == true)
@@ -1816,7 +2173,7 @@ class VulcanDataReader implements models.IProvider {
       }
 
       if (effectiveContent.isEmpty) {
-        effectiveContent = (parent.preview?.isNotEmpty == true) ? parent.preview! : parent.topic;
+        effectiveContent = (parent.preview?.isNotEmpty == true) ? _cleanHtml(parent.preview!) : parent.topic;
       }
 
       final updated = models.Message.from(

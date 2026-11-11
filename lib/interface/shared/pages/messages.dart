@@ -524,34 +524,48 @@ class _MessagesPageState extends State<MessagesPage> {
         setState(() => isWorking = true);
 
         Share.session.provider.fetchMessageContent(parent: message, byMe: folder == MessageFolders.outbox).then((result) {
-          setState(() => isWorking = false);
-
-          final resolvedMessage = result.result ?? message;
-          if (folder == MessageFolders.inbox) {
-            var index = Share.session.data.messages.received.indexOf(message);
-            if (index != -1) {
-              Share.session.data.messages.received[index] = Message.from(
-                other: resolvedMessage,
-                readDate: resolvedMessage.readDate ?? DateTime.now(),
-              );
-            }
-          }
-          if (folder == MessageFolders.outbox) {
-            var index = Share.session.data.messages.sent.indexOf(message);
-            if (index != -1) {
-              Share.session.data.messages.sent[index] = Message.from(other: resolvedMessage);
-            }
+          final resolvedMessage = Message.from(
+            other: result.result ?? message,
+            readDate: (result.result ?? message).readDate ?? DateTime.now(),
+          );
+          if (mounted) {
+            setState(() {
+              isWorking = false;
+              if (folder == MessageFolders.inbox) {
+                var index = Share.session.data.messages.received.indexOf(message);
+                if (index == -1) {
+                  index = Share.session.data.messages.received
+                      .indexWhere((m) => (m.url.isNotEmpty && m.url == message.url) || (m.id != -1 && m.id == message.id));
+                }
+                if (index != -1) {
+                  Share.session.data.messages.received[index] = resolvedMessage;
+                }
+              }
+              if (folder == MessageFolders.outbox) {
+                var index = Share.session.data.messages.sent.indexOf(message);
+                if (index == -1) {
+                  index = Share.session.data.messages.sent
+                      .indexWhere((m) => (m.url.isNotEmpty && m.url == message.url) || (m.id != -1 && m.id == message.id));
+                }
+                if (index != -1) {
+                  Share.session.data.messages.sent[index] = resolvedMessage;
+                }
+              }
+            });
           }
 
           if (mounted) {
             Navigator.push(
-                // ignore: use_build_context_synchronously
-                context,
-                AdaptivePageRoute(
-                    builder: (context) => MessageDetailsPage(
-                          message: resolvedMessage,
-                          isByMe: folder == MessageFolders.outbox,
-                        )));
+                    // ignore: use_build_context_synchronously
+                    context,
+                    AdaptivePageRoute(
+                        builder: (context) => MessageDetailsPage(
+                              message: resolvedMessage,
+                              isByMe: folder == MessageFolders.outbox,
+                            )))
+                .then((_) {
+              if (mounted) setState(() {});
+            });
           }
 
           Share.settings.save();

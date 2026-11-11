@@ -2,7 +2,6 @@ import 'package:darq/darq.dart';
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/models/data/teacher.dart';
 
 import 'package:hive/hive.dart';
@@ -87,8 +86,46 @@ class Message extends Equatable {
   @HiveField(11)
   final List<Teacher>? receivers;
 
+  static String cleanHtml(String html) {
+    if (html.isEmpty) return html;
+    return html
+        .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
+        .replaceAll(RegExp(r'</p>', caseSensitive: false), '\n\n')
+        .replaceAll(RegExp(r'<p[^>]*>', caseSensitive: false), '')
+        .replaceAll(RegExp(r'</div>', caseSensitive: false), '\n')
+        .replaceAll(RegExp(r'</li>', caseSensitive: false), '\n')
+        .replaceAll(RegExp(r'<li[^>]*>', caseSensitive: false), '\u2022 ')
+        .replaceAll(RegExp(r'<[^>]*>'), '')
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&amp;', '&')
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#39;', "'")
+        .replaceAll('&apos;', "'")
+        .replaceAll('&ndash;', '\u2013')
+        .replaceAll('&mdash;', '\u2014')
+        .replaceAll('&oacute;', '\u00F3')
+        .replaceAll('&Oacute;', '\u00D3')
+        .replaceAllMapped(RegExp(r'&#(\d+);'), (m) {
+          final code = int.tryParse(m.group(1)!);
+          return code != null ? String.fromCharCode(code) : m.group(0)!;
+        })
+        .replaceAllMapped(RegExp(r'&#x([0-9a-fA-F]+);'), (m) {
+          final code = int.tryParse(m.group(1)!, radix: 16);
+          return code != null ? String.fromCharCode(code) : m.group(0)!;
+        })
+        .replaceAll(RegExp(r'\n{3,}'), '\n\n')
+        .trim();
+  }
+
+  String? get cleanContent => content != null ? cleanHtml(content!) : null;
+
   bool get read =>
-      receivers != null || (readDate != null && readDate!.isBefore(DateTime.now()) && readDate != DateTime(2000));
+      receivers != null ||
+      (readDate != null &&
+          readDate != DateTime(2000) &&
+          !readDate!.isAfter(DateTime.now().add(const Duration(days: 1))));
 
   String get senderName =>
       sender?.name ??
@@ -96,12 +133,23 @@ class Message extends Equatable {
           ? '/Messages/To'.localized.format(receivers?.select((x, index) => x.name).join(', ') ?? '')
           : '94149CBB-5B72-4186-A155-20A9C7FB1B2C'.localized);
 
-  String get previewString =>
-      (preview?.isEmpty ?? true) ? (content?.trim() ?? '/Messages/NoPreview'.localized) : preview!.trim();
+  String get previewString {
+    final raw = (preview?.isEmpty ?? true) ? (content?.trim() ?? '/Messages/NoPreview'.localized) : preview!.trim();
+    return cleanHtml(raw).replaceAll(RegExp(r'\s+'), ' ').trim();
+  }
 
-  String get sendDateString => sendDate.difference(DateTime.now().getDateOnly()).inDays > 0
-      ? DateFormat.Hm().format(sendDate)
-      : DateFormat.MMMd(Share.settings.appSettings.localeCode).format(sendDate);
+  String get sendDateString {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final msgDay = DateTime(sendDate.year, sendDate.month, sendDate.day);
+    if (msgDay == today) {
+      return DateFormat.Hm(Share.settings.appSettings.localeCode).format(sendDate);
+    }
+    if (sendDate.year != now.year) {
+      return DateFormat.yMMMd(Share.settings.appSettings.localeCode).format(sendDate);
+    }
+    return DateFormat.MMMd(Share.settings.appSettings.localeCode).format(sendDate);
+  }
 
   String get readDateString => '/Messages/ReadDate'.localized.format(
       DateFormat.yMMMd(Share.settings.appSettings.localeCode).format(readDate ?? DateTime(2000)),
