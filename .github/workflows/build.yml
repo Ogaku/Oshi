@@ -146,11 +146,14 @@ jobs:
           "
 
       - name: Install dependencies
-        run: flutter pub get
+        run: |
+          flutter config --no-enable-swift-package-manager
+          flutter pub get
 
       - name: Build iOS IPA
         run: |
-          flutter build ios --release --no-codesign || true
+          set -o pipefail
+          flutter build ios --release --no-codesign 2>&1 | tee build_ios.log || true
           if [ -d "./build/ios/iphoneos/Runner.app" ]; then
             cd ./build/ios/iphoneos
             mkdir -p Payload
