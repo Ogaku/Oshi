@@ -14,10 +14,6 @@ on:
 permissions:
   contents: write
 
-concurrency:
-  group: fox-build
-  cancel-in-progress: true
-
 jobs:
   build-fox-android:
     name: Build FOX Android
