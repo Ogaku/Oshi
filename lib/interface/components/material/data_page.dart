@@ -1,11 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-import 'package:contentsize_tabbarview/contentsize_tabbarview.dart';
 import 'package:darq/darq.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:enum_flag/enum_flag.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
+import 'package:oshi/interface/components/material/content_size_tab_bar_view.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/share/share.dart';
@@ -13,21 +13,22 @@ import 'package:oshi/share/share.dart';
 final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
 
 class DataPage extends DataPageBase {
-  const DataPage(
-      {super.key,
-      required super.title,
-      super.pageFlags = 0,
-      super.setState,
-      super.segmentController,
-      super.searchBuilder,
-      super.children,
-      super.selectedDate,
-      super.leading,
-      super.trailing,
-      super.segments,
-      super.previousPageTitle,
-      super.childOverride,
-      super.pageBuilder});
+  const DataPage({
+    super.key,
+    required super.title,
+    super.pageFlags = 0,
+    super.setState,
+    super.segmentController,
+    super.searchBuilder,
+    super.children,
+    super.selectedDate,
+    super.leading,
+    super.trailing,
+    super.segments,
+    super.previousPageTitle,
+    super.childOverride,
+    super.pageBuilder,
+  });
 
   @override
   State<DataPage> createState() => DataPageState();
@@ -41,9 +42,10 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     tabController = TabController(
-        length: widget.segments?.length ?? 1,
-        vsync: this,
-        initialIndex: widget.segments?.keys.toList().indexOf(widget.segmentController?.segment) ?? 0);
+      length: widget.segments?.length ?? 1,
+      vsync: this,
+      initialIndex: widget.segments?.keys.toList().indexOf(widget.segmentController?.segment) ?? 0,
+    );
     tabController.addListener(_onTabChanged);
     widget.segmentController?.reserved = tabController;
   }
@@ -69,7 +71,7 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void refresh(args) {
+  void refresh(dynamic args) {
     if (mounted) setState(() {});
     if (mounted && widget.setState != null) widget.setState!(() {});
   }
@@ -104,32 +106,36 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
     widget.segmentController?.addListener(pushUpdateSegment);
 
     // onChanged, onSubmitted -> already handled by searchController
-    return DynamicColorBuilder(builder: (lightDynamic, darkDynamic) {
-      // ignore: unused_local_variable
-      ColorScheme? lightColorScheme, darkColorScheme;
+    return DynamicColorBuilder(
+      builder: (lightDynamic, darkDynamic) {
+        // ignore: unused_local_variable
+        ColorScheme? lightColorScheme, darkColorScheme;
 
-      if (lightDynamic != null && darkDynamic != null) {
-        (lightColorScheme, darkColorScheme) = generateDynamicColourSchemes(lightDynamic, darkDynamic);
-      }
+        if (lightDynamic != null && darkDynamic != null) {
+          (lightColorScheme, darkColorScheme) = generateDynamicColourSchemes(lightDynamic, darkDynamic);
+        }
 
-      var pageChild = CustomScrollView(
-        slivers: <Widget>[
-          SliverAppBar.large(
-            key: ValueKey<int>(1),
-            backgroundColor:
-                widget.pageFlags.hasFlag(DataPageType.alternativeBackground) ? Theme.of(context).hoverColor : null,
-            pinned: true,
-            snap: false,
-            floating: false,
-            flexibleSpace: LayoutBuilder(
+        var pageChild = CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar.large(
+              key: ValueKey<int>(1),
+              backgroundColor: widget.pageFlags.hasFlag(DataPageType.alternativeBackground)
+                  ? Theme.of(context).hoverColor
+                  : null,
+              pinned: true,
+              snap: false,
+              floating: false,
+              flexibleSpace: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) => FlexibleSpaceBar(
-                    centerTitle: false,
-                    titlePadding: EdgeInsets.only(
-                        left: (isChildPage ?? false) ? (100.0 - ((constraints.maxHeight - 64) * 100 / (242 - 64))) : 20,
-                        bottom: 15,
-                        right: 20),
-                    title: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                    background: Stack(children: <Widget>[
+                  centerTitle: false,
+                  titlePadding: EdgeInsets.only(
+                    left: (isChildPage ?? false) ? (100.0 - ((constraints.maxHeight - 64) * 100 / (242 - 64))) : 20,
+                    bottom: 15,
+                    right: 20,
+                  ),
+                  title: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  background: Stack(
+                    children: <Widget>[
                       // Search icon
                       if (widget.pageFlags.hasFlag(DataPageType.searchable))
                         SearchAnchor(
@@ -139,17 +145,16 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
                                 ? const EdgeInsets.only(left: 65, top: 17)
                                 : const EdgeInsets.all(15.0),
                             child: Align(
-                                alignment: (isChildPage ?? false) && widget.trailing == null
-                                    ? Alignment.topRight
-                                    : Alignment.topLeft,
-                                child: SafeArea(
-                                    child: Icon(
-                                  Icons.search,
-                                  size: 25,
-                                  color: Theme.of(context).colorScheme.onSurface,
-                                ))),
+                              alignment: (isChildPage ?? false) && widget.trailing == null
+                                  ? Alignment.topRight
+                                  : Alignment.topLeft,
+                              child: SafeArea(
+                                child: Icon(Icons.search, size: 25, color: Theme.of(context).colorScheme.onSurface),
+                              ),
+                            ),
                           ),
-                          suggestionsBuilder: widget.searchBuilder ??
+                          suggestionsBuilder:
+                              widget.searchBuilder ??
                               (context, controller) => (widget.children ?? []).prepend(SizedBox(height: 15)),
                         ),
                       // Refresh progress status
@@ -158,10 +163,12 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
                         SafeArea(
                           child: Padding(
                             padding: switch (isChildPage ?? false) {
-                              false when widget.pageFlags.hasFlag(DataPageType.searchable) =>
-                                const EdgeInsets.only(left: 45), // Search icon only
-                              false when !widget.pageFlags.hasFlag(DataPageType.searchable) =>
-                                const EdgeInsets.only(left: 5), // Nothing in the way
+                              false when widget.pageFlags.hasFlag(DataPageType.searchable) => const EdgeInsets.only(
+                                left: 45,
+                              ), // Search icon only
+                              false when !widget.pageFlags.hasFlag(DataPageType.searchable) => const EdgeInsets.only(
+                                left: 5,
+                              ), // Nothing in the way
                               true when widget.pageFlags.hasFlag(DataPageType.searchable) && widget.trailing == null =>
                                 const EdgeInsets.only(left: 45), // Back icon only
                               true when widget.pageFlags.hasFlag(DataPageType.searchable) && widget.trailing != null =>
@@ -169,19 +176,27 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
                               _ => const EdgeInsets.all(0),
                             },
                             child: Container(
-                                margin: const EdgeInsets.only(top: 10, left: 10),
-                                child: ConstrainedBox(
-                                    constraints: const BoxConstraints(maxWidth: 150),
-                                    child: Row(children: [
-                                      Flexible(
-                                          child: Text(
+                              margin: const EdgeInsets.only(top: 10, left: 10),
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(maxWidth: 150),
+                                child: Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
                                         Share.session.refreshStatus.progressStatus ?? '',
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
-                                            color: CupertinoColors.inactiveGray, fontSize: 13, fontWeight: FontWeight.w300),
-                                      ))
-                                    ]))),
+                                          color: CupertinoColors.inactiveGray,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       if (widget.leading != null &&
@@ -189,116 +204,132 @@ class DataPageState extends State<DataPage> with TickerProviderStateMixin {
                               (Share.session.refreshStatus.progressStatus?.isEmpty ?? true)))
                         SafeArea(
                           child: SizedBox(
-                              height: 60,
-                              width: 150,
-                              child: Container(margin: EdgeInsets.only(left: 10, top: 3, bottom: 1), child: widget.leading)),
+                            height: 60,
+                            width: 150,
+                            child: Container(margin: EdgeInsets.only(left: 10, top: 3, bottom: 1), child: widget.leading),
+                          ),
                         ),
-                    ]))),
-            leadingWidth: widget.leading != null ? 150 : null,
-            leading: widget.leading != null ? Container() : null,
-            actions: <Widget>[Container(margin: EdgeInsets.only(right: 10), child: widget.trailing)],
-          ),
-          if (widget.pageFlags.hasFlag(DataPageType.segmented) && (widget.segments?.isNotEmpty ?? false))
-            SliverAppBar(
-              pinned: true,
-              primary: false,
-              centerTitle: false,
-              titleSpacing: 0,
-              toolbarHeight: 48,
-              automaticallyImplyLeading: false,
-              title: widget.pageFlags.hasFlag(DataPageType.segmented) && (widget.segments?.isNotEmpty ?? false)
-                  ? TabBar(
-                      indicatorSize: TabBarIndicatorSize.label,
-                      isScrollable: widget.segmentController?.scrollable ?? true,
-                      tabAlignment:
-                          (widget.segmentController?.scrollable ?? false) ? TabAlignment.center : TabAlignment.fill,
-                      labelPadding: EdgeInsets.symmetric(horizontal: 20),
-                      tabs: widget.segments!.values
-                          .select((x, index) => Tab(
-                                text: (!Share.settings.appSettings.useCupertino &&
+                    ],
+                  ),
+                ),
+              ),
+              leadingWidth: widget.leading != null ? 150 : null,
+              leading: widget.leading != null ? Container() : null,
+              actions: <Widget>[Container(margin: EdgeInsets.only(right: 10), child: widget.trailing)],
+            ),
+            if (widget.pageFlags.hasFlag(DataPageType.segmented) && (widget.segments?.isNotEmpty ?? false))
+              SliverAppBar(
+                pinned: true,
+                primary: false,
+                centerTitle: false,
+                titleSpacing: 0,
+                toolbarHeight: 48,
+                automaticallyImplyLeading: false,
+                title: widget.pageFlags.hasFlag(DataPageType.segmented) && (widget.segments?.isNotEmpty ?? false)
+                    ? TabBar(
+                        indicatorSize: TabBarIndicatorSize.label,
+                        isScrollable: widget.segmentController?.scrollable ?? true,
+                        tabAlignment: (widget.segmentController?.scrollable ?? false)
+                            ? TabAlignment.center
+                            : TabAlignment.fill,
+                        labelPadding: EdgeInsets.symmetric(horizontal: 20),
+                        tabs: widget.segments!.values
+                            .select(
+                              (x, index) => Tab(
+                                text:
+                                    (!Share.settings.appSettings.useCupertino &&
                                         isHorizontalPhoneMode(context) &&
                                         widget.pageBuilder != null)
                                     ? null
                                     : x,
-                                child: (!Share.settings.appSettings.useCupertino &&
+                                child:
+                                    (!Share.settings.appSettings.useCupertino &&
                                         isHorizontalPhoneMode(context) &&
                                         widget.pageBuilder != null)
-                                    ? Text(x,
+                                    ? Text(
+                                        x,
                                         style: TextStyle(
-                                            color: tabController.index == index
-                                                ? Theme.of(context).colorScheme.primary
-                                                : ((tabController.index - index).abs() < 4
+                                          color: tabController.index == index
+                                              ? Theme.of(context).colorScheme.primary
+                                              : ((tabController.index - index).abs() < 4
                                                     ? Theme.of(context).colorScheme.secondary
-                                                    : Theme.of(context).colorScheme.onSurfaceVariant)))
+                                                    : Theme.of(context).colorScheme.onSurfaceVariant),
+                                        ),
+                                      )
                                     : null,
-                              ))
-                          .toList(),
-                      controller: tabController,
-                    )
-                  : null,
-            ),
-          if (!(widget.children?.isEmpty ?? true) && widget.pageBuilder == null)
-            SliverList.list(
-              children: widget.children!,
-            ),
-          if (widget.pageFlags.hasFlag(DataPageType.segmented) && widget.pageBuilder != null)
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: isHorizontalPhoneMode(context)
-                  ? SizedBox(
-                      height: 2000,
-                      child: TabBarView(
+                              ),
+                            )
+                            .toList(),
                         controller: tabController,
-                        viewportFraction: isHorizontalPhoneMode(context) ? (1 / 7) : 1.0,
-                        children: List.generate(
+                      )
+                    : null,
+              ),
+            if (!(widget.children?.isEmpty ?? true) && widget.pageBuilder == null)
+              SliverList.list(children: widget.children!),
+            if (widget.pageFlags.hasFlag(DataPageType.segmented) && widget.pageBuilder != null)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: isHorizontalPhoneMode(context)
+                    ? SizedBox(
+                        height: 2000,
+                        child: TabBarView(
+                          controller: tabController,
+                          viewportFraction: isHorizontalPhoneMode(context) ? (1 / 7) : 1.0,
+                          children: List.generate(
                             widget.segments!.length,
                             (index) => (widget.segments!.length > 10 && (index - tabController.index).abs() > 7)
                                 ? const SizedBox.shrink()
-                                : widget.pageBuilder!(context, widget.segments!.keys.elementAt(index))),
-                      ),
-                    )
-                  : Column(
-                      children: [
-                        ContentSizeTabBarView(
-                          controller: tabController,
-                          children: List.generate(
+                                : widget.pageBuilder!(context, widget.segments!.keys.elementAt(index)),
+                          ),
+                        ),
+                      )
+                    : Column(
+                        children: [
+                          ContentSizeTabBarView(
+                            controller: tabController,
+                            children: List.generate(
                               widget.segments!.length,
                               (index) => (widget.segments!.length > 10 && (index - tabController.index).abs() > 2)
                                   ? const SizedBox.shrink()
-                                  : widget.pageBuilder!(context, widget.segments!.keys.elementAt(index))),
-                        ),
-                      ],
-                    ),
-            ),
-        ],
-      );
+                                  : widget.pageBuilder!(context, widget.segments!.keys.elementAt(index)),
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+          ],
+        );
 
-      return Scaffold(
-        backgroundColor: widget.pageFlags.hasFlag(DataPageType.alternativeBackground) ? Theme.of(context).hoverColor : null,
-        body: widget.pageFlags.hasFlag(DataPageType.refreshable)
-            ? RefreshIndicator(
-                key: widget.pageFlags.hasFlag(DataPageType.refreshable) ? _refreshIndicatorKey : null,
-                displacement: 55,
-                onRefresh: () async {
-                  if (Share.session.refreshStatus.isRefreshing) return;
-                  await Share.session.refreshStatus.refreshMutex.protect<void>(() async {
-                    try {
-                      HapticFeedback.mediumImpact(); // Trigger a haptic feedback
-                    } catch (ex) {
-                      // ignored
-                    }
+        return Scaffold(
+          backgroundColor: widget.pageFlags.hasFlag(DataPageType.alternativeBackground)
+              ? Theme.of(context).hoverColor
+              : null,
+          body: widget.pageFlags.hasFlag(DataPageType.refreshable)
+              ? RefreshIndicator(
+                  key: widget.pageFlags.hasFlag(DataPageType.refreshable) ? _refreshIndicatorKey : null,
+                  displacement: 55,
+                  onRefresh: () async {
+                    if (Share.session.refreshStatus.isRefreshing) return;
+                    await Share.session.refreshStatus.refreshMutex.protect<void>(() async {
+                      try {
+                        HapticFeedback.mediumImpact(); // Trigger a haptic feedback
+                      } catch (ex) {
+                        // ignored
+                      }
 
-                    await Share.session.refreshAll(weekStart: widget.selectedDate);
-                    // refreshController.refreshCompleted();
+                      await Share.session.refreshAll(weekStart: widget.selectedDate);
+                      // refreshController.refreshCompleted();
 
-                    if (mounted) setState(() {});
-                    if (mounted && widget.setState != null) widget.setState!(() {});
-                  });
-                },
-                child: pageChild)
-            : pageChild,
-      );
-    });
+                      if (mounted) setState(() {});
+                      if (mounted && widget.setState != null) widget.setState!(() {});
+                    });
+                  },
+                  child: pageChild,
+                )
+              : pageChild,
+        );
+      },
+    );
   }
 }
 

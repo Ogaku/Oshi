@@ -6,6 +6,8 @@ import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/share/translator.dart';
 
+export 'package:oshi/share/translator.dart';
+
 extension DateTimeAddDate on DateTime {
   DateTime addDate({int years = 0, int months = 0, int days = 0}) {
     if (years == 0 && months == 0 && days == 0) return this;

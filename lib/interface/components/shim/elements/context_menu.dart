@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 import 'package:darq/darq.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/share/share.dart';
 

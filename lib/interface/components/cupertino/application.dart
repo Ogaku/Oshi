@@ -5,9 +5,9 @@ import 'dart:io';
 
 import 'package:appcenter_sdk_flutter/appcenter_sdk_flutter.dart' as apps;
 import 'package:darq/darq.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -59,7 +59,7 @@ class _BaseAppState extends State<BaseApp> {
     super.dispose();
   }
 
-  void refresh(args) {
+  void refresh(dynamic args) {
     if (mounted) setState(() {});
   }
 
@@ -71,8 +71,7 @@ class _BaseAppState extends State<BaseApp> {
 
     Share.tabsNavigatePage.unsubscribeAll();
     Share.tabsNavigatePage.subscribe((args) {
-      if (args?.value == null) return;
-      setState(() => tabController.index = args!.value.clamp(0, 4));
+      setState(() => tabController.index = args.value.clamp(0, 4));
     });
 
     // Re-subscribe to all events - refresh
@@ -105,12 +104,11 @@ class _BaseAppState extends State<BaseApp> {
                 // Re-subscribe to all events - modals
                 Share.showErrorModal.unsubscribeAll();
                 Share.showErrorModal.subscribe((args) async {
-                  if (args?.value == null) return;
                   await showCupertinoModalPopup(
                       context: context,
                       useRootNavigator: true,
                       builder: (s) => CupertinoActionSheet(
-                          title: Text(args!.value.title),
+                          title: Text(args.value.title),
                           message: Text(args.value.message),
                           actions: args.value.actions.isEmpty
                               ? null
@@ -308,7 +306,7 @@ class _UnreadDotState extends State<UnreadDot> {
     super.dispose();
   }
 
-  void refresh(args) => setState(() => unseen = widget.unseen());
+  void refresh(dynamic args) => setState(() => unseen = widget.unseen());
 
   @override
   Widget build(BuildContext context) {

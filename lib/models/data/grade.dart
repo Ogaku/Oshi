@@ -2,7 +2,6 @@
 
 import 'package:darq/darq.dart';
 import 'package:equatable/equatable.dart';
-import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:oshi/models/data/lesson.dart';

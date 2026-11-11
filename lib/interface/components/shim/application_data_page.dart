@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:oshi/share/share.dart';
 
@@ -8,21 +8,22 @@ import 'package:oshi/interface/components/material/data_page.dart' as material;
 import 'package:oshi/interface/components/cupertino/data_page.dart' as cupertino;
 
 abstract class DataPageBase extends StatefulWidget {
-  const DataPageBase(
-      {super.key,
-      required this.title,
-      this.pageFlags = 0,
-      this.setState,
-      this.searchBuilder,
-      this.segmentController,
-      this.children,
-      this.selectedDate,
-      this.leading,
-      this.trailing,
-      this.segments,
-      this.previousPageTitle,
-      this.childOverride,
-      this.pageBuilder});
+  const DataPageBase({
+    super.key,
+    required this.title,
+    this.pageFlags = 0,
+    this.setState,
+    this.searchBuilder,
+    this.segmentController,
+    this.children,
+    this.selectedDate,
+    this.leading,
+    this.trailing,
+    this.segments,
+    this.previousPageTitle,
+    this.childOverride,
+    this.pageBuilder,
+  });
 
   final String title; // Page title
   final String? previousPageTitle;
@@ -41,20 +42,21 @@ abstract class DataPageBase extends StatefulWidget {
   final DateTime? selectedDate; // For refreshes
   final bool? childOverride; // For child pages
 
-  static DataPageBase adaptive(
-      {required String title,
-      String? previousPageTitle,
-      Widget? leading,
-      Widget? trailing,
-      int pageFlags = 0,
-      void Function(VoidCallback fn)? setState,
-      FutureOr<Iterable<Widget>> Function(BuildContext, SearchController)? searchBuilder,
-      SegmentController? segmentController,
-      Map<dynamic, String>? segments,
-      List<Widget>? children,
-      DateTime? selectedDate,
-      bool? childOverride,
-      Widget Function(BuildContext, dynamic)? pageBuilder}) {
+  static DataPageBase adaptive({
+    required String title,
+    String? previousPageTitle,
+    Widget? leading,
+    Widget? trailing,
+    int pageFlags = 0,
+    void Function(VoidCallback fn)? setState,
+    FutureOr<Iterable<Widget>> Function(BuildContext, SearchController)? searchBuilder,
+    SegmentController? segmentController,
+    Map<dynamic, String>? segments,
+    List<Widget>? children,
+    DateTime? selectedDate,
+    bool? childOverride,
+    Widget Function(BuildContext, dynamic)? pageBuilder,
+  }) {
     // Segment controller watcher
     if (segmentController != null && setState != null) {
       segmentController.removeListener(() => setState(() => {}));
@@ -113,15 +115,15 @@ enum DataPageType with EnumFlag {
 }
 
 class SegmentController with ChangeNotifier {
-  SegmentController({dynamic segment, this.reserved, this.scrollable = false}) : _segment = segment;
+  SegmentController({this._segment, this.reserved, this.scrollable = false});
 
   dynamic _segment;
   dynamic reserved;
   bool scrollable;
 
-  get segment => _segment;
+  dynamic get segment => _segment;
 
-  set segment(value) {
+  set segment(dynamic value) {
     _segment = value;
     notifyListeners();
   }

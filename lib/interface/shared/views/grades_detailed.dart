@@ -3,8 +3,7 @@
 
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:format/format.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
 import 'package:oshi/interface/components/shim/elements/context_menu.dart';
@@ -16,7 +15,6 @@ import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
-import 'package:oshi/share/translator.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
 
 class GradesDetailedPage extends StatefulWidget {
@@ -84,9 +82,10 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                     actions: [
                       AdaptiveContextMenuAction(
                         onPressed: () {
-                          sharing.Share.share('0440D007-CD66-495E-A1C3-9D290E26F507'
-                              .localized
-                              .format(widget.lesson.name, widget.lesson.gradesAverage));
+                          sharing.SharePlus.instance.share(sharing.ShareParams(
+                              text: '0440D007-CD66-495E-A1C3-9D290E26F507'
+                                  .localized
+                                  .format(widget.lesson.name, widget.lesson.gradesAverage)));
                           if (Share.settings.appSettings.useCupertino) {
                             Navigator.of(context, rootNavigator: true).pop();
                           }
@@ -154,9 +153,10 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                   actions: [
                     AdaptiveContextMenuAction(
                       onPressed: () {
-                        sharing.Share.share('86D66F6A-6E4B-4C65-8AB3-EBEACA3FFC90'
-                            .localized
-                            .format(widget.lesson.name, widget.lesson.gradesSemAverage));
+                        sharing.SharePlus.instance.share(sharing.ShareParams(
+                            text: '86D66F6A-6E4B-4C65-8AB3-EBEACA3FFC90'
+                                .localized
+                                .format(widget.lesson.name, widget.lesson.gradesSemAverage)));
                         if (Share.settings.appSettings.useCupertino) {
                           Navigator.of(context, rootNavigator: true).pop();
                         }
@@ -225,13 +225,14 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
               actions: [
                 AdaptiveContextMenuAction(
                   onPressed: () {
-                    sharing.Share.share('E02FB126-60E8-4604-B616-69529AB0EE64'.localized.format(
-                        (widget.lesson.allGrades
-                                .firstWhereOrDefault(
-                                    (x) => x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition))
-                                ?.value) ??
-                            '',
-                        widget.lesson.name));
+                    sharing.SharePlus.instance.share(sharing.ShareParams(
+                        text: 'E02FB126-60E8-4604-B616-69529AB0EE64'.localized.format(
+                            (widget.lesson.allGrades
+                                    .firstWhereOrDefault(
+                                        (x) => x.isFinalProposition || (x.semester == 2 && x.isSemesterProposition))
+                                    ?.value) ??
+                                '',
+                            widget.lesson.name)));
                     if (Share.settings.appSettings.useCupertino) {
                       Navigator.of(context, rootNavigator: true).pop();
                     }
@@ -310,12 +311,13 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
               actions: [
                 AdaptiveContextMenuAction(
                   onPressed: () {
-                    sharing.Share.share('A7A1CA79-09B4-4EA6-BA6D-ED85243BADDA'.localized.format(
-                        (widget.lesson.allGrades
-                                .firstWhereOrDefault((x) => x.isSemesterProposition && x.semester == 1)
-                                ?.value) ??
-                            '',
-                        widget.lesson.name));
+                    sharing.SharePlus.instance.share(sharing.ShareParams(
+                        text: 'A7A1CA79-09B4-4EA6-BA6D-ED85243BADDA'.localized.format(
+                            (widget.lesson.allGrades
+                                    .firstWhereOrDefault((x) => x.isSemesterProposition && x.semester == 1)
+                                    ?.value) ??
+                                '',
+                            widget.lesson.name)));
                     if (Share.settings.appSettings.useCupertino) {
                       Navigator.of(context, rootNavigator: true).pop();
                     }
@@ -393,12 +395,13 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
               actions: [
                 AdaptiveContextMenuAction(
                   onPressed: () {
-                    sharing.Share.share('C0E5DDF1-1578-41A3-8833-9F6B8F327512'.localized.format(
-                        (widget.lesson.allGrades
-                                .firstWhereOrDefault((x) => x.isFinal || (x.semester == 2 && x.isSemester))
-                                ?.value) ??
-                            '',
-                        widget.lesson.name));
+                    sharing.SharePlus.instance.share(sharing.ShareParams(
+                        text: 'C0E5DDF1-1578-41A3-8833-9F6B8F327512'.localized.format(
+                            (widget.lesson.allGrades
+                                    .firstWhereOrDefault((x) => x.isFinal || (x.semester == 2 && x.isSemester))
+                                    ?.value) ??
+                                '',
+                            widget.lesson.name)));
                     if (Share.settings.appSettings.useCupertino) {
                       Navigator.of(context, rootNavigator: true).pop();
                     }
@@ -476,9 +479,10 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
               actions: [
                 AdaptiveContextMenuAction(
                   onPressed: () {
-                    sharing.Share.share('113A072F-2E32-4BBE-8705-4FB4F5B26F6E'.localized.format(
-                        (widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemester && x.semester == 1)?.value) ?? '',
-                        widget.lesson.name));
+                    sharing.SharePlus.instance.share(sharing.ShareParams(
+                        text: '113A072F-2E32-4BBE-8705-4FB4F5B26F6E'.localized.format(
+                            (widget.lesson.allGrades.firstWhereOrDefault((x) => x.isSemester && x.semester == 1)?.value) ?? '',
+                            widget.lesson.name)));
                     if (Share.settings.appSettings.useCupertino) {
                       Navigator.of(context, rootNavigator: true).pop();
                     }

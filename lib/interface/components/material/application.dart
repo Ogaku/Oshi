@@ -7,16 +7,15 @@ import 'dart:io';
 import 'package:appcenter_sdk_flutter/appcenter_sdk_flutter.dart' as apps;
 import 'package:darq/darq.dart';
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/share/appcenter.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/notifications.dart';
-import 'package:oshi/share/translator.dart';
 import 'package:path/path.dart' as path;
 import 'package:oshi/share/platform.dart';
 
@@ -66,7 +65,7 @@ class _BaseAppState extends State<BaseApp> {
     super.dispose();
   }
 
-  void refresh(args) {
+  void refresh(dynamic args) {
     if (mounted) setState(() {});
   }
 
@@ -88,8 +87,7 @@ class _BaseAppState extends State<BaseApp> {
 
     Share.tabsNavigatePage.unsubscribeAll();
     Share.tabsNavigatePage.subscribe((args) {
-      if (args?.value == null) return;
-      setState(() => currentPageIndex = args!.value.clamp(0, 4));
+      setState(() => currentPageIndex = args.value.clamp(0, 4));
     });
 
     // Re-subscribe to all events - refresh
@@ -225,11 +223,10 @@ class _BaseAppState extends State<BaseApp> {
                 // Re-subscribe to all events - modals
                 Share.showErrorModal.unsubscribeAll();
                 Share.showErrorModal.subscribe((args) async {
-                  if (args?.value == null) return;
                   await showDialog<void>(
                     context: context,
                     builder: (BuildContext context) => AlertDialog(
-                        title: Text(args!.value.title),
+                        title: Text(args.value.title),
                         content: Text(args.value.message),
                         actions: args.value.actions.isEmpty
                             ? []
@@ -341,7 +338,7 @@ class _UnreadDotState extends State<UnreadDot> {
     super.dispose();
   }
 
-  void refresh(args) => setState(() => unseen = widget.unseen());
+  void refresh(dynamic args) => setState(() => unseen = widget.unseen());
 
   @override
   Widget build(BuildContext context) {

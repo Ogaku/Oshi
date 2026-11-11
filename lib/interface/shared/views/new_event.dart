@@ -1,10 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/input.dart';
@@ -17,7 +16,6 @@ import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/share/share.dart';
-import 'package:oshi/share/translator.dart';
 
 class EventComposePage extends StatefulWidget {
   const EventComposePage(

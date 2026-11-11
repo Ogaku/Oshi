@@ -1,26 +1,27 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:enum_flag/enum_flag.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:oshi/interface/components/cupertino/widgets/searchable_bar.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/share/share.dart';
 
 class DataPage extends DataPageBase {
-  const DataPage(
-      {super.key,
-      required super.title,
-      super.pageFlags = 0,
-      super.setState,
-      super.searchBuilder,
-      super.segmentController,
-      super.children,
-      super.selectedDate,
-      super.leading,
-      super.trailing,
-      super.segments,
-      super.previousPageTitle});
+  const DataPage({
+    super.key,
+    required super.title,
+    super.pageFlags = 0,
+    super.setState,
+    super.searchBuilder,
+    super.segmentController,
+    super.children,
+    super.selectedDate,
+    super.leading,
+    super.trailing,
+    super.segments,
+    super.previousPageTitle,
+  });
 
   @override
   State<DataPage> createState() => DataPageState();
@@ -46,13 +47,12 @@ class DataPageState extends State<DataPage> {
 
   Future<void> _onSearchChanged() async {
     if (mounted) {
-      searchChildren =
-          widget.searchBuilder != null ? (await widget.searchBuilder!(context, searchController)).toList() : [];
+      searchChildren = widget.searchBuilder != null ? (await widget.searchBuilder!(context, searchController)).toList() : [];
       if (mounted) setState(() {});
     }
   }
 
-  void refresh(args) {
+  void refresh(dynamic args) {
     if (mounted) setState(() {});
     if (mounted && widget.setState != null) widget.setState!(() {});
   }
@@ -77,19 +77,20 @@ class DataPageState extends State<DataPage> {
           ? null
           : ConstrainedBox(
               constraints: BoxConstraints(maxWidth: 250),
-              child: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis)),
+              child: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+            ),
       trailing: widget.trailing,
       child: widget.pageFlags.hasFlag(DataPageType.searchable) && searchController.text.isNotEmpty
           ? null // searchChildren.firstOrNull
           : widget.pageFlags.hasFlag(DataPageType.singleChild)
-              ? widget.children?.firstOrNull
-              : null,
+          ? widget.children?.firstOrNull
+          : null,
       segments: widget.pageFlags.hasFlag(DataPageType.segmented) ? widget.segments : null,
       setState: widget.setState,
       anchor: widget.pageFlags.hasFlag(DataPageType.noTitleSpace) ? 0.0 : null,
       disableAddons:
           !(widget.pageFlags.hasFlag(DataPageType.searchable) || widget.pageFlags.hasFlag(DataPageType.segmented)) ||
-              !widget.pageFlags.hasFlag(DataPageType.refreshable),
+          !widget.pageFlags.hasFlag(DataPageType.refreshable),
       useSliverBox: widget.pageFlags.hasFlag(DataPageType.boxedPage),
       selectedDate: widget.selectedDate,
       keepBackgroundWatchers: widget.pageFlags.hasFlag(DataPageType.keepBackgroundWatchers),
@@ -98,15 +99,20 @@ class DataPageState extends State<DataPage> {
       searchController: widget.pageFlags.hasFlag(DataPageType.searchable) ? searchController : null,
       backgroundColor: widget.pageFlags.hasFlag(DataPageType.alternativeBackground)
           ? CupertinoDynamicColor.withBrightness(
-              color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 28, 28, 30))
+              color: const Color.fromARGB(255, 242, 242, 247),
+              darkColor: const Color.fromARGB(255, 28, 28, 30),
+            )
           : null,
     );
 
     return widget.pageFlags.hasFlag(DataPageType.withBase)
         ? CupertinoPageScaffold(
             backgroundColor: CupertinoDynamicColor.withBrightness(
-                color: const Color.fromARGB(255, 242, 242, 247), darkColor: const Color.fromARGB(255, 0, 0, 0)),
-            child: navigationBar)
+              color: const Color.fromARGB(255, 242, 242, 247),
+              darkColor: const Color.fromARGB(255, 0, 0, 0),
+            ),
+            child: navigationBar,
+          )
         : navigationBar;
   }
 }

@@ -3,7 +3,7 @@ import 'package:oshi/interface/shared/session_management.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:oshi/share/background.dart';
 import 'package:oshi/share/notifications.dart';
@@ -84,7 +84,7 @@ class _MainAppState extends State<MainApp> {
 
       // Validate our internet connection
       if (Share.session.settings.backgroundSyncWiFiOnly &&
-          (await (Connectivity().checkConnectivity())) != ConnectivityResult.wifi) return;
+          !(await (Connectivity().checkConnectivity())).contains(ConnectivityResult.wifi)) return;
 
       // Validate our session data
       if (Share.settings.sessions.lastSession == null || !Share.session.settings.enableBackgroundSync) return;
@@ -111,10 +111,7 @@ class _MainAppState extends State<MainApp> {
     Share.changeBase.unsubscribeAll();
     Share.changeBase.subscribe((args) {
       setState(() {
-        if (args != null)
-          child = args.value;
-        else
-          child = _child;
+        child = args.value;
       });
     });
 

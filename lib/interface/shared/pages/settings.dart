@@ -10,10 +10,9 @@ import 'package:duration/locale.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:event/event.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:format/format.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -42,7 +41,6 @@ import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
-import 'package:oshi/share/translator.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:duration/duration.dart';
@@ -1068,7 +1066,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                           fit: BoxFit.contain,
                                                           controller: controller,
                                                           scanWindow: scanWindow,
-                                                          errorBuilder: (context, error, child) {
+                                                          errorBuilder: (context, error) {
                                                             return ScannerErrorWidget(error: error);
                                                           },
                                                           overlayBuilder: (context, constraints) {
@@ -1235,14 +1233,14 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                           var path = (await Hive.openBox('sessions')).path;
                                                                           if (path != null) {
                                                                             var file = await File(path).readAsBytes();
-                                                                            var result = await FilePicker.platform.saveFile(
+                                                                            var result = await FilePicker.saveFile(
                                                                                 dialogTitle:
                                                                                     '2E20C624-26E9-4BF7-9106-6E1963BDDD8A'
                                                                                         .localized,
                                                                                 fileName: 'sessions.hive',
                                                                                 bytes: file);
                                                                             if (Platform.isWindows && result != null) {
-                                                                              File(result).writeAsBytes(file);
+                                                                              File(result.toFilePath()).writeAsBytes(file);
                                                                             }
                                                                           }
                                                                         });
@@ -1259,11 +1257,12 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                     click: () async {
                                                                       try {
                                                                         await Share.settingsMutex.protect<void>(() async {
-                                                                          var save = await FilePicker.platform.pickFiles(
-                                                                              allowMultiple: false, type: FileType.any);
+                                                                          var save = await FilePicker.pickFiles(
+                                                                              type: FileType.any);
 
-                                                                          if (!(save?.files.first.path?.endsWith('.hive') ??
-                                                                              false)) {
+                                                                          if (save.isEmpty ||
+                                                                              !(save.first.path?.endsWith('.hive') ??
+                                                                                  false)) {
                                                                             return;
                                                                           }
 
@@ -1272,7 +1271,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                               .put('sessions', Share.settings.sessions);
 
                                                                           var path = (await Hive.openBox('sessions')).path;
-                                                                          if (save?.files.first.path != null &&
+                                                                          if (save.first.path != null &&
                                                                               path != null) {
                                                                             try {
                                                                               await Hive.close();
@@ -1281,7 +1280,7 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                                                             }
 
                                                                             File(path).delete();
-                                                                            File(save!.files.first.path!).copy(path);
+                                                                            File(save.first.path!).copy(path);
 
                                                                             await Hive.initFlutter();
                                                                             await Share.settings.load();

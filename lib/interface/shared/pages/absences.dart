@@ -3,9 +3,8 @@
 
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:format/format.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/interface/components/shim/elements/attendance.dart';
@@ -14,7 +13,6 @@ import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
-import 'package:oshi/share/translator.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/shared/views/message_compose.dart';
 
@@ -40,7 +38,7 @@ class _AbsencesPageState extends State<AbsencesPage> {
     super.dispose();
   }
 
-  void refresh(args) {
+  void refresh(dynamic args) {
     if (mounted) setState(() {});
   }
 

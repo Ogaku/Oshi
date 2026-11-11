@@ -10,11 +10,10 @@ import 'package:appcenter_sdk_flutter/appcenter_sdk_flutter.dart';
 import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
 import 'package:event/event.dart' as event;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' as notifications;
-import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:mutex/mutex.dart';
 import 'package:oshi/interface/shared/pages/home.dart';
@@ -41,7 +40,6 @@ import 'package:oshi/providers/sample/sample_data.dart';
 import 'package:oshi/share/config.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
-import 'package:oshi/share/translator.dart';
 import 'package:oshi/share/appcenter.dart' as apps;
 
 part 'share.g.dart';
@@ -367,15 +365,15 @@ class Session extends HiveObject {
           id: 9999992);
 
       mProgress.progressChanged.subscribe((args) {
-        refreshStatus.progressStatus = args?.value.message;
+        refreshStatus.progressStatus = args.value.message;
         NotificationController.sendNotification(
             playSoundforce: false,
             title: '/Sync/Title'.localized,
-            content: (args?.value.message?.isEmpty ?? true)
+            content: (args.value.message?.isEmpty ?? true)
                 ? '7F2D0551-2391-4676-ADED-FAECF0CB89D7'.localized
-                : args!.value.message!,
+                : args.value.message!,
             category: NotificationCategories.other,
-            progress: args?.value.progress ?? 0.0,
+            progress: args.value.progress ?? 0.0,
             id: 9999992);
       });
 
@@ -506,7 +504,7 @@ class Session extends HiveObject {
       Share.currentIdleSplash = Share.translator.getRandomSplash();
       Share.currentEndingSplash = Share.translator.getRandomEndingSplash();
       if (!(isWindows || isFuchsia)) {
-        Future.delayed(const Duration(seconds: 2)).then((value) => Share.notificationsPlugin.cancel(9999992));
+        Future.delayed(const Duration(seconds: 2)).then((value) => Share.notificationsPlugin.cancel(id: 9999992));
       }
 
       refreshStatus.markAsDone(); // Refresh started
@@ -522,7 +520,7 @@ class Session extends HiveObject {
           }
         )));
       }
-      if (!(isWindows || isFuchsia)) Share.notificationsPlugin.cancel(9999992);
+      if (!(isWindows || isFuchsia)) Share.notificationsPlugin.cancel(id: 9999992);
       refreshStatus.markAsDone(); // Refresh started
       return (success: false, message: Exception(ex));
     }

@@ -1,5 +1,5 @@
 // ignore_for_file: prefer_const_constructors
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:oshi/interface/shared/views/events_timeline.dart';
 import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/data/timetables.dart';

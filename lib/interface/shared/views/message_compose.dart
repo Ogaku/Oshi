@@ -1,10 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:format/format.dart';
 import 'package:oshi/interface/components/cupertino/widgets/text_chip.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/interface/shared/containers.dart';

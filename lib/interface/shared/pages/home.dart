@@ -4,9 +4,8 @@ import 'dart:async';
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:event/event.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:format/format.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/interface/components/shim/elements/attendance.dart';
 import 'package:oshi/interface/components/shim/elements/compact.dart';
@@ -26,7 +25,6 @@ import 'package:oshi/models/data/messages.dart';
 import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
-import 'package:oshi/share/translator.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:visibility_aware_state/visibility_aware_state.dart';
 
@@ -62,7 +60,7 @@ class _HomePageState extends VisibilityAwareState<HomePage> {
     super.onVisibilityChanged(visibility);
   }
 
-  void refresh(args) {
+  void refresh(dynamic args) {
     if (mounted) setState(() {});
   }
 

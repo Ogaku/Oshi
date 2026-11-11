@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:format/format.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
@@ -14,7 +13,6 @@ import 'package:oshi/interface/shared/views/new_grade.dart';
 import 'package:oshi/models/data/grade.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
-import 'package:oshi/share/translator.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
 import 'package:uuid/uuid.dart';
 
@@ -25,9 +23,10 @@ extension GradeBodyExtension on Grade {
           itemBuilder: (context) => [
                 AdaptiveMenuItem(
                   onTap: () {
-                    sharing.Share.share('720C70E6-DB4D-44F7-878A-484DDF8A5648'
-                        .localized
-                        .format(value, DateFormat("EEEE, MMM d, y").format(date)));
+                    sharing.SharePlus.instance.share(sharing.ShareParams(
+                        text: '720C70E6-DB4D-44F7-878A-484DDF8A5648'
+                            .localized
+                            .format(value, DateFormat("EEEE, MMM d, y").format(date))));
                     Navigator.of(context).pop();
                   },
                   icon: CupertinoIcons.share,

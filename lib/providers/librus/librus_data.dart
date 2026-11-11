@@ -33,7 +33,6 @@ import 'package:oshi/models/data/grade.dart' as models;
 import 'package:oshi/models/data/messages.dart' as models;
 import 'package:oshi/models/provider.dart' as models;
 import 'package:oshi/providers/sample/sample_data.dart';
-import 'package:oshi/share/translator.dart';
 
 import 'models/shim/classrooms.dart' show Classrooms, Classroom;
 import 'models/shim/event_categories.dart' show EventCategories;

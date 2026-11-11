@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:darq/darq.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:format/format.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
@@ -17,7 +16,6 @@ import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
 import 'package:add_2_calendar/add_2_calendar.dart' as calendar;
-import 'package:oshi/share/translator.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:uuid/uuid.dart';
@@ -117,12 +115,13 @@ extension EventWidgetExtension on Event {
           actions: [
             CupertinoContextMenuAction(
               onPressed: () {
-                sharing.Share.share('A70900F1-79A1-432D-AC6D-137794074CCE'.localized.format(
-                    titleString,
-                    DateFormat("EEEE, MMM d, y").format(timeFrom),
-                    (classroom?.name.isNotEmpty ?? false)
-                        ? ('C33F8288-5BAD-4574-9C53-B54FED6757AC'.localized.format(classroom?.name ?? ""))
-                        : '55FCBDA9-6905-49C9-A3E8-426058041A8B'.localized));
+                sharing.SharePlus.instance.share(sharing.ShareParams(
+                    text: 'A70900F1-79A1-432D-AC6D-137794074CCE'.localized.format(
+                        titleString,
+                        DateFormat("EEEE, MMM d, y").format(timeFrom),
+                        (classroom?.name.isNotEmpty ?? false)
+                            ? ('C33F8288-5BAD-4574-9C53-B54FED6757AC'.localized.format(classroom?.name ?? ""))
+                            : '55FCBDA9-6905-49C9-A3E8-426058041A8B'.localized)));
                 Navigator.of(context, rootNavigator: true).pop();
               },
               trailingIcon: CupertinoIcons.share,
@@ -627,10 +626,11 @@ extension LessonWidgetExtension on TimetableLesson {
         actions: [
           CupertinoContextMenuAction(
             onPressed: () {
-              sharing.Share.share('5E6CA4CB-4757-46BC-80F3-2B208CE822DD'.localized.format(
-                  subject?.name ?? '25EFC95E-A925-4F98-BE8B-AB646D266E25'.localized,
-                  DateFormat("EEEE, MMM d, y").format(date),
-                  teacher?.name ?? '0ED15CBE-83CA-4E47-818F-61FCD06CBADA'.localized));
+              sharing.SharePlus.instance.share(sharing.ShareParams(
+                  text: '5E6CA4CB-4757-46BC-80F3-2B208CE822DD'.localized.format(
+                      subject?.name ?? '25EFC95E-A925-4F98-BE8B-AB646D266E25'.localized,
+                      DateFormat("EEEE, MMM d, y").format(date),
+                      teacher?.name ?? '0ED15CBE-83CA-4E47-818F-61FCD06CBADA'.localized)));
               Navigator.of(context, rootNavigator: true).pop();
             },
             trailingIcon: CupertinoIcons.share,

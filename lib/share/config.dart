@@ -5,7 +5,7 @@ import 'package:oshi/share/platform.dart';
 import 'package:universal_io/io.dart';
 
 import 'package:darq/darq.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:intl/date_symbol_data_file.dart';
 import 'package:oshi/share/resources.dart';
 

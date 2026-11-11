@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'dart:ui';
 import 'package:darq/darq.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:oshi/interface/components/cupertino/widgets/navigation_bar.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
@@ -411,10 +411,10 @@ class SizeReportingWidget extends StatefulWidget {
   final ValueChanged<Size> onSizeChange;
 
   const SizeReportingWidget({
-    Key? key,
+    super.key,
     required this.child,
     required this.onSizeChange,
-  }) : super(key: key);
+  });
 
   @override
   State<SizeReportingWidget> createState() => _SizeReportingWidgetState();
@@ -448,11 +448,11 @@ class ExpandablePageView extends StatefulWidget {
   final void Function(int)? pageChanged;
 
   const ExpandablePageView({
-    Key? key,
+    super.key,
     required this.builder,
     required this.controller,
     this.pageChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<ExpandablePageView> createState() => _ExpandablePageViewState();

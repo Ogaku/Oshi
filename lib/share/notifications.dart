@@ -222,8 +222,13 @@ class NotificationController {
               interruptionLevel:
                   (playSoundforce ?? (progress == null)) ? InterruptionLevel.active : InterruptionLevel.passive,
               categoryIdentifier: notificationCategories[NotificationCategories.other /* category */]?.identifier));
-      await Share.notificationsPlugin
-          .show(id ?? Random().nextInt(999999), title, content, notificationDetails, payload: data);
+      await Share.notificationsPlugin.show(
+        id: id ?? Random().nextInt(999999),
+        title: title,
+        body: content,
+        notificationDetails: notificationDetails,
+        payload: data,
+      );
     } catch (ex) {
       // ignore
     }

@@ -1,12 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:event/event.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_shake_animated/flutter_shake_animated.dart';
-import 'package:format/format.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/interface/components/shim/session_management.dart';
@@ -99,7 +98,7 @@ class _SessionsPageState extends State<SessionsPage> {
 
                                     var progress = Progress<({double? progress, String? message})>();
                                     progress.progressChanged
-                                        .subscribe((args) => setState(() => _progressMessage = args?.value.message));
+                                        .subscribe((args) => setState(() => _progressMessage = args.value.message));
 
                                     // showCupertinoModalBottomSheet(context: context, builder: (context) => LoginPage(provider: x));
                                     Share.settings.sessions.lastSessionId = x; // Update
@@ -190,12 +189,11 @@ class _SessionsPageState extends State<SessionsPage> {
           // Re-subscribe to all events - modals
           Share.showErrorModal.unsubscribeAll();
           Share.showErrorModal.subscribe((args) async {
-            if (args?.value == null) return;
             await showCupertinoModalPopup(
                 context: context,
                 useRootNavigator: true,
                 builder: (s) => CupertinoActionSheet(
-                    title: Text(args!.value.title),
+                    title: Text(args.value.title),
                     message: Text(args.value.message),
                     actions: args.value.actions.isEmpty
                         ? null
@@ -526,12 +524,11 @@ class _NewSessionPageState extends State<NewSessionPage> {
               // Re-subscribe to all events - modals
               Share.showErrorModal.unsubscribeAll();
               Share.showErrorModal.subscribe((args) async {
-                if (args?.value == null) return;
                 await showCupertinoModalPopup(
                     context: context,
                     useRootNavigator: true,
                     builder: (s) => CupertinoActionSheet(
-                        title: Text(args!.value.title),
+                        title: Text(args.value.title),
                         message: Text(args.value.message),
                         actions: args.value.actions.isEmpty
                             ? null
@@ -682,7 +679,7 @@ class _LoginPageState extends State<LoginPage> {
                   });
 
                   var progress = Progress<({double? progress, String? message})>();
-                  progress.progressChanged.subscribe((args) => setState(() => _progressMessage = args?.value.message));
+                  progress.progressChanged.subscribe((args) => setState(() => _progressMessage = args.value.message));
 
                   if (!await tryLogin(
                       progress: progress,

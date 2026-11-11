@@ -3,7 +3,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' as notifications;
 import 'package:hive_flutter/adapters.dart';
 import 'package:oshi/models/data/averages.dart';
@@ -34,7 +34,7 @@ import 'package:logging/logging.dart';
 // [Android-only] This "Headless Task" is run when the Android app is terminated with `enableHeadless: true`
 // Be sure to annotate your callback function to avoid issues in release mode on Flutter >= 3.3.0
 @pragma('vm:entry-point')
-void backgroundFetchHeadlessTask(HeadlessTask task) async {
+void backgroundFetchHeadlessTask(HeadlessEvent task) async {
   String taskId = task.taskId;
   bool isTimeout = task.timeout;
 
@@ -49,7 +49,7 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
 
   // Validate our internet connection
   if (Share.session.settings.backgroundSyncWiFiOnly &&
-      (await (Connectivity().checkConnectivity())) != ConnectivityResult.wifi) {
+      !(await (Connectivity().checkConnectivity())).contains(ConnectivityResult.wifi)) {
     return;
   }
 
@@ -132,13 +132,11 @@ Future<void> setupBaseApplication() async {
 
   // Set the icon to null if you want to use the default app icon
   await Share.notificationsPlugin.initialize(
-    notifications.InitializationSettings(
+    settings: notifications.InitializationSettings(
         android: const notifications.AndroidInitializationSettings('app_icon'),
         macOS: notifications.DarwinInitializationSettings(
-            onDidReceiveLocalNotification: NotificationController.onNotificationResponse,
             notificationCategories: NotificationController.notificationCategories.values.toList()),
         iOS: notifications.DarwinInitializationSettings(
-            onDidReceiveLocalNotification: NotificationController.onNotificationResponse,
             notificationCategories: NotificationController.notificationCategories.values.toList()),
         linux: const notifications.LinuxInitializationSettings(defaultActionName: 'Open notification')),
     onDidReceiveNotificationResponse: NotificationController.notificationResponseReceived,

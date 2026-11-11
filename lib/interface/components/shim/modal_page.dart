@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'package:oshi/interface/components/material/modal_page.dart' as material;
 import 'package:oshi/interface/components/cupertino/modal_page.dart' as cupertino;

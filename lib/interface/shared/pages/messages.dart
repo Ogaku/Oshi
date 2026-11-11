@@ -2,10 +2,9 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
@@ -20,7 +19,6 @@ import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/share/share.dart';
-import 'package:oshi/share/translator.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
@@ -71,7 +69,7 @@ class _MessagesPageState extends State<MessagesPage> {
     super.dispose();
   }
 
-  void refresh(args) {
+  void refresh(dynamic args) {
     if (mounted) setState(() {});
   }
 
@@ -214,7 +212,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                 color: Colors.white,
                               ),
                             ),
-                            onTap: (CompletionHandler handler) => sharing.Share.share(folder == MessageFolders.outbox
+                            onTap: (CompletionHandler handler) => sharing.SharePlus.instance.share(sharing.ShareParams(text: folder == MessageFolders.outbox
                                 ? '7A49BCB7-61FF-4472-985A-9952A67F03C8'.localized.format(
                                     DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate),
                                     Share.session.data.student.account.name,
@@ -225,7 +223,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                     DateFormat("EEE, MMM d, y 'a't hh:mm a").format(x.message.sendDate),
                                     x.message.sender?.name,
                                     x.message.topic,
-                                    x.message.preview)),
+                                    x.message.preview))),
                             color: CupertinoColors.systemBlue))
                         .toList(),
                     child: AdaptiveCard(
@@ -334,11 +332,11 @@ class _MessagesPageState extends State<MessagesPage> {
     Share.messagesNavigate.unsubscribeAll();
     Share.messagesNavigate.subscribe((args) {
       setState(
-          () => _folder = ((args?.value.receivers?.isNotEmpty ?? false) ? MessageFolders.outbox : MessageFolders.inbox));
+          () => _folder = ((args.value.receivers?.isNotEmpty ?? false) ? MessageFolders.outbox : MessageFolders.inbox));
       openMessage(
           context: context,
-          message: args?.value,
-          folder: ((args?.value.receivers?.isNotEmpty ?? false) ? MessageFolders.outbox : MessageFolders.inbox));
+          message: args.value,
+          folder: ((args.value.receivers?.isNotEmpty ?? false) ? MessageFolders.outbox : MessageFolders.inbox));
     });
 
     Share.messagesNavigateAnnouncement.unsubscribeAll();
@@ -346,8 +344,8 @@ class _MessagesPageState extends State<MessagesPage> {
       setState(() => _folder = MessageFolders.announcements);
       openMessage(
           context: context,
-          message: args?.value.message,
-          announcement: args?.value.parent,
+          message: args.value.message,
+          announcement: args.value.parent,
           folder: MessageFolders.announcements);
     });
 

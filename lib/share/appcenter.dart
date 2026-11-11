@@ -4,9 +4,9 @@ import 'package:universal_io/io.dart';
 
 import 'package:appcenter_sdk_flutter/appcenter_sdk_flutter.dart' as apps;
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_app_installer/flutter_app_installer.dart';
 import 'package:oshi/share/platform.dart';
 import 'package:oshi/share/notifications.dart';

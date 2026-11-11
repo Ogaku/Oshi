@@ -1,14 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:darq/darq.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
-import 'package:format/format.dart';
 import 'package:oshi/interface/components/cupertino/widgets/options_form.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
-import 'package:oshi/share/translator.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 class AdaptiveTextField extends StatefulWidget {

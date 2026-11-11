@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:oshi/interface/shared/containers.dart';
 
 // Used for iOS "Inset Grouped" margin, determined from SwiftUI's Forms in

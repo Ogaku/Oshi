@@ -2,9 +2,9 @@
 
 import 'dart:async';
 
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
 import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/interface/shared/views/grades_detailed.dart';

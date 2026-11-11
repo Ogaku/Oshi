@@ -4,13 +4,12 @@ import 'package:darq/darq.dart';
 import 'package:dio/dio.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:event/event.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_shake_animated/flutter_shake_animated.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
-import 'package:format/format.dart';
 import 'package:oshi/interface/components/material/application.dart';
 import 'package:oshi/interface/components/shim/session_management.dart';
 import 'package:oshi/interface/shared/containers.dart';
@@ -76,7 +75,7 @@ class _SessionsPageState extends State<SessionsPage> {
 
                             var progress = Progress<({double? progress, String? message})>();
                             progress.progressChanged
-                                .subscribe((args) => setState(() => _progressMessage = args?.value.message));
+                                .subscribe((args) => setState(() => _progressMessage = args.value.message));
 
                             // showCupertinoModalBottomSheet(context: context, builder: (context) => LoginPage(provider: x));
                             Share.settings.sessions.lastSessionId = x; // Update
@@ -213,11 +212,10 @@ class _SessionsPageState extends State<SessionsPage> {
             // Re-subscribe to all events - modals
             Share.showErrorModal.unsubscribeAll();
             Share.showErrorModal.subscribe((args) async {
-              if (args?.value == null) return;
               await showDialog<void>(
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                    title: Text(args!.value.title),
+                    title: Text(args.value.title),
                     content: Text(args.value.message),
                     actions: args.value.actions.isEmpty
                         ? []
@@ -636,7 +634,7 @@ class _LoginPageState extends State<LoginPage> {
                       });
 
                       var progress = Progress<({double? progress, String? message})>();
-                      progress.progressChanged.subscribe((args) => setState(() => _progressMessage = args?.value.message));
+                      progress.progressChanged.subscribe((args) => setState(() => _progressMessage = args.value.message));
 
                       if (!await tryLogin(
                           progress: progress,

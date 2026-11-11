@@ -1,5 +1,6 @@
 import 'dart:async' show Future;
 import 'dart:convert';
+import 'package:format/format.dart' as fmt;
 import 'package:universal_io/io.dart';
 import 'dart:math';
 import 'package:darq/darq.dart';
@@ -125,6 +126,33 @@ extension TranslatorExtension on String {
       }
     }
     return result;
+  }
+}
+
+const _missingFormatValue = Object();
+
+extension StringFormat on String {
+  String format([
+    Object? v1 = _missingFormatValue,
+    Object? v2 = _missingFormatValue,
+    Object? v3 = _missingFormatValue,
+    Object? v4 = _missingFormatValue,
+    Object? v5 = _missingFormatValue,
+    Object? v6 = _missingFormatValue,
+    Object? v7 = _missingFormatValue,
+    Object? v8 = _missingFormatValue,
+    Object? v9 = _missingFormatValue,
+    Object? v10 = _missingFormatValue,
+  ]) {
+    if (v1 is List && identical(v2, _missingFormatValue)) {
+      return fmt.formatWith(this, positional: v1);
+    }
+    if (v1 is Map<String, Object?> && identical(v2, _missingFormatValue)) {
+      return fmt.formatWith(this, named: v1);
+    }
+    final rawArgs = [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10];
+    final args = rawArgs.takeWhile((e) => !identical(e, _missingFormatValue)).toList();
+    return fmt.formatWith(this, positional: args);
   }
 }
 

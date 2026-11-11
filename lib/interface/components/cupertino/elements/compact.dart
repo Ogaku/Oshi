@@ -2,8 +2,7 @@
 import 'package:darq/darq.dart';
 import 'package:event/event.dart';
 import 'package:extended_wrap/extended_wrap.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:format/format.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/widgets/text_chip.dart';
@@ -27,12 +26,13 @@ extension EventBodyExtension on List<data.Event> {
           actions: [
             CupertinoContextMenuAction(
               onPressed: () {
-                sharing.Share.share('A70900F1-79A1-432D-AC6D-137794074CCE'.localized.format(
-                    x.titleString,
-                    DateFormat("EEEE, MMM d, y").format(x.timeFrom),
-                    (x.classroom?.name.isNotEmpty ?? false)
-                        ? ('C33F8288-5BAD-4574-9C53-B54FED6757AC'.localized.format(x.classroom?.name ?? ""))
-                        : '55FCBDA9-6905-49C9-A3E8-426058041A8B'.localized));
+                sharing.SharePlus.instance.share(sharing.ShareParams(
+                    text: 'A70900F1-79A1-432D-AC6D-137794074CCE'.localized.format(
+                        x.titleString,
+                        DateFormat("EEEE, MMM d, y").format(x.timeFrom),
+                        (x.classroom?.name.isNotEmpty ?? false)
+                            ? ('C33F8288-5BAD-4574-9C53-B54FED6757AC'.localized.format(x.classroom?.name ?? ""))
+                            : '55FCBDA9-6905-49C9-A3E8-426058041A8B'.localized)));
                 Navigator.of(context, rootNavigator: true).pop();
               },
               trailingIcon: CupertinoIcons.share,
@@ -128,9 +128,10 @@ extension EventBodyExtension on List<data.Event> {
           actions: [
             CupertinoContextMenuAction(
               onPressed: () {
-                sharing.Share.share('/Page/Home/Homework/share'
-                    .localized
-                    .format(x.titleString, DateFormat("EEEE, MMM d, y").format(x.timeFrom)));
+                sharing.SharePlus.instance.share(sharing.ShareParams(
+                    text: '/Page/Home/Homework/share'
+                        .localized
+                        .format(x.titleString, DateFormat("EEEE, MMM d, y").format(x.timeFrom))));
                 Navigator.of(context, rootNavigator: true).pop();
               },
               trailingIcon: CupertinoIcons.share,
@@ -263,9 +264,10 @@ extension GradeBodyExtension on List<({List<Grade> grades, Lesson lesson})> {
           actions: [
             CupertinoContextMenuAction(
               onPressed: () {
-                sharing.Share.share('1D35A7A3-301A-48F7-9ACA-C1986E63D1CF'
-                    .localized
-                    .format(x.grades.select((y, s) => y.value).join(", "), x.lesson.name));
+                sharing.SharePlus.instance.share(sharing.ShareParams(
+                    text: '1D35A7A3-301A-48F7-9ACA-C1986E63D1CF'
+                        .localized
+                        .format(x.grades.select((y, s) => y.value).join(", "), x.lesson.name)));
                 Navigator.of(context, rootNavigator: true).pop();
               },
               trailingIcon: CupertinoIcons.share,

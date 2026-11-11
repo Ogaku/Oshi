@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors
-import 'package:flutter/cupertino.dart';
-import 'package:format/format.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
@@ -9,7 +8,6 @@ import 'package:oshi/interface/shared/views/message_compose.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
-import 'package:oshi/share/translator.dart';
 import 'package:share_plus/share_plus.dart' as sharing;
 import 'package:uuid/uuid.dart';
 
@@ -59,8 +57,9 @@ extension LessonWidgetExtension on Attendance {
           actions: [
             CupertinoContextMenuAction(
               onPressed: () {
-                sharing.Share.share('/Page/Absences/Share'.localized.format(type.asPrep(), type.asStringLong(),
-                    DateFormat("EEEE, MMM d, y").format(date), lesson.subject?.name, lessonNo));
+                sharing.SharePlus.instance.share(sharing.ShareParams(
+                    text: '/Page/Absences/Share'.localized.format(type.asPrep(), type.asStringLong(),
+                        DateFormat("EEEE, MMM d, y").format(date), lesson.subject?.name, lessonNo)));
                 Navigator.of(context, rootNavigator: true).pop();
               },
               trailingIcon: CupertinoIcons.share,

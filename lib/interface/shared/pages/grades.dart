@@ -5,8 +5,8 @@ import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:extended_wrap/extended_wrap.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
@@ -18,7 +18,6 @@ import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/resources.dart';
 import 'package:oshi/share/share.dart';
-import 'package:oshi/share/translator.dart';
 
 // Boiler: returned to the app tab builder
 StatefulWidget get gradesPage => GradesPage();
@@ -37,7 +36,7 @@ class _GradesPageState extends State<GradesPage> {
     super.dispose();
   }
 
-  void refresh(args) {
+  void refresh(dynamic args) {
     if (mounted) setState(() {});
   }
 
@@ -194,13 +193,12 @@ class _GradesPageState extends State<GradesPage> {
 
     Share.gradesNavigate.unsubscribeAll();
     Share.gradesNavigate.subscribe((args) {
-      if (args?.value == null) return;
       if (Navigator.of(context).canPop()) Navigator.of(context).pop();
       Navigator.push(
           context,
           AdaptivePageRoute(
               builder: (context) => GradesDetailedPage(
-                    lesson: args!.value,
+                    lesson: args.value,
                   )));
     });
 
@@ -286,7 +284,7 @@ class _LineChart extends StatelessWidget {
   LineTouchData get lineTouchData1 => LineTouchData(
         handleBuiltInTouches: true,
         touchTooltipData: LineTouchTooltipData(
-          tooltipBgColor: Colors.blueGrey.withValues(alpha: 0.8),
+          getTooltipColor: (touchedSpot) => Colors.blueGrey.withValues(alpha: 0.8),
         ),
       );
 
@@ -349,7 +347,7 @@ class _LineChart extends StatelessWidget {
     );
 
     return SideTitleWidget(
-        axisSide: meta.axisSide,
+        meta: meta,
         space: 10,
         child: Text(
             DateFormat.MMM(Share.settings.appSettings.localeCode)

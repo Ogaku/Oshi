@@ -1,10 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 import 'package:darq/darq.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
@@ -43,7 +42,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
             title: '/Share'.localized,
             icon: CupertinoIcons.share,
             onTap: () {
-              sharing.Share.share(widget.isByMe
+              sharing.SharePlus.instance.share(sharing.ShareParams(text: widget.isByMe
                   ? '485689BD-B015-4C7B-AADE-BC9F084B1E2B'.localized.format(
                       DateFormat("EEE, MMM d, y 'a't hh:mm a").format(widget.message.sendDate),
                       Share.session.data.student.account.name,
@@ -54,7 +53,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                       DateFormat("EEE, MMM d, y 'a't hh:mm a").format(widget.message.sendDate),
                       widget.message.sender?.name,
                       widget.message.topic,
-                      widget.message.content));
+                      widget.message.content)));
             },
           ),
           PullDownMenuDivider.large(),

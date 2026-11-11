@@ -3,8 +3,7 @@
 
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:format/format.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/elements/event.dart';
@@ -17,7 +16,6 @@ import 'package:oshi/models/data/event.dart';
 import 'package:oshi/models/data/timetables.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
-import 'package:oshi/share/translator.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 class EventsPage extends StatefulWidget {

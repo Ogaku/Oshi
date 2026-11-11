@@ -4,9 +4,8 @@
 import 'dart:async';
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:format/format.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/material/data_page.dart';
@@ -23,7 +22,6 @@ import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/models/data/event.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
-import 'package:oshi/share/translator.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:oshi/interface/shared/views/events_timeline.dart' show EventsPage;
 import 'package:visibility_aware_state/visibility_aware_state.dart';
@@ -111,7 +109,7 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
     super.onVisibilityChanged(visibility);
   }
 
-  void refresh(args) {
+  void refresh(dynamic args) {
     if (mounted) setState(() {});
   }
 
@@ -439,13 +437,12 @@ class _TimetablePageState extends VisibilityAwareState<TimetablePage> {
 
     Share.timetableNavigateDay.unsubscribeAll();
     Share.timetableNavigateDay.subscribe((args) {
-      if (args?.value == null) return;
       if (Navigator.of(context).canPop()) Navigator.of(context).pop();
 
       setState(() => dayDifference =
-          args!.value.asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays);
+          args.value.asDate().difference(Share.session.data.student.mainClass.beginSchoolYear.asDate()).inDays);
 
-      animateToPage(args!.value.asDate());
+      animateToPage(args.value.asDate());
     });
 
     return DataPageBase.adaptive(
