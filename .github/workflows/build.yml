@@ -35,10 +35,10 @@ jobs:
           import datetime, re, os
           today = datetime.date.today().strftime('%Y%m%d')
           run_num = '${{ github.run_number }}'
-          build_ver = f'1.0.{today}.{run_num}'
+          build_ver = f'1.1.{today}.{run_num}'
 
           with open('pubspec.yaml', 'r') as f: c = f.read()
-          c = re.sub(r'version: .*', f'version: 1.0.{today}+{run_num}', c)
+          c = re.sub(r'version: .*', f'version: 1.1.{today}+{run_num}', c)
           with open('pubspec.yaml', 'w') as f: f.write(c)
 
           with open('lib/share/share.dart', 'r') as f: c = f.read()
@@ -124,10 +124,10 @@ jobs:
           import datetime, re, os
           today = datetime.date.today().strftime('%Y%m%d')
           run_num = '${{ github.run_number }}'
-          build_ver = f'1.0.{today}.{run_num}'
+          build_ver = f'1.1.{today}.{run_num}'
 
           with open('pubspec.yaml', 'r') as f: c = f.read()
-          c = re.sub(r'version: .*', f'version: 1.0.{today}+{run_num}', c)
+          c = re.sub(r'version: .*', f'version: 1.1.{today}+{run_num}', c)
           with open('pubspec.yaml', 'w') as f: f.write(c)
 
           with open('lib/share/share.dart', 'r') as f: c = f.read()
@@ -186,14 +186,15 @@ jobs:
           path: release-assets
 
       - name: Compute release tag
+        id: compute_tag
         run: |
-          echo "RELEASE_TAG=1.0.$(date '+%Y%m%d').${{ github.run_number }}" >> $GITHUB_ENV
+          echo "tag=1.1.$(date '+%Y%m%d').${{ github.run_number }}" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.RELEASE_TAG }}
-          name: Release ${{ env.RELEASE_TAG }}
+          tag_name: ${{ steps.compute_tag.outputs.tag }}
+          name: Release ${{ steps.compute_tag.outputs.tag }}
           files: release-assets/*
           generate_release_notes: true
           token: ${{ secrets.GITHUB_TOKEN }}

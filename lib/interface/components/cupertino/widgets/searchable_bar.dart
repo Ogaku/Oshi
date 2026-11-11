@@ -266,7 +266,7 @@ class _NavState extends State<SearchableSliverNavigationBar> {
                                                           ? CupertinoTheme.of(context).barBackgroundColor.withAlpha(255)
                                                           : collapsedController.isDark
                                                               ? const Color.fromRGBO(45, 45, 45, 0.5)
-                                                              : Colors.white.withOpacity(0.5)
+                                                              : Colors.white.withValues(alpha: 0.5)
                                                       : CupertinoDynamicColor.resolve(
                                                           const CupertinoDynamicColor.withBrightness(
                                                               color: Color.fromARGB(255, 242, 242, 247),
