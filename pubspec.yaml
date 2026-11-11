@@ -51,8 +51,9 @@ dependencies:
   background_fetch: ^1.7.0
   connectivity_plus: ^7.3.2
   mutex: ^3.1.0
-  flutter_app_installer: ^2.0.0
-  permission_handler: ^13.0.2
+  flutter_app_installer:
+    path: plugin/flutter_app_installer
+  permission_handler: ^12.0.3
   extended_wrap: ^0.1.5
   flutter_app_badger: ^1.5.0
   fl_chart: ^1.3.1
