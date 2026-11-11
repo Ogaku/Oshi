@@ -31,4 +31,9 @@ class FlutterAppInstaller {
   }) async {
     return FlutterAppInstallerPlatform.instance.installApk(filePath: filePath, silently: silently);
   }
+
+  /// Inspects the apk and compares it with the installed app (package, version code, signature).
+  Future<Map<String, dynamic>> verifyApk({required String filePath}) async {
+    return FlutterAppInstallerPlatform.instance.verifyApk(filePath: filePath);
+  }
 }

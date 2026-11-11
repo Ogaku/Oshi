@@ -53,4 +53,8 @@ abstract class FlutterAppInstallerPlatform extends PlatformInterface {
   }) async {
     throw UnimplementedError('installApk() has not been implemented.');
   }
+
+  Future<Map<String, dynamic>> verifyApk({required String filePath}) async {
+    throw UnimplementedError('verifyApk() has not been implemented.');
+  }
 }

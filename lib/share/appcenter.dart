@@ -9,7 +9,6 @@ import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_app_installer/flutter_app_installer.dart';
 import 'package:oshi/share/platform.dart';
-import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/share.dart';
 import 'package:oshi/share/translator.dart';
 import 'package:path_provider/path_provider.dart';
@@ -39,7 +38,58 @@ class AppCenter {
     }
   }
 
+  /// FOX channel: optional builds published as GitHub pre-releases tagged `fox-<version>`.
+  /// `releases/latest` never returns pre-releases, so regular users are never offered these.
+  static Future<AppVersion?> fetchFoxVersions() async {
+    try {
+      var response = await Dio(BaseOptions(
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+        headers: {
+          'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': 'Oshi-App',
+        },
+      )).get('https://api.github.com/repos/Ogaku/Oshi/releases', queryParameters: {'per_page': 30});
+
+      var data = response.data;
+      if (data is String) data = jsonDecode(data);
+      if (data is! List) return null;
+
+      AppVersion? best;
+      for (var release in data) {
+        if (release is! Map || release['draft'] == true || release['prerelease'] != true) continue;
+
+        final tag = (release['tag_name'] ?? '').toString().trim();
+        if (!tag.toLowerCase().startsWith('fox-')) continue;
+
+        Uri? downloadUri;
+        if (release['assets'] is List) {
+          for (var a in release['assets'] as List) {
+            if (a is Map && a['name']?.toString().toLowerCase().endsWith('.apk') == true && a['browser_download_url'] != null) {
+              downloadUri = Uri.parse(a['browser_download_url'].toString());
+              break;
+            }
+          }
+        }
+        if (downloadUri == null) continue;
+
+        final candidate = AppVersion(
+          version: Version.parse(tag.substring(4)),
+          notes: (release['body'] ?? '').toString(),
+          download: downloadUri,
+        );
+        if (best == null || candidate.version > best.version) best = candidate;
+      }
+      return best;
+    } catch (ex) {
+      return null;
+    }
+  }
+
   static Future<AppVersion?> fetchVersions() async {
+    // FOX builds only ever follow the FOX channel
+    if (Share.isFoxChannel) return fetchFoxVersions();
+
     try {
       // 1. Try GitHub Releases API first
       var response = await Dio(BaseOptions(
@@ -183,6 +233,31 @@ class AppCenter {
     }
   }
 
+  /// Returns a human-readable reason why the downloaded [apk] would be rejected by Android,
+  /// or null when it looks installable (or when it cannot be inspected).
+  static Future<String?> _verifyDownloadedApk(File apk) async {
+    try {
+      final info = await FlutterAppInstaller().verifyApk(filePath: apk.path);
+      if (info['valid'] != true) return null; // can't tell - let Android decide
+
+      if (info['packageMatches'] == false) {
+        return 'Pobrany plik to inna aplikacja (${info['packageName']}). Zgłoś problem twórcom.';
+      }
+      if (info['signatureMatches'] == false) {
+        return 'Pobrana wersja jest podpisana innym kluczem niż zainstalowana aplikacja, dlatego Android '
+            'odrzuci aktualizację ("Aplikacja nie została zainstalowana").\n\n'
+            'Odinstaluj aktualną wersję i zainstaluj nową ręcznie z przeglądarki (dane aplikacji zostaną usunięte).';
+      }
+      if (info['isNewer'] == false) {
+        return 'Pobrana wersja (${info['versionCode']}) nie jest nowsza od zainstalowanej '
+            '(${info['installedVersionCode']}), więc Android nie pozwoli jej zainstalować.';
+      }
+    } catch (_) {
+      // ignored - verification is best effort
+    }
+    return null;
+  }
+
   static Future<void> performUpdate(BuildContext context, AppVersion appVersion) async {
     if (!isAndroid) {
       try {
@@ -276,14 +351,39 @@ class AppCenter {
       }
 
       try {
-        await Permission.storage.request();
-      } catch (_) {}
-      try {
         await Permission.requestInstallPackages.request();
       } catch (_) {}
 
-      final installFile = await copyFileToExternalStorage(apkFile);
-      await FlutterAppInstaller().installApk(filePath: installFile.path);
+      // Android silently answers "App not installed" for a mismatching signature or version,
+      // so check the downloaded package ourselves first and explain what is wrong.
+      final problem = await _verifyDownloadedApk(apkFile);
+      if (problem != null) {
+        if (context.mounted) {
+          await showDialog<void>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text('Nie można zainstalować aktualizacji'),
+              content: Text(problem),
+              actions: [
+                TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('OK')),
+                FilledButton(
+                  onPressed: () async {
+                    Navigator.of(ctx).pop();
+                    try {
+                      await launchUrl(appVersion.download, mode: LaunchMode.externalApplication);
+                    } catch (_) {}
+                  },
+                  child: const Text('Otwórz w przeglądarce'),
+                ),
+              ],
+            ),
+          );
+        }
+        return;
+      }
+
+      // Installed straight from the app cache, served by the FileProvider (cache-path)
+      await FlutterAppInstaller().installApk(filePath: apkFile.path);
     } catch (ex) {
       if (isCancelled) return;
 

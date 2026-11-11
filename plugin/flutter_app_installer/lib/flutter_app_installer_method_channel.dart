@@ -60,4 +60,14 @@ class MethodChannelFlutterAppInstaller extends FlutterAppInstallerPlatform {
       },
     );
   }
+
+  /// Compare the apk in [filePath] with the installed app: package, version code and signing certificates.
+  @override
+  Future<Map<String, dynamic>> verifyApk({required String filePath}) async {
+    final result = await methodChannel.invokeMapMethod<String, dynamic>(
+      'verifyApk',
+      <String, dynamic>{"filePath": filePath},
+    );
+    return result ?? <String, dynamic>{'valid': false, 'error': 'no_result'};
+  }
 }

@@ -32,13 +32,16 @@ jobs:
           SZKOLNY_APP_TOKEN: ${{ secrets.SZKOLNY_APP_TOKEN }}
         run: |
           python3 -c "
-          import datetime, re, os
+          import datetime, re, os, time
           today = datetime.date.today().strftime('%Y%m%d')
           run_num = '${{ github.run_number }}'
           build_ver = f'1.1.{today}.{run_num}'
+          # Android versionCode must strictly increase for every build, otherwise updates fail with
+          # 'App not installed'. Unix time is monotonic and shared by every channel (stable and FOX).
+          build_code = int(time.time())
 
           with open('pubspec.yaml', 'r') as f: c = f.read()
-          c = re.sub(r'version: .*', f'version: 1.1.{today}+{run_num}', c)
+          c = re.sub(r'version: .*', f'version: 1.1.{today}+{build_code}', c)
           with open('pubspec.yaml', 'w') as f: f.write(c)
 
           with open('lib/share/share.dart', 'r') as f: c = f.read()
@@ -55,6 +58,15 @@ jobs:
               c = c.replace('AZ_SZKOLNY_APP_TOKEN', szkolny_token)
           with open('lib/share/appcenter.dart', 'w') as f: f.write(c)
           "
+
+      - name: Require release keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_FILE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::KEYSTORE_FILE_BASE64 secret is missing. Releases must be signed with one stable key, otherwise Android refuses to update the app ('App not installed'). See docs/signing.md"
+            exit 1
+          fi
 
       - name: Setup Keystore
         env:
@@ -74,6 +86,8 @@ jobs:
         run: flutter pub get
 
       - name: Build Android APK
+        env:
+          REQUIRE_RELEASE_SIGNING: "true"
         run: |
           set +e
           flutter build apk --release --android-skip-build-dependency-validation > build_apk.log 2>&1
@@ -121,13 +135,16 @@ jobs:
           SZKOLNY_APP_TOKEN: ${{ secrets.SZKOLNY_APP_TOKEN }}
         run: |
           python3 -c "
-          import datetime, re, os
+          import datetime, re, os, time
           today = datetime.date.today().strftime('%Y%m%d')
           run_num = '${{ github.run_number }}'
           build_ver = f'1.1.{today}.{run_num}'
+          # Android versionCode must strictly increase for every build, otherwise updates fail with
+          # 'App not installed'. Unix time is monotonic and shared by every channel (stable and FOX).
+          build_code = int(time.time())
 
           with open('pubspec.yaml', 'r') as f: c = f.read()
-          c = re.sub(r'version: .*', f'version: 1.1.{today}+{run_num}', c)
+          c = re.sub(r'version: .*', f'version: 1.1.{today}+{build_code}', c)
           with open('pubspec.yaml', 'w') as f: f.write(c)
 
           with open('lib/share/share.dart', 'r') as f: c = f.read()

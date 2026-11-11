@@ -61,6 +61,12 @@ class Share {
   // Shared settings data for managing sessions
   static Settings settings = Settings();
   static String buildNumber = '9.9.9.9';
+
+  // Release channel this build was published to. CI replaces the placeholder:
+  // 'fox' builds are delivered as optional pre-releases and only update from the FOX channel,
+  // anything else is treated as the regular stable channel.
+  static const String updateChannel = 'AZ_UPDATE_CHANNEL';
+  static bool get isFoxChannel => updateChannel == 'fox';
   static bool backgroundSyncActive = false;
 
   // Raised by the app to notify that the uses's just logged in

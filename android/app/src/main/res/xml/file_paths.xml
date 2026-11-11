@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
+    <!-- App cache: where the downloaded update apk is placed -->
+    <cache-path path="." name="app_cache" />
+    <files-path path="." name="app_files" />
+    <external-files-path path="." name="app_external_files" />
+    <external-cache-path path="." name="app_external_cache" />
     <external-path path="Android/data/Oshi/" name="files_root" />
     <external-path path="/data/user/0/com.ogaku.oshi/cache/" name="files_cache" />
     <external-path path="Download" name="external_files_download" />

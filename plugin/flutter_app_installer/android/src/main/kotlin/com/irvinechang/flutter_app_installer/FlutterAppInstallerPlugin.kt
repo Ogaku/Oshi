@@ -76,6 +76,7 @@ class FlutterAppInstallerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware
       "isSystemApplication" -> result.success(isSystemApplication(applicationContext.packageManager, applicationContext.packageName))
       "checkShellRootPermission" -> result.success(checkRootPermission())
       "installApk" -> installApk(call, result)
+      "verifyApk" -> verifyApk(call, result)
       else -> {
         result.notImplemented()
       }
@@ -223,6 +224,55 @@ class FlutterAppInstallerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware
     }
 
     if(!resultReplied) result.success(false)
+  }
+
+  /**
+   * Compare a downloaded apk with the currently installed app, so the caller can explain
+   * why Android would reject the update ("App not installed") before even trying to install it.
+   *
+   * Replies with a map: valid, packageName, packageMatches, versionCode, installedVersionCode,
+   * isNewer, signatureMatches (or valid=false and error when the file cannot be inspected).
+   **/
+  @Suppress("DEPRECATION")
+  private fun verifyApk(@NonNull call: MethodCall, @NonNull result: Result) {
+    val filePath = call.argument<String>("filePath")
+    if (filePath == null || !File(filePath).exists()) {
+      result.success(mapOf("valid" to false, "error" to "missing_file"))
+      return
+    }
+
+    try {
+      val pm = applicationContext.packageManager
+      val flags = PackageManager.GET_SIGNING_CERTIFICATES
+      val archive = pm.getPackageArchiveInfo(filePath, flags)
+      if (archive == null) {
+        result.success(mapOf("valid" to false, "error" to "unreadable"))
+        return
+      }
+
+      val installed = pm.getPackageInfo(applicationContext.packageName, flags)
+
+      fun signers(info: PackageInfo): Set<String> {
+        val signing = info.signingInfo ?: return emptySet()
+        val all = (signing.apkContentsSigners ?: emptyArray<android.content.pm.Signature>()) + (signing.signingCertificateHistory ?: emptyArray<android.content.pm.Signature>())
+        return all.map { it.toCharsString() }.toSet()
+      }
+
+      val archiveSigners = signers(archive)
+      val installedSigners = signers(installed)
+
+      result.success(mapOf(
+        "valid" to true,
+        "packageName" to archive.packageName,
+        "packageMatches" to (archive.packageName == applicationContext.packageName),
+        "versionCode" to archive.longVersionCode,
+        "installedVersionCode" to installed.longVersionCode,
+        "isNewer" to (archive.longVersionCode > installed.longVersionCode),
+        "signatureMatches" to archiveSigners.intersect(installedSigners).isNotEmpty()
+      ))
+    } catch (e: Exception) {
+      result.success(mapOf("valid" to false, "error" to (e.message ?: "unknown")))
+    }
   }
 
   /**
