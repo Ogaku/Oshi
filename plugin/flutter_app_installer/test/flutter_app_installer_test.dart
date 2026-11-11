@@ -33,6 +33,9 @@ class MockFlutterAppInstallerPlatform with MockPlatformInterfaceMixin implements
   @override
   // TODO: implement versionName
   Future<String?> get versionName => throw UnimplementedError();
+
+  @override
+  Future<Map<String, dynamic>> verifyApk({required String filePath}) => throw UnimplementedError();
 }
 
 void main() {

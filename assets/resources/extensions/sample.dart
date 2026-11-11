@@ -79,6 +79,6 @@ class SampleRegisterExtension extends OProvider {
   Map<String, dynamic> getRegisterDataJson() => <String, dynamic>{};
 }
 
-SampleRegisterExtension main(OSource source) {
-  return SampleRegisterExtension(source: source);
+SampleRegisterExtension main(dynamic source) {
+  return SampleRegisterExtension(source: source as OSource);
 }

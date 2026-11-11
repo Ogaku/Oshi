@@ -188,7 +188,8 @@ class OHttpClient {
 /// parallel multi-endpoint requests, HTML scraping, and RSA signing while keeping their
 /// provider lifecycle and configuration inside the `.dart` extension script.
 class OProtocolDriver {
-  OProtocolDriver(this.protocol, {required this.hostContext}) {
+  OProtocolDriver(this.protocol, {OExtensionHostContext? hostContext})
+      : hostContext = hostContext ?? OExtensionHostContext() {
     _delegate = switch (protocol.toLowerCase()) {
       'librus' || 'synergia' => LibrusDataReader(),
       'vulcan' || 'hebe' || 'eduvulcan' => VulcanDataReader(),

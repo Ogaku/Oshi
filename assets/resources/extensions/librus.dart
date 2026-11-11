@@ -88,6 +88,6 @@ class LibrusSynergiaExtension extends OProvider {
   Map<String, dynamic> getRegisterDataJson() => <String, dynamic>{};
 }
 
-LibrusSynergiaExtension main(OSource source) {
-  return LibrusSynergiaExtension(source: source);
+LibrusSynergiaExtension main(dynamic source) {
+  return LibrusSynergiaExtension(source: source as OSource);
 }

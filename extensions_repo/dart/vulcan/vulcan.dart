@@ -98,7 +98,7 @@ class EduVulcanExtension extends OProvider {
   Map<String, dynamic> getRegisterDataJson() => <String, dynamic>{};
 }
 
-EduVulcanExtension main(OSource source) {
-  return EduVulcanExtension(source: source);
+EduVulcanExtension main(dynamic source) {
+  return EduVulcanExtension(source: source as OSource);
 }
 
