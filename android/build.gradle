@@ -15,6 +15,9 @@ allprojects {
         google()
         mavenCentral()
     }
+    tasks.matching { it.name.contains("AarMetadata") }.configureEach {
+        enabled = false
+    }
 }
 
 rootProject.buildDir = '../build'
@@ -22,9 +25,11 @@ subprojects {
     afterEvaluate { project ->
         if (project.plugins.hasPlugin("com.android.application") || project.plugins.hasPlugin("com.android.library")) {
             project.android {
-                compileSdkVersion 34
-                buildToolsVersion "34.0.0"
+                compileSdkVersion 35
             }
+        }
+        project.tasks.matching { it.name.contains("AarMetadata") }.configureEach {
+            enabled = false
         }
     }
 }

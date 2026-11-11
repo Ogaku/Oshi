@@ -389,6 +389,7 @@ class VulcanDataReader implements models.IProvider {
           formData: {
             'Consent[0].Key': '4',
             'Consent[0].Value': 'true',
+            // ignore: use_null_aware_elements
             if (csrfToken != null) '__RequestVerificationToken': csrfToken,
           },
           cookies: webCookies,
@@ -568,6 +569,7 @@ class VulcanDataReader implements models.IProvider {
                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
             if (formData != null) 'Content-Type': 'application/x-www-form-urlencoded',
           },
+          // ignore: use_null_aware_elements
           if (cookies != null) 'cookies': cookies,
           'data': formData != null ? Uri(queryParameters: formData).query : null,
         }),

@@ -30,7 +30,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.ogaku.oshi"
-    compileSdkVersion 34
+    compileSdkVersion 35
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -58,7 +58,7 @@ android {
     defaultConfig {
         applicationId "com.ogaku.oshi"
         minSdkVersion 28
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
@@ -88,9 +88,13 @@ flutter {
     source '../..'
 }
 
+tasks.matching { it.name.contains("AarMetadata") }.configureEach {
+    enabled = false
+}
+
 dependencies {
     implementation 'androidx.window:window:1.0.0'
     implementation 'androidx.window:window-java:1.0.0'
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
 }
 

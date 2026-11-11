@@ -113,6 +113,7 @@ class HebeSigner {
 
     final signedHeaders = <String, String>{
       'vCanonicalUrl': canonicalUrl,
+      // ignore: use_null_aware_elements
       if (digestValue != null) 'Digest': digestValue,
       'vDate': formattedDate,
     };
