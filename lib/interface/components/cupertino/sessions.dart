@@ -7,8 +7,10 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_shake_animated/flutter_shake_animated.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:oshi/extensions/extension_manager.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/interface/components/shim/session_management.dart';
+import 'package:oshi/interface/shared/pages/extensions_browser.dart';
 import 'package:oshi/interface/shared/session_management.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/share/appcenter.dart';
@@ -38,12 +40,24 @@ class _SessionsPageState extends State<SessionsPage> {
   @override
   void initState() {
     super.initState();
+    ExtensionManager.instance.addListener(_onExtensionsChanged);
 
     // Set up other stuff after the app's launched
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Share.checkUpdates.broadcast(); // Check for updates
       NotificationController.requestNotificationAccess();
     });
+  }
+
+  void _onExtensionsChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    ExtensionManager.instance.removeListener(_onExtensionsChanged);
+    scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -365,6 +379,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
   @override
   void initState() {
     super.initState();
+    ExtensionManager.instance.addListener(_onExtensionsChanged);
 
     // Set up other stuff after the app's launched
     SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -388,6 +403,17 @@ class _NewSessionPageState extends State<NewSessionPage> {
         Share.settingsLoadError = null;
       }
     });
+  }
+
+  void _onExtensionsChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    ExtensionManager.instance.removeListener(_onExtensionsChanged);
+    scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -456,15 +482,30 @@ class _NewSessionPageState extends State<NewSessionPage> {
                 fit: BoxFit.fitWidth,
                 child:
                     Container(margin: EdgeInsets.only(right: 20), child: Text('/Session/New/Register/Question'.localized))),
-            trailing: GestureDetector(
-              child: Icon(CupertinoIcons.question_circle),
-              onTap: () async {
-                try {
-                  await launchUrlString('https://github.com/Ogaku');
-                } catch (ex) {
-                  // ignored
-                }
-              },
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                    await openExtensionsBrowser(context, showDevProviders: enableFake);
+                    if (mounted) setState(() {});
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 14),
+                    child: Icon(CupertinoIcons.square_grid_2x2),
+                  ),
+                ),
+                GestureDetector(
+                  child: Icon(CupertinoIcons.question_circle),
+                  onTap: () async {
+                    try {
+                      await launchUrlString('https://github.com/Ogaku');
+                    } catch (ex) {
+                      // ignored
+                    }
+                  },
+                ),
+              ],
             ),
           ),
           SliverFillRemaining(
@@ -484,10 +525,32 @@ class _NewSessionPageState extends State<NewSessionPage> {
                               '/Session/New/Register/Info'.localized,
                               style: TextStyle(fontSize: 14),
                             ))),
+                    if (providersList.isNotEmpty)
+                      CupertinoListSection.insetGrouped(
+                          hasLeading: false,
+                          margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                          children: providersList),
                     CupertinoListSection.insetGrouped(
                         hasLeading: false,
                         margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-                        children: providersList),
+                        children: [
+                          CupertinoListTile(
+                            leading: Icon(CupertinoIcons.add_circled),
+                            title: Text(
+                              providersList.isEmpty
+                                  ? 'Przeglądaj dostawców dziennika (Dodatki)'
+                                  : 'Zarządzaj dostawcami i repozytoriami',
+                            ),
+                            subtitle: providersList.isEmpty
+                                ? Text('Pobierz rozszerzenie Librus lub eduVULCAN / UONET+')
+                                : null,
+                            trailing: CupertinoListTileChevron(),
+                            onTap: () async {
+                              await openExtensionsBrowser(context, showDevProviders: enableFake);
+                              if (mounted) setState(() {});
+                            },
+                          ),
+                        ]),
                     Expanded(
                         child: Align(
                             alignment: Alignment.bottomCenter,

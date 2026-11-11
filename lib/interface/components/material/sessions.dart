@@ -10,9 +10,11 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_shake_animated/flutter_shake_animated.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
+import 'package:oshi/extensions/extension_manager.dart';
 import 'package:oshi/interface/components/material/application.dart';
 import 'package:oshi/interface/components/shim/session_management.dart';
 import 'package:oshi/interface/shared/containers.dart';
+import 'package:oshi/interface/shared/pages/extensions_browser.dart';
 import 'package:oshi/interface/shared/session_management.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/share/appcenter.dart';
@@ -38,12 +40,24 @@ class _SessionsPageState extends State<SessionsPage> {
   @override
   void initState() {
     super.initState();
+    ExtensionManager.instance.addListener(_onExtensionsChanged);
 
     // Set up other stuff after the app's launched
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Share.checkUpdates.broadcast(); // Check for updates
       NotificationController.requestNotificationAccess();
     });
+  }
+
+  void _onExtensionsChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    ExtensionManager.instance.removeListener(_onExtensionsChanged);
+    scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -363,6 +377,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
   @override
   void initState() {
     super.initState();
+    ExtensionManager.instance.addListener(_onExtensionsChanged);
 
     // Set up other stuff after the app's launched
     SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -386,6 +401,17 @@ class _NewSessionPageState extends State<NewSessionPage> {
         Share.settingsLoadError = null;
       }
     });
+  }
+
+  void _onExtensionsChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    ExtensionManager.instance.removeListener(_onExtensionsChanged);
+    scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -464,6 +490,14 @@ class _NewSessionPageState extends State<NewSessionPage> {
                 titlePadding: EdgeInsets.only(left: 20, bottom: 15, right: 20),
                 title: Text('/Session/New/Register/Question'.localized)),
             actions: [
+              IconButton(
+                tooltip: 'Dostawcy i repozytoria (Dodatki)',
+                onPressed: () async {
+                  await openExtensionsBrowser(context, showDevProviders: enableFake);
+                  if (mounted) setState(() {});
+                },
+                icon: Icon(Icons.extension_outlined),
+              ),
               Container(
                 padding: EdgeInsets.only(right: 10),
                 child: TextButton(
@@ -485,9 +519,68 @@ class _NewSessionPageState extends State<NewSessionPage> {
               child: Text('/Session/New/Register/Info'.localized),
             ),
           ),
-          SliverList.list(
-            children: providersList,
-          ),
+          if (providersList.isEmpty)
+            SliverToBoxAdapter(
+              child: Card(
+                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                elevation: 0,
+                color: Theme.of(context).colorScheme.surfaceContainerLow,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.extension_outlined,
+                        size: 44,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        'Brak zainstalowanych dostawców dziennika',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        'Pobierz rozszerzenie dla swojego dziennika (np. Librus Synergia lub eduVULCAN / UONET+) z wbudowanej przeglądarki dodatków.',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 16),
+                      FilledButton.icon(
+                        onPressed: () async {
+                          await openExtensionsBrowser(context, showDevProviders: enableFake);
+                          if (mounted) setState(() {});
+                        },
+                        icon: Icon(Icons.add),
+                        label: Text('Przeglądaj dostawców (Dodatki)'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            )
+          else ...[
+            SliverList.list(
+              children: providersList,
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                child: OutlinedButton.icon(
+                  onPressed: () async {
+                    await openExtensionsBrowser(context, showDevProviders: enableFake);
+                    if (mounted) setState(() {});
+                  },
+                  icon: Icon(Icons.extension_outlined),
+                  label: Text('Zarządzaj dostawcami i repozytoriami'),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
       bottomNavigationBar: Container(

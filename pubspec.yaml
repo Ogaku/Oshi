@@ -28,7 +28,6 @@ dependencies:
   uuid: ^4.6.0
   modal_bottom_sheet: ^3.0.0-pre
   url_launcher: ^6.3.3
-  hive_generator: ^2.0.1
   hive_flutter: ^1.1.0
   pull_down_button: ^0.10.2
   dynamic_color: ^2.1.0
@@ -77,16 +76,18 @@ dependencies:
   qr_flutter: ^4.1.0
   mobile_scanner: ^7.5.0
   expandable_page_view: any
+  d4rt: ^0.2.6
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  build_runner: ^2.4.13
-  json_serializable: ^6.8.0
+  build_runner: any
+  json_serializable: any
 
 flutter:
   uses-material-design: true
   assets:
     - assets/resources/strings/
     - assets/resources/images/
+    - assets/resources/extensions/
 

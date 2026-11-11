@@ -27,6 +27,7 @@ import 'package:oshi/interface/components/shim/modal_page.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/input.dart';
+import 'package:oshi/interface/shared/pages/extensions_browser.dart';
 import 'package:oshi/interface/shared/session_management.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/platform.dart';
@@ -587,6 +588,17 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                                   ]))))),
                   child: 'F55B93B2-D401-43DC-B735-5BE1FAC9077F'.localized,
                   after: Share.settings.appSettings.useCupertino ? '' : 'CDE7ED74-6C59-42E2-A3D6-BD06161D3E10'.localized,
+                ),
+                AdaptiveCard(
+                  regular: true,
+                  click: () async {
+                    await openExtensionsBrowser(context, showDevProviders: Share.session.settings.devMode);
+                    if (mounted) setState(() {});
+                  },
+                  child: 'Dostawcy i repozytoria',
+                  after: Share.settings.appSettings.useCupertino
+                      ? ''
+                      : 'Przeglądaj dodatki dzienników i zewnętrzne repozytoria',
                 )
               ],
             ),

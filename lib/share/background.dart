@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' as notifications;
 import 'package:hive_flutter/adapters.dart';
+import 'package:oshi/extensions/extension_manager.dart';
 import 'package:oshi/models/data/averages.dart';
 import 'package:oshi/share/appcenter.dart';
 import 'package:oshi/share/config.dart';
@@ -117,7 +118,11 @@ Future<void> setupBaseApplication() async {
   // Load english localization resources
   await Share.translator.loadResources('en');
 
+  // Initialize extension repositories and installed provider extensions
+  await ExtensionManager.instance.initialize();
+
   await Share.settings.load(); // Load all settings from hive, make sure nothing is missing
+  await ExtensionManager.instance.ensureSessionProvidersInstalled();
   Share.settings.sessions.sessions.remove('SESSIONS-SHIM-SMPL-FAKE-DATAPROVIDER');
   if (Share.settings.sessions.lastSessionId == 'SESSIONS-SHIM-SMPL-FAKE-DATAPROVIDER') {
     Share.settings.sessions.lastSessionId = Share.settings.sessions.sessions.keys.isNotEmpty ? Share.settings.sessions.sessions.keys.first : null;

@@ -34,9 +34,8 @@ import 'package:oshi/models/data/teacher.dart';
 import 'package:oshi/models/progress.dart';
 import 'package:oshi/interface/shared/pages/home.dart' show DateTimeExtension;
 
+import 'package:oshi/extensions/runtime/dart_extension_provider.dart';
 import 'package:oshi/providers/librus/librus_data.dart';
-import 'package:oshi/providers/vulcan/vulcan_data.dart';
-import 'package:oshi/providers/sample/sample_data.dart';
 import 'package:oshi/share/config.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
@@ -97,15 +96,9 @@ class Share {
   // Navigate the bottom tab bar to the specified page
   static event.Event<event.Value<int>> tabsNavigatePage = event.Event<event.Value<int>>();
 
-  // Currently supported provider types, maps sample instances to factories
-  static Map<String, ({IProvider instance, IProvider Function() factory})> providers = {
-    // Sample data provider, only for debugging purposes
-    'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER': (instance: FakeDataReader(), factory: () => FakeDataReader()),
-    // Librus synergia: log in with a synergia account
-    'PROVGUID-RGLR-PROV-LIBR-LIBRSYNERGIA': (instance: LibrusDataReader(), factory: () => LibrusDataReader()),
-    // eduVULCAN / UONET+: log in with an eduVULCAN or UONET+ account
-    'PROVGUID-RGLR-PROV-VULC-EDUVULCANAPI': (instance: VulcanDataReader(), factory: () => VulcanDataReader()),
-  };
+  // Currently installed provider extensions, maps sample instances to factories.
+  // Populated at runtime by ExtensionManager.
+  static Map<String, ({IProvider instance, IProvider Function() factory})> providers = {};
 }
 
 class Settings {
@@ -251,7 +244,7 @@ class Session extends HiveObject {
       Map<Lesson, List<Grade>>? customGrades,
       SessionConfig? settings,
       UnreadChanges? unreadChanges})
-      : provider = provider ?? Share.providers[providerGuid]!.factory(),
+      : provider = provider ?? Share.providers[providerGuid]?.factory() ?? UninstalledExtensionProvider(providerGuid),
         sessionCredentials = credentials ?? {},
         data = ProviderData(),
         changes = changes ?? [],
@@ -1117,5 +1110,10 @@ extension SzkolnyEventCategorySelector on EventCategory {
 }
 
 extension ProviderLoginType on IProvider {
-  int get loginType => switch (runtimeType) { LibrusDataReader => 2, _ => 20 };
+  int get loginType {
+    if (this is DartExtensionProvider) {
+      return (this as DartExtensionProvider).loginType;
+    }
+    return switch (runtimeType) { LibrusDataReader => 2, _ => 20 };
+  }
 }
