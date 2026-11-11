@@ -5,7 +5,6 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/application_data_page.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/input.dart';
@@ -62,9 +61,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                 ? 'DC48985E-AA43-4507-AF74-DAF3A385B6C1'.localized
                 : 'D1D2C948-7EC7-4966-9AD0-686269DF0BE1'.localized,
             icon: CupertinoIcons.reply,
-            onTap: () => showCupertinoModalBottomSheet(
-                context: context,
-                builder: (context) => MessageComposePage(
+            onTap: () => openMessageCompose(context,
                     receivers: widget.isByMe ? [] : (widget.message.sender != null ? [widget.message.sender!] : []),
                     subject: widget.isByMe
                         ? 'F77E1795-3404-4BCA-A173-80AFF744AAA1'.localized.format(widget.message.topic)
@@ -82,7 +79,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                             DateFormat("EEE, MMM d, y 'a't hh:mm a").format(widget.message.sendDate),
                             widget.message.sender?.name,
                             widget.message.topic,
-                            widget.message.cleanContent))),
+                            widget.message.cleanContent)),
           ),
           AdaptiveMenuItem(
             title: '/Delete'.localized,

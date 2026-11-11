@@ -201,16 +201,15 @@ extension EventWidgetExtension on Event {
                         icon: CupertinoIcons.chat_bubble_2,
                         title: '/Inquiry'.localized,
                         onTap: () {
-                          showMaterialModalBottomSheet(
-                              context: context,
-                              builder: (context) => MessageComposePage(
-                                  receivers: sender != null ? [sender!] : [],
-                                  subject: 'C834975A-FECF-4FA1-A099-242BC18FB55C'
-                                      .localized
-                                      .format(DateFormat("y.M.d").format(date ?? timeFrom)),
-                                  signature:
-                                      '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                           Navigator.of(context).pop();
+                          openMessageCompose(
+                              context,
+                              receivers: sender != null ? [sender!] : [],
+                              subject: 'C834975A-FECF-4FA1-A099-242BC18FB55C'
+                                  .localized
+                                  .format(DateFormat("y.M.d").format(date ?? timeFrom)),
+                              signature:
+                                  '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}');
                         },
                       ),
                       !isOwnEvent)
@@ -595,35 +594,33 @@ extension LessonWidgetExtension on TimetableLesson {
                 icon: CupertinoIcons.timer,
                 title: '3B6E8151-45FD-48B3-97CB-99E556E02F3E'.localized.format(lessonCallButtonString),
                 onTap: () {
-                  showMaterialModalBottomSheet(
-                      context: context,
-                      builder: (context) => MessageComposePage(
-                          receivers: teacher != null ? [teacher!] : [],
-                          subject: '4DF5CFE9-2B5F-4AE1-AEFC-B4B8888A09ED'
-                              .localized
-                              .format(lessonCallMessageString, DateFormat("y.M.d").format(date), lessonNo),
-                          message: '7955E73E-D260-43BA-8E2F-88CD43348BBD'
-                              .localized
-                              .format(lessonCallMessageString, subject?.name, DateFormat("y.M.d").format(date), lessonNo),
-                          signature:
-                              '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                   Navigator.of(context).pop();
+                  openMessageCompose(
+                      context,
+                      receivers: teacher != null ? [teacher!] : [],
+                      subject: '4DF5CFE9-2B5F-4AE1-AEFC-B4B8888A09ED'
+                          .localized
+                          .format(lessonCallMessageString, DateFormat("y.M.d").format(date), lessonNo),
+                      message: '7955E73E-D260-43BA-8E2F-88CD43348BBD'
+                          .localized
+                          .format(lessonCallMessageString, subject?.name, DateFormat("y.M.d").format(date), lessonNo),
+                      signature:
+                          '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}');
                 },
               ),
               AdaptiveMenuItem(
                 icon: CupertinoIcons.chat_bubble_2,
                 title: '/Inquiry'.localized,
                 onTap: () {
-                  showMaterialModalBottomSheet(
-                      context: context,
-                      builder: (context) => MessageComposePage(
-                          receivers: teacher != null ? [teacher!] : [],
-                          subject: '50CFA04B-E8EB-4BC9-80F1-C5EF39FE8F3A'
-                              .localized
-                              .format(DateFormat("y.M.d").format(date), lessonNo),
-                          signature:
-                              '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                   Navigator.of(context).pop();
+                  openMessageCompose(
+                      context,
+                      receivers: teacher != null ? [teacher!] : [],
+                      subject: '50CFA04B-E8EB-4BC9-80F1-C5EF39FE8F3A'
+                          .localized
+                          .format(DateFormat("y.M.d").format(date), lessonNo),
+                      signature:
+                          '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}');
                 },
               ),
             ],

@@ -5,7 +5,6 @@ import 'package:extended_wrap/extended_wrap.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:intl/intl.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/widgets/text_chip.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/input.dart';
@@ -45,16 +44,15 @@ extension EventBodyExtension on List<data.Event> {
                           icon: CupertinoIcons.chat_bubble_2,
                           title: '/Inquiry'.localized,
                           onTap: () {
-                            showMaterialModalBottomSheet(
-                                context: context,
-                                builder: (context) => MessageComposePage(
-                                    receivers: x.sender != null ? [x.sender!] : [],
-                                    subject: 'C834975A-FECF-4FA1-A099-242BC18FB55C'
-                                        .localized
-                                        .format(DateFormat("y.M.d").format(x.date ?? x.timeFrom)),
-                                    signature:
-                                        '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                             Navigator.of(context).pop();
+                            openMessageCompose(
+                                context,
+                                receivers: x.sender != null ? [x.sender!] : [],
+                                subject: 'C834975A-FECF-4FA1-A099-242BC18FB55C'
+                                    .localized
+                                    .format(DateFormat("y.M.d").format(x.date ?? x.timeFrom)),
+                                signature:
+                                    '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}');
                           },
                         ),
                       if (x.isOwnEvent)
@@ -128,16 +126,15 @@ extension EventBodyExtension on List<data.Event> {
               icon: CupertinoIcons.chat_bubble_2,
               title: '/Inquiry'.localized,
               onTap: () {
-                showMaterialModalBottomSheet(
-                    context: context,
-                    builder: (context) => MessageComposePage(
-                        receivers: x.sender != null ? [x.sender!] : [],
-                        subject: '58F3C0BE-AC60-4176-A06D-CB9B58FE99B6'
-                            .localized
-                            .format(DateFormat("y.M.d").format(x.timeTo ?? x.date ?? x.timeFrom)),
-                        signature:
-                            '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                 Navigator.of(context).pop();
+                openMessageCompose(
+                    context,
+                    receivers: x.sender != null ? [x.sender!] : [],
+                    subject: '58F3C0BE-AC60-4176-A06D-CB9B58FE99B6'
+                        .localized
+                        .format(DateFormat("y.M.d").format(x.timeTo ?? x.date ?? x.timeFrom)),
+                    signature:
+                        '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}');
               },
             ),
           ],
@@ -233,19 +230,18 @@ extension GradeBodyExtension on List<({List<Grade> grades, Lesson lesson})> {
               icon: CupertinoIcons.chat_bubble_2,
               title: '/Inquiry'.localized,
               onTap: () {
-                showMaterialModalBottomSheet(
-                    context: context,
-                    builder: (context) => MessageComposePage(
-                        receivers: [x.lesson.teacher],
-                        subject: '7AE5B440-ADC8-49F7-AB1F-3E3CEDD78DC8'.localized.format(
-                            x.grades.length > 1
-                                ? 'DA7A5A8C-9A1D-4378-8BC1-AB6A9E2E8B67'.localized
-                                : '6D0701F1-1754-4897-9902-B701EB2038CD'.localized,
-                            x.grades.select((y, index) => y.value).join(', '),
-                            x.lesson.name),
-                        signature:
-                            '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                 Navigator.of(context).pop();
+                openMessageCompose(
+                    context,
+                    receivers: [x.lesson.teacher],
+                    subject: '7AE5B440-ADC8-49F7-AB1F-3E3CEDD78DC8'.localized.format(
+                        x.grades.length > 1
+                            ? 'DA7A5A8C-9A1D-4378-8BC1-AB6A9E2E8B67'.localized
+                            : '6D0701F1-1754-4897-9902-B701EB2038CD'.localized,
+                        x.grades.select((y, index) => y.value).join(', '),
+                        x.lesson.name),
+                    signature:
+                        '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}');
               },
             ),
           ],

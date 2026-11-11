@@ -6,7 +6,6 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/interface/shared/containers.dart';
 import 'package:oshi/interface/shared/input.dart';
@@ -393,15 +392,9 @@ class _MessagesPageState extends State<MessagesPage> {
                         AdaptiveMenuItem(
                           title: 'E9113B8D-3AD9-467B-94BD-A180F46A01BD'.localized,
                           icon: CupertinoIcons.add,
-                          onTap: () {
-                            (Share.settings.appSettings.useCupertino
-                                    ? showCupertinoModalBottomSheet
-                                    : showMaterialModalBottomSheet)(
-                                context: context,
-                                builder: (context) => MessageComposePage(
-                                    signature:
-                                        '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-                          },
+                          onTap: () => openMessageCompose(context,
+                              signature:
+                                  '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'),
                         ),
                         PullDownMenuDivider.large(),
                         PullDownMenuTitle(title: Text('6D852D45-7E29-4E26-844D-6DC40ACD66BD'.localized)),
@@ -456,15 +449,10 @@ class _MessagesPageState extends State<MessagesPage> {
                             ),
                           ),
                           IconButton(
-                            onPressed: () {
-                              (Share.settings.appSettings.useCupertino
-                                      ? showCupertinoModalBottomSheet
-                                      : showMaterialModalBottomSheet)(
-                                  context: context,
-                                  builder: (context) => MessageComposePage(
-                                      signature:
-                                          '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
-                            },
+                            tooltip: 'B8C5F980-D32F-42C9-A7E0-FF7667884776'.localized,
+                            onPressed: () => openMessageCompose(context,
+                                signature:
+                                    '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'),
                             icon: Icon(
                               Icons.add,
                               size: 25,

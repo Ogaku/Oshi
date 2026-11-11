@@ -13,7 +13,6 @@ import 'package:oshi/interface/shared/input.dart';
 import 'package:oshi/models/data/attendances.dart';
 import 'package:oshi/share/extensions.dart';
 import 'package:oshi/share/share.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/shared/views/message_compose.dart';
 
 // Boiler: returned to the app tab builder
@@ -106,22 +105,19 @@ class _AbsencesPageState extends State<AbsencesPage> {
                     icon: CupertinoIcons.doc_on_clipboard,
                     onTap: () {
                       if (Share.session.data.student.attendances?.isEmpty ?? true) return;
-                      (Share.settings.appSettings.useCupertino
-                              ? showCupertinoModalBottomSheet
-                              : showMaterialModalBottomSheet)(
-                          context: context,
-                          builder: (context) => MessageComposePage(
-                              receivers: [Share.session.data.student.mainClass.classTutor],
-                              subject: 'CC111EE5-B18F-46EB-A6FF-09E3ABFA1FA1'.localized,
-                              message: '3E0C235F-9615-4152-A5BB-5B5A93596E9D'.localized.format(Share
-                                  .session.data.student.attendances!
-                                  .where((x) => x.type == AttendanceType.absent)
-                                  .groupBy((x) => x.date)
-                                  .select((x, index) =>
-                                      ' - ${DateFormat("y.M.dd").format(x.key)} (${x.count > 1 ? '${x.orderBy((x) => x.lessonNo).first.lessonNo} - ${x.orderBy((x) => x.lessonNo).last.lessonNo} godzina lekcyjna' : '${x.first.lessonNo} godzina lekcyjna'}) \n')
-                                  .join()),
-                              signature: '0E517324-ACF9-4F1A-9B74-4D002235C964'.localized.format(
-                                  Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
+                      openMessageCompose(
+                          context,
+                          receivers: [Share.session.data.student.mainClass.classTutor],
+                          subject: 'CC111EE5-B18F-46EB-A6FF-09E3ABFA1FA1'.localized,
+                          message: '3E0C235F-9615-4152-A5BB-5B5A93596E9D'.localized.format(Share
+                              .session.data.student.attendances!
+                              .where((x) => x.type == AttendanceType.absent)
+                              .groupBy((x) => x.date)
+                              .select((x, index) =>
+                                  ' - ${DateFormat("y.M.dd").format(x.key)} (${x.count > 1 ? '${x.orderBy((x) => x.lessonNo).first.lessonNo} - ${x.orderBy((x) => x.lessonNo).last.lessonNo} godzina lekcyjna' : '${x.first.lessonNo} godzina lekcyjna'}) \n')
+                              .join()),
+                          signature: '0E517324-ACF9-4F1A-9B74-4D002235C964'.localized.format(
+                              Share.session.data.student.account.name, Share.session.data.student.mainClass.name));
                     },
                   ),
                 ],

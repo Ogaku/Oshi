@@ -4,7 +4,6 @@
 import 'package:darq/darq.dart';
 import 'package:enum_flag/enum_flag.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/interface/components/cupertino/application.dart';
 import 'package:oshi/interface/components/shim/elements/context_menu.dart';
 import 'package:oshi/interface/components/shim/elements/grade.dart';
@@ -101,13 +100,12 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                           if (Share.settings.appSettings.useCupertino) {
                             Navigator.of(context, rootNavigator: true).pop();
                           }
-                          showCupertinoModalBottomSheet(
-                              context: context,
-                              builder: (context) => MessageComposePage(
-                                  receivers: [widget.lesson.teacher],
-                                  subject: '79617CAD-C9A1-4BCA-98FC-4F9D1ADE1B35'.localized.format(widget.lesson.name),
-                                  signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
-                                      Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
+                          openMessageCompose(
+                              context,
+                              receivers: [widget.lesson.teacher],
+                              subject: '79617CAD-C9A1-4BCA-98FC-4F9D1ADE1B35'.localized.format(widget.lesson.name),
+                              signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
+                                  Share.session.data.student.account.name, Share.session.data.student.mainClass.name));
                         },
                       ),
                     ],
@@ -172,13 +170,12 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                         if (Share.settings.appSettings.useCupertino) {
                           Navigator.of(context, rootNavigator: true).pop();
                         }
-                        showCupertinoModalBottomSheet(
-                            context: context,
-                            builder: (context) => MessageComposePage(
-                                receivers: [widget.lesson.teacher],
-                                subject: 'BC6173B0-BD9D-4627-8512-594FB359B983'.localized.format(widget.lesson.name),
-                                signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
-                                    Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
+                        openMessageCompose(
+                            context,
+                            receivers: [widget.lesson.teacher],
+                            subject: 'BC6173B0-BD9D-4627-8512-594FB359B983'.localized.format(widget.lesson.name),
+                            signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
+                                Share.session.data.student.account.name, Share.session.data.student.mainClass.name));
                       },
                     ),
                   ],
@@ -248,13 +245,12 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                     if (Share.settings.appSettings.useCupertino) {
                       Navigator.of(context, rootNavigator: true).pop();
                     }
-                    showCupertinoModalBottomSheet(
-                        context: context,
-                        builder: (context) => MessageComposePage(
-                            receivers: [widget.lesson.teacher],
-                            subject: '9221D91C-83A8-423E-8352-31FEE4C06FD0'.localized.format(widget.lesson.name),
-                            signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
-                                Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
+                    openMessageCompose(
+                        context,
+                        receivers: [widget.lesson.teacher],
+                        subject: '9221D91C-83A8-423E-8352-31FEE4C06FD0'.localized.format(widget.lesson.name),
+                        signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
+                            Share.session.data.student.account.name, Share.session.data.student.mainClass.name));
                   },
                 ),
               ],
@@ -333,13 +329,12 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                     if (Share.settings.appSettings.useCupertino) {
                       Navigator.of(context, rootNavigator: true).pop();
                     }
-                    showCupertinoModalBottomSheet(
-                        context: context,
-                        builder: (context) => MessageComposePage(
-                            receivers: [widget.lesson.teacher],
-                            subject: '9F390DDF-CBAB-45FA-B762-BDBBDAC7472D'.localized.format(widget.lesson.name),
-                            signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
-                                Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
+                    openMessageCompose(
+                        context,
+                        receivers: [widget.lesson.teacher],
+                        subject: '9F390DDF-CBAB-45FA-B762-BDBBDAC7472D'.localized.format(widget.lesson.name),
+                        signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
+                            Share.session.data.student.account.name, Share.session.data.student.mainClass.name));
                   },
                 ),
               ],
@@ -417,13 +412,12 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                     if (Share.settings.appSettings.useCupertino) {
                       Navigator.of(context, rootNavigator: true).pop();
                     }
-                    showCupertinoModalBottomSheet(
-                        context: context,
-                        builder: (context) => MessageComposePage(
-                            receivers: [widget.lesson.teacher],
-                            subject: '3A47D98A-3FDF-4BD0-94BE-B97A402AE20B'.localized.format(widget.lesson.name),
-                            signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
-                                Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
+                    openMessageCompose(
+                        context,
+                        receivers: [widget.lesson.teacher],
+                        subject: '3A47D98A-3FDF-4BD0-94BE-B97A402AE20B'.localized.format(widget.lesson.name),
+                        signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
+                            Share.session.data.student.account.name, Share.session.data.student.mainClass.name));
                   },
                 ),
               ],
@@ -498,13 +492,12 @@ class _GradesDetailedPageState extends State<GradesDetailedPage> {
                     if (Share.settings.appSettings.useCupertino) {
                       Navigator.of(context, rootNavigator: true).pop();
                     }
-                    showCupertinoModalBottomSheet(
-                        context: context,
-                        builder: (context) => MessageComposePage(
-                            receivers: [widget.lesson.teacher],
-                            subject: '6023BF44-17D2-463D-870B-759681BA3CA7'.localized.format(widget.lesson.name),
-                            signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
-                                Share.session.data.student.account.name, Share.session.data.student.mainClass.name)));
+                    openMessageCompose(
+                        context,
+                        receivers: [widget.lesson.teacher],
+                        subject: '6023BF44-17D2-463D-870B-759681BA3CA7'.localized.format(widget.lesson.name),
+                        signature: '36C35A24-B8AA-47FB-B564-9B83D2838415'.localized.format(
+                            Share.session.data.student.account.name, Share.session.data.student.mainClass.name));
                   },
                 ),
               ],

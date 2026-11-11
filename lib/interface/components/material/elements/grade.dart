@@ -56,16 +56,15 @@ extension GradeBodyExtension on Grade {
                         icon: CupertinoIcons.chat_bubble_2,
                         title: '/Inquiry'.localized,
                         onTap: () {
-                          showMaterialModalBottomSheet(
-                              context: context,
-                              builder: (context) => MessageComposePage(
-                                  receivers: [addedBy],
-                                  subject: 'B0FB564D-E5AF-451E-855F-5988D86C8A6A'
-                                      .localized
-                                      .format(value, DateFormat("y.M.d").format(addDate)),
-                                  signature:
-                                      '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}'));
                           Navigator.of(context).pop();
+                          openMessageCompose(
+                              context,
+                              receivers: [addedBy],
+                              subject: 'B0FB564D-E5AF-451E-855F-5988D86C8A6A'
+                                  .localized
+                                  .format(value, DateFormat("y.M.d").format(addDate)),
+                              signature:
+                                  '${Share.session.data.student.account.name}, ${Share.session.data.student.mainClass.name}');
                         },
                       ),
                       !isOwnGrade)
