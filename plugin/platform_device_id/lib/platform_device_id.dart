@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:universal_io/io.dart';
 import 'package:flutter/services.dart';
-import 'package:device_info/device_info.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:platform_device_id_platform_interface/platform_device_id_platform_interface.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -13,7 +13,7 @@ class PlatformDeviceId {
   /// Provides device and operating system information.
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
 
-  /// Information derived from `android`-`androidId` or `ios`-`identifierForVendor`
+  /// Information derived from `android`-`id` or `ios`-`identifierForVendor`
   static Future<String?> get getDeviceId async {
     String? deviceId;
     try {
@@ -21,7 +21,7 @@ class PlatformDeviceId {
         deviceId = await PlatformDeviceIdPlatform.instance.getDeviceId();
       } else if (isAndroid) {
         AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
-        deviceId = androidInfo.androidId;
+        deviceId = androidInfo.id;
       } else if (isIOS) {
         IosDeviceInfo iosInfo = await deviceInfoPlugin.iosInfo;
         deviceId = iosInfo.identifierForVendor;
