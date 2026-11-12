@@ -1,0 +1,104 @@
+[
+  {
+    "id": "PROVGUID-RGLR-PROV-LIBR-LIBRSYNERGIA",
+    "name": "Librus Synergia",
+    "description": "/Providers/Librus/Description",
+    "version": "1.2.0",
+    "lang": "pl",
+    "author": "Ogaku",
+    "iconUrl": "https://api.librus.pl/images/logo-synergia.png",
+    "bannerUrl": "https://api.librus.pl/images/logo-synergia.png",
+    "baseUrl": "https://synergia.librus.pl",
+    "sourceCodeUrl": "https://raw.githubusercontent.com/Ogaku/Oshi-Extension-Librus/main/extension.dart",
+    "repoUrl": "https://github.com/Ogaku/Oshi-Extension-Librus",
+    "sha256": "f2c926875b84da0ed322532238873094d52d980cbba54ef83631b8432004150a",
+    "minAppVersion": "1.1.0",
+    "loginType": 2,
+    "isDevOnly": false,
+    "credentials": [
+      {
+        "key": "login",
+        "name": "/Session/Login/Username",
+        "obscure": false,
+        "optional": false,
+        "webOnly": false
+      },
+      {
+        "key": "pass",
+        "name": "/Session/Login/Password",
+        "obscure": true,
+        "optional": false,
+        "webOnly": false
+      },
+      {
+        "key": "proxy",
+        "name": "/Session/Login/ProxyUrl",
+        "obscure": false,
+        "optional": true,
+        "webOnly": true,
+        "helperText": "/Session/Login/ProxyHelper",
+        "helperUrl": "https://github.com/Ogaku/Oshi/wiki/Web-app"
+      }
+    ]
+  },
+  {
+    "id": "PROVGUID-RGLR-PROV-VULC-EDUVULCANAPI",
+    "name": "eduVULCAN / UONET+",
+    "description": "/Providers/Vulcan/Description",
+    "version": "1.2.0",
+    "lang": "pl",
+    "author": "Ogaku",
+    "iconUrl": "https://eduvulcan.pl/Content/images/favicon/apple-touch-icon.png",
+    "bannerUrl": "https://eduvulcan.pl/Content/images/favicon/apple-touch-icon.png",
+    "baseUrl": "https://lekcjaplus.vulcan.net.pl",
+    "sourceCodeUrl": "https://raw.githubusercontent.com/Ogaku/Oshi-Extension-Vulcan/main/extension.dart",
+    "repoUrl": "https://github.com/Ogaku/Oshi-Extension-Vulcan",
+    "sha256": "6bea0c48891bcc7b292f3a3dd61d85d1db0f41576c4c289c5ee75dbf9a771dcc",
+    "minAppVersion": "1.1.0",
+    "loginType": 20,
+    "isDevOnly": false,
+    "credentials": [
+      {
+        "key": "login",
+        "name": "/Session/Login/Username",
+        "obscure": false,
+        "optional": false,
+        "webOnly": false
+      },
+      {
+        "key": "pass",
+        "name": "/Session/Login/Password",
+        "obscure": true,
+        "optional": false,
+        "webOnly": false
+      },
+      {
+        "key": "proxy",
+        "name": "/Session/Login/ProxyUrl",
+        "obscure": false,
+        "optional": true,
+        "webOnly": true,
+        "helperText": "/Session/Login/ProxyHelper",
+        "helperUrl": "https://github.com/Ogaku/Oshi/wiki/Web-app"
+      }
+    ]
+  },
+  {
+    "id": "PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER",
+    "name": "/Providers/Sample/Name",
+    "description": "/Providers/Sample/Description",
+    "version": "1.2.0",
+    "lang": "all",
+    "author": "Ogaku",
+    "iconUrl": "https://media.tenor.com/QPvKS6-yrzUAAAAC/cirno-touhou.gif",
+    "bannerUrl": "https://media.tenor.com/QPvKS6-yrzUAAAAC/cirno-touhou.gif",
+    "baseUrl": "https://github.com/Ogaku/Oshi",
+    "sourceCodeUrl": "https://raw.githubusercontent.com/Ogaku/Oshi-Extensions/main/template/extension.dart",
+    "repoUrl": "https://github.com/Ogaku/Oshi-Extensions/tree/main/template",
+    "sha256": "ff877d2041aead757daf76a0b49f46137843f826ce387510a656804fc0b51ee9",
+    "minAppVersion": "1.1.0",
+    "loginType": 20,
+    "isDevOnly": true,
+    "credentials": []
+  }
+]

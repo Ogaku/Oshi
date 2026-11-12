@@ -2351,6 +2351,14 @@
             "translation": "To jest przykładowy dziennik dostępny w celach testowych. Zawiera przykładowe oceny, plan lekcji, wiadomości i wydarzenia."
         },
         {
+            "id": "/Providers/Vulcan/Name",
+            "translation": "eduVULCAN / UONET+"
+        },
+        {
+            "id": "/Providers/Vulcan/Description",
+            "translation": "Zaloguj się za pomocą konta eduVULCAN (login/e-mail i hasło) lub tokenu mobilnego UONET+ i kodu PIN (wpisz test / test dla trybu demonstracyjnego)."
+        },
+        {
             "id": "/Settings/Classrooms/Title",
             "translation": "Własne sale lekcyjne"
         },
@@ -2849,6 +2857,5 @@
             "title": "Ofiara spełniona",
             "subtitle": "Bogu niech będą dzięki"
         }
-    ],
-    "/Providers/Vulcan/Description": "Zaloguj się za pomocą konta eduVULCAN (login/e-mail i hasło) lub tokenu mobilnego UONET+ i kodu PIN (wpisz test / test dla trybu demonstracyjnego)."
+    ]
 }
