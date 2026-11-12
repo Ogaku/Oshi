@@ -165,6 +165,7 @@ jobs:
       - name: Install dependencies
         run: |
           flutter config --no-enable-swift-package-manager
+          rm -rf ios/Podfile.lock ios/Pods
           flutter pub get
 
       - name: Build iOS IPA
