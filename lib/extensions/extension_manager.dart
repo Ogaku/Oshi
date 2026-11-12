@@ -25,6 +25,8 @@ class ExtensionManager extends ChangeNotifier {
   final Map<String, ExtensionManifest> _installed = {};
   final List<ExtensionRepo> _repositories = [];
   final List<ExtensionManifest> _available = [];
+  DateTime? _lastCatalogFetch;
+  static const Duration catalogCacheTtl = Duration(minutes: 30);
   bool _initialized = false;
   bool _isLoadingCatalog = false;
   String? _lastCatalogError;
@@ -34,6 +36,7 @@ class ExtensionManager extends ChangeNotifier {
   List<ExtensionManifest> get available => List.unmodifiable(_available);
   bool get isLoadingCatalog => _isLoadingCatalog;
   String? get lastCatalogError => _lastCatalogError;
+  DateTime? get lastCatalogFetch => _lastCatalogFetch;
 
   bool isInstalled(String id) => _installed.containsKey(id);
 
@@ -102,7 +105,26 @@ class ExtensionManager extends ChangeNotifier {
           }
         }
       }
-      // 3. Pre-populate available from bundled catalog if available is empty
+      // 3. Load cached catalog from Hive or fall back to bundled catalog (zero network)
+      final rawAvailable = box.get('cached_available');
+      if (rawAvailable is String && rawAvailable.isNotEmpty) {
+        try {
+          final decoded = jsonDecode(rawAvailable);
+          if (decoded is List) {
+            _available.clear();
+            for (final item in decoded) {
+              if (item is Map) {
+                _available.add(ExtensionManifest.fromJson(item.cast<String, dynamic>()));
+              }
+            }
+          }
+        } catch (_) {}
+      }
+      final rawLastFetch = box.get('last_catalog_fetch');
+      if (rawLastFetch is int && rawLastFetch > 0) {
+        _lastCatalogFetch = DateTime.fromMillisecondsSinceEpoch(rawLastFetch);
+      }
+
       if (_available.isEmpty) {
         final bundled = await _loadBundledCatalog();
         _available.addAll(bundled);
@@ -159,9 +181,6 @@ class ExtensionManager extends ChangeNotifier {
     if (missing.isEmpty) return;
 
     debugPrint('[ExtensionManager] Auto-installing providers for existing sessions: $missing');
-    if (_available.isEmpty) {
-      await refreshCatalog();
-    }
 
     for (final guid in missing) {
       ExtensionManifest? candidate;
@@ -366,9 +385,28 @@ class ExtensionManager extends ChangeNotifier {
     return manifests;
   }
 
-  /// Refreshes the combined catalog from all enabled repositories.
-  Future<void> refreshCatalog() async {
+  /// Asks GitHub for the extensions list only when needed (e.g. when the user
+  /// enters the new session / account login flow), respecting the cache TTL so
+  /// that repeated navigation does not rate-limit GitHub.
+  Future<void> refreshCatalogIfNeeded({bool force = false}) async {
     await initialize();
+    if (!force && _lastCatalogFetch != null && _available.isNotEmpty) {
+      final elapsed = DateTime.now().difference(_lastCatalogFetch!);
+      if (elapsed < catalogCacheTtl) {
+        debugPrint(
+          '[ExtensionManager] Skipping GitHub request: using cached extensions catalog '
+          '(fetched ${elapsed.inMinutes}m ago, TTL: ${catalogCacheTtl.inMinutes}m)',
+        );
+        return;
+      }
+    }
+    await refreshCatalog(force: force);
+  }
+
+  /// Refreshes the combined catalog from all enabled repositories and GitHub topic discovery.
+  Future<void> refreshCatalog({bool force = false}) async {
+    await initialize();
+    if (_isLoadingCatalog) return;
     _isLoadingCatalog = true;
     _lastCatalogError = null;
     notifyListeners();
@@ -403,11 +441,19 @@ class ExtensionManager extends ChangeNotifier {
       debugPrint('[ExtensionManager] Community discovery error: $e');
     }
 
-    _available
-      ..clear()
-      ..addAll(merged.values);
+    if (merged.isNotEmpty) {
+      _available
+        ..clear()
+        ..addAll(merged.values);
+    } else if (_available.isEmpty) {
+      final bundled = await _loadBundledCatalog();
+      _available.addAll(bundled);
+    }
+
+    _lastCatalogFetch = DateTime.now();
     _isLoadingCatalog = false;
     _lastCatalogError = firstError;
+    await _saveState();
     notifyListeners();
   }
 
@@ -699,6 +745,12 @@ class ExtensionManager extends ChangeNotifier {
           ));
         }
       }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 403) {
+        debugPrint('[ExtensionManager] GitHub API rate limit reached (HTTP 403). Using cached catalog.');
+      } else {
+        debugPrint('[ExtensionManager] GitHub API error during community discovery: ${e.message}');
+      }
     } catch (e) {
       debugPrint('[ExtensionManager] fetchCommunityExtensionsFromGitHub failed: $e');
     }
@@ -717,6 +769,15 @@ class ExtensionManager extends ChangeNotifier {
         'installed',
         jsonEncode(_installed.values.map((m) => m.toJson(includeSourceCode: true)).toList()),
       );
+      if (_available.isNotEmpty) {
+        await box.put(
+          'cached_available',
+          jsonEncode(_available.map((m) => m.toJson(includeSourceCode: false)).toList()),
+        );
+      }
+      if (_lastCatalogFetch != null) {
+        await box.put('last_catalog_fetch', _lastCatalogFetch!.millisecondsSinceEpoch);
+      }
     } catch (e) {
       debugPrint('[ExtensionManager] _saveState error: $e');
     }

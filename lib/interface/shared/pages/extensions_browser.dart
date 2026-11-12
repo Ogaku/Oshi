@@ -40,7 +40,7 @@ class _ExtensionsBrowserPageState extends State<ExtensionsBrowserPage> {
     super.initState();
     _manager.addListener(_onManagerChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _manager.refreshCatalog();
+      _manager.refreshCatalogIfNeeded();
     });
   }
 
@@ -201,7 +201,7 @@ class _ExtensionsBrowserPageState extends State<ExtensionsBrowserPage> {
           actions: [
             IconButton(
               tooltip: 'Odśwież katalog',
-              onPressed: _manager.isLoadingCatalog ? null : () => _manager.refreshCatalog(),
+              onPressed: _manager.isLoadingCatalog ? null : () => _manager.refreshCatalog(force: true),
               icon: _manager.isLoadingCatalog
                   ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
                   : const Icon(Icons.refresh),
@@ -492,7 +492,7 @@ class _ExtensionsBrowserPageState extends State<ExtensionsBrowserPage> {
           children: [
             CupertinoButton(
               padding: EdgeInsets.zero,
-              onPressed: _manager.isLoadingCatalog ? null : () => _manager.refreshCatalog(),
+              onPressed: _manager.isLoadingCatalog ? null : () => _manager.refreshCatalog(force: true),
               child: _manager.isLoadingCatalog
                   ? const CupertinoActivityIndicator()
                   : const Icon(CupertinoIcons.refresh, size: 22),

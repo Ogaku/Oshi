@@ -410,6 +410,9 @@ class _NewSessionPageState extends State<NewSessionPage> {
     super.initState();
     ExtensionManager.instance.addListener(_onExtensionsChanged);
 
+    // Only query GitHub for extensions when user enters the login / register new account flow
+    ExtensionManager.instance.refreshCatalogIfNeeded();
+
     // Set up other stuff after the app's launched
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Share.checkUpdates.broadcast(); // Check for updates
