@@ -262,6 +262,19 @@ class LibrusLogin extends reader.LibrusLogin {
 
 //#region OAuth Setup
     try {
+      // Establish portalRodzina session
+      await synergiaData.session
+          .post(proxyUrl,
+              data: jsonEncode({
+                'uri': librusPortalRodzinaUri,
+                'method': "GET",
+                'headers': {'Referer': 'https://portal.librus.pl/'},
+                'cookies': synergiaData.cookies,
+              }))
+          .setCookies(synergiaData.cookies);
+    } catch (_) {}
+
+    try {
       // The first step - acquire the OAuth session token
       // We're here foe cookies only - suppress all exceptions
       await synergiaData.session
@@ -286,6 +299,12 @@ class LibrusLogin extends reader.LibrusLogin {
                 'uri': librusOAuthUri,
                 'method': "POST",
                 'query': {'client_id': 46},
+                'headers': {
+                  'X-Requested-With': 'XMLHttpRequest',
+                  'Accept': 'application/json, text/javascript, */*; q=0.01',
+                  'Origin': 'https://api.librus.pl',
+                  'Referer': 'https://api.librus.pl/OAuth/Authorization?client_id=46',
+                },
                 'data': {'action': 'login', 'login': synergiaLogin, 'pass': synergiaPass},
                 'cookies': synergiaData.cookies
               }))

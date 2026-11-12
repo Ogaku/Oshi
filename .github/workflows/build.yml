@@ -36,13 +36,13 @@ jobs:
           import datetime, re, os, time
           today = datetime.date.today().strftime('%Y%m%d')
           run_num = '${{ github.run_number }}'
-          build_ver = f'1.1.{today}.{run_num}'
+          build_ver = f'1.2.{today}.{run_num}'
           # Android versionCode must strictly increase for every build, otherwise updates fail with
           # 'App not installed'. Unix time is monotonic and shared by every channel (stable and FOX).
           build_code = int(time.time())
 
           with open('pubspec.yaml', 'r') as f: c = f.read()
-          c = re.sub(r'version: .*', f'version: 1.1.{today}+{build_code}', c)
+          c = re.sub(r'version: .*', f'version: 1.2.{today}+{build_code}', c)
           with open('pubspec.yaml', 'w') as f: f.write(c)
 
           with open('lib/share/share.dart', 'r') as f: c = f.read()
@@ -120,7 +120,6 @@ jobs:
   build-ios:
     name: Build iOS
     runs-on: macos-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 
@@ -139,13 +138,13 @@ jobs:
           import datetime, re, os, time
           today = datetime.date.today().strftime('%Y%m%d')
           run_num = '${{ github.run_number }}'
-          build_ver = f'1.1.{today}.{run_num}'
+          build_ver = f'1.2.{today}.{run_num}'
           # Android versionCode must strictly increase for every build, otherwise updates fail with
           # 'App not installed'. Unix time is monotonic and shared by every channel (stable and FOX).
           build_code = int(time.time())
 
           with open('pubspec.yaml', 'r') as f: c = f.read()
-          c = re.sub(r'version: .*', f'version: 1.1.{today}+{build_code}', c)
+          c = re.sub(r'version: .*', f'version: 1.2.{today}+{build_code}', c)
           with open('pubspec.yaml', 'w') as f: f.write(c)
 
           with open('lib/share/share.dart', 'r') as f: c = f.read()
@@ -171,7 +170,7 @@ jobs:
       - name: Build iOS IPA
         run: |
           set -o pipefail
-          flutter build ios --release --no-codesign 2>&1 | tee build_ios.log || true
+          flutter build ios --release --no-codesign 2>&1 | tee build_ios.log
           if [ -d "./build/ios/iphoneos/Runner.app" ]; then
             cd ./build/ios/iphoneos
             mkdir -p Payload
@@ -191,7 +190,7 @@ jobs:
     name: Create GitHub Release
     runs-on: ubuntu-latest
     needs: [build-android, build-ios]
-    if: always() && needs.build-android.result == 'success'
+    if: needs.build-android.result == 'success' && needs.build-ios.result == 'success'
     steps:
       - name: Download Android artifact
         uses: actions/download-artifact@v4
@@ -201,7 +200,6 @@ jobs:
 
       - name: Download iOS artifact
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
           name: Oshi-iOS
           path: release-assets
@@ -209,7 +207,7 @@ jobs:
       - name: Compute release tag
         id: compute_tag
         run: |
-          echo "tag=1.1.$(date '+%Y%m%d').${{ github.run_number }}" >> $GITHUB_OUTPUT
+          echo "tag=1.2.$(date '+%Y%m%d').${{ github.run_number }}" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

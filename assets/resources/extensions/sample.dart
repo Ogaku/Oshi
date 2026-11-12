@@ -1,18 +1,21 @@
-// @id PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER
-// @name /Providers/Sample/Name
-// @version 1.1.0
-// @lang all
-// @author Ogaku
-// @icon https://media.tenor.com/QPvKS6-yrzUAAAAC/cirno-touhou.gif
-// @banner https://media.tenor.com/QPvKS6-yrzUAAAAC/cirno-touhou.gif
-// @baseUrl https://github.com/Ogaku/Oshi
+// @id PROVGUID-CUSTOM-TEMPLATE-REGISTER
+// @name Template Register Provider
+// @version 1.2.0
+// @lang pl
+// @author YourName
+// @icon https://raw.githubusercontent.com/Ogaku/Oshi/main/assets/resources/images/logo_fit.png
+// @banner https://raw.githubusercontent.com/Ogaku/Oshi/main/assets/resources/images/logo_fit.png
+// @baseUrl https://register.myschool.edu.pl
 // @loginType 20
-// @description /Providers/Sample/Description
+// @description Starter template and reference implementation for Oshi register extensions.
 
 import 'package:oshi/bridge_lib.dart';
 
-class SampleRegisterExtension extends OProvider {
-  SampleRegisterExtension({required this.source}) : _driver = OProtocolDriver('sample');
+/// Template register extension for Oshi.
+/// Developers can copy this file into their own GitHub repository as `extension.dart`,
+/// add the GitHub topic `oshi-extension`, and it will be discovered automatically by Oshi worldwide!
+class CustomRegisterExtension extends OProvider {
+  CustomRegisterExtension({required this.source}) : _driver = OProtocolDriver('sample');
 
   final OSource source;
   final OProtocolDriver _driver;
@@ -28,11 +31,16 @@ class SampleRegisterExtension extends OProvider {
 
   @override
   Future<Map<String, dynamic>> login(Map<String, String> credentials) async {
+    // Implement your authentication here using httpGet / httpPost:
+    // final username = credentials['login'];
+    // final password = credentials['pass'];
+    // final res = await httpPost('${source.baseUrl}/api/login', body: {'u': username, 'p': password});
     return await _driver.login(credentials);
   }
 
   @override
   Future<Map<String, dynamic>> refresh(String? weekStartIso) async {
+    // Fetch timetable, grades, attendance, and events:
     return await _driver.refresh(weekStartIso);
   }
 
@@ -79,6 +87,6 @@ class SampleRegisterExtension extends OProvider {
   Map<String, dynamic> getRegisterDataJson() => <String, dynamic>{};
 }
 
-SampleRegisterExtension main(dynamic source) {
-  return SampleRegisterExtension(source: source as OSource);
+CustomRegisterExtension main(dynamic source) {
+  return CustomRegisterExtension(source: source as OSource);
 }

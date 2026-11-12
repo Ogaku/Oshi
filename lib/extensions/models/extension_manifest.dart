@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:oshi/share/translator.dart';
 
@@ -44,14 +45,14 @@ class ExtensionCredentialField {
   }
 
   Map<String, dynamic> toJson() => {
-        'key': key,
-        'name': name,
-        'obscure': obscure,
-        'optional': optional,
-        'webOnly': webOnly,
-        if (helperText != null) 'helperText': helperText,
-        if (helperUrl != null) 'helperUrl': helperUrl,
-      };
+    'key': key,
+    'name': name,
+    'obscure': obscure,
+    'optional': optional,
+    'webOnly': webOnly,
+    if (helperText != null) 'helperText': helperText,
+    if (helperUrl != null) 'helperUrl': helperUrl,
+  };
 }
 
 class ExtensionManifest {
@@ -122,11 +123,7 @@ class ExtensionManifest {
     final result = <String, ({String name, bool obscure, ({String text, Uri link})? helper})>{};
     for (final field in credentials) {
       if (field.webOnly && !kIsWeb) continue;
-      result[field.key] = (
-        name: field.localizedName,
-        obscure: field.obscure,
-        helper: field.helper,
-      );
+      result[field.key] = (name: field.localizedName, obscure: field.obscure, helper: field.helper);
     }
     return result;
   }
@@ -188,7 +185,8 @@ class ExtensionManifest {
 
     final authorVal = (json['author'] ?? 'Ogaku').toString();
     final effectiveRepo = repoUrl ?? json['repoUrl']?.toString();
-    final isOff = json['isOfficial'] == true ||
+    final isOff =
+        json['isOfficial'] == true ||
         authorVal.toLowerCase() == 'ogaku' ||
         (effectiveRepo?.toLowerCase().contains('ogaku/oshi-extension') ?? false);
 
@@ -216,39 +214,33 @@ class ExtensionManifest {
   }
 
   Map<String, dynamic> toJson({bool includeSourceCode = false}) => {
-        'id': id,
-        'name': name,
-        'description': description,
-        'version': version,
-        'lang': lang,
-        'author': author,
-        'iconUrl': iconUrl,
-        if (bannerUrl != null) 'bannerUrl': bannerUrl,
-        'baseUrl': baseUrl,
-        'sourceCodeUrl': sourceCodeUrl,
-        if (sha256 != null) 'sha256': sha256,
-        'minAppVersion': minAppVersion,
-        'loginType': loginType,
-        'isDevOnly': isDevOnly,
-        'isOfficial': isOfficial,
-        'credentials': credentials.map((c) => c.toJson()).toList(),
-        if (repoUrl != null) 'repoUrl': repoUrl,
-        if (includeSourceCode && sourceCode != null) 'sourceCode': sourceCode,
-        if (installedAt != null) 'installedAt': installedAt!.toIso8601String(),
-      };
+    'id': id,
+    'name': name,
+    'description': description,
+    'version': version,
+    'lang': lang,
+    'author': author,
+    'iconUrl': iconUrl,
+    if (bannerUrl != null) 'bannerUrl': bannerUrl,
+    'baseUrl': baseUrl,
+    'sourceCodeUrl': sourceCodeUrl,
+    if (sha256 != null) 'sha256': sha256,
+    'minAppVersion': minAppVersion,
+    'loginType': loginType,
+    'isDevOnly': isDevOnly,
+    'isOfficial': isOfficial,
+    'credentials': credentials.map((c) => c.toJson()).toList(),
+    if (repoUrl != null) 'repoUrl': repoUrl,
+    if (includeSourceCode && sourceCode != null) 'sourceCode': sourceCode,
+    if (installedAt != null) 'installedAt': installedAt!.toIso8601String(),
+  };
 
   @override
   String toString() => jsonEncode(toJson());
 }
 
 class ExtensionRepo {
-  const ExtensionRepo({
-    required this.name,
-    required this.url,
-    this.website,
-    this.isOfficial = false,
-    this.enabled = true,
-  });
+  const ExtensionRepo({required this.name, required this.url, this.website, this.isOfficial = false, this.enabled = true});
 
   final String name;
   final String url;
@@ -256,13 +248,7 @@ class ExtensionRepo {
   final bool isOfficial;
   final bool enabled;
 
-  ExtensionRepo copyWith({
-    String? name,
-    String? url,
-    String? website,
-    bool? isOfficial,
-    bool? enabled,
-  }) {
+  ExtensionRepo copyWith({String? name, String? url, String? website, bool? isOfficial, bool? enabled}) {
     return ExtensionRepo(
       name: name ?? this.name,
       url: url ?? this.url,
@@ -273,19 +259,18 @@ class ExtensionRepo {
   }
 
   factory ExtensionRepo.fromJson(Map<String, dynamic> json) => ExtensionRepo(
-        name: (json['name'] ?? 'Repository').toString(),
-        url: (json['url'] ?? '').toString(),
-        website: json['website']?.toString(),
-        isOfficial: json['isOfficial'] == true,
-        enabled: json['enabled'] != false,
-      );
+    name: (json['name'] ?? 'Repository').toString(),
+    url: (json['url'] ?? '').toString(),
+    website: json['website']?.toString(),
+    isOfficial: json['isOfficial'] == true,
+    enabled: json['enabled'] != false,
+  );
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'url': url,
-        if (website != null) 'website': website,
-        'isOfficial': isOfficial,
-        'enabled': enabled,
-      };
+    'name': name,
+    'url': url,
+    if (website != null) 'website': website,
+    'isOfficial': isOfficial,
+    'enabled': enabled,
+  };
 }
-

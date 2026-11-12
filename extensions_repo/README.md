@@ -14,7 +14,7 @@ Each extension is developed, maintained, and versioned in its own independent re
 | :--- | :--- | :--- | :--- |
 | **Librus Synergia** | [Ogaku/Oshi-Extension-Librus](https://github.com/Ogaku/Oshi-Extension-Librus) | [`extension.dart`](https://raw.githubusercontent.com/Ogaku/Oshi-Extension-Librus/main/extension.dart) | Synergia API |
 | **eduVULCAN / UONET+** | [Ogaku/Oshi-Extension-Vulcan](https://github.com/Ogaku/Oshi-Extension-Vulcan) | [`extension.dart`](https://raw.githubusercontent.com/Ogaku/Oshi-Extension-Vulcan/main/extension.dart) | eduVULCAN API |
-| **Sample / Starter Template** | [Ogaku/Oshi-Extension-Sample](https://github.com/Ogaku/Oshi-Extension-Sample) | [`extension.dart`](https://raw.githubusercontent.com/Ogaku/Oshi-Extension-Sample/main/extension.dart) | Demo / Mock |
+| **Starter Template** | [template/extension.dart](./template/extension.dart) | [`template/extension.dart`](https://raw.githubusercontent.com/Ogaku/Oshi-Extensions/main/template/extension.dart) | Developer Starter |
 
 ---
 

@@ -1,6 +1,6 @@
 // @id PROVGUID-RGLR-PROV-LIBR-LIBRSYNERGIA
 // @name Librus Synergia
-// @version 1.1.0
+// @version 1.2.0
 // @lang pl
 // @author Ogaku
 // @icon https://play-lh.googleusercontent.com/s277392B31t33M3G5hG8R7bB4z5vM8dJ4X9fP3qN1cT6wY8kU2aV5eR0iO7pL3sA1g
@@ -18,7 +18,7 @@ class LibrusSynergiaExtension extends OProvider {
   final OProtocolDriver _driver;
 
   static const String gatewayBaseUrl = 'https://synergia.librus.pl/gateway/api/2.0';
-  static const String portalOAuthUrl = 'https://portal.librus.pl/rodzina/synergia/loguj';
+  static const String portalOAuthUrl = 'https://synergia.librus.pl/loguj/portalRodzina';
 
   @override
   String get providerName => source.name;

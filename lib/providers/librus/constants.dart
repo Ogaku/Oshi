@@ -1,4 +1,5 @@
 /* Main scraper module's addresses */
+const String librusPortalRodzinaUri = 'https://synergia.librus.pl/loguj/portalRodzina';
 const String librusOAuthUri = 'https://api.librus.pl/OAuth/Authorization';
 const String librusOAuthGrantUri = 'https://api.librus.pl/OAuth/Authorization/Grant';
 
