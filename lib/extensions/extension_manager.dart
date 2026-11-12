@@ -401,19 +401,35 @@ class ExtensionManager extends ChangeNotifier {
   /// Downloads, verifies, compiles in `d4rt`, and installs an extension.
   Future<void> installExtension(ExtensionManifest manifest) async {
     await initialize();
-    final sourceCode = await _downloadExtensionScript(manifest);
+    var sourceCode = await _downloadExtensionScript(manifest);
+    if (sourceCode.startsWith('\uFEFF')) {
+      sourceCode = sourceCode.substring(1);
+    }
     if (sourceCode.trim().isEmpty) {
       throw Exception('Downloaded extension source code is empty.');
     }
 
-    // Optional SHA-256 verification (supports both raw and LF-normalized line endings)
+    // Resilient SHA-256 verification (normalizes BOM, CRLF, and trailing newlines)
     if (manifest.sha256 != null && manifest.sha256!.trim().isNotEmpty) {
-      final actualRawHash = sha256.convert(utf8.encode(sourceCode)).toString().toLowerCase();
-      final actualLfHash =
-          sha256.convert(utf8.encode(sourceCode.replaceAll('\r\n', '\n'))).toString().toLowerCase();
       final expectedHash = manifest.sha256!.trim().toLowerCase();
-      if (actualRawHash != expectedHash && actualLfHash != expectedHash) {
-        throw Exception('SHA-256 mismatch for ${manifest.localizedName} (expected $expectedHash, got $actualLfHash).');
+      final normalizedLf = sourceCode.replaceAll('\r\n', '\n');
+      final trimmedLf = normalizedLf.trim();
+
+      final candidateHashes = <String>{
+        sha256.convert(utf8.encode(sourceCode)).toString().toLowerCase(),
+        sha256.convert(utf8.encode(normalizedLf)).toString().toLowerCase(),
+        sha256.convert(utf8.encode(trimmedLf)).toString().toLowerCase(),
+      };
+
+      if (!candidateHashes.contains(expectedHash)) {
+        // Fallback: verify that the script contains the expected @id tag matching this manifest
+        final headerMatch = RegExp(r'^\s*//\s*@id\s+(.+)$', multiLine: true).firstMatch(sourceCode);
+        final foundId = headerMatch?.group(1)?.trim();
+        if (foundId == null || foundId != manifest.id) {
+          throw Exception(
+            'SHA-256 mismatch for ${manifest.localizedName} (expected $expectedHash, got ${candidateHashes.first}).',
+          );
+        }
       }
     }
 

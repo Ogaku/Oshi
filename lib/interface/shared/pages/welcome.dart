@@ -72,11 +72,7 @@ class _WelcomePageState extends State<WelcomePage> {
                           color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                           shape: BoxShape.circle,
                           boxShadow: [
-                            BoxShadow(
-                              color: colorScheme.primary.withValues(alpha: 0.12),
-                              blurRadius: 32,
-                              spreadRadius: 8,
-                            ),
+                            BoxShadow(color: colorScheme.primary.withValues(alpha: 0.12), blurRadius: 32, spreadRadius: 8),
                           ],
                         ),
                         child: Image.asset(
@@ -89,18 +85,13 @@ class _WelcomePageState extends State<WelcomePage> {
                       const SizedBox(height: 24),
                       Text(
                         'Oshi',
-                        style: theme.textTheme.headlineLarge?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.5,
-                        ),
+                        style: theme.textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.w800, letterSpacing: 0.5),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Twój asystent szkolny i nowoczesny terminarz',
                         textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
+                        style: theme.textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant),
                       ),
                       const SizedBox(height: 36),
                       // Highlights
@@ -130,10 +121,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       FilledButton.icon(
                         onPressed: _isCreatingCalendar ? null : () => _onGetStarted(context),
                         icon: const Icon(Icons.arrow_forward_rounded),
-                        label: const Text(
-                          'Rozpocznij',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                        ),
+                        label: const Text('Rozpocznij', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                         style: FilledButton.styleFrom(
                           minimumSize: const Size.fromHeight(54),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -143,28 +131,16 @@ class _WelcomePageState extends State<WelcomePage> {
                       OutlinedButton.icon(
                         onPressed: _isCreatingCalendar ? null : () => _onUseStandaloneCalendar(context),
                         icon: _isCreatingCalendar
-                            ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
+                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                             : const Icon(Icons.calendar_month_outlined),
-                        label: Text(
-                          _isCreatingCalendar ? 'Konfiguracja...' : 'Używaj bez dziennika (Tylko kalendarz)',
-                        ),
+                        label: Text(_isCreatingCalendar ? 'Konfiguracja...' : 'Używaj bez dziennika (Tylko kalendarz)'),
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size.fromHeight(50),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         ),
                       ),
                       const SizedBox(height: 16),
-                      Opacity(
-                        opacity: 0.35,
-                        child: Text(
-                          Share.buildNumber,
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                      ),
+                      Opacity(opacity: 0.35, child: Text(Share.buildNumber, style: const TextStyle(fontSize: 12))),
                     ],
                   ),
                 ),
@@ -187,10 +163,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: BoxDecoration(color: colorScheme.surfaceContainerLow, borderRadius: BorderRadius.circular(16)),
       child: Row(
         children: [
           Container(
@@ -206,17 +179,9 @@ class _WelcomePageState extends State<WelcomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                ),
+                Text(title, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
+                Text(subtitle, style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant)),
               ],
             ),
           ),
@@ -254,22 +219,12 @@ class _WelcomePageState extends State<WelcomePage> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      const Text(
-                        'Oshi',
-                        style: TextStyle(
-                          fontSize: 34,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
+                      const Text('Oshi', style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, letterSpacing: 0.3)),
                       const SizedBox(height: 8),
                       const Text(
                         'Twój asystent szkolny i nowoczesny terminarz',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: CupertinoColors.secondaryLabel,
-                        ),
+                        style: TextStyle(fontSize: 16, color: CupertinoColors.secondaryLabel),
                       ),
                       const SizedBox(height: 36),
                       _buildCupertinoFeatureItem(
@@ -298,10 +253,7 @@ class _WelcomePageState extends State<WelcomePage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
-                            Text(
-                              'Rozpocznij',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                            ),
+                            Text('Rozpocznij', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                             SizedBox(width: 8),
                             Icon(CupertinoIcons.arrow_right, size: 18),
                           ],
@@ -318,21 +270,12 @@ class _WelcomePageState extends State<WelcomePage> {
                                 children: const [
                                   Icon(CupertinoIcons.calendar, size: 18),
                                   SizedBox(width: 8),
-                                  Text(
-                                    'Używaj bez dziennika (Tylko kalendarz)',
-                                    style: TextStyle(fontSize: 15),
-                                  ),
+                                  Text('Używaj bez dziennika (Tylko kalendarz)', style: TextStyle(fontSize: 15)),
                                 ],
                               ),
                       ),
                       const SizedBox(height: 16),
-                      Opacity(
-                        opacity: 0.35,
-                        child: Text(
-                          Share.buildNumber,
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                      ),
+                      Opacity(opacity: 0.35, child: Text(Share.buildNumber, style: const TextStyle(fontSize: 12))),
                     ],
                   ),
                 ),
@@ -344,11 +287,7 @@ class _WelcomePageState extends State<WelcomePage> {
     );
   }
 
-  Widget _buildCupertinoFeatureItem({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
+  Widget _buildCupertinoFeatureItem({required IconData icon, required String title, required String subtitle}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -370,15 +309,9 @@ class _WelcomePageState extends State<WelcomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                ),
+                Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: const TextStyle(fontSize: 13, color: CupertinoColors.secondaryLabel),
-                ),
+                Text(subtitle, style: const TextStyle(fontSize: 13, color: CupertinoColors.secondaryLabel)),
               ],
             ),
           ),
@@ -399,38 +332,39 @@ class _WelcomePageState extends State<WelcomePage> {
       );
     }
 
-    return DynamicColorBuilder(builder: (lightDynamic, darkDynamic) {
-      ColorScheme? lightColorScheme, darkColorScheme;
-      if (lightDynamic != null && darkDynamic != null) {
-        (lightColorScheme, darkColorScheme) = generateDynamicColourSchemes(lightDynamic, darkDynamic);
-      }
+    return DynamicColorBuilder(
+      builder: (lightDynamic, darkDynamic) {
+        ColorScheme? lightColorScheme, darkColorScheme;
+        if (lightDynamic != null && darkDynamic != null) {
+          (lightColorScheme, darkColorScheme) = generateDynamicColourSchemes(lightDynamic, darkDynamic);
+        }
 
-      final inner = Builder(builder: (context) => _buildMaterialContent(context));
-      if (!widget.asApp) return inner;
+        final inner = Builder(builder: (context) => _buildMaterialContent(context));
+        if (!widget.asApp) return inner;
 
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: lightColorScheme,
-          useMaterial3: true,
-          pageTransitionsTheme: const PageTransitionsTheme(
-            builders: <TargetPlatform, PageTransitionsBuilder>{
-              TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
-            },
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme: lightColorScheme,
+            useMaterial3: true,
+            pageTransitionsTheme: const PageTransitionsTheme(
+              builders: <TargetPlatform, PageTransitionsBuilder>{
+                TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+              },
+            ),
           ),
-        ),
-        darkTheme: ThemeData(
-          colorScheme: darkColorScheme,
-          useMaterial3: true,
-          pageTransitionsTheme: const PageTransitionsTheme(
-            builders: <TargetPlatform, PageTransitionsBuilder>{
-              TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
-            },
+          darkTheme: ThemeData(
+            colorScheme: darkColorScheme,
+            useMaterial3: true,
+            pageTransitionsTheme: const PageTransitionsTheme(
+              builders: <TargetPlatform, PageTransitionsBuilder>{
+                TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+              },
+            ),
           ),
-        ),
-        home: inner,
-      );
-    });
+          home: inner,
+        );
+      },
+    );
   }
 }
-
