@@ -56334,7 +56334,7 @@ k=$.J.B().d
 k.b="Making you some Ereignislebensraum..."
 k.aq()
 k=A.pQ(A.qT("https://api.szkolny.eu",null,null,null,null,B.dZ,null))
-j=B.b.gaj("1.1.20261112.76".split("."))
+j=B.b.gaj("1.1.20261112.77".split("."))
 s=7
 return A.x(A.DO(),$async$KE)
 case 7:i=a2
@@ -56342,7 +56342,7 @@ i=i==null?null:J.Wh(i)
 if(i==null)i="UNKNOWN"
 h=t.N
 g=t.z
-i=A.up(null,null,null,null,A.p(["X-ApiKey",u.F,"X-AppBuild",j,"X-AppFlavor","Release","X-AppVersion","1.1.20261112.76","X-DeviceId",i,"Content-Type","application/json"],h,g),null,null,null,null,null,null,null,null,null,null,null,null,null)
+i=A.up(null,null,null,null,A.p(["X-ApiKey",u.F,"X-AppBuild",j,"X-AppFlavor","Release","X-AppVersion","1.1.20261112.77","X-DeviceId",i,"Content-Type","application/json"],h,g),null,null,null,null,null,null,null,null,null,null,null,null,null)
 s=8
 return A.x(A.DO(),$async$KE)
 case 8:j=a2
@@ -56407,7 +56407,7 @@ k=$.J.B().d
 k.b="Live, now! Broadcasting\n(Your fantastic event!)"
 k.aq()
 k=A.pQ(A.qT("https://api.szkolny.eu",null,null,null,null,B.dZ,null))
-j=B.b.gaj("1.1.20261112.76".split("."))
+j=B.b.gaj("1.1.20261112.77".split("."))
 s=7
 return A.x(A.DO(),$async$Sb)
 case 7:i=b2
@@ -56415,7 +56415,7 @@ i=i==null?null:J.Wh(i)
 if(i==null)i="UNKNOWN"
 h=t.N
 g=t.z
-i=A.up(null,null,null,null,A.p(["X-ApiKey",u.F,"X-AppBuild",j,"X-AppFlavor","Release","X-AppVersion","1.1.20261112.76","X-DeviceId",i,"Content-Type","application/json"],h,g),null,null,null,null,null,null,null,null,null,null,null,null,null)
+i=A.up(null,null,null,null,A.p(["X-ApiKey",u.F,"X-AppBuild",j,"X-AppFlavor","Release","X-AppVersion","1.1.20261112.77","X-DeviceId",i,"Content-Type","application/json"],h,g),null,null,null,null,null,null,null,null,null,null,null,null,null)
 s=8
 return A.x(A.DO(),$async$Sb)
 case 8:j=b2
@@ -205782,7 +205782,7 @@ n=this.b
 m=n.length===0
 r=m?A.K($.m().m(0,"/Sessions"),k,k,k,k,k,k,k,k):k
 l=t.p
-return A.H1(s,A.YL(0,q,k,A.b([p,A.bNI(A.X(k,A.bv(A.b([new A.cO(B.bf,k,k,o,k),A.dd(A.H_(k,B.fN,n,B.w,k,14,k,!1,r,new A.w(15,0,15,10),k),!1,!1,!1,!m),A.H_(k,B.fN,A.b([A.C2(k,k,new A.w(0,0,0,0),k,new A.dL(new A.cAh(),k),k)],l),B.w,k,14,k,!1,k,new A.w(15,5,15,10),k),A.d6(new A.cO(B.dm,k,k,A.bF(A.X(k,A.K($.m().m(0,"/TrademarkInfo"),k,k,k,k,A.au(k,k,k,k,k,k,k,k,k,k,k,12,k,k,k,k,k,!0,k,k,k,k,k,k,k,k),B.b9,k,k),B.i,k,k,k,k,k,k,new A.w(30,0,30,10),k,k,k,k),0.5),k),1),A.bF(A.K("1.1.20261112.76",k,k,k,k,A.au(k,k,k,k,k,k,k,k,k,k,k,12,k,k,k,k,k,!0,k,k,k,k,k,k,k,k),k,k,k),0.25)],l),B.r,B.t,B.l,0,B.v),B.i,k,k,k,k,k,k,k,new A.w(0,0,0,20),k,k,k),!1)],l)),k)},
+return A.H1(s,A.YL(0,q,k,A.b([p,A.bNI(A.X(k,A.bv(A.b([new A.cO(B.bf,k,k,o,k),A.dd(A.H_(k,B.fN,n,B.w,k,14,k,!1,r,new A.w(15,0,15,10),k),!1,!1,!1,!m),A.H_(k,B.fN,A.b([A.C2(k,k,new A.w(0,0,0,0),k,new A.dL(new A.cAh(),k),k)],l),B.w,k,14,k,!1,k,new A.w(15,5,15,10),k),A.d6(new A.cO(B.dm,k,k,A.bF(A.X(k,A.K($.m().m(0,"/TrademarkInfo"),k,k,k,k,A.au(k,k,k,k,k,k,k,k,k,k,k,12,k,k,k,k,k,!0,k,k,k,k,k,k,k,k),B.b9,k,k),B.i,k,k,k,k,k,k,new A.w(30,0,30,10),k,k,k,k),0.5),k),1),A.bF(A.K("1.1.20261112.77",k,k,k,k,A.au(k,k,k,k,k,k,k,k,k,k,k,12,k,k,k,k,k,!0,k,k,k,k,k,k,k,k),k,k,k),0.25)],l),B.r,B.t,B.l,0,B.v),B.i,k,k,k,k,k,k,k,new A.w(0,0,0,20),k,k,k),!1)],l)),k)},
 $S:547}
 A.cAc.prototype={
 $1(a){return A.cTS(this.a,a)},
@@ -205921,7 +205921,7 @@ l=A.K(m?"Przegl\u0105daj dostawc\xf3w dziennika (Dodatki)":"Zarz\u0105dzaj dosta
 m=m?A.K("Pobierz rozszerzenie Librus lub eduVULCAN / UONET+",i,i,i,i,i,i,i,i):i
 n.push(A.H_(i,B.fN,A.b([A.C2(o,new A.cus(j,a),i,m,l,new A.Yo(i))],q),B.w,i,14,i,!1,i,new A.w(15,0,15,10),i))
 n.push(A.d6(new A.cO(B.dm,i,i,A.bF(A.X(i,A.K($.m().m(0,"/TrademarkInfo"),i,i,i,i,A.au(i,i,i,i,i,i,i,i,i,i,i,12,i,i,i,i,i,!0,i,i,i,i,i,i,i,i),B.b9,i,i),B.i,i,i,i,i,i,i,new A.w(30,0,30,10),i,i,i,i),0.5),i),1))
-n.push(A.bF(A.e_(i,A.K("1.1.20261112.76",i,i,i,i,A.au(i,i,i,i,i,i,i,i,i,i,i,12,i,i,i,i,i,!0,i,i,i,i,i,i,i,i),i,i,i),B.N,!1,i,new A.cut(j),i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,!1,B.ai),0.25))
+n.push(A.bF(A.e_(i,A.K("1.1.20261112.77",i,i,i,i,A.au(i,i,i,i,i,i,i,i,i,i,i,12,i,i,i,i,i,!0,i,i,i,i,i,i,i,i),i,i,i),B.N,!1,i,new A.cut(j),i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,i,!1,B.ai),0.25))
 k=A.H1(h,A.YL(0,g,i,A.b([p,A.bNI(A.X(i,A.bv(n,B.r,B.t,B.l,0,B.v),B.i,i,i,i,i,i,i,i,new A.w(0,0,0,20),i,i,i),!1)],q)),i)
 return!j.a.c?k:A.aVs(!1,new A.dL(new A.cuv(k),i),j.ga3f())},
 ga3f(){if(A.as(new A.U(Date.now(),0,!1))===10&&A.aH(new A.U(Date.now(),0,!1))===31)return A.tQ(B.hy)
@@ -208569,7 +208569,7 @@ r=A.cRp(A.b([A.X(n,A.mw(!1,s?A.c3(A.aik(n,n,n,n,n,n,n,n,n,n),20,20):A.by(B.IZ,n,
 q=A.X(n,A.K($.m().m(0,"/Session/Page/RegisterLog"),n,n,n,n,n,n,n,n),B.i,n,n,n,n,n,n,new A.w(20,0,20,10),n,n,n,n)
 o=A.Bs(this.b,new A.dL(new A.czZ(),n),t.q6)
 s=A.L(o,o.$ti.i("v.E"))
-return A.K0(n,n,A.YL(0,n,n,A.b([r,new A.uI(q,n),A.cRq(s)],p)),A.X(n,A.lR(A.b([new A.e0(A.b([new A.cO(B.dm,n,n,A.bF(A.X(n,A.K($.m().m(0,"/TrademarkInfo"),n,n,n,n,A.au(n,n,n,n,n,n,n,n,n,n,n,12,n,n,n,n,n,!0,n,n,n,n,n,n,n,n),B.b9,n,n),B.i,n,n,n,n,n,n,new A.w(30,0,30,10),n,n,n,n),0.5),n)],p)),new A.e0(A.b([A.f7(A.bF(A.K("1.1.20261112.76",n,n,n,n,A.au(n,n,n,n,n,n,n,n,n,n,n,12,n,n,n,n,n,!0,n,n,n,n,n,n,n,n),n,n,n),0.25),n,n)],p))],t.xR),n),B.i,n,n,n,n,n,n,n,new A.w(0,0,0,20),n,n,n))},
+return A.K0(n,n,A.YL(0,n,n,A.b([r,new A.uI(q,n),A.cRq(s)],p)),A.X(n,A.lR(A.b([new A.e0(A.b([new A.cO(B.dm,n,n,A.bF(A.X(n,A.K($.m().m(0,"/TrademarkInfo"),n,n,n,n,A.au(n,n,n,n,n,n,n,n,n,n,n,12,n,n,n,n,n,!0,n,n,n,n,n,n,n,n),B.b9,n,n),B.i,n,n,n,n,n,n,new A.w(30,0,30,10),n,n,n,n),0.5),n)],p)),new A.e0(A.b([A.f7(A.bF(A.K("1.1.20261112.77",n,n,n,n,A.au(n,n,n,n,n,n,n,n,n,n,n,12,n,n,n,n,n,!0,n,n,n,n,n,n,n,n),n,n,n),0.25),n,n)],p))],t.xR),n),B.i,n,n,n,n,n,n,n,new A.w(0,0,0,20),n,n,n))},
 $S:536}
 A.czT.prototype={
 $1(a){return A.d8s(this.a,a)},
@@ -208734,7 +208734,7 @@ if(k==null)k=e
 else{j=A.a1(a).ax
 i=j.rx
 k=k.bq(i==null?j.k3:i)}d.push(new A.uI(new A.BH(b,0,new A.eh(p,B.G),e,new A.w(20,16,20,16),new A.aU(new A.w(24,24,24,24),A.bv(A.b([o,n,m,l,A.K("Pobierz rozszerzenie dla swojego dziennika (np. Librus Synergia lub eduVULCAN / UONET+) z wbudowanej przegl\u0105darki dodatk\xf3w.",e,e,e,e,k,B.b9,e,e),A.c3(e,16,e),A.alc(A.by(B.nJ,e,e,e),A.K("Przegl\u0105daj dostawc\xf3w (Dodatki)",e,e,e,e,e,e,e,e),new A.cuA(f,a),e)],c),B.r,B.t,B.l,0,B.v),e),B.b1m,e),e))}d.push(new A.uI(new A.aU(new A.w(24,16,24,16),A.cQF(A.by(B.A3,e,e,e),A.K("Zarz\u0105dzaj dostawcami i repozytoriami",e,e,e,e,e,e,e,e),new A.cuB(f,a),e),e),e))
-return new A.yg(new A.cuC(f,A.K0(e,e,A.YL(0,e,e,d),A.X(e,A.lR(A.b([new A.e0(A.b([new A.cO(B.dm,e,e,A.bF(A.X(e,A.K($.m().m(0,"/TrademarkInfo"),e,e,e,e,A.au(e,e,e,e,e,e,e,e,e,e,e,12,e,e,e,e,e,!0,e,e,e,e,e,e,e,e),B.b9,e,e),B.i,e,e,e,e,e,e,new A.w(30,0,30,10),e,e,e,e),0.5),e)],c)),new A.e0(A.b([A.f7(A.bF(A.e_(e,A.K("1.1.20261112.76",e,e,e,e,A.au(e,e,e,e,e,e,e,e,e,e,e,12,e,e,e,e,e,!0,e,e,e,e,e,e,e,e),e,e,e),B.N,!1,e,new A.cuk(f),e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,!1,B.ai),0.25),e,e)],c))],t.xR),e),B.i,e,e,e,e,e,e,e,new A.w(0,0,0,20),e,e,e))),e)}}
+return new A.yg(new A.cuC(f,A.K0(e,e,A.YL(0,e,e,d),A.X(e,A.lR(A.b([new A.e0(A.b([new A.cO(B.dm,e,e,A.bF(A.X(e,A.K($.m().m(0,"/TrademarkInfo"),e,e,e,e,A.au(e,e,e,e,e,e,e,e,e,e,e,12,e,e,e,e,e,!0,e,e,e,e,e,e,e,e),B.b9,e,e),B.i,e,e,e,e,e,e,new A.w(30,0,30,10),e,e,e,e),0.5),e)],c)),new A.e0(A.b([A.f7(A.bF(A.e_(e,A.K("1.1.20261112.77",e,e,e,e,A.au(e,e,e,e,e,e,e,e,e,e,e,12,e,e,e,e,e,!0,e,e,e,e,e,e,e,e),e,e,e),B.N,!1,e,new A.cuk(f),e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,e,!1,B.ai),0.25),e,e)],c))],t.xR),e),B.i,e,e,e,e,e,e,e,new A.w(0,0,0,20),e,e,e))),e)}}
 A.ctK.prototype={
 $0(){return this.a.e.K(0,this.b.a)},
 $S:0}
@@ -212325,7 +212325,7 @@ q=A.co(5,c,!0,A.b([i,h,g,f,A.aQ(p,!1,e,new A.cCK(a4),!1,!1,c,c,!0,!0,!1,c,c)],a2
 a3=$.T().b.a
 p=a3?15:18
 a3=a3?"":$.m().m(0,"B2C872FA-F50E-4EB5-A646-B5F743603522")
-o=A.aQ("1.1.20261112.76",!1,$.m().m(0,"4C9277BD-392C-4ECB-8307-8AF4E09F539A"),new A.cCL(d,a4),!1,!1,c,c,!0,!0,!1,c,c)
+o=A.aQ("1.1.20261112.77",!1,$.m().m(0,"4C9277BD-392C-4ECB-8307-8AF4E09F539A"),new A.cCL(d,a4),!1,!1,c,c,!0,!0,!1,c,c)
 i=$.m().m(0,"/Share")
 return A.qZ(c,A.b([a1,s,r,q,A.co(5,c,!0,A.b([o,A.aQ($.m().m(0,"4FAD3DFA-A095-448D-BA21-56726E117111"),!1,i,new A.cCM(a4),!1,!1,c,c,!0,!0,!1,c,c),A.aQ("GitHub",!1,$.m().m(0,"B3D579E5-2A27-4B61-A42A-C2DFD6150022"),new A.cCN(),!1,!1,c,c,!0,!0,!1,c,c),A.aQ("Ko-fi",!1,$.m().m(0,"5352613A-B420-4441-A89D-612693727FF6"),new A.cCO(),!1,!1,c,c,!0,!0,!1,c,c)],a2),14,!1,c,a3,!0,new A.w(p,15,p,15),!1,c,c)],a2),c,c,b.b,a0,c,c,c,c,d.gl_(),a,c)},
 bpC(){var s,r=this.c
@@ -213183,7 +213183,7 @@ $0(){var s=A.iO(new A.cCm(this.a))
 return A.be(this.b,!1).a3(s)},
 $S:88}
 A.cCm.prototype={
-$1(a){var s,r,q=null,p="1.1.20261112.76",o=$.m().m(0,"4C9277BD-392C-4ECB-8307-8AF4E09F539A"),n=$.T().b.a?15:18,m=$.m().m(0,"4F794C4E-204D-4F7F-A7ED-6DC83C95AF3B"),l=A.aQ(p,!1,$.m().m(0,"02B0EE84-7869-413F-B3DA-8EF6D1ED8E7A"),new A.cBR(this.a,a),!1,!0,q,q,!0,!0,!1,q,q),k=$.m().m(0,"785EA92C-03D6-47D6-BFA9-A7100998A92B"),j=t.p
+$1(a){var s,r,q=null,p="1.1.20261112.77",o=$.m().m(0,"4C9277BD-392C-4ECB-8307-8AF4E09F539A"),n=$.T().b.a?15:18,m=$.m().m(0,"4F794C4E-204D-4F7F-A7ED-6DC83C95AF3B"),l=A.aQ(p,!1,$.m().m(0,"02B0EE84-7869-413F-B3DA-8EF6D1ED8E7A"),new A.cBR(this.a,a),!1,!0,q,q,!0,!0,!1,q,q),k=$.m().m(0,"785EA92C-03D6-47D6-BFA9-A7100998A92B"),j=t.p
 n=A.co(5,q,!0,A.b([l,A.aQ(B.b.gaj(p.split(".")),!1,k,q,!1,!1,q,q,!0,!0,!1,q,q)],j),14,!1,q,m,!1,new A.w(n,15,n,15),!1,q,q)
 l=$.T().b.a?15:18
 m=$.m().m(0,"84D8D5E0-43AA-4463-BAE8-FF5453F79FB2")
@@ -214232,7 +214232,7 @@ n=A.alc(B.aon,B.a6Z,n,A.cZE(k,k,B.aUa,k,new A.eh(A.ef(16),B.G),k,k))
 m=i.d
 i=m?k:new A.cHV(i,a)
 l=m?B.aUA:B.aoo
-return A.jY(new A.d1(new A.ay(0,1/0,b.d-48,1/0),new A.CZ(A.bv(A.b([B.CV,s,B.a31,r,B.iT,j,B.a33,q,B.a30,p,B.a30,o,B.a35,B.a32,n,B.iS,A.cQF(l,A.K(m?"Konfiguracja...":"U\u017cywaj bez dziennika (Tylko kalendarz)",k,k,k,k,k,k,k,k),i,A.dnj(k,k,k,k,k,k,k,k,k,k,k,B.aUt,k,k,new A.eh(A.ef(16),B.G),k,k,k,k,k)),B.lS,A.bF(A.K("1.1.20261112.76",k,k,k,k,B.a6O,k,k,k),0.35)],t.p),B.r,B.t,B.l,0,B.v),k),k),B.w,k,B.N,B.HR,k,k,k,B.aj)},
+return A.jY(new A.d1(new A.ay(0,1/0,b.d-48,1/0),new A.CZ(A.bv(A.b([B.CV,s,B.a31,r,B.iT,j,B.a33,q,B.a30,p,B.a30,o,B.a35,B.a32,n,B.iS,A.cQF(l,A.K(m?"Konfiguracja...":"U\u017cywaj bez dziennika (Tylko kalendarz)",k,k,k,k,k,k,k,k),i,A.dnj(k,k,k,k,k,k,k,k,k,k,k,B.aUt,k,k,new A.eh(A.ef(16),B.G),k,k,k,k,k)),B.lS,A.bF(A.K("1.1.20261112.77",k,k,k,k,B.a6O,k,k,k),0.35)],t.p),B.r,B.t,B.l,0,B.v),k),k),B.w,k,B.N,B.HR,k,k,k,B.aj)},
 $S:380}
 A.cHU.prototype={
 $0(){return this.a.aoJ(this.b)},
@@ -214244,7 +214244,7 @@ A.cHT.prototype={
 $2(a,b){var s=null,r=A.X(s,A.rg("assets/resources/images/logo_fit.png",B.dJ,96,96),B.i,s,s,new A.bM(B.yz,s,s,s,s,s,s,B.cf),s,s,s,s,B.cN,s,s,s),q=this.a,p=q.a1V(B.ip,u.ju,"Plan lekcji i zast\u0119pstwa"),o=q.a1V(B.anH,u.yj,"Oceny, frekwencja i wiadomo\u015bci"),n=q.a1V(B.anG,u.cq,"Z dziennikiem lub bez niego"),m=q.d,l=m?s:new A.cHR(q,a)
 l=A.cOP(A.ef(16),A.b9(B.atT,B.r,B.bQ,B.l,0,s),s,l,B.HH)
 q=m?s:new A.cHS(q,a)
-return A.jY(new A.d1(new A.ay(0,1/0,b.d-48,1/0),new A.CZ(A.bv(A.b([B.CV,r,B.a31,B.aY5,B.iT,B.aYb,B.a33,p,B.iS,o,B.iS,n,B.a35,B.a32,l,B.iS,A.fK(B.y,s,m?B.ys:A.b9(B.aAW,B.r,B.bQ,B.l,0,s),s,B.b6,s,s,q,B.HG,0.4),B.lS,A.bF(A.K("1.1.20261112.76",s,s,s,s,B.a6O,s,s,s),0.35)],t.p),B.r,B.t,B.l,0,B.v),s),s),B.w,s,B.N,B.HR,s,s,s,B.aj)},
+return A.jY(new A.d1(new A.ay(0,1/0,b.d-48,1/0),new A.CZ(A.bv(A.b([B.CV,r,B.a31,B.aY5,B.iT,B.aYb,B.a33,p,B.iS,o,B.iS,n,B.a35,B.a32,l,B.iS,A.fK(B.y,s,m?B.ys:A.b9(B.aAW,B.r,B.bQ,B.l,0,s),s,B.b6,s,s,q,B.HG,0.4),B.lS,A.bF(A.K("1.1.20261112.77",s,s,s,s,B.a6O,s,s,s),0.35)],t.p),B.r,B.t,B.l,0,B.v),s),s),B.w,s,B.N,B.HR,s,s,s,B.aj)},
 $S:380}
 A.cHR.prototype={
 $0(){return this.a.aoJ(this.b)},
@@ -224263,7 +224263,7 @@ case 12:s=$.J.B().y.dy?14:15
 break
 case 14:p=17
 e=A.pQ(A.qT("https://api.szkolny.eu",null,null,null,null,B.dZ,null))
-c=B.b.gaj("1.1.20261112.76".split("."))
+c=B.b.gaj("1.1.20261112.77".split("."))
 s=20
 return A.x(A.DO(),$async$ow)
 case 20:b=c0
@@ -224271,7 +224271,7 @@ b=b==null?null:J.Wh(b)
 if(b==null)b="UNKNOWN"
 a=t.N
 a0=t.z
-b=A.up(null,null,null,null,A.p(["X-ApiKey",u.F,"X-AppBuild",c,"X-AppFlavor","Release","X-AppVersion","1.1.20261112.76","X-DeviceId",b,"Content-Type","application/json"],a,a0),null,null,null,null,null,null,null,null,null,null,null,null,null)
+b=A.up(null,null,null,null,A.p(["X-ApiKey",u.F,"X-AppBuild",c,"X-AppFlavor","Release","X-AppVersion","1.1.20261112.77","X-DeviceId",b,"Content-Type","application/json"],a,a0),null,null,null,null,null,null,null,null,null,null,null,null,null)
 s=21
 return A.x(A.DO(),$async$ow)
 case 21:c=c0
