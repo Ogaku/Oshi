@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_shake_animated/flutter_shake_animated.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:oshi/extensions/extension_manager.dart';
+import 'package:oshi/extensions/models/extension_manifest.dart';
+import 'package:oshi/extensions/runtime/standalone_calendar_provider.dart';
 import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/interface/components/shim/session_management.dart';
 import 'package:oshi/interface/shared/pages/extensions_browser.dart';
@@ -374,7 +376,34 @@ class NewSessionPage extends StatefulWidget {
 
 class _NewSessionPageState extends State<NewSessionPage> {
   final scrollController = ScrollController();
+  final Set<String> _installingGuids = {};
   bool subscribed = false, enableFake = false;
+
+  Future<void> _installAndLogin(ExtensionManifest manifest) async {
+    if (_installingGuids.contains(manifest.id)) return;
+    setState(() => _installingGuids.add(manifest.id));
+    try {
+      await ExtensionManager.instance.installExtension(manifest);
+      if (!mounted) return;
+      final provider = Share.providers[manifest.id]?.instance;
+      if (provider != null) {
+        showCupertinoModalBottomSheet(
+          context: context,
+          builder: (context) => LoginPageBase.adaptive(instance: provider, providerGuid: manifest.id),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        Share.showErrorModal.broadcast(Value((
+          title: 'Błąd instalacji',
+          message: '$e',
+          actions: {},
+        )));
+      }
+    } finally {
+      if (mounted) setState(() => _installingGuids.remove(manifest.id));
+    }
+  }
 
   @override
   void initState() {
@@ -419,7 +448,9 @@ class _NewSessionPageState extends State<NewSessionPage> {
   @override
   Widget build(BuildContext context) {
     var providersList = Share.providers.keys
-        .where((x) => enableFake || x != 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER')
+        .where((x) =>
+            (enableFake || x != 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER') &&
+            x != StandaloneCalendarProvider.guid)
         .select(
           (x, index) => CupertinoListTile(
               padding: EdgeInsets.all(0),
@@ -469,6 +500,12 @@ class _NewSessionPageState extends State<NewSessionPage> {
                         },
                       ))),
         )
+        .toList();
+
+    final availableUninstalled = ExtensionManager.instance.available
+        .where((x) =>
+            !ExtensionManager.instance.isInstalled(x.id) &&
+            (enableFake || x.id != 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER'))
         .toList();
 
     var result = CupertinoPageScaffold(
@@ -525,11 +562,68 @@ class _NewSessionPageState extends State<NewSessionPage> {
                               '/Session/New/Register/Info'.localized,
                               style: TextStyle(fontSize: 14),
                             ))),
+                    // Standalone Calendar Option
+                    CupertinoListSection.insetGrouped(
+                      hasLeading: false,
+                      margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                      children: [
+                        CupertinoListTile(
+                          leading: Container(
+                            padding: EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: CupertinoColors.activeBlue.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(CupertinoIcons.calendar, color: CupertinoColors.activeBlue, size: 20),
+                          ),
+                          title: Text('Brak dostawcy (Tylko kalendarz)', style: TextStyle(fontWeight: FontWeight.w600)),
+                          subtitle: Text('Własny terminarz i plan lekcji bez konta w e-dzienniku'),
+                          trailing: CupertinoListTileChevron(),
+                          onTap: () async => await createStandaloneCalendarSession(context: context),
+                        ),
+                      ],
+                    ),
                     if (providersList.isNotEmpty)
                       CupertinoListSection.insetGrouped(
+                          header: Text('Dostawcy dziennika'),
                           hasLeading: false,
                           margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
                           children: providersList),
+                    if (availableUninstalled.isNotEmpty)
+                      CupertinoListSection.insetGrouped(
+                        header: Text('Dostępne rozszerzenia dziennika do pobrania'),
+                        hasLeading: false,
+                        margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                        children: availableUninstalled.map((ext) {
+                          final isInstalling = _installingGuids.contains(ext.id);
+                          return CupertinoListTile(
+                            leading: ext.iconUrl.isNotEmpty
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(6),
+                                    child: FadeInImage.memoryNetwork(
+                                      width: 30,
+                                      height: 30,
+                                      placeholder: kTransparentImage,
+                                      image: ext.iconUrl,
+                                      imageErrorBuilder: (_, _, _) => Icon(CupertinoIcons.square_grid_2x2),
+                                    ),
+                                  )
+                                : Icon(CupertinoIcons.square_grid_2x2),
+                            title: Text(ext.localizedName, style: TextStyle(fontWeight: FontWeight.w600)),
+                            subtitle: Text(ext.localizedDescription, maxLines: 2, overflow: TextOverflow.ellipsis),
+                            trailing: isInstalling
+                                ? CupertinoActivityIndicator()
+                                : CupertinoButton(
+                                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                    minimumSize: const Size(0, 28),
+                                    color: CupertinoColors.activeBlue,
+                                    borderRadius: BorderRadius.circular(14),
+                                    onPressed: () => _installAndLogin(ext),
+                                    child: Text('Instaluj', style: TextStyle(fontSize: 13, color: CupertinoColors.white)),
+                                  ),
+                          );
+                        }).toList(),
+                      ),
                     CupertinoListSection.insetGrouped(
                         hasLeading: false,
                         margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),

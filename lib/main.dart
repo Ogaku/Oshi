@@ -34,7 +34,7 @@ class _MainAppState extends State<MainApp> {
   late StatefulWidget Function() child;
   StatefulWidget Function() get _child => () => (Share.settings.sessions.lastSession != null
       ? baseApplication
-      : (Share.settings.sessions.sessions.isEmpty ? newSessionPage : sessionsPage));
+      : (Share.settings.sessions.sessions.isEmpty ? welcomePage : sessionsPage));
 
   @override
   void initState() {

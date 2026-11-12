@@ -35,6 +35,7 @@ import 'package:oshi/models/progress.dart';
 import 'package:oshi/interface/shared/pages/home.dart' show DateTimeExtension;
 
 import 'package:oshi/extensions/runtime/dart_extension_provider.dart';
+import 'package:oshi/extensions/runtime/standalone_calendar_provider.dart';
 import 'package:oshi/providers/librus/librus_data.dart';
 import 'package:oshi/share/config.dart';
 import 'package:oshi/share/notifications.dart';
@@ -244,7 +245,11 @@ class Session extends HiveObject {
       Map<Lesson, List<Grade>>? customGrades,
       SessionConfig? settings,
       UnreadChanges? unreadChanges})
-      : provider = provider ?? Share.providers[providerGuid]?.factory() ?? UninstalledExtensionProvider(providerGuid),
+      : provider = provider ??
+            Share.providers[providerGuid]?.factory() ??
+            (providerGuid == StandaloneCalendarProvider.guid
+                ? StandaloneCalendarProvider()
+                : UninstalledExtensionProvider(providerGuid)),
         sessionCredentials = credentials ?? {},
         data = ProviderData(),
         changes = changes ?? [],

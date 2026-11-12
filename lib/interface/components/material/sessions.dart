@@ -11,6 +11,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_shake_animated/flutter_shake_animated.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:oshi/extensions/extension_manager.dart';
+import 'package:oshi/extensions/models/extension_manifest.dart';
+import 'package:oshi/extensions/runtime/standalone_calendar_provider.dart';
 import 'package:oshi/interface/components/material/application.dart';
 import 'package:oshi/interface/components/shim/session_management.dart';
 import 'package:oshi/interface/shared/containers.dart';
@@ -372,7 +374,34 @@ class NewSessionPage extends StatefulWidget {
 
 class _NewSessionPageState extends State<NewSessionPage> {
   final scrollController = ScrollController();
+  final Set<String> _installingGuids = {};
   bool subscribed = false, enableFake = false;
+
+  Future<void> _installAndLogin(ExtensionManifest manifest) async {
+    if (_installingGuids.contains(manifest.id)) return;
+    setState(() => _installingGuids.add(manifest.id));
+    try {
+      await ExtensionManager.instance.installExtension(manifest);
+      if (!mounted) return;
+      final provider = Share.providers[manifest.id]?.instance;
+      if (provider != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginPageBase.adaptive(instance: provider, providerGuid: manifest.id),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Błąd instalacji rozszerzenia: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _installingGuids.remove(manifest.id));
+    }
+  }
 
   @override
   void initState() {
@@ -417,7 +446,9 @@ class _NewSessionPageState extends State<NewSessionPage> {
   @override
   Widget build(BuildContext context) {
     var providersList = Share.providers.keys
-        .where((x) => enableFake || x != 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER')
+        .where((x) =>
+            (enableFake || x != 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER') &&
+            x != StandaloneCalendarProvider.guid)
         .select(
           (x, index) => Builder(
               builder: (context) => MaterialButton(
@@ -477,6 +508,12 @@ class _NewSessionPageState extends State<NewSessionPage> {
         .skipLast(1)
         .toList();
 
+    final availableUninstalled = ExtensionManager.instance.available
+        .where((x) =>
+            !ExtensionManager.instance.isInstalled(x.id) &&
+            (enableFake || x.id != 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER'))
+        .toList();
+
     var body = Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
@@ -519,7 +556,139 @@ class _NewSessionPageState extends State<NewSessionPage> {
               child: Text('/Session/New/Register/Info'.localized),
             ),
           ),
-          if (providersList.isEmpty)
+          // Option: Standalone Calendar ("No provider")
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Card.filled(
+                color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.65),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () async => await createStandaloneCalendarSession(context: context),
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.calendar_month_rounded,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            size: 24,
+                          ),
+                        ),
+                        SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Brak dostawcy (Tylko kalendarz)',
+                                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'Własny terminarz, zadania i plan lekcji bez konta w e-dzienniku.',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.arrow_forward_ios_rounded, size: 16),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(24, 18, 24, 8),
+              child: Row(
+                children: [
+                  Icon(Icons.school_outlined, size: 20, color: Theme.of(context).colorScheme.primary),
+                  SizedBox(width: 8),
+                  Text(
+                    'Dostawcy dziennika (E-Dzienniki)',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (providersList.isNotEmpty) ...[
+            SliverList.list(
+              children: providersList,
+            ),
+          ],
+          if (availableUninstalled.isNotEmpty) ...[
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(24, 14, 24, 6),
+                child: Text(
+                  'Dostępne rozszerzenia do zainstalowania:',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ),
+            ),
+            SliverList.builder(
+              itemCount: availableUninstalled.length,
+              itemBuilder: (context, index) {
+                final ext = availableUninstalled[index];
+                final isInstalling = _installingGuids.contains(ext.id);
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                  child: Card.outlined(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      leading: ext.iconUrl.isNotEmpty
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: FadeInImage.memoryNetwork(
+                                width: 36,
+                                height: 36,
+                                placeholder: kTransparentImage,
+                                image: ext.iconUrl,
+                                imageErrorBuilder: (_, _, _) =>
+                                    Icon(Icons.extension, color: Theme.of(context).colorScheme.primary),
+                              ),
+                            )
+                          : Icon(Icons.extension, color: Theme.of(context).colorScheme.primary),
+                      title: Text(ext.localizedName, style: TextStyle(fontWeight: FontWeight.w600)),
+                      subtitle: Text(
+                        ext.localizedDescription,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: isInstalling
+                          ? SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : FilledButton.tonal(
+                              onPressed: () => _installAndLogin(ext),
+                              child: Text('Zainstaluj'),
+                            ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+          if (providersList.isEmpty && availableUninstalled.isEmpty)
             SliverToBoxAdapter(
               child: Card(
                 margin: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -562,25 +731,20 @@ class _NewSessionPageState extends State<NewSessionPage> {
                   ),
                 ),
               ),
-            )
-          else ...[
-            SliverList.list(
-              children: providersList,
             ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: OutlinedButton.icon(
-                  onPressed: () async {
-                    await openExtensionsBrowser(context, showDevProviders: enableFake);
-                    if (mounted) setState(() {});
-                  },
-                  icon: Icon(Icons.extension_outlined),
-                  label: Text('Zarządzaj dostawcami i repozytoriami'),
-                ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  await openExtensionsBrowser(context, showDevProviders: enableFake);
+                  if (mounted) setState(() {});
+                },
+                icon: Icon(Icons.extension_outlined),
+                label: Text('Zarządzaj dostawcami i repozytoriami'),
               ),
             ),
-          ],
+          ),
         ],
       ),
       bottomNavigationBar: Container(

@@ -8,6 +8,7 @@ import 'package:oshi/interface/components/cupertino/sessions.dart' as cupertino;
 
 import 'package:oshi/interface/components/material/application.dart' as material;
 import 'package:oshi/interface/components/cupertino/application.dart' as cupertino;
+import 'package:oshi/interface/shared/pages/welcome.dart';
 
 // Boiler: base application
 StatefulWidget get baseApplication => Share.settings.appSettings.useCupertino ? cupertino.BaseApp() : material.BaseApp();
@@ -19,3 +20,6 @@ StatefulWidget get sessionsPage =>
 // Boiler: new session
 StatefulWidget get newSessionPage =>
     Share.settings.appSettings.useCupertino ? cupertino.NewSessionPage(asApp: true) : material.NewSessionPage();
+
+// Boiler: welcome onboarding
+StatefulWidget get welcomePage => WelcomePage(asApp: true);

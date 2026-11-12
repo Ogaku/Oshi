@@ -8,6 +8,7 @@ import 'package:hive/hive.dart';
 import 'package:oshi/extensions/bridge/oshi_bridge.dart';
 import 'package:oshi/extensions/models/extension_manifest.dart';
 import 'package:oshi/extensions/runtime/dart_extension_provider.dart';
+import 'package:oshi/extensions/runtime/standalone_calendar_provider.dart';
 import 'package:oshi/share/appcenter.dart' show Version;
 import 'package:oshi/share/share.dart';
 import 'package:path_provider/path_provider.dart';
@@ -101,6 +102,11 @@ class ExtensionManager extends ChangeNotifier {
           }
         }
       }
+      // 3. Pre-populate available from bundled catalog if available is empty
+      if (_available.isEmpty) {
+        final bundled = await _loadBundledCatalog();
+        _available.addAll(bundled);
+      }
     } catch (e, st) {
       debugPrint('[ExtensionManager] initialize error: $e\n$st');
     }
@@ -113,6 +119,10 @@ class ExtensionManager extends ChangeNotifier {
   /// Synchronizes `Share.providers` with the currently installed extensions.
   void syncShareProviders() {
     Share.providers.clear();
+    Share.providers[StandaloneCalendarProvider.guid] = (
+      instance: StandaloneCalendarProvider(),
+      factory: () => StandaloneCalendarProvider(),
+    );
     for (final entry in _installed.entries) {
       final manifest = entry.value;
       Share.providers[entry.key] = (
@@ -493,6 +503,19 @@ class ExtensionManager extends ChangeNotifier {
     }
 
     throw Exception('Failed to download extension from ${manifest.sourceCodeUrl}');
+  }
+
+  Future<List<ExtensionManifest>> _loadBundledCatalog() async {
+    try {
+      final raw = await rootBundle.loadString('assets/resources/extensions/index.json');
+      final list = jsonDecode(raw) as List;
+      return list
+          .whereType<Map>()
+          .map((item) => ExtensionManifest.fromJson(item.cast<String, dynamic>(), repoUrl: officialRepoUrl))
+          .toList();
+    } catch (_) {
+      return [];
+    }
   }
 
   Future<ExtensionManifest?> _loadBundledManifestById(String id) async {
