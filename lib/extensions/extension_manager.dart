@@ -390,6 +390,19 @@ class ExtensionManager extends ChangeNotifier {
       }
     }
 
+    // Discover community extensions tagged with topic 'oshi-extension' on GitHub
+    try {
+      final community = await fetchCommunityExtensionsFromGitHub();
+      for (final item in community) {
+        final existing = merged[item.id];
+        if (existing == null || Version.parse(item.version) > Version.parse(existing.version)) {
+          merged[item.id] = item;
+        }
+      }
+    } catch (e) {
+      debugPrint('[ExtensionManager] Community discovery error: $e');
+    }
+
     _available
       ..clear()
       ..addAll(merged.values);
@@ -567,6 +580,8 @@ class ExtensionManager extends ChangeNotifier {
     final loginType = int.tryParse(readTag('loginType') ?? '20') ?? 20;
     final description = readTag('description') ?? 'Custom Dart register extension';
 
+    final isOff = author.toLowerCase() == 'ogaku' || readTag('official') == 'true';
+
     return ExtensionManifest(
       id: id,
       name: name,
@@ -581,11 +596,114 @@ class ExtensionManager extends ChangeNotifier {
       loginType: loginType,
       repoUrl: url,
       sourceCode: sourceCode,
+      isOfficial: isOff,
       credentials: const [
         ExtensionCredentialField(key: 'login', name: '/Session/Login/Username'),
         ExtensionCredentialField(key: 'pass', name: '/Session/Login/Password', obscure: true),
       ],
     );
+  }
+
+  /// Discovers community extensions on GitHub tagged with topic `oshi-extension`.
+  /// Any developer worldwide can create an extension repository on GitHub, tag it with
+  /// `oshi-extension`, and have it automatically discovered by Oshi without needing manual approval.
+  Future<List<ExtensionManifest>> fetchCommunityExtensionsFromGitHub() async {
+    final dio = Dio(BaseOptions(
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+      headers: const {
+        'Accept': 'application/vnd.github+json',
+        'User-Agent': 'Oshi-App',
+      },
+    ));
+
+    final manifests = <ExtensionManifest>[];
+    try {
+      final res = await dio.get<dynamic>(
+        'https://api.github.com/search/repositories?q=topic:oshi-extension&sort=updated&order=desc',
+      );
+      final dynamic rawData = res.data;
+      final Map<String, dynamic>? data = rawData is String
+          ? jsonDecode(rawData) as Map<String, dynamic>?
+          : (rawData is Map ? rawData.cast<String, dynamic>() : null);
+      if (data == null || data['items'] is! List) return manifests;
+
+      final items = data['items'] as List;
+      for (final item in items) {
+        if (item is! Map) continue;
+        final fullName = item['full_name']?.toString() ?? '';
+        final defaultBranch = item['default_branch']?.toString() ?? 'main';
+        final ownerLogin = (item['owner'] is Map) ? (item['owner']['login']?.toString() ?? '') : '';
+        final repoHtmlUrl = item['html_url']?.toString() ?? 'https://github.com/$fullName';
+        final isOgaku = ownerLogin.toLowerCase() == 'ogaku';
+
+        // Check if repo provides an index.json first
+        final indexUrl = 'https://raw.githubusercontent.com/$fullName/$defaultBranch/index.json';
+        bool parsedFromIndex = false;
+        try {
+          final indexRes = await dio.get<String>(
+            indexUrl,
+            options: Options(responseType: ResponseType.plain),
+          );
+          if (indexRes.statusCode == 200 && (indexRes.data?.trim().isNotEmpty ?? false)) {
+            final parsed = await fetchCatalogFromUrl(indexUrl);
+            if (parsed.isNotEmpty) {
+              for (final m in parsed) {
+                manifests.add(m.copyWith(
+                  author: m.author.isNotEmpty && m.author != 'Custom'
+                      ? m.author
+                      : (ownerLogin.isNotEmpty ? ownerLogin : 'Community'),
+                  isOfficial: isOgaku || m.isOfficial,
+                  repoUrl: repoHtmlUrl,
+                ));
+              }
+              parsedFromIndex = true;
+            }
+          }
+        } catch (_) {}
+
+        if (!parsedFromIndex) {
+          // If no index.json, look for root extension.dart
+          final scriptUrl = 'https://raw.githubusercontent.com/$fullName/$defaultBranch/extension.dart';
+          try {
+            final scriptRes = await dio.get<String>(
+              scriptUrl,
+              options: Options(responseType: ResponseType.plain),
+            );
+            if (scriptRes.statusCode == 200 && (scriptRes.data?.trim().isNotEmpty ?? false)) {
+              final m = _parseManifestFromDartHeader(scriptRes.data!, scriptUrl);
+              manifests.add(m.copyWith(
+                author: m.author.isNotEmpty && m.author != 'Custom'
+                    ? m.author
+                    : (ownerLogin.isNotEmpty ? ownerLogin : 'Community'),
+                isOfficial: isOgaku || m.isOfficial,
+                repoUrl: repoHtmlUrl,
+              ));
+              continue;
+            }
+          } catch (_) {}
+
+          // Fallback: create manifest placeholder from repository metadata
+          final repoName = item['name']?.toString() ?? 'Extension';
+          final repoDesc = item['description']?.toString() ?? 'Community register extension';
+          final cleanId = 'PROVGUID-EXT-${fullName.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '-').toUpperCase()}';
+          manifests.add(ExtensionManifest(
+            id: cleanId,
+            name: repoName.replaceAll('Oshi-Extension-', '').replaceAll('-', ' '),
+            description: repoDesc,
+            version: '1.0.0',
+            author: ownerLogin.isNotEmpty ? ownerLogin : 'Community',
+            sourceCodeUrl: scriptUrl,
+            repoUrl: repoHtmlUrl,
+            isOfficial: isOgaku,
+          ));
+        }
+      }
+    } catch (e) {
+      debugPrint('[ExtensionManager] fetchCommunityExtensionsFromGitHub failed: $e');
+    }
+
+    return manifests;
   }
 
   Future<void> _saveState() async {

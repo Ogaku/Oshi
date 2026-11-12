@@ -86,14 +86,27 @@ Map<String, dynamic> getRegisterDataJson() {
 }
 ```
 
-### 4. Installing Directly from Your Repository
-Users can install your extension directly by pasting your raw `extension.dart` URL into Oshi:
+### 4. 🏷️ Instant Community Discovery via GitHub Tag/Topic (`oshi-extension`)
+**You don't even need approval or a Pull Request to have your extension listed in Oshi!**
+
+Simply tag your public GitHub repository with the topic `oshi-extension`:
+1. In your GitHub extension repository, click the gear ⚙️ icon next to **About** (top-right of your repo page).
+2. Under **Topics**, add:
+   ```text
+   oshi-extension
+   ```
+3. Save changes.
+
+Oshi automatically queries GitHub for repositories with the `oshi-extension` topic and displays them to users in the app under the **Społeczność (Community)** catalog!
+
+### 5. Installing Directly from Your Repository URL
+Users can also install your extension directly by pasting your GitHub repo or raw `extension.dart` URL into Oshi:
 ```text
 https://raw.githubusercontent.com/your-username/oshi-extension-myschool/main/extension.dart
 ```
 
-### 5. Submitting to the Official Catalog
-To make your extension discoverable by all Oshi users:
+### 6. Submitting to the Curated Official Catalog (Optional)
+If you would like your extension to be officially verified with the **Oficjalne** badge:
 1. Fork this repository (`Ogaku/Oshi-Extensions`).
 2. Add your extension's entry to [`index.json`](./index.json).
 3. Submit a Pull Request.

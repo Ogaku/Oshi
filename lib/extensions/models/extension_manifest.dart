@@ -74,6 +74,7 @@ class ExtensionManifest {
     this.repoUrl,
     this.sourceCode,
     this.installedAt,
+    this.isOfficial = false,
   });
 
   final String id;
@@ -94,9 +95,22 @@ class ExtensionManifest {
   final String? repoUrl;
   final String? sourceCode;
   final DateTime? installedAt;
+  final bool isOfficial;
 
   String get localizedName => name.startsWith('/') ? name.localized : name;
-  String get localizedDescription => description.startsWith('/') ? description.localized : description;
+  String get localizedDescription {
+    if (description.startsWith('/')) {
+      final trans = description.localized;
+      if (trans != description && !trans.startsWith('/')) return trans;
+      if (description.toLowerCase().contains('vulcan')) {
+        return 'Dziennik elektroniczny eduVULCAN i UONET+';
+      }
+      if (description.toLowerCase().contains('librus')) {
+        return 'Dziennik elektroniczny Librus Synergia';
+      }
+    }
+    return description;
+  }
 
   Uri? get effectiveBannerUri {
     final raw = (bannerUrl != null && bannerUrl!.isNotEmpty) ? bannerUrl! : iconUrl;
@@ -136,6 +150,7 @@ class ExtensionManifest {
     String? repoUrl,
     String? sourceCode,
     DateTime? installedAt,
+    bool? isOfficial,
   }) {
     return ExtensionManifest(
       id: id ?? this.id,
@@ -156,6 +171,7 @@ class ExtensionManifest {
       repoUrl: repoUrl ?? this.repoUrl,
       sourceCode: sourceCode ?? this.sourceCode,
       installedAt: installedAt ?? this.installedAt,
+      isOfficial: isOfficial ?? this.isOfficial,
     );
   }
 
@@ -170,13 +186,19 @@ class ExtensionManifest {
       }
     }
 
+    final authorVal = (json['author'] ?? 'Ogaku').toString();
+    final effectiveRepo = repoUrl ?? json['repoUrl']?.toString();
+    final isOff = json['isOfficial'] == true ||
+        authorVal.toLowerCase() == 'ogaku' ||
+        (effectiveRepo?.toLowerCase().contains('ogaku/oshi-extension') ?? false);
+
     return ExtensionManifest(
       id: (json['id'] ?? json['guid'] ?? '').toString(),
       name: (json['name'] ?? '').toString(),
       description: (json['description'] ?? json['notes'] ?? '').toString(),
       version: (json['version'] ?? '1.0.0').toString(),
       lang: (json['lang'] ?? 'pl').toString(),
-      author: (json['author'] ?? 'Ogaku').toString(),
+      author: authorVal,
       iconUrl: (json['iconUrl'] ?? json['icon'] ?? '').toString(),
       bannerUrl: json['bannerUrl']?.toString(),
       baseUrl: (json['baseUrl'] ?? '').toString(),
@@ -186,9 +208,10 @@ class ExtensionManifest {
       loginType: json['loginType'] is int ? json['loginType'] as int : int.tryParse('${json['loginType'] ?? 20}') ?? 20,
       isDevOnly: json['isDevOnly'] == true,
       credentials: creds,
-      repoUrl: repoUrl ?? json['repoUrl']?.toString(),
+      repoUrl: effectiveRepo,
       sourceCode: json['sourceCode']?.toString(),
       installedAt: json['installedAt'] != null ? DateTime.tryParse(json['installedAt'].toString()) : null,
+      isOfficial: isOff,
     );
   }
 
@@ -207,6 +230,7 @@ class ExtensionManifest {
         'minAppVersion': minAppVersion,
         'loginType': loginType,
         'isDevOnly': isDevOnly,
+        'isOfficial': isOfficial,
         'credentials': credentials.map((c) => c.toJson()).toList(),
         if (repoUrl != null) 'repoUrl': repoUrl,
         if (includeSourceCode && sourceCode != null) 'sourceCode': sourceCode,

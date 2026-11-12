@@ -652,41 +652,149 @@ class _NewSessionPageState extends State<NewSessionPage> {
               itemBuilder: (context, index) {
                 final ext = availableUninstalled[index];
                 final isInstalling = _installingGuids.contains(ext.id);
+                final isOfficial = ext.isOfficial || ext.author.toLowerCase() == 'ogaku';
+                final scheme = Theme.of(context).colorScheme;
+
                 return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                   child: Card.outlined(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                      leading: ext.iconUrl.isNotEmpty
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: FadeInImage.memoryNetwork(
-                                width: 36,
-                                height: 36,
-                                placeholder: kTransparentImage,
-                                image: ext.iconUrl,
-                                imageErrorBuilder: (_, _, _) =>
-                                    Icon(Icons.extension, color: Theme.of(context).colorScheme.primary),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    child: Padding(
+                      padding: EdgeInsets.all(14),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 42,
+                                height: 42,
+                                decoration: BoxDecoration(
+                                  color: scheme.surfaceContainerHighest,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: ext.iconUrl.isNotEmpty
+                                      ? FadeInImage.memoryNetwork(
+                                          placeholder: kTransparentImage,
+                                          image: ext.iconUrl,
+                                          fit: BoxFit.contain,
+                                          imageErrorBuilder: (_, _, _) =>
+                                              Icon(Icons.extension_rounded, color: scheme.primary),
+                                        )
+                                      : Icon(Icons.extension_rounded, color: scheme.primary),
+                                ),
                               ),
-                            )
-                          : Icon(Icons.extension, color: Theme.of(context).colorScheme.primary),
-                      title: Text(ext.localizedName, style: TextStyle(fontWeight: FontWeight.w600)),
-                      subtitle: Text(
-                        ext.localizedDescription,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      ext.localizedName,
+                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                    if (ext.localizedDescription.isNotEmpty) ...[
+                                      SizedBox(height: 3),
+                                      Text(
+                                        ext.localizedDescription,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                              color: scheme.onSurfaceVariant,
+                                            ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              if (isInstalling)
+                                SizedBox(
+                                  width: 28,
+                                  height: 28,
+                                  child: CircularProgressIndicator(strokeWidth: 2.5),
+                                )
+                              else
+                                FilledButton.tonal(
+                                  style: FilledButton.styleFrom(
+                                    visualDensity: VisualDensity.compact,
+                                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                  ),
+                                  onPressed: () => _installAndLogin(ext),
+                                  child: Text('Zainstaluj'),
+                                ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Divider(height: 1, color: scheme.outlineVariant.withValues(alpha: 0.4)),
+                          SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(
+                                isOfficial ? Icons.verified_user_outlined : Icons.person_outline_rounded,
+                                size: 15,
+                                color: scheme.onSurfaceVariant,
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                'Autor: ${ext.author}',
+                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                      color: scheme.onSurfaceVariant,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                              ),
+                              if (isOfficial) ...[
+                                SizedBox(width: 8),
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: scheme.primaryContainer,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    'Oficjalne',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: scheme.onPrimaryContainer,
+                                    ),
+                                  ),
+                                ),
+                              ] else ...[
+                                SizedBox(width: 8),
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: scheme.secondaryContainer.withValues(alpha: 0.7),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    'Społeczność',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                      color: scheme.onSecondaryContainer,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              Spacer(),
+                              Text(
+                                'v${ext.version}',
+                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                      color: scheme.outline,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      trailing: isInstalling
-                          ? SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : FilledButton.tonal(
-                              onPressed: () => _installAndLogin(ext),
-                              child: Text('Zainstaluj'),
-                            ),
                     ),
                   ),
                 );

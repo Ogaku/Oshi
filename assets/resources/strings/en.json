@@ -2343,6 +2343,14 @@
             "translation": "This is a sample provider, it's still here for debugging purposes only. You could say hello, I guess? Please be prepared for no actual response, though."
         },
         {
+            "id": "/Providers/Vulcan/Name",
+            "translation": "eduVULCAN / UONET+"
+        },
+        {
+            "id": "/Providers/Vulcan/Description",
+            "translation": "Log in using your eduVULCAN email/username and password, or a UONET+ mobile access token and PIN (use test / test for demo mode)."
+        },
+        {
             "id": "/Settings/Classrooms/Title",
             "translation": "Custom Classrooms"
         },
@@ -2851,6 +2859,5 @@
             "title": "It's not the end of your mori...",
             "subtitle": "But of your {} lessons!"
         }
-    ],
-    "/Providers/Vulcan/Description": "Log in using your eduVULCAN email/username and password, or a UONET+ mobile access token and PIN (use test / test for demo mode)."
+    ]
 }

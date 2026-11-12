@@ -596,13 +596,15 @@ class _NewSessionPageState extends State<NewSessionPage> {
                         margin: EdgeInsets.only(left: 15, right: 15, bottom: 10),
                         children: availableUninstalled.map((ext) {
                           final isInstalling = _installingGuids.contains(ext.id);
+                          final isOfficial = ext.isOfficial || ext.author.toLowerCase() == 'ogaku';
                           return CupertinoListTile(
+                            padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                             leading: ext.iconUrl.isNotEmpty
                                 ? ClipRRect(
                                     borderRadius: BorderRadius.circular(6),
                                     child: FadeInImage.memoryNetwork(
-                                      width: 30,
-                                      height: 30,
+                                      width: 32,
+                                      height: 32,
                                       placeholder: kTransparentImage,
                                       image: ext.iconUrl,
                                       imageErrorBuilder: (_, _, _) => Icon(CupertinoIcons.square_grid_2x2),
@@ -610,14 +612,78 @@ class _NewSessionPageState extends State<NewSessionPage> {
                                   )
                                 : Icon(CupertinoIcons.square_grid_2x2),
                             title: Text(ext.localizedName, style: TextStyle(fontWeight: FontWeight.w600)),
-                            subtitle: Text(ext.localizedDescription, maxLines: 2, overflow: TextOverflow.ellipsis),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (ext.localizedDescription.isNotEmpty) ...[
+                                  SizedBox(height: 2),
+                                  Text(ext.localizedDescription, maxLines: 2, overflow: TextOverflow.ellipsis),
+                                ],
+                                SizedBox(height: 5),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      isOfficial
+                                          ? CupertinoIcons.checkmark_seal_fill
+                                          : CupertinoIcons.person,
+                                      size: 13,
+                                      color: CupertinoColors.secondaryLabel,
+                                    ),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      'Autor: ${ext.author}',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: CupertinoColors.secondaryLabel,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    if (isOfficial) ...[
+                                      SizedBox(width: 6),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                                        decoration: BoxDecoration(
+                                          color: CupertinoColors.activeBlue.withValues(alpha: 0.15),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'Oficjalne',
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: CupertinoColors.activeBlue,
+                                          ),
+                                        ),
+                                      ),
+                                    ] else ...[
+                                      SizedBox(width: 6),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                                        decoration: BoxDecoration(
+                                          color: CupertinoColors.systemGrey5,
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          'Społeczność',
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w600,
+                                            color: CupertinoColors.secondaryLabel,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ],
+                            ),
                             trailing: isInstalling
                                 ? CupertinoActivityIndicator()
                                 : CupertinoButton(
-                                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                                    minimumSize: const Size(0, 28),
+                                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                                    minimumSize: const Size(0, 30),
                                     color: CupertinoColors.activeBlue,
-                                    borderRadius: BorderRadius.circular(14),
+                                    borderRadius: BorderRadius.circular(15),
                                     onPressed: () => _installAndLogin(ext),
                                     child: Text('Instaluj', style: TextStyle(fontSize: 13, color: CupertinoColors.white)),
                                   ),

@@ -394,6 +394,45 @@ class _ExtensionsBrowserPageState extends State<ExtensionsBrowserPage> {
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(fontSize: 13, color: scheme.onSurfaceVariant),
                                         ),
+                                        const SizedBox(height: 6),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              (ext.isOfficial || ext.author.toLowerCase() == 'ogaku')
+                                                  ? Icons.verified_user_outlined
+                                                  : Icons.person_outline_rounded,
+                                              size: 14,
+                                              color: scheme.onSurfaceVariant,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              'Autor: ${ext.author}',
+                                              style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant),
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                                              decoration: BoxDecoration(
+                                                color: (ext.isOfficial || ext.author.toLowerCase() == 'ogaku')
+                                                    ? scheme.primaryContainer
+                                                    : scheme.secondaryContainer.withValues(alpha: 0.7),
+                                                borderRadius: BorderRadius.circular(4),
+                                              ),
+                                              child: Text(
+                                                (ext.isOfficial || ext.author.toLowerCase() == 'ogaku')
+                                                    ? 'Oficjalne'
+                                                    : 'Społeczność',
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: (ext.isOfficial || ext.author.toLowerCase() == 'ogaku')
+                                                      ? scheme.onPrimaryContainer
+                                                      : scheme.onSecondaryContainer,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -549,6 +588,45 @@ class _ExtensionsBrowserPageState extends State<ExtensionsBrowserPage> {
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(fontSize: 13),
                                 ),
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  Icon(
+                                    (ext.isOfficial || ext.author.toLowerCase() == 'ogaku')
+                                        ? CupertinoIcons.checkmark_seal_fill
+                                        : CupertinoIcons.person,
+                                    size: 13,
+                                    color: CupertinoColors.secondaryLabel,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Autor: ${ext.author}',
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      color: CupertinoColors.secondaryLabel,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  if (ext.isOfficial || ext.author.toLowerCase() == 'ogaku') ...[
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                                      decoration: BoxDecoration(
+                                        color: CupertinoColors.activeBlue.withValues(alpha: 0.15),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: const Text(
+                                        'Oficjalne',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                          color: CupertinoColors.activeBlue,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
                               ),
                             ],
                           ),
