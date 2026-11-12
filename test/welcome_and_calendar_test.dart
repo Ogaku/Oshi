@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:oshi/extensions/runtime/standalone_calendar_provider.dart';
+import 'package:oshi/interface/components/material/sessions.dart' as material;
 import 'package:oshi/interface/shared/pages/welcome.dart';
 import 'package:oshi/share/share.dart';
 
@@ -55,6 +56,33 @@ void main() {
       expect(find.text('Rozpocznij'), findsOneWidget);
 
       // Secondary "Tylko kalendarz" button
+      expect(find.textContaining('Tylko kalendarz'), findsOneWidget);
+    });
+  });
+
+  group('NewSessionPage widget', () {
+    testWidgets('renders when Share.providers is empty without throwing skipLast error', (tester) async {
+      Share.providers.clear();
+      await tester.pumpWidget(
+        const material.NewSessionPage(routed: false),
+      );
+      await tester.pump();
+
+      expect(find.textContaining('Tylko kalendarz'), findsOneWidget);
+    });
+
+    testWidgets('WelcomePage "Rozpocznij" transitions to NewSessionPage without throwing', (tester) async {
+      Share.providers.clear();
+      await tester.pumpWidget(
+        const WelcomePage(asApp: true),
+      );
+      await tester.pump();
+
+      final getStartedBtn = find.text('Rozpocznij');
+      expect(getStartedBtn, findsOneWidget);
+      await tester.tap(getStartedBtn);
+      await tester.pumpAndSettle();
+
       expect(find.textContaining('Tylko kalendarz'), findsOneWidget);
     });
   });

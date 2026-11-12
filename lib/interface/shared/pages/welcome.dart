@@ -1,12 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:event/event.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:oshi/extensions/runtime/standalone_calendar_provider.dart';
 import 'package:oshi/interface/components/cupertino/sessions.dart' as cupertino;
 import 'package:oshi/interface/components/material/sessions.dart' as material;
 import 'package:oshi/interface/components/shim/page_routes.dart';
 import 'package:oshi/interface/shared/containers.dart';
+import 'package:oshi/interface/shared/session_management.dart';
 import 'package:oshi/share/share.dart';
 
 class WelcomePage extends StatefulWidget {
@@ -21,17 +23,22 @@ class WelcomePage extends StatefulWidget {
 class _WelcomePageState extends State<WelcomePage> {
   bool _isCreatingCalendar = false;
 
-  void _onGetStarted() {
-    Navigator.of(context).push(
-      AdaptivePageRoute(
-        builder: (context) => Share.settings.appSettings.useCupertino
-            ? cupertino.NewSessionPage(asApp: false)
-            : material.NewSessionPage(routed: true),
-      ),
-    );
+  void _onGetStarted(BuildContext context) {
+    final nav = Navigator.maybeOf(context);
+    if (nav != null) {
+      nav.push(
+        AdaptivePageRoute(
+          builder: (context) => Share.settings.appSettings.useCupertino
+              ? cupertino.NewSessionPage(asApp: false)
+              : material.NewSessionPage(routed: true),
+        ),
+      );
+    } else {
+      Share.changeBase.broadcast(Value(() => newSessionPage));
+    }
   }
 
-  Future<void> _onUseStandaloneCalendar() async {
+  Future<void> _onUseStandaloneCalendar(BuildContext context) async {
     if (_isCreatingCalendar) return;
     setState(() => _isCreatingCalendar = true);
     try {
@@ -121,7 +128,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       const SizedBox(height: 28),
                       // Buttons
                       FilledButton.icon(
-                        onPressed: _isCreatingCalendar ? null : _onGetStarted,
+                        onPressed: _isCreatingCalendar ? null : () => _onGetStarted(context),
                         icon: const Icon(Icons.arrow_forward_rounded),
                         label: const Text(
                           'Rozpocznij',
@@ -134,7 +141,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       ),
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
-                        onPressed: _isCreatingCalendar ? null : _onUseStandaloneCalendar,
+                        onPressed: _isCreatingCalendar ? null : () => _onUseStandaloneCalendar(context),
                         icon: _isCreatingCalendar
                             ? const SizedBox(
                                 width: 18,
@@ -285,7 +292,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       const Spacer(flex: 2),
                       const SizedBox(height: 28),
                       CupertinoButton.filled(
-                        onPressed: _isCreatingCalendar ? null : _onGetStarted,
+                        onPressed: _isCreatingCalendar ? null : () => _onGetStarted(context),
                         borderRadius: BorderRadius.circular(16),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         child: Row(
@@ -302,7 +309,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       ),
                       const SizedBox(height: 12),
                       CupertinoButton(
-                        onPressed: _isCreatingCalendar ? null : _onUseStandaloneCalendar,
+                        onPressed: _isCreatingCalendar ? null : () => _onUseStandaloneCalendar(context),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         child: _isCreatingCalendar
                             ? const CupertinoActivityIndicator()
@@ -383,7 +390,7 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
     if (Share.settings.appSettings.useCupertino) {
-      final inner = _buildCupertinoContent(context);
+      final inner = Builder(builder: (context) => _buildCupertinoContent(context));
       if (!widget.asApp) return inner;
       return CupertinoApp(
         debugShowCheckedModeBanner: false,

@@ -445,7 +445,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
 
   @override
   Widget build(BuildContext context) {
-    var providersList = Share.providers.keys
+    final baseProviders = Share.providers.keys
         .where((x) =>
             (enableFake || x != 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER') &&
             x != StandaloneCalendarProvider.guid)
@@ -498,15 +498,20 @@ class _NewSessionPageState extends State<NewSessionPage> {
                     },
                   )),
         )
-        .selectMany((x, index) => [
-              x,
-              Padding(
-                padding: const EdgeInsets.only(top: 5.0),
-                child: Divider(indent: 28, endIndent: 28, height: 1, color: Color(0x55AAAAAA)),
-              )
-            ])
-        .skipLast(1)
         .toList();
+
+    final providersList = baseProviders.isEmpty
+        ? <Widget>[]
+        : baseProviders
+            .selectMany((x, index) => [
+                  x,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5.0),
+                    child: Divider(indent: 28, endIndent: 28, height: 1, color: Color(0x55AAAAAA)),
+                  )
+                ])
+            .skipLast(1)
+            .toList();
 
     final availableUninstalled = ExtensionManager.instance.available
         .where((x) =>

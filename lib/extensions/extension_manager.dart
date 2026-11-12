@@ -473,13 +473,15 @@ class ExtensionManager extends ChangeNotifier {
     ));
 
     final candidateUrls = <String>[manifest.sourceCodeUrl];
-    if (manifest.sourceCodeUrl.contains('Ogaku/Oshi-Extensions/main/')) {
-      candidateUrls.add(
-        manifest.sourceCodeUrl.replaceFirst(
-          'https://raw.githubusercontent.com/Ogaku/Oshi-Extensions/main/',
-          'https://raw.githubusercontent.com/Ogaku/Oshi/FOX/extensions_repo/',
-        ),
-      );
+    if (manifest.id == 'PROVGUID-RGLR-PROV-LIBR-LIBRSYNERGIA') {
+      candidateUrls.add('https://raw.githubusercontent.com/Ogaku/Oshi-Extension-Librus/main/extension.dart');
+      candidateUrls.add('https://raw.githubusercontent.com/Ogaku/Oshi-Extensions/main/dart/librus/librus.dart');
+    } else if (manifest.id == 'PROVGUID-RGLR-PROV-VULC-EDUVULCANAPI') {
+      candidateUrls.add('https://raw.githubusercontent.com/Ogaku/Oshi-Extension-Vulcan/main/extension.dart');
+      candidateUrls.add('https://raw.githubusercontent.com/Ogaku/Oshi-Extensions/main/dart/vulcan/vulcan.dart');
+    } else if (manifest.id == 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER') {
+      candidateUrls.add('https://raw.githubusercontent.com/Ogaku/Oshi-Extension-Sample/main/extension.dart');
+      candidateUrls.add('https://raw.githubusercontent.com/Ogaku/Oshi-Extensions/main/dart/sample/sample.dart');
     }
 
     for (final url in candidateUrls) {
