@@ -36,7 +36,6 @@ import 'package:oshi/interface/shared/pages/home.dart' show DateTimeExtension;
 
 import 'package:oshi/extensions/runtime/dart_extension_provider.dart';
 import 'package:oshi/extensions/runtime/standalone_calendar_provider.dart';
-import 'package:oshi/providers/librus/librus_data.dart';
 import 'package:oshi/share/config.dart';
 import 'package:oshi/share/notifications.dart';
 import 'package:oshi/share/resources.dart';
@@ -308,11 +307,22 @@ class Session extends HiveObject {
   List<Event> get events =>
       data.student.mainClass.events.appendAll(adminEvents).appendAll(customEvents).appendAll(sharedEvents).toList();
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool _hasLoggedInThisRun = false;
+
+  Future<({bool success, Exception? message})> _ensureLoggedIn(
+      {IProgress<({double? progress, String? message})>? progress}) async {
+    if (_hasLoggedInThisRun) return (success: true, message: null);
+    return await tryLogin(progress: progress);
+  }
+
   // Login and reset methods for early setup - implement as async
   Future<({bool success, Exception? message})> login(
       {Map<String, String>? credentials, IProgress<({double? progress, String? message})>? progress}) async {
     if (credentials?.isNotEmpty ?? false) sessionCredentials = credentials ?? {};
-    return await provider.login(credentials: credentials ?? sessionCredentials, progress: progress);
+    final res = await provider.login(credentials: credentials ?? sessionCredentials, progress: progress);
+    if (res.success) _hasLoggedInThisRun = true;
+    return res;
   }
 
   // Login and reset methods for early setup - implement as async
@@ -322,7 +332,9 @@ class Session extends HiveObject {
       bool showErrors = false}) async {
     try {
       if (credentials?.isNotEmpty ?? false) sessionCredentials = credentials ?? {};
-      return await provider.login(credentials: credentials ?? sessionCredentials, progress: progress);
+      final res = await provider.login(credentials: credentials ?? sessionCredentials, progress: progress);
+      if (res.success) _hasLoggedInThisRun = true;
+      return res;
     } catch (ex, stack) {
       if (showErrors) {
         Share.showErrorModal.broadcast(event.Value((
@@ -381,9 +393,29 @@ class Session extends HiveObject {
             id: 9999992);
       });
 
+      // Ensure the extension session is authenticated at least once this run
+      final loginState = await _ensureLoggedIn(progress: mProgress);
+
       // Actually refresh everything
       var result1 = await provider.refresh(weekStart: weekStart, progress: mProgress);
+      if (!result1.success && sessionCredentials.isNotEmpty) {
+        final relogin = await tryLogin(progress: mProgress);
+        if (relogin.success) {
+          result1 = await provider.refresh(weekStart: weekStart, progress: mProgress);
+        }
+      }
+
       var result2 = await provider.refreshMessages(progress: mProgress);
+      if (!result2.success && sessionCredentials.isNotEmpty) {
+        final relogin = await tryLogin(progress: mProgress);
+        if (relogin.success) {
+          result2 = await provider.refreshMessages(progress: mProgress);
+        }
+      }
+
+      if (!result1.success && result1.message == null && !loginState.success) {
+        result1 = (success: false, message: loginState.message);
+      }
 
       NotificationController.sendNotification(
           playSoundforce: false,
@@ -535,7 +567,14 @@ class Session extends HiveObject {
   // For reporting 'progress' - mark 'Progress' as null for indeterminate status
   Future<({bool success, Exception? message})> refresh(
       {DateTime? weekStart, IProgress<({double? progress, String? message})>? progress}) async {
+    await _ensureLoggedIn(progress: progress);
     var result = await provider.refresh(weekStart: weekStart, progress: progress);
+    if (!result.success && sessionCredentials.isNotEmpty) {
+      final relogin = await tryLogin(progress: progress);
+      if (relogin.success) {
+        result = await provider.refresh(weekStart: weekStart, progress: progress);
+      }
+    }
     if (result.success) await updateData(info: true);
     return result;
   }
@@ -545,7 +584,14 @@ class Session extends HiveObject {
   // For reporting 'progress' - mark 'Progress' as null for indeterminate status
   Future<({bool success, Exception? message})> refreshMessages(
       {IProgress<({double? progress, String? message})>? progress}) async {
+    await _ensureLoggedIn(progress: progress);
     var result = await provider.refreshMessages(progress: progress);
+    if (!result.success && sessionCredentials.isNotEmpty) {
+      final relogin = await tryLogin(progress: progress);
+      if (relogin.success) {
+        result = await provider.refreshMessages(progress: progress);
+      }
+    }
     if (result.success) {
       await updateData(messages: true);
       Share.refreshAll.broadcast();
@@ -556,8 +602,40 @@ class Session extends HiveObject {
   // Send a message to selected user/s, fetched from `Messages.Receivers`
   // Don't encode the strings, the provider will need to take care of that
   Future<({bool success, Exception? message})> sendMessage(List<Teacher> receivers, String topic, String content) async {
+    await _ensureLoggedIn();
     var result = await provider.sendMessage(receivers: receivers, topic: topic, content: content);
+    if (!result.success && sessionCredentials.isNotEmpty) {
+      final relogin = await tryLogin();
+      if (relogin.success) {
+        result = await provider.sendMessage(receivers: receivers, topic: topic, content: content);
+      }
+    }
     if (result.success) await updateData(messages: true);
+    return result;
+  }
+
+  Future<({bool success, Exception? message, Message? result})> fetchMessageContent(
+      {required Message parent, required bool byMe}) async {
+    await _ensureLoggedIn();
+    var result = await provider.fetchMessageContent(parent: parent, byMe: byMe);
+    if (!result.success && sessionCredentials.isNotEmpty) {
+      final relogin = await tryLogin();
+      if (relogin.success) {
+        result = await provider.fetchMessageContent(parent: parent, byMe: byMe);
+      }
+    }
+    return result;
+  }
+
+  Future<({bool success, Exception? message})> moveMessageToTrash({required Message parent, required bool byMe}) async {
+    await _ensureLoggedIn();
+    var result = await provider.moveMessageToTrash(parent: parent, byMe: byMe);
+    if (!result.success && sessionCredentials.isNotEmpty) {
+      final relogin = await tryLogin();
+      if (relogin.success) {
+        result = await provider.moveMessageToTrash(parent: parent, byMe: byMe);
+      }
+    }
     return result;
   }
 
@@ -1119,6 +1197,6 @@ extension ProviderLoginType on IProvider {
     if (this is DartExtensionProvider) {
       return (this as DartExtensionProvider).loginType;
     }
-    return switch (runtimeType) { LibrusDataReader => 2, _ => 20 };
+    return 20;
   }
 }

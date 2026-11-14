@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:oshi/extensions/extension_manager.dart';
 import 'package:oshi/extensions/runtime/standalone_calendar_provider.dart';
 import 'package:oshi/interface/components/material/sessions.dart' as material;
 import 'package:oshi/interface/shared/pages/welcome.dart';
@@ -9,6 +10,7 @@ void main() {
 
   setUpAll(() async {
     await Share.translator.loadResources('en');
+    ExtensionManager.instance.seedForTesting();
   });
 
   group('StandaloneCalendarProvider', () {

@@ -94,7 +94,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                   (widget.isByMe ? Share.session.data.messages.sent : Share.session.data.messages.received)
                       .remove(widget.message);
                 });
-                Share.session.provider.moveMessageToTrash(parent: widget.message, byMe: widget.isByMe);
+                Share.session.moveMessageToTrash(parent: widget.message, byMe: widget.isByMe);
               } on Exception catch (e) {
                 if (isAndroid || isIOS) {
                   Fluttertoast.showToast(

@@ -2,23 +2,24 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
-import 'package:flutter/foundation.dart' show compute;
 import 'package:intl/intl.dart';
 
-class HebeKeyPair {
+/// Generated RSA-2048 keypair encoded for HTTP request signing.
+class RsaKeyPair {
   final String certificate; // Base64 DER SubjectPublicKeyInfo
-  final String privateKey; // JSON-encoded (n, d) hex for pure-Dart signing
+  final String privateKey; // JSON-encoded (n, d, CRT) hex for pure-Dart signing
   final String fingerprint; // MD5 hex of Base64 SubjectPublicKeyInfo
 
-  const HebeKeyPair({
+  const RsaKeyPair({
     required this.certificate,
     required this.privateKey,
     required this.fingerprint,
   });
 }
 
-class HebeSigner {
-  // Pre-verified 1024-bit primes (safe for instant 2048-bit RSA modulus construction without blocking the UI isolate)
+/// Pure-Dart RSA-2048 key generator and HTTP Signature header signer.
+class RsaHttpSigner {
+  // Pre-verified 1024-bit primes for fast 2048-bit modulus construction.
   static final List<BigInt> _primePool = [
     BigInt.parse(
         'eb94d4fd12764a2237d84f060b9143c06e86ec797f572310d2945ff5fdc5c5bc'
@@ -65,7 +66,12 @@ class HebeSigner {
     0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20
   ];
 
-  static HebeKeyPair generateKeyPair() {
+  /// Computes a SHA-256 digest of UTF-8 text and returns its raw bytes.
+  static List<int> sha256DigestBytes(String input) {
+    return sha256.convert(utf8.encode(input)).bytes;
+  }
+
+  static RsaKeyPair generateKeyPair() {
     final rng = Random.secure();
     final idx1 = rng.nextInt(_primePool.length);
     var idx2 = rng.nextInt(_primePool.length - 1);
@@ -84,7 +90,6 @@ class HebeSigner {
     final privateKeyJson = jsonEncode({
       'n': n.toRadixString(16),
       'd': d.toRadixString(16),
-      // CRT parameters: make signing several times faster (important on web/JS)
       'p': p.toRadixString(16),
       'q': q.toRadixString(16),
       'dp': (d % (p - BigInt.one)).toRadixString(16),
@@ -92,7 +97,7 @@ class HebeSigner {
       'qi': q.modInverse(p).toRadixString(16),
     });
 
-    return HebeKeyPair(
+    return RsaKeyPair(
       certificate: publicBase64,
       privateKey: privateKeyJson,
       fingerprint: fingerprint,
@@ -104,12 +109,18 @@ class HebeSigner {
     required String privateKeyJson,
     required String? body,
     required String requestPath,
+    String? canonicalPattern,
     DateTime? timestamp,
   }) {
     final now = (timestamp ?? DateTime.now()).toUtc();
-    final canonicalUrl = formatCanonicalUrl(requestPath);
-    final digestValue = body != null ? base64Encode(sha256.convert(utf8.encode(body)).bytes) : null;
-    final formattedDate = '${DateFormat('EEE, dd MMM yyyy HH:mm:ss', 'en_US').format(now)} GMT';
+    final canonicalUrl = formatCanonicalUrl(
+      requestPath,
+      canonicalPattern: canonicalPattern,
+    );
+    final digestValue =
+        body != null ? base64Encode(sha256.convert(utf8.encode(body)).bytes) : null;
+    final formattedDate =
+        '${DateFormat('EEE, dd MMM yyyy HH:mm:ss', 'en_US').format(now)} GMT';
 
     final signedHeaders = <String, String>{
       'vCanonicalUrl': canonicalUrl,
@@ -131,10 +142,14 @@ class HebeSigner {
     };
   }
 
-  static String formatCanonicalUrl(String path) {
-    final match = RegExp(r'(api/mobile/.+)').firstMatch(path);
-    final extracted = match != null ? match.group(1)! : path;
-    return Uri.encodeComponent(extracted).toLowerCase();
+  static String formatCanonicalUrl(String path, {String? canonicalPattern}) {
+    if (canonicalPattern != null && canonicalPattern.isNotEmpty) {
+      final match = RegExp(canonicalPattern).firstMatch(path);
+      if (match != null && match.groupCount >= 1) {
+        return Uri.encodeComponent(match.group(1)!).toLowerCase();
+      }
+    }
+    return Uri.encodeComponent(path).toLowerCase();
   }
 
   static String signContent(String content, String privateKeyJson) {
@@ -160,7 +175,11 @@ class HebeSigner {
 
     final m = _bytesToBigInt(em);
     BigInt s;
-    if (map['p'] != null && map['q'] != null && map['dp'] != null && map['dq'] != null && map['qi'] != null) {
+    if (map['p'] != null &&
+        map['q'] != null &&
+        map['dp'] != null &&
+        map['dq'] != null &&
+        map['qi'] != null) {
       final p = BigInt.parse(map['p'] as String, radix: 16);
       final q = BigInt.parse(map['q'] as String, radix: 16);
       final dp = BigInt.parse(map['dp'] as String, radix: 16);
@@ -183,7 +202,6 @@ class HebeSigner {
       _derInteger(_bigIntToSignedBytes(n)),
       _derInteger(_bigIntToSignedBytes(e)),
     ]);
-    // rsaEncryption OID 1.2.840.113549.1.1.1 + NULL
     final algorithmIdentifier = Uint8List.fromList([
       0x30, 0x0d,
       0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01,
@@ -219,7 +237,7 @@ class HebeSigner {
     final out = BytesBuilder();
     out.addByte(0x03);
     out.add(lenBytes);
-    out.addByte(0x00); // 0 unused bits
+    out.addByte(0x00);
     out.add(bytes);
     return out.toBytes();
   }
@@ -271,68 +289,3 @@ class HebeSigner {
   }
 }
 
-class VulcanPowSolver {
-  /// Solves eduVULCAN's SHA-256 Proof-of-Work captcha challenge synchronously.
-  static String solve({
-    required String challenge,
-    required int difficulty,
-    required int rounds,
-  }) {
-    if (rounds <= 0) return '';
-    var currentPrefix = utf8.encode(challenge).toList();
-    final results = <int>[];
-
-    for (var r = 0; r < rounds; r++) {
-      var nonce = 1;
-      while (true) {
-        final nonceBytes = utf8.encode(nonce.toString());
-        final input = <int>[...currentPrefix, ...nonceBytes];
-        final digest = sha256.convert(input).bytes;
-        final value = (digest[0] * 16777216) +
-            ((digest[1] & 0xff) << 16) +
-            ((digest[2] & 0xff) << 8) +
-            (digest[3] & 0xff);
-        if (value < difficulty) {
-          results.add(nonce);
-          currentPrefix = input;
-          break;
-        }
-        nonce++;
-        if (nonce > 50000000) {
-          throw Exception('eduVULCAN PoW captcha exceeded max iterations');
-        }
-      }
-    }
-    return results.join(';');
-  }
-
-  /// Solves eduVULCAN's SHA-256 Proof-of-Work captcha challenge asynchronously without freezing the UI.
-  static Future<String> solveAsync({
-    required String challenge,
-    required int difficulty,
-    required int rounds,
-  }) async {
-    if (rounds <= 0) return '';
-    try {
-      return await compute(_solveIsolate, {
-        'challenge': challenge,
-        'difficulty': difficulty,
-        'rounds': rounds,
-      });
-    } catch (_) {
-      return solve(
-        challenge: challenge,
-        difficulty: difficulty,
-        rounds: rounds,
-      );
-    }
-  }
-
-  static String _solveIsolate(Map<String, dynamic> params) {
-    return solve(
-      challenge: params['challenge'] as String,
-      difficulty: params['difficulty'] as int,
-      rounds: params['rounds'] as int,
-    );
-  }
-}

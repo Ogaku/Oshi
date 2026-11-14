@@ -103,12 +103,6 @@ class ExtensionManifest {
     if (description.startsWith('/')) {
       final trans = description.localized;
       if (trans != description && !trans.startsWith('/')) return trans;
-      if (description.toLowerCase().contains('vulcan')) {
-        return 'Dziennik elektroniczny eduVULCAN i UONET+';
-      }
-      if (description.toLowerCase().contains('librus')) {
-        return 'Dziennik elektroniczny Librus Synergia';
-      }
     }
     return description;
   }
@@ -148,6 +142,8 @@ class ExtensionManifest {
     String? sourceCode,
     DateTime? installedAt,
     bool? isOfficial,
+    bool clearSourceCode = false,
+    bool clearSha256 = false,
   }) {
     return ExtensionManifest(
       id: id ?? this.id,
@@ -160,13 +156,13 @@ class ExtensionManifest {
       bannerUrl: bannerUrl ?? this.bannerUrl,
       baseUrl: baseUrl ?? this.baseUrl,
       sourceCodeUrl: sourceCodeUrl ?? this.sourceCodeUrl,
-      sha256: sha256 ?? this.sha256,
+      sha256: clearSha256 ? null : (sha256 ?? this.sha256),
       minAppVersion: minAppVersion ?? this.minAppVersion,
       loginType: loginType ?? this.loginType,
       isDevOnly: isDevOnly ?? this.isDevOnly,
       credentials: credentials ?? this.credentials,
       repoUrl: repoUrl ?? this.repoUrl,
-      sourceCode: sourceCode ?? this.sourceCode,
+      sourceCode: clearSourceCode ? null : (sourceCode ?? this.sourceCode),
       installedAt: installedAt ?? this.installedAt,
       isOfficial: isOfficial ?? this.isOfficial,
     );

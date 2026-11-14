@@ -181,7 +181,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                           .remove(x.message);
                                       isWorking = true;
                                     });
-                                    Share.session.provider
+                                    Share.session
                                         .moveMessageToTrash(parent: x.message, byMe: folder == MessageFolders.outbox)
                                         .then((value) => setState(() => isWorking = false));
                                   } on Exception catch (e) {
@@ -511,7 +511,7 @@ class _MessagesPageState extends State<MessagesPage> {
       } else {
         setState(() => isWorking = true);
 
-        Share.session.provider.fetchMessageContent(parent: message, byMe: folder == MessageFolders.outbox).then((result) {
+        Share.session.fetchMessageContent(parent: message, byMe: folder == MessageFolders.outbox).then((result) {
           final resolvedMessage = Message.from(
             other: result.result ?? message,
             readDate: (result.result ?? message).readDate ?? DateTime.now(),

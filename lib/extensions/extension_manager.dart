@@ -19,7 +19,6 @@ class ExtensionManager extends ChangeNotifier {
   ExtensionManager._();
 
   static const String officialRepoUrl = 'https://raw.githubusercontent.com/Ogaku/Oshi-Extensions/main/index.json';
-  static const String foxMirrorRepoUrl = 'https://raw.githubusercontent.com/Ogaku/Oshi/FOX/extensions_repo/index.json';
   static const String officialRepoWebsite = 'https://github.com/Ogaku/Oshi-Extensions';
 
   final Map<String, ExtensionManifest> _installed = {};
@@ -28,6 +27,7 @@ class ExtensionManager extends ChangeNotifier {
   DateTime? _lastCatalogFetch;
   static const Duration catalogCacheTtl = Duration(minutes: 30);
   bool _initialized = false;
+  bool _seededForTesting = false;
   bool _isLoadingCatalog = false;
   String? _lastCatalogError;
 
@@ -131,11 +131,25 @@ class ExtensionManager extends ChangeNotifier {
       }
     } catch (e, st) {
       debugPrint('[ExtensionManager] initialize error: $e\n$st');
+      _lastCatalogFetch ??= DateTime.now();
+      if (_available.isEmpty) {
+        try {
+          final bundled = await _loadBundledCatalog();
+          _available.addAll(bundled);
+        } catch (_) {}
+      }
     }
 
     _initialized = true;
     syncShareProviders();
     notifyListeners();
+  }
+
+  /// Marks the extension manager as initialized with a fresh catalog cache for unit/widget tests.
+  void seedForTesting() {
+    _initialized = true;
+    _seededForTesting = true;
+    _lastCatalogFetch = DateTime.now();
   }
 
   /// Synchronizes `Share.providers` with the currently installed extensions.
@@ -157,7 +171,13 @@ class ExtensionManager extends ChangeNotifier {
     try {
       for (final session in Share.settings.sessions.sessions.values) {
         final reg = Share.providers[session.providerGuid];
-        if (reg != null && session.provider is UninstalledExtensionProvider) {
+        final installedManifest = _installed[session.providerGuid];
+        if (reg != null &&
+            (session.provider is UninstalledExtensionProvider ||
+                (session.provider is DartExtensionProvider &&
+                    installedManifest != null &&
+                    (session.provider as DartExtensionProvider).manifest.sourceCode !=
+                        installedManifest.sourceCode))) {
           session.provider = reg.factory();
         }
       }
@@ -165,7 +185,8 @@ class ExtensionManager extends ChangeNotifier {
   }
 
   /// Ensures that any existing user sessions saved before the extension system was introduced
-  /// automatically have their provider extension installed on first launch.
+  /// automatically have their provider extension installed on first launch, and automatically
+  /// upgrades installed legacy `OProtocolDriver` shims to self-contained extensions.
   Future<void> ensureSessionProvidersInstalled() async {
     await initialize();
 
@@ -177,12 +198,25 @@ class ExtensionManager extends ChangeNotifier {
           entry.value.providerGuid,
     };
 
+    final legacyToUpgrade = <String>{
+      for (final entry in _installed.entries)
+        if (entry.key != 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER' &&
+            (entry.value.sourceCode?.contains('OProtocolDriver') ?? false))
+          entry.key,
+    };
+
     final missing = neededGuids.where((id) => !_installed.containsKey(id)).toSet();
-    if (missing.isEmpty) return;
+    final targets = {...missing, ...legacyToUpgrade};
+    if (targets.isEmpty) return;
 
-    debugPrint('[ExtensionManager] Auto-installing providers for existing sessions: $missing');
+    debugPrint('[ExtensionManager] Installing/upgrading session providers: $targets');
 
-    for (final guid in missing) {
+    if (legacyToUpgrade.isNotEmpty ||
+        targets.any((guid) => !_available.any((ext) => ext.id == guid))) {
+      await refreshCatalogIfNeeded(force: legacyToUpgrade.isNotEmpty);
+    }
+
+    for (final guid in targets) {
       ExtensionManifest? candidate;
       for (final ext in _available) {
         if (ext.id == guid) {
@@ -190,12 +224,22 @@ class ExtensionManager extends ChangeNotifier {
           break;
         }
       }
+
+      if (legacyToUpgrade.contains(guid)) {
+        final fallback = _installed[guid];
+        if (candidate != null) {
+          candidate = candidate.copyWith(clearSourceCode: true, clearSha256: true);
+        } else if (fallback != null) {
+          candidate = fallback.copyWith(clearSourceCode: true, clearSha256: true);
+        }
+      }
+
       candidate ??= await _loadBundledManifestById(guid);
       if (candidate != null) {
         try {
           await installExtension(candidate);
         } catch (e) {
-          debugPrint('[ExtensionManager] Failed to auto-install $guid: $e');
+          debugPrint('[ExtensionManager] Failed to auto-install/upgrade $guid: $e');
         }
       }
     }
@@ -334,32 +378,29 @@ class ExtensionManager extends ChangeNotifier {
     }
 
     String? rawJson;
-    if (url == officialRepoUrl) {
-      // Try official repo -> FOX branch mirror -> bundled asset fallback
-      for (final candidateUrl in [officialRepoUrl, foxMirrorRepoUrl]) {
-        try {
-          final res = await dio.get<String>(candidateUrl);
-          if (res.statusCode == 200 && (res.data?.trim().isNotEmpty ?? false)) {
-            rawJson = res.data;
-            break;
-          }
-        } catch (_) {}
-      }
-      rawJson ??= await rootBundle.loadString('assets/resources/extensions/index.json');
-    } else {
-      try {
-        final res = await dio.get<String>(url);
+    try {
+      final res = await dio.get<String>(url);
+      if (res.statusCode == 200 && (res.data?.trim().isNotEmpty ?? false)) {
         rawJson = res.data;
-      } catch (e) {
-        // If user entered a GitHub repo that uses `master` instead of `main`, try `master`
-        if (url.contains('/main/index.json')) {
+      }
+    } catch (e) {
+      // If user entered a GitHub repo that uses `master` instead of `main`, try `master`
+      if (url.contains('/main/index.json')) {
+        try {
           final masterUrl = url.replaceFirst('/main/index.json', '/master/index.json');
           final res = await dio.get<String>(masterUrl);
-          rawJson = res.data;
-        } else {
-          rethrow;
+          if (res.statusCode == 200 && (res.data?.trim().isNotEmpty ?? false)) {
+            rawJson = res.data;
+          }
+        } catch (_) {
+          if (url != officialRepoUrl) rethrow;
         }
+      } else if (url != officialRepoUrl) {
+        rethrow;
       }
+    }
+    if (url == officialRepoUrl) {
+      rawJson ??= await rootBundle.loadString('assets/resources/extensions/index.json');
     }
 
     if (rawJson == null || rawJson.trim().isEmpty) {
@@ -389,6 +430,7 @@ class ExtensionManager extends ChangeNotifier {
   /// enters the new session / account login flow), respecting the cache TTL so
   /// that repeated navigation does not rate-limit GitHub.
   Future<void> refreshCatalogIfNeeded({bool force = false}) async {
+    if (_seededForTesting && !force) return;
     await initialize();
     if (!force && _lastCatalogFetch != null && _available.isNotEmpty) {
       final elapsed = DateTime.now().difference(_lastCatalogFetch!);
@@ -548,13 +590,7 @@ class ExtensionManager extends ChangeNotifier {
     ));
 
     final candidateUrls = <String>[manifest.sourceCodeUrl];
-    if (manifest.id == 'PROVGUID-RGLR-PROV-LIBR-LIBRSYNERGIA') {
-      candidateUrls.add('https://raw.githubusercontent.com/Ogaku/Oshi-Extension-Librus/main/extension.dart');
-      candidateUrls.add('https://raw.githubusercontent.com/Ogaku/Oshi-Extensions/main/dart/librus/librus.dart');
-    } else if (manifest.id == 'PROVGUID-RGLR-PROV-VULC-EDUVULCANAPI') {
-      candidateUrls.add('https://raw.githubusercontent.com/Ogaku/Oshi-Extension-Vulcan/main/extension.dart');
-      candidateUrls.add('https://raw.githubusercontent.com/Ogaku/Oshi-Extensions/main/dart/vulcan/vulcan.dart');
-    } else if (manifest.id == 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER') {
+    if (manifest.id == 'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER') {
       candidateUrls.add('https://raw.githubusercontent.com/Ogaku/Oshi-Extension-Sample/main/extension.dart');
       candidateUrls.add('https://raw.githubusercontent.com/Ogaku/Oshi-Extensions/main/dart/sample/sample.dart');
     }
@@ -568,10 +604,8 @@ class ExtensionManager extends ChangeNotifier {
       } catch (_) {}
     }
 
-    // Offline / pre-release bundled fallback for official extensions
+    // Offline / bundled fallback for standalone sample demo extension
     final bundledAsset = switch (manifest.id) {
-      'PROVGUID-RGLR-PROV-LIBR-LIBRSYNERGIA' => 'assets/resources/extensions/librus.dart',
-      'PROVGUID-RGLR-PROV-VULC-EDUVULCANAPI' => 'assets/resources/extensions/vulcan.dart',
       'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER' => 'assets/resources/extensions/sample.dart',
       _ => null,
     };

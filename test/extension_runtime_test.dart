@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:oshi/extensions/bridge/oshi_bridge.dart';
+import 'package:oshi/extensions/bridge/rsa_signer.dart';
 import 'package:oshi/extensions/extension_manager.dart';
 import 'package:oshi/extensions/models/extension_manifest.dart';
 import 'package:oshi/extensions/runtime/dart_extension_provider.dart';
@@ -15,8 +17,8 @@ void main() {
     await Share.translator.loadResources('en');
   });
 
-  test('Extension repository index.json parses and matches script SHA-256 digests', () async {
-    final indexFile = File('extensions_repo/index.json');
+  test('Bundled extension index.json parses and matches sample.dart SHA-256 digest', () async {
+    final indexFile = File('assets/resources/extensions/index.json');
     expect(indexFile.existsSync(), isTrue);
 
     final decoded = jsonDecode(await indexFile.readAsString()) as List<dynamic>;
@@ -25,33 +27,18 @@ void main() {
         .map(ExtensionManifest.fromJson)
         .toList();
 
-    expect(manifests.length, 3);
+    expect(manifests.length, 1);
+    expect(manifests.first.id, equals('PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER'));
+
+    final scriptFile = File('assets/resources/extensions/sample.dart');
+    expect(scriptFile.existsSync(), isTrue);
+    final source = await scriptFile.readAsString();
+    final actualRawSha = sha256.convert(utf8.encode(source)).toString().toLowerCase();
+    final actualLfSha = sha256.convert(utf8.encode(source.replaceAll('\r\n', '\n'))).toString().toLowerCase();
     expect(
-      manifests.map((m) => m.id).toSet(),
-      equals({
-        'PROVGUID-RGLR-PROV-LIBR-LIBRSYNERGIA',
-        'PROVGUID-RGLR-PROV-VULC-EDUVULCANAPI',
-        'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER',
-      }),
+      {actualRawSha, actualLfSha},
+      contains(manifests.first.sha256?.toLowerCase()),
     );
-
-    final paths = {
-      'PROVGUID-RGLR-PROV-LIBR-LIBRSYNERGIA': 'extensions_repo/dart/librus/librus.dart',
-      'PROVGUID-RGLR-PROV-VULC-EDUVULCANAPI': 'extensions_repo/dart/vulcan/vulcan.dart',
-      'PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER': 'extensions_repo/dart/sample/sample.dart',
-    };
-
-    for (final manifest in manifests) {
-      final scriptFile = File(paths[manifest.id]!);
-      expect(scriptFile.existsSync(), isTrue);
-      final source = await scriptFile.readAsString();
-      final actualRawSha = sha256.convert(utf8.encode(source)).toString().toLowerCase();
-      final actualLfSha = sha256.convert(utf8.encode(source.replaceAll('\r\n', '\n'))).toString().toLowerCase();
-      expect(
-        {actualRawSha, actualLfSha},
-        contains(manifest.sha256?.toLowerCase()),
-      );
-    }
   });
 
   test('normalizeRepoInput handles GitHub URLs, raw URLs, and oshi:// deep links', () {
@@ -71,33 +58,123 @@ void main() {
     );
   });
 
-  test('d4rt executes librus.dart, vulcan.dart, and sample.dart and runs Sample provider end-to-end', () async {
-    final indexJson = jsonDecode(await File('extensions_repo/index.json').readAsString()) as List<dynamic>;
-    final manifests = {
-      for (final item in indexJson.whereType<Map<String, dynamic>>())
-        item['id'] as String: ExtensionManifest.fromJson(item),
-    };
+  test('OHttpClient normalizes pathless cookies, preserves redirect cookies, and isolates host-only domains',
+      () async {
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    final port = server.port;
+    final seenCookieHeaders = <String, String>{};
 
-    // Validate Librus and Vulcan d4rt scripts compile and instantiate OProvider via main(source)
-    final librusSource = await File('extensions_repo/dart/librus/librus.dart').readAsString();
-    final librusProvider = DartExtensionProvider(
-      manifest: manifests['PROVGUID-RGLR-PROV-LIBR-LIBRSYNERGIA']!.copyWith(sourceCode: librusSource),
+    server.listen((HttpRequest req) async {
+      seenCookieHeaders['${req.headers.value('host')}${req.uri.path}'] =
+          req.headers.value(HttpHeaders.cookieHeader) ?? '';
+
+      if (req.uri.path == '/loguj') {
+        req.response.statusCode = 200;
+        req.response.headers.add(HttpHeaders.setCookieHeader, 'DZIENNIKSID=abc123; HttpOnly');
+        req.response.write('ok');
+      } else if (req.uri.path == '/uczen/index') {
+        req.response.statusCode = 200;
+        req.response.write(req.headers.value(HttpHeaders.cookieHeader) ?? '');
+      } else if (req.uri.path == '/hop1') {
+        req.response.statusCode = 302;
+        req.response.headers.add(HttpHeaders.setCookieHeader, 'HOSTONLY=secret1; Path=/');
+        req.response.headers.set(HttpHeaders.locationHeader, 'http://localhost:$port/hop2');
+      } else if (req.uri.path == '/hop2') {
+        req.response.statusCode = 302;
+        req.response.headers.set(HttpHeaders.locationHeader, '/final');
+      } else if (req.uri.path == '/final') {
+        req.response.statusCode = 200;
+        req.response.write('done:${req.headers.value(HttpHeaders.cookieHeader) ?? ''}');
+      } else {
+        req.response.statusCode = 404;
+      }
+      await req.response.close();
+    });
+
+    final prevOverrides = HttpOverrides.current;
+    HttpOverrides.global = null;
+    try {
+      final client = OHttpClient();
+
+      // Pathless cookie set on /loguj must be normalized to / and sent to /uczen/index
+      final loginRes = await client.get('http://127.0.0.1:$port/loguj');
+      expect(loginRes.statusCode, 200);
+      final uczenRes = await client.get('http://127.0.0.1:$port/uczen/index');
+      expect(uczenRes.body, contains('DZIENNIKSID=abc123'));
+
+      // Manual redirect inspection
+      final manualHop = await client.get('http://127.0.0.1:$port/hop1', followRedirects: false);
+      expect(manualHop.statusCode, 302);
+      expect(manualHop.location, equals('http://localhost:$port/hop2'));
+
+      // 127.0.0.1 received HOSTONLY=secret1, but redirect to localhost must NOT send 127.0.0.1 cookies
+      final followRes = await client.get('http://127.0.0.1:$port/hop1', followRedirects: true);
+      expect(followRes.statusCode, 200);
+      expect(followRes.url, equals('http://localhost:$port/final'));
+      expect(seenCookieHeaders['localhost:$port/hop2'], isEmpty);
+      expect(client.getCookies('http://127.0.0.1:$port/')['HOSTONLY'], equals('secret1'));
+      expect(client.getCookies('http://localhost:$port/').containsKey('HOSTONLY'), isFalse);
+    } finally {
+      HttpOverrides.global = prevOverrides;
+      await server.close(force: true);
+    }
+  });
+
+  test('RsaHttpSigner generates keypairs and signs canonical request paths', () {
+    final kp = RsaHttpSigner.generateKeyPair();
+    expect(kp.certificate, isNotEmpty);
+    expect(kp.fingerprint.length, equals(32));
+    expect(jsonDecode(kp.privateKey), isA<Map<String, dynamic>>());
+
+    final headers = RsaHttpSigner.getSignatureHeaders(
+      keyId: kp.fingerprint,
+      privateKeyJson: kp.privateKey,
+      body: '{"test":1}',
+      requestPath: 'https://example.org/tenant/api/mobile/school/lucky?day=2026-11-14',
+      canonicalPattern: r'(api/mobile/.+)',
     );
-    expect(librusProvider.providerName, equals('Librus Synergia'));
-    expect(librusProvider.loginType, equals(2));
+    expect(headers['vCanonicalUrl'], contains('api%2fmobile%2fschool%2flucky'));
+    expect(headers['Digest'], startsWith('SHA-256='));
+    expect(headers['Signature'], contains('keyId="${kp.fingerprint}"'));
+    expect(RsaHttpSigner.sha256DigestBytes('abc').length, equals(32));
+  });
 
-    final vulcanSource = await File('extensions_repo/dart/vulcan/vulcan.dart').readAsString();
-    final vulcanProvider = DartExtensionProvider(
-      manifest: manifests['PROVGUID-RGLR-PROV-VULC-EDUVULCANAPI']!.copyWith(sourceCode: vulcanSource),
-    );
-    expect(vulcanProvider.providerName, equals('eduVULCAN / UONET+'));
-    expect(vulcanProvider.loginType, equals(20));
+  test('OExtensionHostContext merges partial student, timetables, and messages slices', () {
+    final ctx = OExtensionHostContext();
+    ctx.setRegisterDataFromMap({
+      'student': {
+        'account': {'id': 1, 'userId': 1, 'number': 5, 'firstName': 'Jan', 'lastName': 'Kowalski'},
+      },
+      'timetables': {
+        'timetable': <String, dynamic>{},
+      },
+    });
+    expect(ctx.lastData?.student.account.firstName, equals('Jan'));
 
-    // Execute Sample provider login & refresh through d4rt
-    final sampleSource = await File('extensions_repo/dart/sample/sample.dart').readAsString();
+    ctx.setRegisterDataFromMap({
+      'messages': {
+        'received': [
+          {'id': 42, 'topic': 'Hello', 'preview': 'Body'},
+        ],
+        'sent': <dynamic>[],
+        'receivers': <dynamic>[],
+      },
+    });
+    // Student slice must remain intact when updating messages only
+    expect(ctx.lastData?.student.account.firstName, equals('Jan'));
+    expect(ctx.lastData?.messages.received.length, equals(1));
+    expect(ctx.lastData?.messages.received.first.topic, equals('Hello'));
+  });
+
+  test('d4rt executes sample.dart and runs Sample provider end-to-end', () async {
+    final indexJson = jsonDecode(await File('assets/resources/extensions/index.json').readAsString()) as List<dynamic>;
+    final manifest = ExtensionManifest.fromJson(indexJson.first as Map<String, dynamic>);
+
+    final sampleSource = await File('assets/resources/extensions/sample.dart').readAsString();
     final sampleProvider = DartExtensionProvider(
-      manifest: manifests['PROVGUID-SHIM-SMPL-FAKE-DATAPROVIDER']!.copyWith(sourceCode: sampleSource),
+      manifest: manifest.copyWith(sourceCode: sampleSource),
     );
+    expect(sampleProvider.loginType, equals(20));
 
     final loginResult = await sampleProvider.login(credentials: {});
     expect(loginResult.success, isTrue);
