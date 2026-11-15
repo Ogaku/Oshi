@@ -8,6 +8,7 @@ import 'package:oshi/extensions/bridge/rsa_signer.dart';
 import 'package:oshi/extensions/extension_manager.dart';
 import 'package:oshi/extensions/models/extension_manifest.dart';
 import 'package:oshi/extensions/runtime/dart_extension_provider.dart';
+import 'package:oshi/models/data/lesson.dart';
 import 'package:oshi/share/share.dart';
 
 void main() {
@@ -15,6 +16,7 @@ void main() {
 
   setUpAll(() async {
     await Share.translator.loadResources('en');
+    Share.session = Session();
   });
 
   test('Bundled extension index.json parses and matches sample.dart SHA-256 digest', () async {
@@ -187,5 +189,58 @@ void main() {
     final messagesResult = await sampleProvider.refreshMessages();
     expect(messagesResult.success, isTrue);
     expect(sampleProvider.registerData?.messages.received, isNotEmpty);
+  });
+
+  test('Lesson.gradesAverage uses single-semester average when only Semester 1 has grades', () {
+    final lesson = Lesson.fromJson({
+      'id': 1,
+      'url': '',
+      'name': 'Matematyka',
+      'short': 'MAT',
+      'no': 1,
+      'isExtracurricular': false,
+      'isBlockLesson': false,
+      'teacher': {'id': 1, 'url': '', 'firstName': 'Jan', 'lastName': 'Kowalski'},
+      'grades': [
+        {
+          'id': 10,
+          'url': '',
+          'name': 'Sprawdzian',
+          'value': '5',
+          'weight': 1,
+          'comments': <String>[],
+          'countsToAverage': true,
+          'date': '2026-11-10T00:00:00.000',
+          'addDate': '2026-11-10T00:00:00.000',
+          'resitPart': false,
+          'semester': 1,
+          'isConstituent': true,
+          'isSemester': false,
+          'isSemesterProposition': false,
+          'isFinal': false,
+          'isFinalProposition': false,
+        },
+        {
+          'id': 11,
+          'url': '',
+          'name': 'Kartkowka',
+          'value': '4',
+          'weight': 1,
+          'comments': <String>[],
+          'countsToAverage': true,
+          'date': '2026-11-11T00:00:00.000',
+          'addDate': '2026-11-11T00:00:00.000',
+          'resitPart': false,
+          'semester': 1,
+          'isConstituent': true,
+          'isSemester': false,
+          'isSemesterProposition': false,
+          'isFinal': false,
+          'isFinalProposition': false,
+        },
+      ],
+    });
+
+    expect(lesson.gradesAverage, closeTo(4.5, 0.001));
   });
 }

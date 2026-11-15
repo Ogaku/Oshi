@@ -1761,49 +1761,65 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                     AdaptiveCard(
                       regular: true,
                       child: '288A7361-FF68-4743-88B2-6715F4D56457'.localized,
-                      after: Share.session.data.student.mainClass.unit.name,
+                      after: Share.session.data.student.mainClass.unit.fullName.trim().isNotEmpty
+                          ? Share.session.data.student.mainClass.unit.fullName
+                          : Share.session.data.student.mainClass.unit.name,
                     ),
                     AdaptiveCard(
                       regular: true,
                       child: '16288334-3CEC-4208-849D-A62BF00D75BC'.localized,
-                      after: Share.session.data.student.mainClass.unit.principalName,
+                      after: Share.session.data.student.mainClass.unit.principalName.trim().isNotEmpty
+                          ? Share.session.data.student.mainClass.unit.principalName
+                          : 'E91C42DF-7471-47E1-BAB8-7E3C63713154'.localized,
                     ),
                     AdaptiveCard(
                       regular: true,
                       child: 'A15AC36A-0A6A-4E6A-8E14-7185B9CAA157'.localized,
-                      click: () {
-                        try {
-                          MapsLauncher.launchQuery(
-                              '${Share.session.data.student.mainClass.unit.name}, ${Share.session.data.student.mainClass.unit.address}');
-                        } catch (ex) {
-                          // ignored
-                        }
-                      },
-                      after: Share.session.data.student.mainClass.unit.address,
+                      click: Share.session.data.student.mainClass.unit.address.trim().isNotEmpty
+                          ? () {
+                              try {
+                                MapsLauncher.launchQuery(
+                                    '${Share.session.data.student.mainClass.unit.name}, ${Share.session.data.student.mainClass.unit.address}');
+                              } catch (ex) {
+                                // ignored
+                              }
+                            }
+                          : null,
+                      after: Share.session.data.student.mainClass.unit.address.trim().isNotEmpty
+                          ? Share.session.data.student.mainClass.unit.address
+                          : 'E91C42DF-7471-47E1-BAB8-7E3C63713154'.localized,
                     ),
                     AdaptiveCard(
                       regular: true,
                       child: '2CE8A48D-BCF7-43E9-86FC-4BFA997D1024'.localized,
-                      click: () {
-                        try {
-                          launchUrlString('tel:${Share.session.data.student.mainClass.unit.phone}');
-                        } catch (ex) {
-                          // ignored
-                        }
-                      },
-                      after: Share.session.data.student.mainClass.unit.phone,
+                      click: Share.session.data.student.mainClass.unit.phone.trim().isNotEmpty
+                          ? () {
+                              try {
+                                launchUrlString('tel:${Share.session.data.student.mainClass.unit.phone}');
+                              } catch (ex) {
+                                // ignored
+                              }
+                            }
+                          : null,
+                      after: Share.session.data.student.mainClass.unit.phone.trim().isNotEmpty
+                          ? Share.session.data.student.mainClass.unit.phone
+                          : 'E91C42DF-7471-47E1-BAB8-7E3C63713154'.localized,
                     ),
                     AdaptiveCard(
                       regular: true,
                       child: 'E5A3FE43-E428-4BE8-9E08-48E2149AC5A7'.localized,
-                      click: () {
-                        try {
-                          launchUrlString('mailto:${Share.session.data.student.mainClass.unit.email}');
-                        } catch (ex) {
-                          // ignored
-                        }
-                      },
-                      after: Share.session.data.student.mainClass.unit.email,
+                      click: Share.session.data.student.mainClass.unit.email.trim().isNotEmpty
+                          ? () {
+                              try {
+                                launchUrlString('mailto:${Share.session.data.student.mainClass.unit.email}');
+                              } catch (ex) {
+                                // ignored
+                              }
+                            }
+                          : null,
+                      after: Share.session.data.student.mainClass.unit.email.trim().isNotEmpty
+                          ? Share.session.data.student.mainClass.unit.email
+                          : 'E91C42DF-7471-47E1-BAB8-7E3C63713154'.localized,
                     ),
                   ],
                 ),
@@ -1820,8 +1836,13 @@ class _SettingsPageState extends State<SettingsPage> with TickerProviderStateMix
                         child: '/Average'.localized,
                         after: () {
                           var majors = Share.session.data.student.subjects
-                              .where((x) => x.hasMajor)
+                              .where((x) => x.hasMajor && x.topMajor!.asValue > 0)
                               .select((x, _) => x.topMajor!.asValue);
+                          if (majors.isEmpty) {
+                            majors = Share.session.data.student.subjects
+                                .where((x) => x.gradesAverage > 0)
+                                .select((x, _) => x.gradesAverage);
+                          }
                           return majors.isNotEmpty
                               ? majors.average().toStringAsFixed(2)
                               : 'E91C42DF-7471-47E1-BAB8-7E3C63713154'.localized;

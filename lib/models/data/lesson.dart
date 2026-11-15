@@ -167,32 +167,44 @@ extension AverageExtension on List<Grade> {
       return -100;
     }
 
+    double combineTwo(double a, double b) {
+      if (a > 0 && b > 0) return (a + b) / 2.0;
+      if (a > 0) return a;
+      if (b > 0) return b;
+      return -1;
+    }
+
     /* Return the average, depending on the selected configuration */
     return switch (Share.session.settings.yearlyAverageMethod) {
       YearlyAverageMethods.allGradesAverage => average(weighted, adapt),
-      YearlyAverageMethods.averagesAverage =>
-        (average(weighted, adapt, secondSemester: false) + average(weighted, adapt, firstSemester: false)) / 2.0,
-      YearlyAverageMethods.finalPlusAverage => ((firstWhereOrDefault((x) =>
-                          x.semester == 2 && (x.isSemesterProposition || x.isSemester || x.isFinalProposition || x.isFinal))
-                      ?.asValue ??
-                  -1) +
-              average(weighted, adapt, firstSemester: false)) /
-          2.0,
-      YearlyAverageMethods.averagePlusFinal => ((firstWhereOrDefault((x) =>
-                          x.semester == 1 && (x.isSemesterProposition || x.isSemester || x.isFinalProposition || x.isFinal))
-                      ?.asValue ??
-                  -1) +
-              average(weighted, adapt, secondSemester: false)) /
-          2.0,
-      YearlyAverageMethods.finalsAverage => ((firstWhereOrDefault((x) =>
-                          x.semester == 1 && (x.isSemesterProposition || x.isSemester || x.isFinalProposition || x.isFinal))
-                      ?.asValue ??
-                  -1) +
-              (firstWhereOrDefault((x) =>
-                          x.semester == 2 && (x.isSemesterProposition || x.isSemester || x.isFinalProposition || x.isFinal))
-                      ?.asValue ??
-                  -1)) /
-          2.0,
+      YearlyAverageMethods.averagesAverage => combineTwo(
+          average(weighted, adapt, secondSemester: false),
+          average(weighted, adapt, firstSemester: false),
+        ),
+      YearlyAverageMethods.finalPlusAverage => combineTwo(
+          firstWhereOrDefault((x) =>
+                  x.semester == 2 && (x.isSemesterProposition || x.isSemester || x.isFinalProposition || x.isFinal))
+              ?.asValue ??
+              -1,
+          average(weighted, adapt, firstSemester: false),
+        ),
+      YearlyAverageMethods.averagePlusFinal => combineTwo(
+          firstWhereOrDefault((x) =>
+                  x.semester == 1 && (x.isSemesterProposition || x.isSemester || x.isFinalProposition || x.isFinal))
+              ?.asValue ??
+              -1,
+          average(weighted, adapt, secondSemester: false),
+        ),
+      YearlyAverageMethods.finalsAverage => combineTwo(
+          firstWhereOrDefault((x) =>
+                  x.semester == 1 && (x.isSemesterProposition || x.isSemester || x.isFinalProposition || x.isFinal))
+              ?.asValue ??
+              -1,
+          firstWhereOrDefault((x) =>
+                  x.semester == 2 && (x.isSemesterProposition || x.isSemester || x.isFinalProposition || x.isFinal))
+              ?.asValue ??
+              -1,
+        ),
     };
   }
 }
