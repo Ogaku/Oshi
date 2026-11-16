@@ -310,6 +310,11 @@ class Session extends HiveObject {
   @JsonKey(includeToJson: false, includeFromJson: false)
   bool _hasLoggedInThisRun = false;
 
+  void resetProvider(IProvider newProvider) {
+    provider = newProvider;
+    _hasLoggedInThisRun = false;
+  }
+
   Future<({bool success, Exception? message})> _ensureLoggedIn(
       {IProgress<({double? progress, String? message})>? progress}) async {
     if (_hasLoggedInThisRun) return (success: true, message: null);

@@ -178,7 +178,7 @@ class ExtensionManager extends ChangeNotifier {
                     installedManifest != null &&
                     (session.provider as DartExtensionProvider).manifest.sourceCode !=
                         installedManifest.sourceCode))) {
-          session.provider = reg.factory();
+          session.resetProvider(reg.factory());
         }
       }
     } catch (_) {}

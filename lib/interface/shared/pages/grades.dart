@@ -231,8 +231,16 @@ class _GradesPageState extends State<GradesPage> {
                   child: '/Average'.localized,
                   regular: false,
                   after: () {
-                    var majors =
-                        Share.session.data.student.subjects.where((x) => x.hasMajor).select((x, _) => x.topMajor!.asValue);
+                    var majors = Share.session.data.student.subjects
+                        .where((x) => x.hasMajor && x.topMajor!.asValue > 0)
+                        .select((x, _) => x.topMajor!.asValue)
+                        .toList();
+                    if (majors.isEmpty) {
+                      majors = Share.session.data.student.subjects
+                          .where((x) => x.gradesAverage > 0)
+                          .select((x, _) => x.gradesAverage)
+                          .toList();
+                    }
                     return majors.isNotEmpty
                         ? majors.average().toStringAsFixed(2)
                         : 'E91C42DF-7471-47E1-BAB8-7E3C63713154'.localized;
